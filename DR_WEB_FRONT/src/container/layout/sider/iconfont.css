@@ -1,0 +1,40 @@
+
+@font-face {
+  font-family: 'iconfont';  /* project id 817270 */
+  src: url('//at.alicdn.com/t/font_817270_4cln0v8eqc8.eot');
+  src: url('//at.alicdn.com/t/font_817270_4cln0v8eqc8.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_817270_4cln0v8eqc8.woff') format('woff'),
+  url('//at.alicdn.com/t/font_817270_4cln0v8eqc8.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_817270_4cln0v8eqc8.svg#iconfont') format('svg');
+}
+.iconfont {
+  font-family:"iconfont" !important;
+  font-size:16px;
+  font-style:normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.anticon-bad-k:before { content: "\e860"; }
+
+.anticon-bad-u:before { content: "\e833"; }
+
+.anticon-bad-t:before { content: "\e823"; }
+
+.anticon-bad-r:before { content: "\e821"; }
+
+.anticon-bad-w:before { content: "\e820"; }
+
+.anticon-bad-q:before { content: "\e810"; }
+
+.anticon-bad-m:before { content: "\e806"; }
+
+.anticon-bad-n:before { content: "\e805"; }
+
+.anticon-bad-v:before { content: "\e803"; }
+
+.anticon-bad-b:before { content: "\e802"; }
+
+.anticon-bad-a:before { content: "\e801"; }
+
+.anticon-bad-home:before { content: "\e800"; }

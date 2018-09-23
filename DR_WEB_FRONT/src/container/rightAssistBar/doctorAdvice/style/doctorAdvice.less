@@ -1,0 +1,237 @@
+/**
+ * 右侧辅助栏-----医嘱-----智能论治
+ */
+.intelligentTreat {
+  background-color: #f2f2f2;
+  .intelligentTreat_Tabs {
+    margin-top:10px;
+    .ant-tabs-nav-container {
+      overflow: hidden;
+      font-size: 13px;
+      background-color: transparent;
+    }
+    .ant-tabs-nav-wrap {
+      margin-left: 10px;
+    }
+    .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-nav-container {
+      height:28px;
+    }
+    .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab {
+      background-color: #ffffff;
+      color: #0066CC;
+      height:28px;
+      line-height:28px;
+      width:94px;
+      text-align: center;
+      border-top-left-radius:7px;
+      border-top-right-radius:7px;
+    }
+    .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
+      background: #0066CC;
+      color: #ffffff;
+      border-color: #e8e8e8;
+      height:28px;
+      line-height:28px;
+      width:95px;
+      text-align: center;
+      border-top-left-radius:7px;
+      border-top-right-radius:7px;
+    }
+    .ant-tabs-nav {
+      margin-left: 1.5%
+    }
+    .ant-tabs-tab-next.ant-tabs-tab-arrow-show {
+      opacity: 0;
+    }
+    .ant-tabs-tab-prev-icon, .ant-tabs-tab-next-icon {
+      opacity: 0;
+    }
+    .ant-tabs-content {
+      width:403px;
+      margin-left: 10px;
+      padding-left: 5px;
+    }
+  }
+
+}
+.data {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  height:68vh;
+}
+.data::-webkit-scrollbar {
+      display: none;
+}
+.medicalHistory_data {
+  height:71vh;
+  .data_p {
+    background-color:#F2F2F2;
+    padding-top: 10px;
+    padding-left: 10px;
+    padding-bottom: 2px;
+    font-family: 'Arial Normal', 'Arial';
+    font-weight: 400;
+    font-size: 12px;
+    font-style: normal;
+    color: #333333;
+    span {
+      color:#0066CC;
+      font-size: 14px;
+      padding:2px;
+    }
+  }
+}
+.prescription {
+  background-color: #F2F2F2;
+  margin-top: 10px;
+  .hr1 {
+    background-color: #E4E4E4;
+    height:1px;
+    border:none;
+    margin-top: 6px;
+    margin-bottom: -15px;
+  }
+  .medicalHistory_content {
+    font-size: 12px;
+    color: #333333;
+    font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+    font-style: normal;
+    // line-height: 22px;
+    //margin-top: 10px;
+    .medicalHistory_content-title {
+      height:30px;
+      background-color: #ffffff;
+      padding-top:5px;
+      padding-left:5px;
+      border-top: 1px #E4E4E4 solid;
+      border-left: 1px #E4E4E4 solid;
+      border-right: 1px #E4E4E4 solid;
+      .anticon-up {
+        font-size: 20px;
+        color: #0066CC;
+        cursor: pointer;
+      }
+      .anticon-down {
+        font-size: 20px;
+        color: #0066CC;
+        cursor: pointer;
+      }
+      .ant-divider{
+        background:#999999;
+      }
+      .content-p {
+        font-weight: 400;
+        font-size: 12px;
+        text-align: left;
+        color:#0066CC;
+        span {
+          color:#FFA217;
+          font-size: 12px;
+        }
+      }
+      .content-div {
+        float: right;
+        color:#65BDE3;
+      }
+    }
+  }
+  .content-detail-two {
+    width:403px;
+    border: 1px #E4E4E4 solid;
+    background-color: #EBF5FF;
+    padding-top:8px;
+    padding-left:5px;
+    padding-bottom:5px;
+    line-height: 22px;
+    p:nth-child(2),p:nth-child(4),p:nth-child(6),p:nth-child(8),p:nth-child(10){
+      font-weight: 400;
+      font-family: '微软雅黑';
+      font-size: 12px;
+      color: #333333;
+      margin-left: 50px;
+    }
+    p:nth-child(1),p:nth-child(3),p:nth-child(5),p:nth-child(7),p:nth-child(9){
+      font-weight: 700;
+      font-family: '微软雅黑';
+      font-size: 12px;
+      color: #0066CC;
+      float:left;
+      cursor: pointer;
+    }
+  }
+  hr {
+    background-color: #E4E4E4;
+    height:0.8px;
+    margin-left: -5px;
+    margin-top: 25px;
+    border:none;
+  }
+  .content-detail-two-div {
+    padding-left: 5px;
+    p:nth-child(3) {
+      padding-left: 10px;
+    }
+    .hr2 {
+      background-color: #E4E4E4;
+      height:1px;
+      margin-left: -10px;
+      margin-top: 5px;
+      border:none;
+    }
+  }
+  .content-detail-Five-div {
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    text-align: left;
+    .hr2 {
+      background-color: #E4E4E4;
+      height:1px;
+      margin-left: -10px;
+      margin-top: 25px;
+      border:none;
+    }
+  }
+  .content-detail-five {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height:68vh;
+  }
+  .content-detail-two-Button {
+    float: right;
+    margin-top: -50px;
+    margin-right: 5px;
+  }
+  .ant-btn {
+    height: 22px;
+    color: rgb(10, 110, 203);
+    background-color: inherit;
+    font-size: 12px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(10, 110, 203);
+    border-radius: 150px;
+    padding-top: 2px;
+  }
+  .ant-rate-star {
+    margin-right: 5px;
+  }
+}
+.content-detail-two-Button-p {
+  position:relative;
+  float:right;
+  padding-right: 13px;
+  margin-top: -25px;
+  font-size: 12px;
+  color:#108de9;
+  cursor: pointer;
+}
+.content-detail-five-Button-p {
+  position:relative;
+  float:right;
+  padding-right: 13px;
+  margin-top: -20px;
+  font-size: 12px;
+  color:#108de9;
+  cursor: pointer;
+}

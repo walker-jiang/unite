@@ -1,0 +1,306 @@
+.ant-tabs {
+  height:100%;
+}
+
+/**
+ * 公共组件contentDetail样式
+ */
+.content-detail{
+  width: 424px;
+  background-color: #EBF5FF;
+  padding-top:8px;
+  padding-left:5px;
+  padding-bottom:5px;
+  line-height: 22px;
+  p:nth-child(even){
+    font-weight: 400;
+    font-family: '微软雅黑';
+    font-size: 12px;
+    margin-left: 50px;
+  }
+  p:nth-child(odd){
+    font-weight: 700;
+    font-family: '微软雅黑';
+    font-size: 12px;
+    color: #0066CC;
+    float:left;
+    cursor: pointer;
+  }
+  p:last-child{
+    font-weight: 700;
+    font-family: '微软雅黑';
+    font-size: 12px;
+    color: #0066CC;
+    float:right;
+    margin-right: 20px;
+    margin-top: -22px;
+    cursor: pointer;
+  }
+  span:last-child{
+    font-weight: 700;
+    font-family: '微软雅黑';
+    font-size: 12px;
+    color: #0066CC;
+    text-align:right;
+    padding-left:340px;
+    line-height: 30px;
+    height:30px;
+    background-color: #EBF5FF;
+    width: 100%;
+    cursor: pointer;
+  }
+  .anticon-right{
+    float:left;
+    padding-top: 5px;
+    cursor: pointer;
+  }
+  .anticon-down{
+    float:left;
+    padding-top: 5px;
+    cursor: pointer;
+  }
+}
+
+/**
+ * 病历模板样式
+ */
+.rightAssistBar_template,.rightAssistBar_medicalHistory{
+  position: absolute;
+  width: 424px;
+  height: 70vh;
+  top: 44px;
+  right:0px;
+  z-index: 99;
+  background-color: #ffffff;
+  .tab {
+    height:48px;
+    background-color: #F2F2F2;
+    .ant-input-search-icon {
+      font-size: 18px;
+    }
+    .ant-input-affix-wrapper {
+      width: 97%;
+      height: 30px;
+      margin-top: 8px;
+    }
+    .ant-input{
+      border-radius: 50px;
+    }
+    .anticon-bars {
+      cursor: pointer;
+      font-size:25px;
+      margin-top:12px;
+      margin-left:8px
+    }
+  }
+  .content {
+    font-size: 13px;
+    color: #333333;
+    font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+    font-style: normal;
+    line-height: 22px;
+    .content-title{
+      height:32px;
+      background-color: #ffffff;
+      padding-top:5px;
+      padding-left:8px;
+      .ant-btn {
+        height: 22px;
+        color: rgb(10, 110, 203);
+        font-size: 12px;
+        border-width: 1px;
+        border-style: solid;
+        border-color: rgb(10, 110, 203);
+        border-radius: 150px;
+        padding-top: 2px;
+      }
+      .anticon-up {
+        font-size: 20px;
+        color: #0066CC;
+        cursor: pointer;
+      }
+      .anticon-down {
+        font-size: 20px;
+        color: #0066CC;
+        cursor: pointer;
+      }
+      .ant-divider{
+        background:#999999;
+      }
+      .content-p {
+        font-weight: 700;
+        text-align: left;
+      }
+      .content-p-two {
+        font-weight: 700;
+        text-align: left;
+        color: #008000;
+        margin-left: -10px;
+      }
+      .content-p-three {
+        text-align: right;
+        color: #0066CC;
+        margin-right: 10px;
+      }
+    }
+  }
+  .data {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height:68vh;
+  }
+  .data::-webkit-scrollbar {
+        display: none;
+  }
+  .content-icon{
+    position:relative;
+    font-size: 20px;
+    color:#0066CC;
+    right:0px;
+    float:right;
+    margin-right:20px;
+    margin-top:-25px;
+  }
+}
+
+
+
+/**
+ * 历史病历样式
+ */
+.rightAssistBar_medicalHistory {
+  background-color: #F2F2F2;
+  height:74vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  .medicalHistory_content {
+    font-size: 12px;
+    color: #333333;
+    font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+    font-style: normal;
+    line-height: 22px;
+    margin-top: 10px;
+    .medicalHistory_content-title {
+      height:70px;
+      background-color: #ffffff;
+      padding-top:13px;
+      padding-left:8px;
+      .ant-btn {
+        height: 22px;
+        color: rgb(10, 110, 203);
+        font-size: 12px;
+        border-width: 1px;
+        border-style: solid;
+        border-color: rgb(10, 110, 203);
+        border-radius: 150px;
+        padding-top: 2px;
+      }
+      .ant-col-8 {
+        margin-top: -2px;
+      }
+      .anticon-up {
+        font-size: 20px;
+        color: #0066CC;
+        cursor: pointer;
+      }
+      .anticon-down {
+        font-size: 20px;
+        color: #0066CC;
+        cursor: pointer;
+      }
+      .ant-divider{
+        background:#999999;
+      }
+      .content-p {
+        font-weight: 400;
+        font-size: 12px;
+        text-align: left;
+        span {
+          color:#0066CC;
+          font-size: 12px;
+        }
+      }
+    }
+
+
+  }
+  .medicalHistory_data {
+    height:74vh;
+    .data_p {
+      background-color:#F2F2F2;
+      padding-top: 10px;
+      padding-left: 10px;
+      padding-bottom: 2px;
+      font-family: 'Arial Normal', 'Arial';
+      font-weight: 400;
+      font-size: 12px;
+      font-style: normal;
+      color: #333333;
+      span {
+        color:#0066CC;
+        font-size: 14px;
+        padding:2px;
+      }
+    }
+  }
+
+  .content-icon{
+    position:relative;
+    font-size: 20px;
+    color:#0066CC;
+    right:0px;
+    float:right;
+    margin-right:13px;
+    margin-top:-55px;
+  }
+}
+
+.rightAssistBar_medicalHistory::-webkit-scrollbar {
+      display: none;
+}
+
+.tagList {
+  margin-left: 4px;
+  div:first-child{
+    margin-top: 2px;
+    margin-bottom: 5px;
+    margin-left: 3px;
+  }
+}
+
+/**
+ * 右侧辅助栏-----治疗反馈
+ */
+.rightAssistBar_biofeedbckTherpy {
+  height:74vh;
+  background-color: #ffffff;
+  font-family: 'Arial Normal', 'Arial';
+  font-weight: 400;
+  font-style: normal;
+  font-size: 13px;
+  color: #333333;
+  .rightAssistBar_div {
+    padding-top: 25px;
+    padding-left: 15px;
+    p {
+      padding-bottom: 5px;
+    }
+  }
+  // .chart-x-p {
+  //   position: absolute;
+  //   right:20px;
+  //   margin-top: -70px;
+  // }
+  .biofeedbckTherpy_p {
+    width: 380px;
+    height: 46px;
+    background-color: #FFE1B3;
+    margin-left: 15px;
+    margin-top: 15px;
+    color:#FF6600;
+    p {
+      padding-top: 14px;
+      padding-left: 15px;
+    }
+  }
+}
