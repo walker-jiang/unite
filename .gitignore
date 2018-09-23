@@ -1,9 +1,0 @@
-.idea
-.idea/
-.DS_Store
-../.DS_Store
-./gitlab/DR_WEB_FRONT/node_modules/
-./gitlab/DR_WEB_FRONT/ROOT/
-./gitlab/DR_WEB_FRONT/webpack.common.js
-./gitlab/DR_WEB_FRONT/src/util/configuration.js
-
