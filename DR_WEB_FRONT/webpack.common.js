@@ -154,6 +154,7 @@ module.exports = {
     alias: { // 对间隔比较远的文件可以进行重命名
       components: path.resolve(__dirname, 'src/component/'),
       commonFunc: path.resolve(__dirname, 'src/util/commonFunction/'),
+      roots: path.resolve(__dirname, 'src/container/'),
     }
   }
 };

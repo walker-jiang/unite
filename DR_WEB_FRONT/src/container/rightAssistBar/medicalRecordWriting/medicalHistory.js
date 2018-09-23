@@ -7,13 +7,13 @@ import React, {Component} from 'react';
 import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, Alert, Modal } from 'antd';
 import './style/rightAssistBar.less';
 import ContentDetail from '../pubilcModule/contentDetail.js';
+import medicalRWService from '../service/medicalRWService.js';
 const Search = Input.Search;
 
 export default class template extends Component {
   constructor(props){
     super(props);
     this.state = {
-
       content:[
         {
           title:"风寒感冒-风寒侵袭证诊疗模板",
@@ -49,8 +49,23 @@ export default class template extends Component {
       unfold:false
     };
   };
-  componentWillMount(){
-
+  componentDidMount(){
+    this.searchList();
+  }
+  searchList = (content) =>{
+    let params = {
+      personid:window.sessionStorage.getItem('userid'),
+      orgid: window.sessionStorage.getItem('orgid'),
+      temtype: "0",//0：病历模板，1：医嘱订单
+    };
+    function callBack(res){
+      if(res.result && res.data){
+        console.log("@@@@@@@@@成功==============",res);
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    medicalRWService.GetList(params, callBack);
   }
   render() {
     var { content, unfold } = this.state;

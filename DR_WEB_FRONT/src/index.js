@@ -4,13 +4,13 @@ import Loadable from 'react-loadable'; // 加载时进行模块分离
 import { Switch, Route, Redirect, BrowserRouter } from 'react-router-dom';
 import obj_prototype from 'commonFunc/prototype'; // 引入自定义的原型方法
 // import Mobile from './container/layout/body/center/content/treatManage/tabButton/mobile/index';
-// import Layout from './container/layout';
+import Layout from './container/layout';
 import './global.css'; // 全局样式文件
 const loadingComponent = () => (<div>Loading...</div>);
-const Layout = Loadable({
-  loader: () => import('./container/layout'),
-  loading: loadingComponent,
-});
+// const Layout = Loadable({
+//   loader: () => import('./container/layout'),
+//   loading: loadingComponent,
+// });
 import Login from './container/login';
 // const Login = Loadable({
 //   loader: () => import('./container/login'),
@@ -20,12 +20,8 @@ const SystemOption = Loadable({
   loader: () => import('./container/systemOption'),
   loading: loadingComponent,
 });
-const SyndromeDifferentiation = Loadable({
-  loader: () => import('./container/syndromeDifferentiation'),
-  loading: loadingComponent,
-});
 const Mobile = Loadable({
-  loader: () => import('./container/layout/body/center/content/treatManage/tabButton/mobile/index'),
+  loader: () => import('./container/layout/body/treatment/treatItem/diseasePreventTreat/mobile'),
   loading: loadingComponent,
 });
 const CureNotIll = Loadable({
@@ -43,7 +39,6 @@ const App = () => (
         <Route path='/layout' component={Layout} ></Route>
         <Route path='/systemOption' component={SystemOption} exact></Route>
         <Route path='/Mobile' component={Mobile} exact></Route>
-        <Route path='/syndromeDifferentiation' component={SyndromeDifferentiation} ></Route>
         <Route path='/cureNotIll' component={CureNotIll} ></Route>
 	    </Switch>
   	</BrowserRouter>

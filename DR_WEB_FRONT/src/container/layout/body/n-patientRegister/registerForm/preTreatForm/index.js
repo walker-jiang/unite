@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import { Form, Row, Col, Radio, Select } from 'antd';
-import IllHistory_present from '../../../treatManage/treatment/treatmentList/formItem/illHistory';
-import IllHistory_allergy from '../../../treatManage/treatment/treatmentList/formItem/illHistory';
-import OtherInspect from '../../../treatManage/treatment/treatmentList/formItem/otherInspect';
-import HabitusInspect from '../../../treatManage/treatment/treatmentList/formItem/habitusInspect';
+import IllHistory_present from '../../../treatment/treatItem/writeMedicalRecords/formItem/illHistory';
+import IllHistory_allergy from '../../../treatment/treatItem/writeMedicalRecords/formItem/illHistory';
+import OtherInspect from '../../../treatment/treatItem/writeMedicalRecords/formItem/otherInspect';
+import HabitusInspect from '../../../treatment/treatItem/writeMedicalRecords/formItem/habitusInspect';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import radioSty from 'components/antd/style/radio';
 import selectSty from 'components/antd/style/select';

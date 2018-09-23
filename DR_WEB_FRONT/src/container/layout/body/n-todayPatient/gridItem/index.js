@@ -25,7 +25,7 @@ export default class Index extends Component {
             <Footer themeType={themeType}>
               <ActionButton onClick={e => doing(dataSource.registerid)}>
                 <Link
-                  to={'/Layout/treatManage/' + dataSource.patientid}>
+                  to={'/Layout/treatment/' + dataSource.patientid}>
                   接诊
                 </Link>
               </ActionButton>
@@ -33,7 +33,7 @@ export default class Index extends Component {
             : gridType == 1 ?
             <Footer themeType={themeType}>
               <ActionButton onClick={e => keepDoing(dataSource.registerid)}>
-                <Link to={'/Layout/treatManage/' + dataSource.patientid}>
+                <Link to={'/Layout/treatment/' + dataSource.patientid}>
                   继续接诊
                 </Link>
               </ActionButton>
@@ -44,12 +44,12 @@ export default class Index extends Component {
             :
             <Footer themeType={themeType}>
               <ActionButton onClick={e => redo(dataSource.registerid)}>
-                <Link to={'/Layout/treatManage/' + dataSource.patientid}>
+                <Link to={'/Layout/treatment/' + dataSource.patientid}>
                   重新接诊
                 </Link>
               </ActionButton>
               <ActionButton onClick={e => view(dataSource.registerid)}>
-                <Link to={'/Layout/treatManage/' + dataSource.patientid}>
+                <Link to={'/Layout/treatment/' + dataSource.patientid}>
                   信息查看
                 </Link>
               </ActionButton>

@@ -2,10 +2,6 @@ import React, {Component} from 'react';
 import styled from 'styled-components';
 import { Switch, Route } from 'react-router-dom';
 import Loadable from 'react-loadable'; // 加载时进行模块分离
-import Footer from './footer';
-// import Center from './center';
-import LeftBar from './leftBar';
-import RightBar from './rightBar';
 
 const loadingComponent = () => (<div>Loading...</div>);
 const TodayPatient = Loadable({
@@ -16,10 +12,11 @@ const Home = Loadable({
   loader: () => import('./n-home'),
   loading: loadingComponent,
 });
-const TreatManage = Loadable({
-  loader: () => import('./treatManage'),
-  loading: loadingComponent,
-});
+import TreatManage from './treatment';
+// const TreatManage = Loadable({
+//   loader: () => import('./treatment'),
+//   loading: loadingComponent,
+// });
 const PatientRegister = Loadable({
   loader: () => import('./n-patientRegister'),
   loading: loadingComponent,
@@ -55,7 +52,7 @@ export default class Body extends Component {
           <Route path='/Layout/patientRegister' component={PatientRegister} exact></Route>
           <Route path='/Layout/registerForm' component={RegisterForm} exact></Route>
           <Route path='/Layout' component={Home} exact></Route>
-          <Route path='/Layout/treatManage/:id' component={TreatManage}></Route>
+          <Route path='/Layout/treatment/:id' component={TreatManage}></Route>
           <Route path='/Layout/electronicMedicalRecords' component={Electronic}></Route>
           <Route path='/Layout/cure' component={Cure}></Route>
       </Container>

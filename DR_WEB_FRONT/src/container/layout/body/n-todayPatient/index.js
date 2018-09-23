@@ -230,7 +230,7 @@ export default class Index extends Component {
         rcStatus == 0 ?
         <StyledLink
           onClick={() => this.doing(record.registerid)}
-          to={'/Layout/treatManage/' + record.patientid}>
+          to={'/Layout/treatment/' + record.patientid}>
           接诊
         </StyledLink>
         :
@@ -239,7 +239,7 @@ export default class Index extends Component {
             <span>
               <StyledLink
                 onClick={() => this.keepDoing(record.registerid)}
-                to={'/Layout/treatManage/' + record.patientid}>
+                to={'/Layout/treatment/' + record.patientid}>
                 继续接诊
               </StyledLink>|
               <StyledLink
@@ -251,12 +251,12 @@ export default class Index extends Component {
           : <span>
               <StyledLink
                 onClick={() => this.redo(record.registerid)}
-                to={'/Layout/treatManage/' + record.patientid}>
+                to={'/Layout/treatment/' + record.patientid}>
                 重新接诊
               </StyledLink>|
               <StyledLink
                 onClick={() => this.view(record.registerid)}
-                to={'/Layout/treatManage/' + record.patientid}>
+                to={'/Layout/treatment/' + record.patientid}>
                 信息查看
               </StyledLink>
             </span>

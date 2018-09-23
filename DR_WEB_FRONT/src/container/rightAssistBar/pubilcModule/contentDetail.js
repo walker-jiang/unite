@@ -9,56 +9,83 @@ import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, A
 import SearchTree from './searchTree.js';
 const Search = Input.Search;
 
-export default class ContentDetail extends Component {
+class ContentOne extends Component {
   constructor(props){
     super(props);
     this.state = {
-      one:false,
-      two:false,
-      three:false,
-      four:false,
-      five:false,
-      six:false,
+       isUnfold:true
+    }
+  }
+  // pridepict
+  cutOut = (value) =>{
+    if(value == "" || value == null){
+      return " ";//空格占位
+    }else{
+      if(value.length > 24){
+        return value.substr(0,24)+"...";
+      }else{
+        return value;
+      }
+    }
+  }
+  unfold = (isUnfold) =>{
+    this.setState({isUnfold:!isUnfold});
+  }
+  render(){
+    var name = this.props.oneItem.name;
+    var value = this.props.oneItem.value;
+    var { isUnfold } = this.state;
+    return (
+      <div>
+      {
+        value == ""
+        ?
+        null
+        :
+        <div>
+          <p className="odd" onClick={()=>this.unfold("isUnfold",isUnfold)}>
+            {
+              value.length > 24
+              ?
+              <Icon type={value?"down":"right"}/>
+              :
+              null
+            }
+            <p style={{paddingLeft:15,fontWeight:700,float:'left'}}>{name}：</p>
+            <p className="even">{ isUnfold?value:this.cutOut(value) }</p>
+          </p>
+        </div>
+      }
+      </div>
+    )
+  }
+}
+
+class ContentDetail extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      pridepict:false,
       item:this.props.item,
       unfold:this.props.unfold,
       isCut:true,
       isUnfoldAll:false,//是否展开全部
     };
   };
-  componentWillMount(){
-
-  }
   cut = (isCut) =>{
     console.log("isCut",isCut);
     this.setState({isCut})
   }
-  unfold = (number,isUnfold) =>{
-    switch (number) {
-      case "one":this.setState({one:!isUnfold});break;
-      case "two":this.setState({two:!isUnfold});break;
-      case "three":this.setState({three:!isUnfold});break;
-      case "four":this.setState({four:!isUnfold});break;
-      case "five":this.setState({five:!isUnfold});break;
-      case "six":this.setState({six:!isUnfold});break;
-      default:this.setState({seven:!isUnfold});break;
-    }
-  }
   unfoldAll = (isUnfoldAll) => {
     this.setState({isUnfoldAll:!isUnfoldAll})
-  }
-  cutOut = (value) =>{
-    if(value.length > 24){
-      return value.substr(0,24)+"...";
-    }else{
-      return value;
-    }
   }
   pullDown = (unfold) =>{
     console.log("pullDown====================",unfold);
     this.setState({unfold:!unfold});
   }
   render() {
-    var { isCut, isUnfoldAll, one, two, three, four, five, six, seven, item, unfold  } = this.state;
+    var { isCut, isUnfoldAll, pridepict, item, unfold  } = this.state;
+    console.log("item@@@@@@@",item);
     return (
       <div>
         <div class="content-icon">
@@ -73,35 +100,25 @@ export default class ContentDetail extends Component {
             isUnfoldAll
             ?
             <div class="content-detail">
-              <p onClick={()=>this.unfold("one",one)}><Icon type={one?"down":"right"}/>主诉：</p>
-              <p>{ one?item.one:this.cutOut(item.one) }</p>
-              <p onClick={()=>this.unfold("two",two)}><Icon type={two?"down":"right"}/>望诊：</p>
-              <p>{ two?item.two:this.cutOut(item.two) }</p>
-              <p onClick={()=>this.unfold("three",three)}><Icon type={three?"down":"right"}/>切诊：</p>
-              <p>{ three?item.three:this.cutOut(item.three) }</p>
-              <p onClick={()=>this.unfold("four",four)}><Icon type={four?"down":"right"}/>体格检查：</p>
-              <p>{ four?item.four:this.cutOut(item.four) }</p>
-              <p onClick={()=>this.unfold("five",five)}><Icon type={five?"down":"right"}/>诊断：</p>
-              <p>{ five?item.five:this.cutOut(item.five) }}</p>
-              <p onClick={()=>this.unfold("six",six)}><Icon type={six?"down":"right"}/>XXXX：</p>
-              <p>{ six?item.six:this.cutOut(item.six) }}</p>
-              <p onClick={()=>this.unfold("seven",seven)}><Icon type={seven?"down":"right"}/>XXXX：</p>
-              <p>{ seven?item.seven:this.cutOut(item.seven) }}</p>
-              <p onClick={()=>this.unfoldAll(isUnfoldAll)}>查看详细<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" /></p>
+              {
+                item.map((item,index)=>{
+                  return(
+                    <ContentOne oneItem={item}/>
+                  )
+                })
+              }
+              <p className="queryDetail" onClick={()=>this.unfoldAll(isUnfoldAll)}>查看详细<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" /></p>
             </div>
             :
             <div class="content-detail">
-              <p onClick={()=>this.unfold("one",one)}><Icon type={one?"down":"right"}/>主诉：</p>
-              <p>{ one?item.one:this.cutOut(item.one) }</p>
-              <p onClick={()=>this.unfold("two",two)}><Icon type={two?"down":"right"}/>望诊：</p>
-              <p>{ two?item.two:this.cutOut(item.two) }</p>
-              <p onClick={()=>this.unfold("three",three)}><Icon type={three?"down":"right"}/>切诊：</p>
-              <p>{ three?item.three:this.cutOut(item.three) }</p>
-              <p onClick={()=>this.unfold("four",four)}><Icon type={four?"down":"right"}/>体格检查：</p>
-              <p>{ four?item.four:this.cutOut(item.four) }</p>
-              <p onClick={()=>this.unfold("five",five)}><Icon type={five?"down":"right"}/>诊断：</p>
-              <p>{ five?item.five:this.cutOut(item.five) }}</p>
-              <p onClick={()=>this.unfoldAll(isUnfoldAll)}>查看详细<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" /></p>
+              {
+                item.slice(0,6).map((item,index)=>{
+                  return(
+                    <ContentOne oneItem={item}/>
+                  )
+                })
+              }
+              <p className="queryDetail" onClick={()=>this.unfoldAll(isUnfoldAll)}>查看详细<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" /></p>
             </div>
           )
         }
@@ -109,3 +126,4 @@ export default class ContentDetail extends Component {
     );
   }
 }
+module.exports = ContentDetail;

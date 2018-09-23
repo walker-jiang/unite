@@ -120,13 +120,13 @@ export default class Index extends Component {
         <span>
           <StyledLink
             onClick={() => this.doing(record.registerid)}
-            to={'/Layout/treatManage/' + record.patientid}>
+            to={'/Layout/treatment/' + record.patientid}>
             修改
           </StyledLink>
           |
           <StyledLink
             onClick={() => this.doing(record.registerid)}
-            to={'/Layout/treatManage/' + record.patientid}>
+            to={'/Layout/treatment/' + record.patientid}>
             查看
           </StyledLink>
         </span>

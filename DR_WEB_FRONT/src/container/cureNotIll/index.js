@@ -20,7 +20,7 @@ import 'moment/locale/zh-cn';
 import PatientsNameForm from './patientsNameForm';
 import RadioSex from './radioSex';
 import RadioCF from './radioCF';
-import CureButton from '../layout/body/center/content/treatManage/diseasePreventTreat';
+import CureButton from '../layout/body/treatment/treatItem/diseasePreventTreat';
 
 const Option = Select.Option;
 const FormItem = Form.Item;

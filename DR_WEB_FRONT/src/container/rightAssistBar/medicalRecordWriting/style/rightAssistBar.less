@@ -6,27 +6,29 @@
  * 公共组件contentDetail样式
  */
 .content-detail{
-  width: 424px;
+  width: 408px;
   background-color: #EBF5FF;
   padding-top:8px;
   padding-left:5px;
   padding-bottom:5px;
-  line-height: 22px;
-  p:nth-child(even){
+  line-height: 13px;
+  .even{
     font-weight: 400;
     font-family: '微软雅黑';
     font-size: 12px;
+    text-align: left;
     margin-left: 50px;
+    color:#333333;
   }
-  p:nth-child(odd){
+  .odd{
     font-weight: 700;
     font-family: '微软雅黑';
     font-size: 12px;
     color: #0066CC;
-    float:left;
+    text-align: left;
     cursor: pointer;
   }
-  p:last-child{
+  .queryDetail {
     font-weight: 700;
     font-family: '微软雅黑';
     font-size: 12px;
@@ -65,12 +67,11 @@
  * 病历模板样式
  */
 .rightAssistBar_template,.rightAssistBar_medicalHistory{
-  position: absolute;
-  width: 424px;
+  width: 408px;
   height: 70vh;
   top: 44px;
   right:0px;
-  z-index: 99;
+  z-index: 1;
   background-color: #ffffff;
   .tab {
     height:48px;
@@ -303,4 +304,15 @@
       padding-left: 15px;
     }
   }
+
+}
+.pagination {
+  height:30px;
+  width:100%;
+  background-color: #f2f2f2;
+  text-align: center;
+  position:relative;
+  bottom:0px;
+  padding-top: 3px;
+  cursor: pointer;
 }
