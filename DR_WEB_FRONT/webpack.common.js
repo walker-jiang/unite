@@ -5,7 +5,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const ProgressBarPlugin = require('progress-bar-webpack-plugin');
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   entry: ['./src/index.js'],
@@ -147,7 +147,7 @@ module.exports = {
         to: './jspdf.js'
       }],{copyUnmodified: true}
     ),
-    // new BundleAnalyzerPlugin(), // 打包分析插件
+    new BundleAnalyzerPlugin(), // 打包分析插件
     new webpack.NamedModulesPlugin(), //显示模块的相对路径
   ],
   resolve: {

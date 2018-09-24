@@ -12,11 +12,11 @@ const Home = Loadable({
   loader: () => import('./n-home'),
   loading: loadingComponent,
 });
-import TreatManage from './treatment';
-// const TreatManage = Loadable({
-//   loader: () => import('./treatment'),
-//   loading: loadingComponent,
-// });
+// import TreatManage from './treatment';
+const TreatManage = Loadable({
+  loader: () => import('./treatment'),
+  loading: loadingComponent,
+});
 const PatientRegister = Loadable({
   loader: () => import('./n-patientRegister'),
   loading: loadingComponent,

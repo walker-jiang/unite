@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import { Form, Icon, Button, Row, Col, Tabs } from 'antd';
-import LoadingImg from './img/loading.gif';
 import Loading from 'components/dr/loading';
 import CaseType from './formItem/casetype';
 import MainSpeech from './formItem/mainSpeech';
