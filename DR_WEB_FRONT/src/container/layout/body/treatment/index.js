@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Button } from 'antd';
 import Icon from 'components/dr/icon';
 import buttonSty from 'components/antd/style/button';
+import PatientDetailInfo from './treatItem/patientDetailInfo';
 import WriteMedicalRecords from './treatItem/writeMedicalRecords';
 import DrAdviceManage from './treatItem/drAdviceManage';
 import DiseasePreventTreat from './treatItem/diseasePreventTreat';
@@ -13,7 +14,7 @@ export default class Index extends Component {
   constructor(props){
     super(props);
     this.state = {
-      treatTab: 1,
+      treatTab: 0,
       patienttypeDic: '',
       sexDic: '',
       age: 0,
@@ -42,6 +43,7 @@ export default class Index extends Component {
         window.birthday = res.data.birthday;
         window.sex = res.data.sex;
         window.patientName = res.data.patientname;
+        window.patientID = res.data.patientid;
         self.setState({
           patienttypeDic: res.data.patienttypeDic,
           sexDic: res.data.sexDic,
@@ -67,7 +69,9 @@ export default class Index extends Component {
   render() {
     let { treatTab, patienttypeDic, sexDic, age, visible } = this.state;
     let curTabComponet = null;
-    if(treatTab == 1){
+    if(treatTab == 0){
+      curTabComponet = <PatientDetailInfo />
+    }else if(treatTab == 1){
       curTabComponet = <WriteMedicalRecords />
     }else if(treatTab == 2){
       curTabComponet = <DrAdviceManage />

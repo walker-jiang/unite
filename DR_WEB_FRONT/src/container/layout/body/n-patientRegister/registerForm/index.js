@@ -8,22 +8,29 @@ import buttonSty from 'components/antd/style/button';
 import BasicInfoForm from './basicInfoForm';
 import PreTreatForm from './preTreatForm';
 import SaveTip from 'components/dr/modal/saveTip';
+import Tip from 'components/dr/modal/tip';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 const TabPane = Tabs.TabPane;
 
 export default class Index extends Component {
   submit = (e) =>{
-    this.saveTip.showModal(1);
     let baPatient = {};
     let buPatientCase = {};
+    let dept = {};
     if(this.basicInfoForm){
       this.basicInfoForm.validateFieldsAndScroll((err, values) => {
+        console.log(values, values);
+        console.log('err', err);
         if (!err) {
           baPatient = {
             "addrHome": values.provinceid.label + values.cityid.label + values.areaid.label,
             "birthday": values.birthday.format('YYYY-MM-DD'),
             "creator": window.sessionStorage.getItem('userid'),
+            "provinceid": values.provinceid.key,
+            "cityid": values.cityid.key,
+            "areaid": values.areaid.key,
           };
+          console.log('baPatient', baPatient);
           baPatient = Object.assign(values, baPatient);
         }
       });
@@ -32,28 +39,40 @@ export default class Index extends Component {
       this.preTreatForm.validateFieldsAndScroll((err, values) => {
         if (!err) {
           buPatientCase = {
-            "allergichistory": values.allergichistory.extractionData,
+            "hpi": this.getString(values.allergichistory),
+            "allergichistory": this.getString(values.allergichistory),
             "deptid": values.dept.key,
             "doctorid": values.doctor.key,
             "doctorname": values.doctor.label,
             "orgid": window.sessionStorage.getItem('orgid'),
           };
+          dept = {
+            "deptid": values.dept.key,
+            "deptname": values.dept.label,
+          };
           buPatientCase = Object.assign(values, buPatientCase);
+          delete buPatientCase['dept'];
+          delete buPatientCase['doctor'];
         }
       });
+    }else {
+      this.tip.showModal({stressContent: '诊前信息就诊类型、医生、科室为必填项'});
+      return;
     }
-    let paramData = {
+     let paramData = {
       "baPatient": baPatient,
       "buPatientCase": buPatientCase,
-      "deptid": JSON.stringify(buPatientCase) == '{}' ? '' : buPatientCase.deptid,
-      "deptname": JSON.stringify(buPatientCase) == '{}' ? '' : buPatientCase.dept.label,
       "orgid": window.sessionStorage.getItem('orgid'),
     	"patienttype": baPatient.patienttype,
       "recDoctorid": window.sessionStorage.getItem('userid'),
     	"recDoctorname": window.sessionStorage.getItem('username'),
       "regUserid": window.sessionStorage.getItem('userid'),
 	    "regUsername": window.sessionStorage.getItem('username'),
+      regTypeid: 3, // 义诊
+      "deptid": dept.deptid,
+      "deptname": dept.deptname,
     };
+    this.saveTip.showModal(1);
     let self = this;
     let params = {
       url: 'BuRegisterController/patRegister',
@@ -62,18 +81,26 @@ export default class Index extends Component {
     };
     function callBack(res){
       if(res.result){
-        this.saveTip.showModal(2);
+        self.saveTip.showModal(2);
         // Modal.success({
         //   title: '用户登记成功',
         // });
         // self.props.onOk(res.data.patientid, res.data.registerid, res.data.patientname);
       }else{
-        this.saveTip.showModal(3);
+        self.saveTip.showModal(3);
         console.log('异常响应信息', res);
       }
     };
     ajaxGetResource(params, callBack);
   }
+  /**
+   * [getString 获取form表单项中对象中的文本]
+   * @param  {String} [obj=''] [表单对象]
+   * @return {[type]}          [最终文本]
+   */
+  getString(obj = ''){
+    return obj.extractionData || obj.extractionData == '' ? obj.extractionData : obj;
+  };
   render() {
     return (
       <Container>
@@ -101,6 +128,7 @@ export default class Index extends Component {
           </ActionButton>
         </Content>
         <SaveTip ref={ ref => {this.saveTip = ref}}></SaveTip>
+        <Tip ref={ ref => { this.tip = ref }}></Tip>
       </Container>
     );
   }
@@ -140,16 +168,17 @@ const Content = styled.div`
   height: calc(100% - 50px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
 `;
 const SpecTabs = styled(Tabs)
 `
-  margin: auto;
   width: 1097px;
-  height: 436px;
   &&& .ant-tabs-ink-bar {
     display: none !important;
+  }
+  .ant-tabs {
+    height: 436px;
   }
   .ant-tabs-bar {
     margin: 0px;

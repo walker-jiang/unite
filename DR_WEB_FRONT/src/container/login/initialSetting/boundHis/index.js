@@ -73,7 +73,8 @@ class BindHis extends Component {
       orgid: orgid,
       deptid: deptid,
       post: post,
-      username: username
+      username: username,
+      photo: ''
     };
     // console.log(obj);
     window.loginSystem(JSON.stringify(obj));

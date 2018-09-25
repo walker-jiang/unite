@@ -304,11 +304,12 @@ export default class Diagnose extends Component {
   /** [save 从诊断数据对象提取要展示的文本然后将对象和文本都赋值给输入框] */
   save(diagnoseFinalInfo){
     let text = getDiagnoseText(diagnoseFinalInfo);
-    console.log('diagnoseFinalInfo', diagnoseFinalInfo);
+    console.log('diagnoseFinalInfo', JSON.stringify(diagnoseFinalInfo));
     let formValue = {
       originData: diagnoseFinalInfo,
       extractionData: text
     };
+    console.log('formValue', formValue);
     this.props.onChange(formValue); // 给输入框赋值，包含两部分，一部分是需要传往后台的对象，一部分是在输入框上显示的文本
     this.inputEnterPop.handleClose(); // 关闭弹窗
   };
