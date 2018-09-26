@@ -6,24 +6,48 @@ import ElectronicRight from '../electronicRight';
 import 'antd/lib/button/style';
 import './index.less';
 import getResource from 'commonFunc/ajaxGetResource';
-import { color } from 'echarts/lib/export';
 
 export default class index extends Component {
   constructor(props) {
     super(props);
     this.state = {
         data: [],
-        arr: [1,2,3],
+        arr: [],//后台数据
         valueColor: {0: 'selectColor'},
+        show:'显示',
+        i: '',//左侧key
     };
     // this.handClickList = this.handClickList.bind(this);
   }
   
   componentWillMount () {
-    var data = this.state.data;
-    var arr = this. state.arr;  
-    var first = data.push(arr[0]);
-
+    // var data = this.state.data;
+    // var arr = this. state.arr;  
+    // var first = data.push(arr[0]);
+    // console.log('hahah',this.props.patientid)
+    var patientid = this.props.patientid;
+    let params = {
+      url: 'BuPatientCaseController/getPatient',
+      data: {
+        patientid: patientid
+      }
+    };
+    let that = this;
+    function callBack(res){
+        if(res.result){
+            console.log('成功')
+            var data = that.state.data;
+            data.push(res.data[0]);
+            that.setState({
+                arr: res.data,
+                i: 0,
+                data
+            })
+      }else{
+        // that.setState({data: []});
+      }
+    };
+    getResource(params, callBack);
   }
 
   handClickShow () {
@@ -32,36 +56,53 @@ export default class index extends Component {
       })
   }
 
-  handClickList (i) {
-    //   let that=this
+  //点击左侧List,div
+  handClickList =  (i) => {
+    console.log('zhixing',i)
       let obj={};
       obj[i]='selectColor';
       this.setState({
         valueColor: obj,
+        i:i
       })
   }
 
   render() { 
-    var { data, valueColor } = this.state;
+    var { data, valueColor, arr, show, i } = this.state;
+    var patientname = this.props.patientname;
+    var sex = this.props.sex;
+    var birthday = this.props.birthday;
+    var patienttypeDic = this.props.patienttypeDic;
+    var examDate = this.props.examDate;
+    var casetype = this.props.casetype;
+    console.log('jhdus',data)
+    console.log('jhduscdsfsd',arr)
+    console.log('i',i)
     var lodeData = data.map((item, i)=>{
-        return <ListData key={i} className= {this.state.valueColor[i]} onClick={()=>this.handClickList(i)}>{item}</ListData>
+        return (
+            <ListData key={i} className= {this.state.valueColor[i]} onClick={()=>this.handClickList(i)}>
+                <First>{item.ctstamp.substr(0,10)}|永顺医师馆|医师：{item.doctorname}|{item.casetype}</First>
+                <Second>诊断：{item.ctstamp.substr(0,10)}</Second>
+            </ListData>
+        )
     });
+    console.log(lodeData);
     return (
     <Container>
         <Title>
           <Ele>病例中心>电子病历详情</Ele>
         </Title>
         <CenterArea>
-            <ScrollArea height={200}>
+            <ScrollArea height={100}>
                 <Row>
                     <Col span={6}>
                         <ListBorder className="listRightLine">
                             {lodeData}
-                            <ShowHidden onClick={this.handClickShow.bind(this)}>显示刘德华更多病例信息>></ShowHidden>
+                            <ShowHidden onClick={this.handClickShow.bind(this)}>{data.length == 1? '显示':'隐藏'}刘德华更多病例信息>></ShowHidden>
                         </ListBorder>
                     </Col>
-                    <Col span={17} offset={1}>
-                        <ElectronicRight/>
+                    <Col span={16} offset={1}>
+                        <ElectronicRight data={data} i={i} patientname={patientname} sex={sex} birthday={birthday}  patienttypeDic={patienttypeDic} examDate={examDate} casetype={casetype}/>
                     </Col>
                 </Row>
             </ScrollArea>    
@@ -111,11 +152,17 @@ const ListBorder = styled.div`
 `;
 const ListData = styled.div`
     width: 100%;
-    height: 4rem;
+    height: 5rem;
     border:1px solid #ccc;
     border-top:none;
     border-left:none;
     border-right:none; 
+`;
+const First = styled.p`
+    
+`;
+const Second = styled.p`
+    
 `;
 const ShowHidden = styled.div`
     

@@ -160,7 +160,6 @@ class Index extends Component {
         buDiagnosisInfo.patientno = "test";
         buDiagnosisInfo.registerid = window.registerID;
         buDiagnosisInfo.registerno = "12312";
-
         let finalObj = {
           casetype: values.casetype,
           allergichistory: this.getString(values.allergichistory),
@@ -192,7 +191,6 @@ class Index extends Component {
           psycheck: values.psycheck,
           BuTargetChooseList: selectedItems
         };
-        console.log('finalObj', finalObj);
         Object.assign(initData, finalObj);
         let self = this;
         let params = {
@@ -213,7 +211,6 @@ class Index extends Component {
                     self.setState({
                       saved: 0,
                     });
-                    // self.createScheme.handleOpen(); // 打开是否到智能推方的弹框
                   }, 1000);
                 });
               },2000);
@@ -223,7 +220,6 @@ class Index extends Component {
           }
         };
         ajaxGetResource(params, callBack);
-
       }
     });
   }
@@ -233,7 +229,7 @@ class Index extends Component {
    * @return {[type]}          [最终文本]
    */
   getString(obj = ''){
-    return obj.extractionData ? obj.extractionData : obj;
+    return obj.extractionData || obj.extractionData == '' ? obj.extractionData : obj;
   };
   /**
    * [changeCaseItem 改变病历指标项目]
@@ -274,8 +270,14 @@ class Index extends Component {
     let { saved, caseItems, tabIndex, initData } = this.state;
     const { getFieldDecorator, setFieldsValue, getFieldsValue } = this.props.form;
     let { pridepict = '', hpi = '', inspection = '', palpation = '', smelling = '' } = getFieldsValue();
-    let listenFormData =  { pridepict, hpi, inspection, palpation, smelling };
-
+    let listenFormData =  {
+      pridepict: this.getString(pridepict),
+      hpi: this.getString(hpi),
+      inspection: this.getString(inspection),
+      palpation: this.getString(palpation),
+      smelling: this.getString(smelling),
+    };
+    console.log('listenFormData', listenFormData);
     const formItemLayout = {
       labelCol: {
         xs: { span: 3 },
@@ -488,13 +490,10 @@ const Indicator = styled.div`
 const SureButton = styled(Button)`
   ${buttonSty.semicircle}
 `;
-function formItemValueChange(props, changedValues, allValues){
-  console.log('gogogog',props, changedValues, allValues);
-};
 /*
 @作者：姜中希
 @日期：2018-06-25
 @描述：书写诊疗单界面, 滚动区域仅限于tabs内容
 */
-const TreatmentList = Form.create({onValuesChange: (props, changedValues, allValues) => formItemValueChange(props, changedValues, allValues)})(Index);
+const TreatmentList = Form.create()(Index);
 export default TreatmentList;

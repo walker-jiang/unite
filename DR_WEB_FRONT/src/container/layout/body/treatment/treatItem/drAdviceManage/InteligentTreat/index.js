@@ -205,6 +205,9 @@ export default class InteligentTreat extends Component {
     });
   };
 
+
+  
+
   // 弹框关闭
   handlePopClose () {
     this.setState({

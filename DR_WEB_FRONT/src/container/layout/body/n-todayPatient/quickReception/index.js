@@ -180,7 +180,7 @@ class Index extends Component {
         function callBack(res){
           if(res.result){
             let path = {
-              pathname: '/layout/treatManage/' + res.data.patientid,
+              pathname: '/layout/treatment/' + res.data.patientid,
             };
             window.registerID = res.data.registerid;
             // 跳转到诊疗界面

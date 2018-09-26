@@ -45,9 +45,9 @@ class Index extends Component {
         occupation: '', // 职业
         ABO: '', // 血型
         phoneHome: '', // 座机
-        province: '', // 所属省份
-        city: '', // 所属城市
-        area: '', // 区县,
+        provinceid: '', // 所属省份
+        cityid: '', // 所属城市
+        districtid: '', // 区县,
         streetdesc: '', //详细
         ctName: '', // 联系人
         ctRole: '', //与患者关系
@@ -96,6 +96,7 @@ class Index extends Component {
   };
   getProvinceData(){
     let self = this;
+    console.log('patinentInfo', this.state.patientInfo);
     let params = {
       url: 'BaProvinceController/getList',
       data: {},
@@ -103,8 +104,9 @@ class Index extends Component {
     function callBack(res){
       if(res.result && res.data.length){
         let province = res.data;
+        let defaultProvince = self.state.patientInfo.provinceid ? self.state.patientInfo.provinceid : province[0].provid;
         self.setState({province},() => {
-          self.getCityData(province[0].provid);
+          self.getCityData(defaultProvince);
         });
       }else{
         console.log('异常响应信息', res);
@@ -123,8 +125,9 @@ class Index extends Component {
     function callBack(res){
       if(res.result && res.data.length){
         let city = res.data;
+        let defaultCity = self.state.patientInfo.cityid ? self.state.patientInfo.cityid : city[0].cityid;
         self.setState({city}, () => {
-          self.getAreaData(city[0].cityid);
+          self.getAreaData(defaultCity);
         });
       }else{
         console.log('异常响应信息', res);
@@ -152,7 +155,9 @@ class Index extends Component {
   };
   addPatientData(patientInfo){
     this.props.form.setFieldsValue({'patientname': patientInfo.patientname});
-    this.setState({ patientInfo });
+    this.setState({ patientInfo }, () => {
+      this.getProvinceData();
+    });
   };
   changeDate(moment, dateString){
     let patientInfo = this.state.patientInfo;
@@ -185,6 +190,7 @@ class Index extends Component {
                 label="患者姓名："
                 >
                   {getFieldDecorator('patientname', {
+                    rules: [{ required: true, message: '请填写患者姓名!' }],
                     initialValue: ''
                   })(
                     <QuickAddName ref={ref => {this.quickAddName = ref} } placeholder='请选择患者信息' getQuickData = {this.addPatientData.bind(this)}/>
@@ -211,6 +217,7 @@ class Index extends Component {
                 label="患者编号："
                 >
                   {getFieldDecorator('patientno', {
+                    rules: [{ required: true, message: '请填写患者编号!' }],
                     initialValue: patientInfo.patientno
                   })(
                     <SpecInput />
@@ -226,6 +233,7 @@ class Index extends Component {
                 label="移动电话："
                 >
                   {getFieldDecorator('mobile', {
+                    rules: [{ required: true, message: '请填写电话号码!' }],
                     initialValue: patientInfo.mobile
                   })(
                     <SpecInput />
@@ -279,6 +287,7 @@ class Index extends Component {
                 label="证件类型："
                 >
                   {getFieldDecorator('cardtype', {
+                    rules: [{ required: true, message: '请填写患者证件类型!' }],
                     initialValue: patientInfo.cardtype ? patientInfo.cardtype : ( cardtype.length ? cardtype[0].value : '')
                   })(
                     <SpecSelect>
@@ -298,6 +307,7 @@ class Index extends Component {
                 label="证件号码："
                 >
                   {getFieldDecorator('cardno', {
+                    rules: [{ required: true, message: '请填写患者证件号码!' }],
                     initialValue: patientInfo.cardno
                   })(
                     <SpecInput />

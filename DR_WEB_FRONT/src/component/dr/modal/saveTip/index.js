@@ -23,6 +23,12 @@ export default class Index extends Component {
     this.setState({
       visible: true,
       saved: status
+    }, () => { // 一段时间后消失
+      if(status == 2 || status == 3){
+        window.setTimeout(() => {
+          this.setState({ visible: false });
+        }, 1000);
+      }
     });
   };
   render() {

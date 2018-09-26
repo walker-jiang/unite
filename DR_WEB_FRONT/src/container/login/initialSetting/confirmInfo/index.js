@@ -57,12 +57,14 @@ class Index extends Component {
     }
   }
   render() {
+    console.log('window.sessionStorage.getItem', window.sessionStorage.getItem('userid'));
     const props = {
-      action: 'http://10.10.200.114:8087/uploadController/photoUpload',
+      action: config_service_url + 'BaUploadController/upload',
       data: {
-        orguserid: this.state.orgUserid,
+        orguserid: window.sessionStorage.getItem('userid'),
+        serviceType: 'userPhoto'
       },
-      name:"fileAttachments",//与后台字段对应
+      name:"clientFile",//与后台字段对应
       listType: "picture-card",
       showUploadList: false,
       headers: {'X-Requested-With': null},

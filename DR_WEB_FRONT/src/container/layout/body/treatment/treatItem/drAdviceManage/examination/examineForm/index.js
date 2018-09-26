@@ -110,7 +110,6 @@ class Index extends Component {
         });
 
         that.setState({
-          // recipename: buRecipe.recipename, // 处方名称
           examineData: buOrderDtlList.concat(buOrdmedical.buOrdmedicalSuitList),
           // buRecipe: buRecipe, // 原始处方信息
           data: data, // 原始医嘱信息
@@ -234,6 +233,7 @@ class Index extends Component {
         }
       }
     }
+    console.log('examineItem', examineItem);
     examineData.push(examineItem);
     this.setState({ examineData });
   }
