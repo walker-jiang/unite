@@ -61,6 +61,9 @@ const Textarea = styled.textarea`
   line-height: 20px;
   border: 1px solid rgb(215, 215, 215);
   color: #000000;
+  &:disabled {
+    background-color: #FFFFFF;
+  }
   @media (max-height: 768px) {
     height: 40px !important;
   }

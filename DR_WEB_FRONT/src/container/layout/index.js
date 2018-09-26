@@ -1,11 +1,28 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
+import { withRouter } from 'react-router-dom';
 import Header from './header';
 import Body from './body';
 import Sider from './sider';
 import { Layout } from 'antd';
 
-export default class Index extends Component {
+class Index extends Component {
+  constructor(props){
+    super(props);
+    window.AddHerbalMedicineFunc = (params) => this.AddHerbalMedicineFunc(params)
+  };
+  AddHerbalMedicineFunc(params){
+    window.herbalData = params; // 将知识库传过来的草药数据存为全局变量
+    if(window.sessionStorage.getItem('userid')){ // 当前为已经登陆状态
+      if(window.patientid){ // 已接诊跳转到诊疗页
+        this.props.history.push('/Layout/treatment/' + window.patientid)
+      }else{ // 未接诊跳转到接诊页
+        this.props.history.push('/Layout/todayPatient')
+      }
+    }else{
+        this.props.history.push('/login')
+    }
+  };
   componentWillMount(){
     if(bundleMode == 'CS'){
       this.setUserInfoForClient();
@@ -45,3 +62,4 @@ const SpecLayout = styled(Layout)`
 @日期：2018-06-05
 @描述：布局文件，包含头部导航，以及以下主要内容
 */
+export default withRouter(Index);

@@ -37,6 +37,10 @@ class Index extends Component {
     }
   }
   componentWillMount(){
+    let buOrderDtlList = this.props.buOrderDtlList;
+    this.setState({
+      ...buOrderDtlList
+    });
     this.getDiagnoseData();
     this.getDept();
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
@@ -233,7 +237,6 @@ class Index extends Component {
         }
       }
     }
-    console.log('examineItem', examineItem);
     examineData.push(examineItem);
     this.setState({ examineData });
   }
@@ -337,6 +340,7 @@ class Index extends Component {
   render () {
     let { visiblePop, examineData, buDiagnosisList, miType, aim } = this.state;
     const { getFieldDecorator } = this.props.form;
+
     const {dataSource, feeAll} = this.getTableDataSource(deepClone(examineData));
     const columns = this.getTableColumns();
     const Pagination = {

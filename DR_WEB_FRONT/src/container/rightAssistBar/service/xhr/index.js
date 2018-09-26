@@ -119,16 +119,15 @@ Tool.put = function (pathname, data, success, error) {
  * @param {function} success  请求成功执行方法
  * @param {function} error    请求失败执行方法
  */
-Tool.post = function (pathname, data, async, callBack) {
-    console.log("POST地址为:",config_service_url+pathname);
+Tool.post = function (type, contentType, pathname, data, async, callBack) {
+    console.log("POST地址为:",pathname);
     console.log("POST数据为:",data);
     var returnResult = {}
     //可用 fetch替换
     jQuery.ajax({
-      type: 'GET', //请求的方式
-      url: config_service_url+pathname,//ajax请求地址
+      type: type, //请求的方式
+      url: pathname,//ajax请求地址
       dataType: 'JSON',//数据类型
-      contentType: 'application/json',
       traditional: true, // 可以传递数组参数
       data: data,//发给服务器的数据
       async: async,//true。默认设置下，所有请求均为异步请求。如果需要发送同步请求，请将此选项设置为 false
@@ -154,13 +153,13 @@ Tool.post = function (pathname, data, async, callBack) {
  * @param {function} error    请求失败执行方法
  */
 Tool.postAddUrl = function (pathname, data, async, callBack) {
-    console.log("POST地址为:",config_AssistBar_url+pathname);
+    console.log("POST地址为:",pathname);
     console.log("POST数据为:",data.BaHerbalMedicine);
     var returnResult = {}
     //可用 fetch替换
     $.ajax({
       type: 'POST', //请求的方式
-      url: config_AssistBar_url+pathname,//ajax请求地址
+      url: pathname,//ajax请求地址
       dataType: 'json',//数据类型
       contentType: 'application/json',
       data: JSON.stringify(data),//发给服务器的数据

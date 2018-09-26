@@ -35,7 +35,7 @@ export default class Index extends Component {
 
   };
   render() {
-    const { getFieldDecorator, formItemLayout, initialValue ,title} = this.props;
+    const { getFieldDecorator, formItemLayout, initialValue ,title, disabled = false} = this.props;
     let label_prop  = this.getFormItemProps(title);
     return (
       <Row className='height'>
@@ -48,7 +48,7 @@ export default class Index extends Component {
             {getFieldDecorator(label_prop, {
               initialValue: initialValue,
             })(
-              <IllHisEnterPop title={title} />
+              <IllHisEnterPop disabled={disabled} title={title} />
             )}
           </FormItem>
         </Col>

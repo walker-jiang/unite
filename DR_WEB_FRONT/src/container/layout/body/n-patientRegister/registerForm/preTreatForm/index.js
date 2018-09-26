@@ -96,6 +96,7 @@ class Index extends Component {
   };
   render() {
     const { getFieldDecorator, setFieldsValue } = this.props.form;
+    let disabled = this.props.disabled
     let { casetype, deptData, docData } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -119,9 +120,9 @@ class Index extends Component {
       };
     return (
       <SpecForm>
-        <IllHistory_present title='现病史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: ''}}/>
-        <IllHistory_allergy title='过敏史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: ''}}/>
-        <HabitusInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{temperature: '', breath: '', pulse: '', systolicPressure: '', diastolicPressure: '', heightnum: '', weightnum: ''}}></HabitusInspect>
+        <IllHistory_present title='现病史' disabled={disabled} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: ''}}/>
+        <IllHistory_allergy title='过敏史' disabled={disabled} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: ''}}/>
+        <HabitusInspect setFieldsValue={setFieldsValue} disabled={disabled} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{temperature: '', breath: '', pulse: '', systolicPressure: '', diastolicPressure: '', heightnum: '', weightnum: ''}}></HabitusInspect>
         <Row>
           <Col span={8} offset={3}>
             <FormItem
@@ -132,7 +133,7 @@ class Index extends Component {
               {getFieldDecorator('pregnancy', {
                 initialValue: '2'
               })(
-                <SpecRadioGroup>
+                <SpecRadioGroup disabled={disabled}>
                   <Radio value='1'>是</Radio>
                   <Radio value='2'>否</Radio>
                 </SpecRadioGroup>
@@ -148,7 +149,7 @@ class Index extends Component {
               {getFieldDecorator('menstruation', {
                 initialValue: '2'
               })(
-                <SpecRadioGroup>
+                <SpecRadioGroup disabled={disabled}>
                   <Radio value='1'>是</Radio>
                   <Radio value='2'>否</Radio>
                 </SpecRadioGroup>
@@ -156,7 +157,7 @@ class Index extends Component {
             </FormItem>
           </Col>
         </Row>
-        <OtherInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={''}></OtherInspect>
+        <OtherInspect setFieldsValue={setFieldsValue} disabled={disabled} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={''}></OtherInspect>
         <Row>
           <Col span={8}>
             <FormItem
@@ -168,7 +169,7 @@ class Index extends Component {
                 rules: [{ required: true, message: '请选择患者就诊类型!' }],
                 initialValue: casetype.length ? casetype[0].value : ''
               })(
-                <SpecRadioGroup>
+                <SpecRadioGroup disabled={disabled}>
                 {
                   casetype.map(item => <Radio key={item.value} value={item.value}>{item.vname}</Radio>)
                 }
@@ -186,7 +187,7 @@ class Index extends Component {
                 rules: [{ required: true, message: '请选择就诊科室!' }],
                 initialValue: deptData.length ? { key: deptData[0].deptid, label: deptData[0].deptname } : {key: '', label: ''}
               })(
-                <SpecSelect onChange={e => this.getDocData(e.key)} labelInValue>
+                <SpecSelect disabled={disabled} onChange={e => this.getDocData(e.key)} labelInValue>
                 {
                   deptData.map(item => <Option key={item.deptid} value={item.deptid}>{item.deptname}</Option>)
                 }
@@ -204,7 +205,7 @@ class Index extends Component {
                 rules: [{ required: true, message: '请输入接诊医生姓名!' }],
                 initialValue: docData.length ? { key: docData[0].orgUerid, label: docData[0].realname } : {key: '', label: ''}
               })(
-                <SpecSelect labelInValue>
+                <SpecSelect disabled={disabled} labelInValue>
                 {
                   docData.map(item => <Option key={item.orgUerid} value={item.orgUerid}>{item.realname}</Option>)
                 }

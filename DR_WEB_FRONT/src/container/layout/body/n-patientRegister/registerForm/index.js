@@ -13,6 +13,32 @@ import ajaxGetResource from 'commonFunc/ajaxGetResource';
 const TabPane = Tabs.TabPane;
 
 export default class Index extends Component {
+  componentWillMount(){
+    let operateType = this.props.match.params.type;
+    if(operateType.indexOf('v') || operateType.indexOf('m')){
+      this.getPatientData(operateType.substr(1, operateType.length - 1));
+    }
+  };
+  getPatientData(id){
+    // let self = this;
+    // let params = {
+    //   url: 'BaPatientController/getData',
+    //   data: {
+    //     id: id,
+    //   },
+    // };
+    // function callBack(res){
+    //   if(res.result){
+    //     let date = new Date();
+    //     self.setState({
+    //
+    //     });
+    //   }else{
+    //     console.log('异常响应信息', res);
+    //   }
+    // };
+    // ajaxGetResource(params, callBack);
+  };
   submit = (e) =>{
     let baPatient = {};
     let buPatientCase = {};
@@ -102,6 +128,8 @@ export default class Index extends Component {
     return obj.extractionData || obj.extractionData == '' ? obj.extractionData : obj;
   };
   render() {
+    let operateType = this.props.match.params.type;
+    console.log('dfdfd', operateType.indexOf('v') == 0);
     return (
       <Container>
         <Header>
@@ -116,14 +144,14 @@ export default class Index extends Component {
         <Content>
           <SpecTabs defaultActiveKey="1" animated={false}>
             <TabPane tab="基本信息" key="1">
-              <BasicInfoForm ref={ ref => { this.basicInfoForm = ref }}></BasicInfoForm>
+              <BasicInfoForm ref={ ref => { this.basicInfoForm = ref }} disabled={operateType.indexOf('v') == 0}></BasicInfoForm>
             </TabPane>
             <TabPane tab="诊前信息" key="2">
-              <PreTreatForm ref={ ref => { this.preTreatForm = ref }}></PreTreatForm>
+              <PreTreatForm ref={ ref => { this.preTreatForm = ref }} disabled={operateType.indexOf('v') == 0}></PreTreatForm>
             </TabPane>
           </SpecTabs>
           <ActionButton>
-            <SureButton type="primary" onClick={this.submit}>保存</SureButton>
+            <SureButton type="primary" onClick={this.submit} disabled={operateType.indexOf('v') == 0}>保存</SureButton>
             <CancelButton type="primary">取消</CancelButton>
           </ActionButton>
         </Content>

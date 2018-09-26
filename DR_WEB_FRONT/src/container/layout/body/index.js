@@ -50,7 +50,7 @@ export default class Body extends Component {
       <Container>
           <Route path='/Layout/todayPatient' component={TodayPatient} exact></Route>
           <Route path='/Layout/patientRegister' component={PatientRegister} exact></Route>
-          <Route path='/Layout/registerForm' component={RegisterForm} exact></Route>
+          <Route path='/Layout/registerForm/:type' component={RegisterForm} exact></Route>
           <Route path='/Layout' component={Home} exact></Route>
           <Route path='/Layout/treatment/:id' component={TreatManage}></Route>
           <Route path='/Layout/electronicMedicalRecords' component={Electronic}></Route>

@@ -35,16 +35,13 @@ export default class MedicalRecordTemplate extends Component {
     var { searchValue, page, size, listenFormData } = this.state;
     this.queryTable(searchValue, page, size, listenFormData);//获取table列表
   }
-  // componentDidMount(){
-  //   console.log("componentDidMount====this.props.item",this.props.item);
-  // }
-  componentWillReceiveProps(){
-    console.log("componentWillReceiveProps====this.props.item",this.props.listenFormData);
+  componentWillReceiveProps(nextProps){
+    console.log("componentWillReceiveProps====this.props.item",nextProps.listenFormData);
     this.setState({
       listenFormData:this.props.listenFormData
     })
     var { searchValue, page, size } = this.state;
-    this.queryTable(searchValue, page, size, this.props.listenFormData);
+    this.queryTable(searchValue, page, size, nextProps);
   }
   queryTable = (content, page, size, listenFormData) =>{
     var self = this;
@@ -136,13 +133,35 @@ export default class MedicalRecordTemplate extends Component {
     this.queryTable(searchValue, page++, size, listenFormData)
   }
   /**
+   * 替换html中的标签，得到html标签中的文字
+   * @method repalceHtml
+   * @param  {[type]}    str [description]
+   * @return {[type]}        [description]
+   */
+  repalceHtml = (str) =>{
+    console.log("str@@@@@@@@@@@@@@@@@@",str);
+  	if(str && str != ""){
+      var dd=str.toString().replace(/<\/?.+?>/g,"");
+    	var dds=dd.replace(/ /g,"");//dds为得到后的内容
+    	return dds;
+    }else{
+      return str;
+    }
+  }
+  /**
    * 左右联动（和书写诊疗单）
    * @method changeInitData
    * @param  {[type]}       item [表单内容]
    */
   changeInitData = (item) =>{
     console.log("item",item);
-    this.props.changeInitData(item);
+    var newItem={}
+    var key;
+    for(key in item){
+      newItem[key] = this.repalceHtml(item[key])
+    }
+    newItem['buDiagnosisInfo'] = {};//暂无信息
+    this.props.changeInitData(newItem);
   }
   cut = (isCut) =>{
     console.log("isCut",isCut);

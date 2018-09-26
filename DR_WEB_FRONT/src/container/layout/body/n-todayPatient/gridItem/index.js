@@ -23,7 +23,7 @@ export default class Index extends Component {
           {
             gridType == 0 ?
             <Footer themeType={themeType}>
-              <ActionButton onClick={e => doing(dataSource.registerid)}>
+              <ActionButton onClick={e => doing(dataSource.registerid, dataSource.patientid)}>
                 <Link
                   to={'/Layout/treatment/' + dataSource.patientid}>
                   接诊
@@ -32,7 +32,7 @@ export default class Index extends Component {
             </Footer>
             : gridType == 1 ?
             <Footer themeType={themeType}>
-              <ActionButton onClick={e => keepDoing(dataSource.registerid)}>
+              <ActionButton onClick={e => keepDoing(dataSource.registerid, dataSource.patientid)}>
                 <Link to={'/Layout/treatment/' + dataSource.patientid}>
                   继续接诊
                 </Link>
@@ -43,7 +43,7 @@ export default class Index extends Component {
             </Footer>
             :
             <Footer themeType={themeType}>
-              <ActionButton onClick={e => redo(dataSource.registerid)}>
+              <ActionButton onClick={e => redo(dataSource.registerid, dataSource.patientid)}>
                 <Link to={'/Layout/treatment/' + dataSource.patientid}>
                   重新接诊
                 </Link>

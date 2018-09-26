@@ -24,13 +24,13 @@ import ScrollArea from 'components/scrollArea';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import buttonSty from 'components/antd/style/button';
 import { getDiagnoseText } from 'commonFunc/transform';
-import Template from "roots/rightAssistBar/medicalRecordWriting/medicalRecordTemplate.js";
-import MedicalHistory from "roots/rightAssistBar/medicalRecordWriting/medicalHistory.js";
-import BiofeedbckTherpy from "roots/rightAssistBar/medicalRecordWriting/BiofeedbckTherpy.js";
-import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
-import MedicalHistoryTwo from "roots/rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
-import DoctorAdviceTemplate from "roots/rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
-import IntelligentTreat from "roots/rightAssistBar/doctorAdvice/intelligentTreat.js";
+import MedicalRecordTemplate from "../../../../../rightAssistBar/medicalRecordWriting/medicalRecordTemplate.js";
+import MedicalHistory from "../../../../../rightAssistBar/medicalRecordWriting/medicalHistory.js";
+import BiofeedbckTherpy from "../../../../../rightAssistBar/medicalRecordWriting/BiofeedbckTherpy.js";
+import AuxiliaryDiagnosis from "../../../../../rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
+import MedicalHistoryTwo from "../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
+import DoctorAdviceTemplate from "../../../../../rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
+import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
 
 const TabPane = Tabs.TabPane;
 const bodyHeight = document.body.clientHeight;
@@ -96,7 +96,7 @@ class Index extends Component {
       "allergichistory": '',//过敏史
       "billid": '',
       "breath": '',//呼吸
-      "buDiagnosisInfo": {},
+      "buDiagnosisInfo": {},//诊断
       "buTargetChooseList": [],
       "casetype": '',
       "chfingerprint": '',
@@ -263,8 +263,17 @@ class Index extends Component {
    */
   changeInitData = (initData) =>{
     console.log("!!!!!!!!!!!!!!!!!!",initData);
-    initData['buDiagnosisInfo'] ={};//暂无信息
     this.setState({initData})
+  }
+  /**
+   * [changeTabs 左右联动]
+   * @param  {[type]} initData
+   */
+  changeInitDataTwo = (buDiagnosisInfo) =>{
+    var initData = this.state.initData;
+    initData['buDiagnosisInfo'] = buDiagnosisInfo;
+    console.log("!!!!!!!!!!!!!!!!!!",initData);
+    this.setState({initData});
   }
   render() {
     let { saved, caseItems, tabIndex, initData } = this.state;
@@ -383,15 +392,15 @@ class Index extends Component {
           tabIndex == 1 ?
           (
             <SpecTabs key='1' defaultActiveKey='1' animated={false}>
-              {/* {<TabPane tab="病历模板" key="1">
-                <Template changeInitData={this.changeInitData} listenFormData={listenFormData}/>
+              <TabPane tab="病历模板" key="1">
+                <MedicalRecordTemplate changeInitData={this.changeInitData} listenFormData={listenFormData}/>
               </TabPane>
               <TabPane tab="历史病历" key="2">
-                <MedicalHistory/>
+                <MedicalHistory changeInitData={this.changeInitData}/>
               </TabPane>
               <TabPane tab="辅助诊断" key="3">
-                <AuxiliaryDiagnosis listenFormData={listenFormData}/>
-              </TabPane>} */}
+                <AuxiliaryDiagnosis changeInitDataTwo={this.changeInitDataTwo} listenFormData={listenFormData}/>
+              </TabPane>
               <TabPane tab="病历指标" key="4">
                 <CaseIndicator changeCaseItem={this.changeCaseItem} caseItems={caseItems}></CaseIndicator>
               </TabPane>

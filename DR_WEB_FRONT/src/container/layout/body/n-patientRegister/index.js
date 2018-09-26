@@ -119,14 +119,13 @@ export default class Index extends Component {
       render: (text, record) =>
         <span>
           <StyledLink
-            onClick={() => this.doing(record.registerid)}
-            to={'/Layout/treatment/' + record.patientid}>
+            to={'/Layout/registerForm/m' + record.registerid}>
             修改
           </StyledLink>
           |
           <StyledLink
             onClick={() => this.doing(record.registerid)}
-            to={'/Layout/treatment/' + record.patientid}>
+            to={'/Layout/registerForm/v' + record.registerid}>
             查看
           </StyledLink>
         </span>
@@ -166,7 +165,7 @@ export default class Index extends Component {
           </Left>
           <Right>
             <RegisterButton>
-              <Link to='/Layout/registerForm'>
+              <Link to='/Layout/registerForm/a'>
                 患者登记
               </Link>
             </RegisterButton>

@@ -7,7 +7,7 @@ const FormItem = Form.Item;
 
 export default class Index extends Component {
   render() {
-    const { getFieldDecorator, formItemLayout, initialValue} = this.props;
+    const { getFieldDecorator, formItemLayout, initialValue, disabled = false} = this.props;
     return (
       <Row className='height'>
         <Col span={24}>
@@ -25,7 +25,7 @@ export default class Index extends Component {
               {getFieldDecorator('temperature', {
                 initialValue: initialValue.temperature
               })(
-                <Input />
+                <Input disabled={disabled}/>
               )}
               </FormItem>
             </Col>
@@ -40,7 +40,7 @@ export default class Index extends Component {
               {getFieldDecorator('breath', {
                 initialValue: initialValue.breath
               })(
-                <Input />
+                <Input disabled={disabled}/>
               )}
               </FormItem>
             </Col>
@@ -55,7 +55,7 @@ export default class Index extends Component {
               {getFieldDecorator('pulse', {
                 initialValue: initialValue.pulse
               })(
-                <Input />
+                <Input disabled={disabled}/>
               )}
               </FormItem>
             </Col>
@@ -70,7 +70,7 @@ export default class Index extends Component {
               {getFieldDecorator('systolicPressure', {
                 initialValue: initialValue.systolicPressure
               })(
-                <Input />
+                <Input disabled={disabled}/>
               )}
               </FormItem>
             </Col>
@@ -84,7 +84,7 @@ export default class Index extends Component {
               {getFieldDecorator('diastolicPressure', {
                 initialValue: initialValue.diastolicPressure
               })(
-                <Input />
+                <Input disabled={disabled}/>
               )}
               </FormItem>
             </Col>
@@ -99,7 +99,7 @@ export default class Index extends Component {
               {getFieldDecorator('heightnum', {
                 initialValue: initialValue.heightnum
               })(
-                <Input />
+                <Input disabled={disabled}/>
               )}
               </FormItem>
             </Col>
@@ -113,7 +113,7 @@ export default class Index extends Component {
               {getFieldDecorator('weightnum', {
                 initialValue: initialValue.weightnum
               })(
-                <Input />
+                <Input disabled={disabled}/>
               )}
               </FormItem>
             </Col>

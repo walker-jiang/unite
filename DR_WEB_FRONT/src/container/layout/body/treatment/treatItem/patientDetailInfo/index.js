@@ -39,10 +39,15 @@ export default class Index extends Component {
   }
   render() {
     let { editable } = this.state;
+    let match = {
+      params: {
+        id: 'v123'
+      }
+    };
     return (
       <Container>
         <FormStyle>
-          <BasicInfoForm></BasicInfoForm>
+          <BasicInfoForm disabled={!editable}></BasicInfoForm>
         </FormStyle>
         {
           editable ?
@@ -69,7 +74,7 @@ const ActionButton = styled.div`
   width: 1097px;
 `;
 const ActiveEdit = styled.div`
-  margin: 15px;
+  margin: 10px;
   font-size: 13px;
   color: rgb(10, 110, 203);;
 `;

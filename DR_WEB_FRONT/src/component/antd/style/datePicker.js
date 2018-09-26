@@ -3,6 +3,9 @@ import calendar from '-!file-loader!components/dr/icon/icons/calendar.svg';
 
 /* 只有底部边框自定义右侧小图标的日期选择器样式 */
 const bottomBorder = css`
+  .ant-input-disabled {
+    background-color: #FFFFFF;
+  }
   .ant-input {
     border-radius: 0px;
     border: none;

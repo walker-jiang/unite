@@ -14,7 +14,7 @@ export default class Index extends Component {
   constructor(props){
     super(props);
     this.state = {
-      treatTab: 0,
+      treatTab: window.herbalData ? 2 : 0,
       patienttypeDic: '',
       sexDic: '',
       age: 0,
@@ -27,6 +27,7 @@ export default class Index extends Component {
   componentWillReceiveProps(){
     this.getUserInfo();
   };
+  /** [getUserInfo 获取患者信息] */
   getUserInfo(){
     let self = this;
     let params = {
@@ -69,14 +70,19 @@ export default class Index extends Component {
   render() {
     let { treatTab, patienttypeDic, sexDic, age, visible } = this.state;
     let curTabComponet = null;
-    if(treatTab == 0){
-      curTabComponet = <PatientDetailInfo />
-    }else if(treatTab == 1){
-      curTabComponet = <WriteMedicalRecords />
-    }else if(treatTab == 2){
+    if(window.herbalData){
       curTabComponet = <DrAdviceManage />
-    }else if(treatTab == 3){
-      curTabComponet = <DiseasePreventTreat />
+    }
+    else{
+      if(treatTab == 0){
+        curTabComponet = <PatientDetailInfo />
+      }else if(treatTab == 1){
+        curTabComponet = <WriteMedicalRecords />
+      }else if(treatTab == 2){
+        curTabComponet = <DrAdviceManage />
+      }else if(treatTab == 3){
+        curTabComponet = <DiseasePreventTreat />
+      }
     }
     return (
       <Container>

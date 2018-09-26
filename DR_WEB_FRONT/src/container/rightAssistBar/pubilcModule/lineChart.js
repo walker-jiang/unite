@@ -13,28 +13,20 @@ const { CheckableTag } = Tag;
 
 class TagGroup extends React.Component {
   state = {
-    tags: this.props.tagList,
+    dataSource: this.props.dataSource,
     checked: true
   };
+  //componentWillReceiveProps
   componentDidMount(){
-    var data = [{
-      year: '8.1',
-      value: 3
-    }, {
-      year: '8.8',
-      value: 4
-    }, {
-      year: '9.2',
-      value: 3.5
-    }, {
-      year: '9.9',
-      value: 5
-    }, {
-      year: '9.15',
-      value: 4.9
-    }, {
-      year: '就诊日期',
-    }];
+    var data = [];
+    this.props.dataSource.forEach((item,index)=>{
+      data.push({
+        year:item.utstamp.substr(5,5),
+        value:item.trfeedsorce
+      })
+    })
+    data.push({year: '就诊日期'});
+    console.log("data=============",data);
     var chart = new G2.Chart({
       container: 'mountNode',
       forceFit: true,
@@ -58,10 +50,14 @@ class TagGroup extends React.Component {
       stroke: '#fff',
       lineWidth: 1
     });
+    //repaint
     chart.render();
   }
+  // componentDidMount(){
+  //
+  // }
   render() {
-    const { tags, inputVisible, inputValue, checked } = this.state;
+    const { inputVisible, inputValue, checked } = this.state;
     return (
       <div id="mountNode" style={{marginLeft:-50}}></div>
     );

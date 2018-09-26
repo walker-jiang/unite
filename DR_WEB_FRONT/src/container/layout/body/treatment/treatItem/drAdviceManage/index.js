@@ -24,8 +24,8 @@ import buttonSty from 'components/antd/style/button';
 import MedicalHistoryTwo from "../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
 import DoctorAdviceTemplate from "../../../../../rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
 import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
-
 const TabPane = Tabs.TabPane;
+
 export default class Index extends Component {
   constructor(props) {
     super(props);
@@ -43,12 +43,24 @@ export default class Index extends Component {
     this.actionManager = this.actionManager.bind(this);
     this.getData = this.getData.bind(this);
     this.submit = this.submit.bind(this);
+    this.modelData = this.modelData.bind(this);
   }
   componentWillMount(){
     this.getData();
   }
   componentReceiveProps(){
     this.getData();
+  };
+  componentDidMount(){
+    let herbalData = window.herbalData;
+    if(herbalData){
+      herbalData = JSON.parse(herbalData);
+      herbalData.forEach((item) => {
+        item.usageid = item.baUsage ? item.baUsage.usageid : 9; // 从用法对象转换成字符串用法ID
+        item.usagename = item.baUsage ? item.baUsage.usagename : '无'; // 从用法对象转换成字符串用法名称
+      });
+      this.modelData({herbalData: herbalData}, 3);
+    }
   };
   /**
    * [getData 获取医嘱列表信息]
@@ -148,7 +160,10 @@ export default class Index extends Component {
       this.suitTechnology.handlePopOpen(buOrderDtlList,type)
     }
   }
-
+  // 初始化模板数据打开添加弹框
+  modelData(buOrderDtlList, ordertype){
+    this.actionManager('add', {orderid:'', ordertype: ordertype}, buOrderDtlList)
+  };
   previewClick (printData) {
     this.previewPrint.handlePopOpen(printData)
   }
@@ -264,7 +279,769 @@ export default class Index extends Component {
     this.advicePrint.handlePopOpen();
     this.setState({ test: true });
   }
-
+  /** [examinSampleData 检验数据项 1] */
+  examinSampleData(){
+    return {
+    	examineData: [
+      { // 医嘱套
+      	"baMedicalDtlList": [
+        {
+      		"aim": "医疗服务目标",
+      		"baseUnit": "5",
+      		"count": 1,
+      		"ctstamp": "2018-07-08 16:06:30",
+      		"deptid": 1,
+      		"deptname": "内科",
+      		"medicalTypeid": 4,
+      		"medicalcode": "4",
+      		"medicaldesc": "针管",
+      		"medicalid": 4,
+      		"medicalname": "一次性针管",
+      		"medinslevel": "1",
+      		"medinsrem": "无",
+      		"miType": "1",
+      		"orgid": "1",
+      		"seqno": 4,
+      		"spbody": "",
+      		"specification": "规格",
+      		"unitprice": 15.5,
+      		"useflag": "1",
+      		"utstamp": "2018-08-22 14:02:04",
+      		"medinslevelDic": "未知的字典",
+      		"baseUnitDic": "项"
+      	}, {
+      		"aim": "医疗服务目标",
+      		"baseUnit": "5",
+      		"count": 1,
+      		"ctstamp": "2018-07-09 15:56:50",
+      		"deptid": 1,
+      		"deptname": "内科",
+      		"medicalTypeid": 1,
+      		"medicalcode": "xxb",
+      		"medicaldesc": "血小板",
+      		"medicalid": 3,
+      		"medicalname": "血白细胞测定",
+      		"medinslevel": "1",
+      		"medinsrem": "无",
+      		"miType": "1",
+      		"orgid": "1",
+      		"seqno": 3,
+      		"spbody": "全血",
+      		"specification": "规格",
+      		"unitprice": 15.5,
+      		"useflag": "1",
+      		"utstamp": "2018-08-22 14:02:04",
+      		"medinslevelDic": "未知的字典",
+      		"baseUnitDic": "项"
+      	}, {
+      		"aim": "医疗服务目标",
+      		"baseUnit": "5",
+      		"count": 1,
+      		"ctstamp": "2018-07-08 16:06:15",
+      		"deptid": 1,
+      		"deptname": "内科",
+      		"medicalTypeid": 1,
+      		"medicalcode": "bxb",
+      		"medicaldesc": "白细胞",
+      		"medicalid": 2,
+      		"medicalname": "血小板测定",
+      		"medinslevel": "1",
+      		"medinsrem": "无",
+      		"miType": "1",
+      		"orgid": "1",
+      		"seqno": 2,
+      		"spbody": "全血",
+      		"specification": "规格",
+      		"unitprice": 15.5,
+      		"useflag": "1",
+      		"utstamp": "2018-08-22 14:02:04",
+      		"medinslevelDic": "未知的字典",
+      		"baseUnitDic": "项"
+      	}, {
+      		"aim": "医疗服务目标",
+      		"baseUnit": "5",
+      		"count": 1,
+      		"ctstamp": "2018-07-08 16:05:54",
+      		"deptid": 1,
+      		"deptname": "内科",
+      		"medicalTypeid": 1,
+      		"medicalcode": "hxb",
+      		"medicaldesc": "红细胞",
+      		"medicalid": 1,
+      		"medicalname": "血红蛋白测定",
+      		"medinslevel": "1",
+      		"medinsrem": "无",
+      		"miType": "1",
+      		"orgid": "1",
+      		"seqno": 1,
+      		"spbody": "全血",
+      		"specification": "规格",
+      		"unitprice": 15.5,
+      		"useflag": "1",
+      		"utstamp": "2018-08-22 14:02:04",
+      		"medinslevelDic": "未知的字典",
+      		"baseUnitDic": "项"
+      	}
+      ],
+      	"baseUnit": "5",
+      	"count": 1,
+      	"ctstamp": "2018-07-09 11:12:24",
+      	"depaid": "1",
+      	"deptname": "检验科",
+      	"execDepaid": "1",
+      	"feesum": 50,
+      	"islock": "1",
+      	"medicaldesc": "医疗服务描述",
+      	"medinslevel": "1",
+      	"medinsrem": "无",
+      	"miType": "0",
+      	"orderSuitcode": "xcg",
+      	"orderSuitid": 1,
+      	"orderSuitname": "血常规",
+      	"orgid": "1",
+      	"osSortid": "1",
+      	"osTypeid": 1,
+      	"pinyin": "xuechanggui",
+      	"printmode": "0",
+      	"seqno": 1,
+      	"spbody": "血液",
+      	"specification": "规格",
+      	"useflag": "1",
+      	"utstamp": "2018-08-21 10:55:01",
+      	"medinslevelDic": "未知的字典",
+      	"baseUnitDic": "项",
+      	"key": 12,
+      	"status": 2
+      },
+      { // 非医嘱套
+    		aim: "医疗服务目标",
+    		baseUnit: "5",
+    		baseUnitDic: "项",
+    		count: 1,
+    		ctstamp: "2018-07-08 16:08:20",
+    		deptid: 1,
+    		deptname: "内科",
+    		key: 0,
+    		medicalTypeid: 1,
+    		medicalcode: "14",
+    		medicaldesc: "胶原",
+    		medicalid: 14,
+    		medicalname: "胶原测定",
+    		medinslevel: "1",
+    		medinslevelDic: "未知的字典",
+    		medinsrem: "无",
+    		miType: "0",
+    		orgid: "1",
+    		seqno: 14,
+    		spbody: "全血",
+    		specification: "规格",
+    		status: 0,
+    		unitprice: 15.5,
+    		useflag: "1",
+    		utstamp: "2018-08-22 14:02:05"
+    	}],
+    	aim: 'jiang',
+    	miType: '0', // 0 医保内， 1医保外
+    	"buDiagnosisList": [{
+  				"buDiagnosisDismainfList": [{
+  					"ctstamp": "2018-09-22 10:55:46",
+  					"diagnosisid": "201837584946816406",
+  					"diseaseid": 18,
+  					"id": "201837584946816407",
+  					"manifcode": "ZBXM10",
+  					"manifdesc": "身热，微恶风，汗少，肢体酸重或疼痛，头昏重胀痛，咳嗽痰黏，鼻流浊涕，心烦口渴，或口中黏腻，渴不多饮，",
+  					"manifid": 29,
+  					"manifname": "暑湿伤表证",
+  					"registerid": "201837493347470156",
+  					"useflag": "1",
+  					"utstamp": "2018-09-22 10:55:46"
+  				}],
+  				"cmDiagnosisType": null,
+  				"codetype": "",
+  				"ctstamp": "2018-09-22 10:55:46",
+  				"diacode": "",
+  				"diadesc": "",
+  				"diagnosisCode": "BNW010",
+  				"diagnosisName": "感冒",
+  				"diagnosisNo": null,
+  				"diagnosisType": null,
+  				"diagnosisWay": 1,
+  				"diagnosisid": "201837584946816406",
+  				"diaid": null,
+  				"dianame": "",
+  				"discode": "BNW010",
+  				"disdesc": "感冒",
+  				"diseaseid": 18,
+  				"disname": "感冒",
+  				"doubtDiaType": "",
+  				"mainDiaType": "",
+  				"registerid": "201837493347470156",
+  				"seqno": 4,
+  				"useflag": "1",
+  				"utstamp": "2018-09-22 10:55:46",
+  				"diagnosisWayDic": "中医"
+  			}],
+      }
+  };
+  /** [inspectionSampleData 检查数据项 2] */
+  inspectionSampleData(){
+    return {
+    	inspectionData: [
+      { // 非医嘱套
+      	"aim": "医疗服务目标",
+      	"baseUnit": "5",
+      	"count": 1,
+      	"ctstamp": "2018-07-27 16:58:25",
+      	"deptid": 1,
+      	"deptname": "内科",
+      	"medicalTypeid": 2,
+      	"medicalcode": "26",
+      	"medicaldesc": "CT",
+      	"medicalid": 26,
+      	"medicalname": "CT",
+      	"medinslevel": "1",
+      	"medinsrem": "无",
+      	"miType": "1",
+      	"orgid": "1",
+      	"seqno": 26,
+      	"spbody": "",
+      	"specification": "规格",
+      	"unitprice": 200,
+      	"useflag": "1",
+      	"utstamp": "2018-08-22 14:02:05",
+      	"medinslevelDic": "未知的字典",
+      	"baseUnitDic": "项",
+      	"key": 0,
+      	"status": 0
+      },
+      { // 医嘱套
+      	"baMedicalDtlList": [{
+      		"aim": "医疗服务目标",
+      		"baseUnit": "5",
+      		"count": 1,
+      		"ctstamp": "2018-07-08 16:09:33",
+      		"deptid": 1,
+      		"deptname": "内科",
+      		"medicalTypeid": 2,
+      		"medicalcode": "16",
+      		"medicaldesc": "成像",
+      		"medicalid": 16,
+      		"medicalname": "B超",
+      		"medinslevel": "1",
+      		"medinsrem": "无",
+      		"miType": "1",
+      		"orgid": "1",
+      		"seqno": 16,
+      		"spbody": "腹部",
+      		"specification": "规格",
+      		"unitprice": 15.5,
+      		"useflag": "1",
+      		"utstamp": "2018-08-22 14:02:05",
+      		"medinslevelDic": "未知的字典",
+      		"baseUnitDic": "项"
+      	}, {
+      		"aim": "医疗服务目标",
+      		"baseUnit": "5",
+      		"count": 1,
+      		"ctstamp": "2018-07-08 16:08:26",
+      		"deptid": 1,
+      		"deptname": "内科",
+      		"medicalTypeid": 2,
+      		"medicalcode": "15",
+      		"medicaldesc": "成像",
+      		"medicalid": 15,
+      		"medicalname": "彩超",
+      		"medinslevel": "1",
+      		"medinsrem": "无",
+      		"miType": "1",
+      		"orgid": "1",
+      		"seqno": 15,
+      		"spbody": "腹部",
+      		"specification": "规格",
+      		"unitprice": 15.5,
+      		"useflag": "1",
+      		"utstamp": "2018-08-22 14:02:05",
+      		"medinslevelDic": "未知的字典",
+      		"baseUnitDic": "项"
+      	}],
+      	"baseUnit": "5",
+      	"count": 1,
+      	"ctstamp": "2018-07-09 11:02:42",
+      	"depaid": "1",
+      	"deptname": "检验科",
+      	"execDepaid": "1",
+      	"feesum": 50,
+      	"islock": "1",
+      	"medicaldesc": "医疗服务描述",
+      	"medinslevel": "1",
+      	"medinsrem": "无",
+      	"miType": "0",
+      	"orderSuitcode": "cj",
+      	"orderSuitid": 4,
+      	"orderSuitname": "产检",
+      	"orgid": "1",
+      	"osSortid": "2",
+      	"osTypeid": 2,
+      	"pinyin": "chanjian",
+      	"printmode": "0",
+      	"seqno": 1,
+      	"spbody": "子宫",
+      	"specification": "规格",
+      	"useflag": "1",
+      	"utstamp": "2018-08-21 10:55:01",
+      	"medinslevelDic": "未知的字典",
+      	"baseUnitDic": "项",
+      	"key": 4,
+      	"status": 2
+      }
+    ],
+    	aim: 'jiang',
+    	miType: '0', // 0 医保内， 1医保外
+    	"buDiagnosisList": [{
+  				"buDiagnosisDismainfList": [{
+  					"ctstamp": "2018-09-22 10:55:46",
+  					"diagnosisid": "201837584946816406",
+  					"diseaseid": 18,
+  					"id": "201837584946816407",
+  					"manifcode": "ZBXM10",
+  					"manifdesc": "身热，微恶风，汗少，肢体酸重或疼痛，头昏重胀痛，咳嗽痰黏，鼻流浊涕，心烦口渴，或口中黏腻，渴不多饮，",
+  					"manifid": 29,
+  					"manifname": "暑湿伤表证",
+  					"registerid": "201837493347470156",
+  					"useflag": "1",
+  					"utstamp": "2018-09-22 10:55:46"
+  				}],
+  				"cmDiagnosisType": null,
+  				"codetype": "",
+  				"ctstamp": "2018-09-22 10:55:46",
+  				"diacode": "",
+  				"diadesc": "",
+  				"diagnosisCode": "BNW010",
+  				"diagnosisName": "感冒",
+  				"diagnosisNo": null,
+  				"diagnosisType": null,
+  				"diagnosisWay": 1,
+  				"diagnosisid": "201837584946816406",
+  				"diaid": null,
+  				"dianame": "",
+  				"discode": "BNW010",
+  				"disdesc": "感冒",
+  				"diseaseid": 18,
+  				"disname": "感冒",
+  				"doubtDiaType": "",
+  				"mainDiaType": "",
+  				"registerid": "201837493347470156",
+  				"seqno": 4,
+  				"useflag": "1",
+  				"utstamp": "2018-09-22 10:55:46",
+  				"diagnosisWayDic": "中医"
+  			}],
+      }
+  };
+  /** [WestSampleData 西医治疗数据项] 6*/
+  WestSampleData(){
+    return {
+    	WestMedicineData: [
+        { // 医嘱套
+        	"baMedicalDtlList": [{
+        		"aim": "医疗服务目标",
+        		"baseUnit": "5",
+        		"count": 1,
+        		"ctstamp": "2018-07-08 16:06:30",
+        		"deptid": 1,
+        		"deptname": "内科",
+        		"medicalTypeid": 4,
+        		"medicalcode": "4",
+        		"medicaldesc": "针管",
+        		"medicalid": 4,
+        		"medicalname": "一次性针管",
+        		"medinslevel": "1",
+        		"medinsrem": "无",
+        		"miType": "1",
+        		"orgid": "1",
+        		"seqno": 4,
+        		"spbody": "",
+        		"specification": "规格",
+        		"unitprice": 15.5,
+        		"useflag": "1",
+        		"utstamp": "2018-08-22 14:02:04",
+        		"medinslevelDic": "未知的字典",
+        		"baseUnitDic": "项"
+        	}, {
+        		"aim": "医疗服务目标",
+        		"baseUnit": "5",
+        		"count": 1,
+        		"ctstamp": "2018-07-09 15:56:50",
+        		"deptid": 1,
+        		"deptname": "内科",
+        		"medicalTypeid": 1,
+        		"medicalcode": "xxb",
+        		"medicaldesc": "血小板",
+        		"medicalid": 3,
+        		"medicalname": "血白细胞测定",
+        		"medinslevel": "1",
+        		"medinsrem": "无",
+        		"miType": "1",
+        		"orgid": "1",
+        		"seqno": 3,
+        		"spbody": "全血",
+        		"specification": "规格",
+        		"unitprice": 15.5,
+        		"useflag": "1",
+        		"utstamp": "2018-08-22 14:02:04",
+        		"medinslevelDic": "未知的字典",
+        		"baseUnitDic": "项"
+        	}, {
+        		"aim": "医疗服务目标",
+        		"baseUnit": "5",
+        		"count": 1,
+        		"ctstamp": "2018-07-08 16:06:15",
+        		"deptid": 1,
+        		"deptname": "内科",
+        		"medicalTypeid": 1,
+        		"medicalcode": "bxb",
+        		"medicaldesc": "白细胞",
+        		"medicalid": 2,
+        		"medicalname": "血小板测定",
+        		"medinslevel": "1",
+        		"medinsrem": "无",
+        		"miType": "1",
+        		"orgid": "1",
+        		"seqno": 2,
+        		"spbody": "全血",
+        		"specification": "规格",
+        		"unitprice": 15.5,
+        		"useflag": "1",
+        		"utstamp": "2018-08-22 14:02:04",
+        		"medinslevelDic": "未知的字典",
+        		"baseUnitDic": "项"
+        	}, {
+        		"aim": "医疗服务目标",
+        		"baseUnit": "5",
+        		"count": 1,
+        		"ctstamp": "2018-07-08 16:05:54",
+        		"deptid": 1,
+        		"deptname": "内科",
+        		"medicalTypeid": 1,
+        		"medicalcode": "hxb",
+        		"medicaldesc": "红细胞",
+        		"medicalid": 1,
+        		"medicalname": "血红蛋白测定",
+        		"medinslevel": "1",
+        		"medinsrem": "无",
+        		"miType": "1",
+        		"orgid": "1",
+        		"seqno": 1,
+        		"spbody": "全血",
+        		"specification": "规格",
+        		"unitprice": 15.5,
+        		"useflag": "1",
+        		"utstamp": "2018-08-22 14:02:04",
+        		"medinslevelDic": "未知的字典",
+        		"baseUnitDic": "项"
+        	}],
+        	"baseUnit": "5",
+        	"count": 1,
+        	"ctstamp": "2018-07-09 11:12:24",
+        	"depaid": "1",
+        	"deptname": "检验科",
+        	"execDepaid": "1",
+        	"feesum": 50,
+        	"islock": "1",
+        	"medicaldesc": "医疗服务描述",
+        	"medinslevel": "1",
+        	"medinsrem": "无",
+        	"miType": "0",
+        	"orderSuitcode": "xcg",
+        	"orderSuitid": 1,
+        	"orderSuitname": "血常规",
+        	"orgid": "1",
+        	"osSortid": "1",
+        	"osTypeid": 1,
+        	"pinyin": "xuechanggui",
+        	"printmode": "0",
+        	"seqno": 1,
+        	"spbody": "血液",
+        	"specification": "规格",
+        	"useflag": "1",
+        	"utstamp": "2018-08-21 10:55:01",
+        	"medinslevelDic": "未知的字典",
+        	"baseUnitDic": "项",
+        	"key": 0,
+        	"status": 2
+        }
+      ],
+      aim: 'jiang',
+    	miType: '0', // 0 医保内， 1医保外
+    	"buDiagnosisList": [{
+  				"buDiagnosisDismainfList": [{
+  					"ctstamp": "2018-09-22 10:55:46",
+  					"diagnosisid": "201837584946816406",
+  					"diseaseid": 18,
+  					"id": "201837584946816407",
+  					"manifcode": "ZBXM10",
+  					"manifdesc": "身热，微恶风，汗少，肢体酸重或疼痛，头昏重胀痛，咳嗽痰黏，鼻流浊涕，心烦口渴，或口中黏腻，渴不多饮，",
+  					"manifid": 29,
+  					"manifname": "暑湿伤表证",
+  					"registerid": "201837493347470156",
+  					"useflag": "1",
+  					"utstamp": "2018-09-22 10:55:46"
+  				}],
+  				"cmDiagnosisType": null,
+  				"codetype": "",
+  				"ctstamp": "2018-09-22 10:55:46",
+  				"diacode": "",
+  				"diadesc": "",
+  				"diagnosisCode": "BNW010",
+  				"diagnosisName": "感冒",
+  				"diagnosisNo": null,
+  				"diagnosisType": null,
+  				"diagnosisWay": 1,
+  				"diagnosisid": "201837584946816406",
+  				"diaid": null,
+  				"dianame": "",
+  				"discode": "BNW010",
+  				"disdesc": "感冒",
+  				"diseaseid": 18,
+  				"disname": "感冒",
+  				"doubtDiaType": "",
+  				"mainDiaType": "",
+  				"registerid": "201837493347470156",
+  				"seqno": 4,
+  				"useflag": "1",
+  				"utstamp": "2018-09-22 10:55:46",
+  				"diagnosisWayDic": "中医"
+  			}],
+      }
+  };
+  /** [materialSampleData 材料数据项] 7*/
+  materialSampleData(){
+    return {
+    	MaterialData: [
+        {
+        	"baMedicalDtlList": [{
+        		"aim": "医疗服务目标",
+        		"baseUnit": "5",
+        		"count": 1,
+        		"ctstamp": "2018-07-08 16:09:33",
+        		"deptid": 1,
+        		"deptname": "内科",
+        		"medicalTypeid": 2,
+        		"medicalcode": "16",
+        		"medicaldesc": "成像",
+        		"medicalid": 16,
+        		"medicalname": "B超",
+        		"medinslevel": "1",
+        		"medinsrem": "无",
+        		"miType": "1",
+        		"orgid": "1",
+        		"seqno": 16,
+        		"spbody": "腹部",
+        		"specification": "规格",
+        		"unitprice": 15.5,
+        		"useflag": "1",
+        		"utstamp": "2018-08-22 14:02:05",
+        		"medinslevelDic": "未知的字典",
+        		"baseUnitDic": "项"
+        	}, {
+        		"aim": "医疗服务目标",
+        		"baseUnit": "5",
+        		"count": 1,
+        		"ctstamp": "2018-07-08 16:08:26",
+        		"deptid": 1,
+        		"deptname": "内科",
+        		"medicalTypeid": 2,
+        		"medicalcode": "15",
+        		"medicaldesc": "成像",
+        		"medicalid": 15,
+        		"medicalname": "彩超",
+        		"medinslevel": "1",
+        		"medinsrem": "无",
+        		"miType": "1",
+        		"orgid": "1",
+        		"seqno": 15,
+        		"spbody": "腹部",
+        		"specification": "规格",
+        		"unitprice": 15.5,
+        		"useflag": "1",
+        		"utstamp": "2018-08-22 14:02:05",
+        		"medinslevelDic": "未知的字典",
+        		"baseUnitDic": "项"
+        	}],
+        	"baseUnit": "5",
+        	"count": 1,
+        	"ctstamp": "2018-07-09 11:02:43",
+        	"depaid": "1",
+        	"deptname": "检验科",
+        	"execDepaid": "1",
+        	"feesum": 50,
+        	"islock": "1",
+        	"medicaldesc": "医疗服务描述",
+        	"medinslevel": "1",
+        	"medinsrem": "无",
+        	"miType": "0",
+        	"orderSuitcode": "nkqj",
+        	"orderSuitid": 6,
+        	"orderSuitname": "男科全检",
+        	"orgid": "1",
+        	"osSortid": "2",
+        	"osTypeid": 2,
+        	"pinyin": "nankequanjian",
+        	"printmode": "0",
+        	"seqno": 1,
+        	"spbody": "内外生殖器",
+        	"specification": "规格",
+        	"useflag": "1",
+        	"utstamp": "2018-08-21 10:55:02",
+        	"medinslevelDic": "未知的字典",
+        	"baseUnitDic": "项",
+        	"key": 0,
+        	"status": 0
+        }
+      ],
+      aim: 'jiang',
+    	miType: '0', // 0 医保内， 1医保外
+    	"buDiagnosisList": [{
+  				"buDiagnosisDismainfList": [{
+  					"ctstamp": "2018-09-22 10:55:46",
+  					"diagnosisid": "201837584946816406",
+  					"diseaseid": 18,
+  					"id": "201837584946816407",
+  					"manifcode": "ZBXM10",
+  					"manifdesc": "身热，微恶风，汗少，肢体酸重或疼痛，头昏重胀痛，咳嗽痰黏，鼻流浊涕，心烦口渴，或口中黏腻，渴不多饮，",
+  					"manifid": 29,
+  					"manifname": "暑湿伤表证",
+  					"registerid": "201837493347470156",
+  					"useflag": "1",
+  					"utstamp": "2018-09-22 10:55:46"
+  				}],
+  				"cmDiagnosisType": null,
+  				"codetype": "",
+  				"ctstamp": "2018-09-22 10:55:46",
+  				"diacode": "",
+  				"diadesc": "",
+  				"diagnosisCode": "BNW010",
+  				"diagnosisName": "感冒",
+  				"diagnosisNo": null,
+  				"diagnosisType": null,
+  				"diagnosisWay": 1,
+  				"diagnosisid": "201837584946816406",
+  				"diaid": null,
+  				"dianame": "",
+  				"discode": "BNW010",
+  				"disdesc": "感冒",
+  				"diseaseid": 18,
+  				"disname": "感冒",
+  				"doubtDiaType": "",
+  				"mainDiaType": "",
+  				"registerid": "201837493347470156",
+  				"seqno": 4,
+  				"useflag": "1",
+  				"utstamp": "2018-09-22 10:55:46",
+  				"diagnosisWayDic": "中医"
+  			}],
+      }
+  };
+  /** [herbalSampleData 中药数据项] */
+  herbalSampleData(){
+    return {
+    	herbalData: [
+        {
+        	"baUsage": {
+        		"ctstamp": "2018-07-05 14:52:40",
+        		"orgid": "3",
+        		"pinyin": "xianjian",
+        		"seqno": 1,
+        		"usagecode": 3,
+        		"usagedesc": "先煎",
+        		"usageid": 3,
+        		"usagename": "先煎",
+        		"useflag": "1",
+        		"utstamp": "2018-07-16 17:18:40",
+        		"utype": 2
+        	},
+        	"baseUnit": 1,
+        	"ctstamp": "2018-08-28 10:07:45",
+        	"defQty": 10,
+        	"doseid": 7,
+        	"dosename": "",
+        	"freqname": "",
+        	"hmSortid": 2,
+        	"manufacturer": "1",
+        	"manuid": "12",
+        	"mediUnit": 1,
+        	"medicinecode": 1117,
+        	"medicineid": "1117",
+        	"medicinename": "鸡矢藤",
+        	"medinslevel": "01",
+        	"medinsrem": "无",
+        	"orgid": "1",
+        	"otherPinyin": "test",
+        	"pinyin": "test",
+        	"remarks": "",
+        	"seqno": 1,
+        	"specialUsageid": 3,
+        	"specification": "",
+        	"suppid": "1",
+        	"supplier": "1",
+        	"unitprice": 1123,
+        	"useflag": "1",
+        	"utstamp": "2018-08-28 10:07:45",
+        	"medinslevelDic": "一级",
+        	"baseUnitDic": "克",
+        	"key": 0,
+        	"status": 0,
+        	"usageid": 3,
+        	"usagename": "先煎",
+        	"exist": 1
+        }
+      ],
+      recipename: '处方名称', // 处方名称
+      remark: '嘱托', // 嘱托
+      treatway: '开水煮', // 治疗方法
+      countnum: 3, // 付数
+      freq: {key: '1', label: '每日一次'}, // 频次
+    	"buDiagnosisList": [{
+  				"buDiagnosisDismainfList": [{
+  					"ctstamp": "2018-09-22 10:55:46",
+  					"diagnosisid": "201837584946816406",
+  					"diseaseid": 18,
+  					"id": "201837584946816407",
+  					"manifcode": "ZBXM10",
+  					"manifdesc": "身热，微恶风，汗少，肢体酸重或疼痛，头昏重胀痛，咳嗽痰黏，鼻流浊涕，心烦口渴，或口中黏腻，渴不多饮，",
+  					"manifid": 29,
+  					"manifname": "暑湿伤表证",
+  					"registerid": "201837493347470156",
+  					"useflag": "1",
+  					"utstamp": "2018-09-22 10:55:46"
+  				}],
+  				"cmDiagnosisType": null,
+  				"codetype": "",
+  				"ctstamp": "2018-09-22 10:55:46",
+  				"diacode": "",
+  				"diadesc": "",
+  				"diagnosisCode": "BNW010",
+  				"diagnosisName": "感冒",
+  				"diagnosisNo": null,
+  				"diagnosisType": null,
+  				"diagnosisWay": 1,
+  				"diagnosisid": "201837584946816406",
+  				"diaid": null,
+  				"dianame": "",
+  				"discode": "BNW010",
+  				"disdesc": "感冒",
+  				"diseaseid": 18,
+  				"disname": "感冒",
+  				"doubtDiaType": "",
+  				"mainDiaType": "",
+  				"registerid": "201837493347470156",
+  				"seqno": 4,
+  				"useflag": "1",
+  				"utstamp": "2018-09-22 10:55:46",
+  				"diagnosisWayDic": "中医"
+  			}],
+      }
+  };
   render() {
     let { dataSource, tatalRecords, currentPage, actionType, orderid, buOrderDtlList , showWay } = this.state;
     let that = this;
@@ -309,7 +1086,7 @@ export default class Index extends Component {
                 </Toggle>
                 <Diagnose />
                 <AddRight>
-                  <AutoTreat onClick={this.handleInteligenceClick}>👁辨证论治</AutoTreat>
+                  <AutoTreat onClick={this.modelData}>👁辨证论治</AutoTreat>
                 </AddRight>
               </Header>
               {
