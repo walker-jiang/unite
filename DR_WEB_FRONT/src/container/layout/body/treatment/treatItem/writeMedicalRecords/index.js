@@ -96,7 +96,7 @@ class Index extends Component {
       "allergichistory": '',//过敏史
       "billid": '',
       "breath": '',//呼吸
-      "buDiagnosisInfo": {},
+      "buDiagnosisInfo": {},//诊断
       "buTargetChooseList": [],
       "casetype": '',
       "chfingerprint": '',
@@ -263,8 +263,17 @@ class Index extends Component {
    */
   changeInitData = (initData) =>{
     console.log("!!!!!!!!!!!!!!!!!!",initData);
-    initData['buDiagnosisInfo'] ={};//暂无信息
     this.setState({initData})
+  }
+  /**
+   * [changeTabs 左右联动]
+   * @param  {[type]} initData
+   */
+  changeInitDataTwo = (buDiagnosisInfo) =>{
+    var initData = this.state.initData;
+    initData['buDiagnosisInfo'] = buDiagnosisInfo;
+    console.log("!!!!!!!!!!!!!!!!!!",initData);
+    this.setState({initData});
   }
   render() {
     let { saved, caseItems, tabIndex, initData } = this.state;
@@ -380,39 +389,39 @@ class Index extends Component {
         </SpecForm>
         <Modal>
         {
-          // tabIndex == 1 ?
-          // (
-          //   <SpecTabs key='1' defaultActiveKey='1' animated={false}>
-          //     <TabPane tab="病历模板" key="1">
-          //       <Template changeInitData={this.changeInitData} listenFormData={listenFormData}/>
-          //     </TabPane>
-          //     <TabPane tab="历史病历" key="2">
-          //       <MedicalHistory/>
-          //     </TabPane>
-          //     <TabPane tab="辅助诊断" key="3">
-          //       <AuxiliaryDiagnosis listenFormData={listenFormData}/>
-          //     </TabPane>
-          //     <TabPane tab="病历指标" key="4">
-          //       <CaseIndicator changeCaseItem={this.changeCaseItem} caseItems={caseItems}></CaseIndicator>
-          //     </TabPane>
-          //   </SpecTabs>
-          // ) :
-          // (
-          //   <SpecTabs key='2' defaultActiveKey='2'animated={false}>
-          //     <TabPane tab="历史病历" key="1">
-          //       <MedicalHistory/>
-          //     </TabPane>
-          //     <TabPane tab="治疗反馈" key="2">
-          //       <BiofeedbckTherpy/>
-          //     </TabPane>
-          //     <TabPane tab="病历模板" key="3">
-          //       <MedicalRecordTemplate changeInitData={this.changeInitData} listenFormData={listenFormData}/>
-          //     </TabPane>
-          //     <TabPane tab="病历指标" key="4">
-          //       <CaseIndicator changeCaseItem={this.changeCaseItem} caseItems={caseItems}></CaseIndicator>
-          //     </TabPane>
-          //   </SpecTabs>
-          // )
+          tabIndex == 1 ?
+          (
+            <SpecTabs key='1' defaultActiveKey='1' animated={false}>
+              <TabPane tab="病历模板" key="1">
+                <MedicalRecordTemplate changeInitData={this.changeInitData} listenFormData={listenFormData}/>
+              </TabPane>
+              <TabPane tab="历史病历" key="2">
+                <MedicalHistory changeInitData={this.changeInitData}/>
+              </TabPane>
+              <TabPane tab="辅助诊断" key="3">
+                <AuxiliaryDiagnosis changeInitDataTwo={this.changeInitDataTwo} listenFormData={listenFormData}/>
+              </TabPane>
+              <TabPane tab="病历指标" key="4">
+                <CaseIndicator changeCaseItem={this.changeCaseItem} caseItems={caseItems}></CaseIndicator>
+              </TabPane>
+            </SpecTabs>
+          ) :
+          (
+            <SpecTabs key='2' defaultActiveKey='2'animated={false}>
+              <TabPane tab="历史病历" key="1">
+                <MedicalHistory/>
+              </TabPane>
+              <TabPane tab="治疗反馈" key="2">
+                <BiofeedbckTherpy/>
+              </TabPane>
+              <TabPane tab="病历模板" key="3">
+                <MedicalRecordTemplate changeInitData={this.changeInitData} listenFormData={listenFormData}/>
+              </TabPane>
+              <TabPane tab="病历指标" key="4">
+                <CaseIndicator changeCaseItem={this.changeCaseItem} caseItems={caseItems}></CaseIndicator>
+              </TabPane>
+            </SpecTabs>
+          )
         }
         </Modal>
       </Container>

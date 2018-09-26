@@ -126,10 +126,11 @@ export default class Index extends Component {
    * @param  {[type]} registerid [接诊ID]
    * @return {[type]}            [undefined]
    */
-  doing(registerid){
+  doing(registerid, patientid){
     console.log('接诊');
     window.registerID = registerid;
     window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
+    window.patientid = patientid;
     this.modifyRcState(1, registerid);
   };
   /**
@@ -137,10 +138,11 @@ export default class Index extends Component {
    * @param  {[type]} registerid [接诊ID]
    * @return {[type]}            [undefined]
    */
-  redo(registerid){
+  redo(registerid, patientid){
     console.log('重新接诊');
     window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
     window.registerID = registerid;
+    window.patientid = patientid;
     this.modifyRcState(1, registerid);
   };
   /**
@@ -168,9 +170,10 @@ export default class Index extends Component {
    * @param  {[type]} registerid [接诊ID]
    * @return {[type]}            [undefined]
    */
-  keepDoing(registerid){
-    console.log('续诊');
+  keepDoing(registerid, patientid){
+    console.log('续诊', patientid);
     window.registerID = registerid;
+    window.patientid = patientid;
     window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
   };
   /**
@@ -229,7 +232,7 @@ export default class Index extends Component {
       render: (text, record) =>
         rcStatus == 0 ?
         <StyledLink
-          onClick={() => this.doing(record.registerid)}
+          onClick={() => this.doing(record.registerid, patientid)}
           to={'/Layout/treatment/' + record.patientid}>
           接诊
         </StyledLink>
@@ -238,7 +241,7 @@ export default class Index extends Component {
           rcStatus == 1 ?
             <span>
               <StyledLink
-                onClick={() => this.keepDoing(record.registerid)}
+                onClick={() => this.keepDoing(record.registerid, record.patientid)}
                 to={'/Layout/treatment/' + record.patientid}>
                 继续接诊
               </StyledLink>|

@@ -13,7 +13,7 @@ class ContentOne extends Component {
   constructor(props){
     super(props);
     this.state = {
-       isUnfold:true
+       isUnfold:false
     }
   }
   // pridepict
@@ -29,7 +29,7 @@ class ContentOne extends Component {
     }
   }
   unfold = (isUnfold) =>{
-    this.setState({isUnfold:!isUnfold});
+    this.setState({isUnfold:!this.state.isUnfold});
   }
   render(){
     var name = this.props.oneItem.name;
@@ -38,7 +38,7 @@ class ContentOne extends Component {
     return (
       <div>
       {
-        value == ""
+        value == "" || value == null
         ?
         null
         :
@@ -47,11 +47,11 @@ class ContentOne extends Component {
             {
               value.length > 24
               ?
-              <Icon type={value?"down":"right"}/>
+              <Icon type={isUnfold?"down":"right"} style={{float:'left',marginLeft:-15}}/>
               :
               null
             }
-            <p style={{paddingLeft:15,fontWeight:700,float:'left'}}>{name}：</p>
+            <p style={{fontWeight:700,float:'left'}}>{name}：</p>
             <p className="even">{ isUnfold?value:this.cutOut(value) }</p>
           </p>
         </div>
@@ -103,7 +103,7 @@ class ContentDetail extends Component {
               {
                 item.map((item,index)=>{
                   return(
-                    <ContentOne oneItem={item}/>
+                    <ContentOne oneItem={item} key={index}/>
                   )
                 })
               }

@@ -37,6 +37,10 @@ class Index extends Component {
     }
   }
   componentWillMount(){
+    let buOrderDtlList = this.props.buOrderDtlList;
+    this.setState({
+      ...buOrderDtlList
+    });
     this.getDiagnoseData();
     this.getDept();
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据

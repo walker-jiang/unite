@@ -46,8 +46,24 @@ class Index extends Component {
     this.delHerbal = this.delHerbal.bind(this);
     this.dosageChange = this.dosageChange.bind(this);
     this.usageChange = this.usageChange.bind(this);
+    window.AddHerbalMedicineFunc = (params) => this.AddHerbalMedicineFunc(params)
   }
+  AddHerbalMedicineFunc(params){
+    let herbalData =params;
+    if(herbalData){
+      herbalData = JSON.parse(herbalData);
+      herbalData.forEach((item) => {
+        item.usageid = item.baUsage ? item.baUsage.usageid : 9; // 从用法对象转换成字符串用法ID
+        item.usagename = item.baUsage ? item.baUsage.usagename : '无'; // 从用法对象转换成字符串用法名称
+      });
+      this.setState({herbalData: herbalData});
+    }
+  };
   componentWillMount(){
+    let buOrderDtlList = this.props.buOrderDtlList;
+    this.setState({
+      ...buOrderDtlList
+    });
     this.getDiagnoseData();
     this.getFrequency();
     if(this.props.initData){ // 修改、查看需要初始化数据
@@ -159,6 +175,7 @@ class Index extends Component {
     if(showWay == 'table'){
       this.addTableData.scrollTop = this.addTableData.scrollHeight; // 自动滚动到滚动区域的最底部
     }
+    console.log('herbalItem', JSON.stringify(herbalItem));
     herbalData.push(herbalItem);
     this.setState({ herbalData });
   }
@@ -398,7 +415,7 @@ class Index extends Component {
             showWay == 'list' ?
             <ListShow
               current={current}
-              buOrderDtlList={buOrderDtlList}
+              buOrderDtlList={[]}
               pageSize={pagination.pageSize}
               herbalData={ herbalData }
               delHerbal={this.delHerbal}
@@ -406,7 +423,7 @@ class Index extends Component {
             :
             <TableShow
               current={current}
-              buOrderDtlList={buOrderDtlList}
+              buOrderDtlList={[]}
               herbalData={ herbalData }
               delHerbal={this.delHerbal}
               dosageChange={this.dosageChange}

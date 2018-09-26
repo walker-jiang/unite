@@ -166,6 +166,7 @@ class Index extends Component {
   };
   render() {
     const { getFieldDecorator } = this.props.form;
+    let disabled = this.props.disabled;
     let { country, nation, sex, marry, occupation, pationtype, cardtype, pationrel, province, city, area, patientInfo } = this.state;
     let date = new Date();
     const age = date.getFullYear() - parseInt(patientInfo.birthday.substr(0,4));
@@ -193,7 +194,7 @@ class Index extends Component {
                     rules: [{ required: true, message: '请填写患者姓名!' }],
                     initialValue: ''
                   })(
-                    <QuickAddName ref={ref => {this.quickAddName = ref} } placeholder='请选择患者信息' getQuickData = {this.addPatientData.bind(this)}/>
+                    <QuickAddName ref={ref => {this.quickAddName = ref}} disabled={disabled} placeholder='请选择患者信息' getQuickData = {this.addPatientData.bind(this)}/>
                   )}
               </SpecFormItem>
             </Col>
@@ -206,7 +207,7 @@ class Index extends Component {
                 {getFieldDecorator('careCardno', {
                   initialValue: ''
                 })(
-                  <SpecInput />
+                  <SpecInput disabled={disabled}/>
                 )}
               </SpecFormItem>
             </Col>
@@ -220,7 +221,7 @@ class Index extends Component {
                     rules: [{ required: true, message: '请填写患者编号!' }],
                     initialValue: patientInfo.patientno
                   })(
-                    <SpecInput />
+                    <SpecInput disabled={disabled}/>
                   )}
               </SpecFormItem>
             </Col>
@@ -236,7 +237,7 @@ class Index extends Component {
                     rules: [{ required: true, message: '请填写电话号码!' }],
                     initialValue: patientInfo.mobile
                   })(
-                    <SpecInput />
+                    <SpecInput disabled={disabled}/>
                   )}
               </SpecFormItem>
             </Col>
@@ -249,7 +250,7 @@ class Index extends Component {
                   {getFieldDecorator('countryCode', {
                     initialValue: patientInfo.country ? patientInfo.country : ( country.length ? country[0].value : '')
                   })(
-                    <SpecSelect>
+                    <SpecSelect disabled={disabled}>
                     {
                       country.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -268,7 +269,7 @@ class Index extends Component {
                   {getFieldDecorator('nationCode', {
                     initialValue: patientInfo.nation ? patientInfo.nation : ( nation.length ? nation[0].value : '')
                   })(
-                    <SpecSelect>
+                    <SpecSelect disabled={disabled}>
                     {
                       nation.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -280,7 +281,7 @@ class Index extends Component {
             </Col>
           </Row>
           <Row>
-            <Col span={7} >
+            <Col span={7} offset={1}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -290,7 +291,7 @@ class Index extends Component {
                     rules: [{ required: true, message: '请填写患者证件类型!' }],
                     initialValue: patientInfo.cardtype ? patientInfo.cardtype : ( cardtype.length ? cardtype[0].value : '')
                   })(
-                    <SpecSelect>
+                    <SpecSelect disabled={disabled}>
                       {
                         cardtype.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -300,7 +301,7 @@ class Index extends Component {
                 )}
               </SpecFormItem>
             </Col>
-            <Col span={7} offset={1}>
+            <Col span={7}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -310,7 +311,7 @@ class Index extends Component {
                     rules: [{ required: true, message: '请填写患者证件号码!' }],
                     initialValue: patientInfo.cardno
                   })(
-                    <SpecInput />
+                    <SpecInput disabled={disabled}/>
                   )}
                 </SpecFormItem>
               </Col>
@@ -323,7 +324,7 @@ class Index extends Component {
                     {getFieldDecorator('sex', {
                       initialValue: patientInfo.sex ? patientInfo.sex : ( sex.length ? sex[0].value : '')
                     })(
-                      <SpecSelect>
+                      <SpecSelect disabled={disabled}>
                         {
                           sex.map((item, index)=>
                           <Option key={index} value={item.value}>{item.vname}</Option>
@@ -335,7 +336,7 @@ class Index extends Component {
               </Col>
           </Row>
           <Row>
-            <Col span={7} >
+            <Col span={7} offset={1}>
               <SpecSpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -345,12 +346,12 @@ class Index extends Component {
                   rules: [{ type: 'object', required: true, message: '请输入选择生日!' }],
                   initialValue: moment(patientInfo.birthday, 'YYYY-MM-DD')
                 })(
-                  <SpecDatePicker onChange={this.changeDate} allowClear={false}/>
+                  <SpecDatePicker onChange={this.changeDate} disabled={disabled} allowClear={false}/>
                 )}
-                <SpecSpecInput placeholder='年龄' value={age} onChange={() => {}}/>
+                <SpecSpecInput placeholder='年龄' disabled={disabled} value={age} onChange={() => {}}/>
               </SpecSpecFormItem>
             </Col>
-            <Col span={7} offset={1}>
+            <Col span={7}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -359,10 +360,10 @@ class Index extends Component {
                   {getFieldDecorator('patienttype', {
                     initialValue: patientInfo.patienttype ? patientInfo.patienttype : ( pationtype.length ? pationtype[0].value : '')
                   })(
-                    <SpecSelect>
+                    <SpecSelect disabled={disabled}>
                     {
                       pationtype.map((item, index)=>
-                        <Option key={index} value={item.value}>{item.vname}</Option>
+                        <Option key={index} value={item.value} >{item.vname}</Option>
                       )
                     }
                     </SpecSelect>
@@ -378,7 +379,7 @@ class Index extends Component {
                   {getFieldDecorator('maritalStatus', {
                     initialValue: patientInfo.maritalStatus ? patientInfo.maritalStatus : ( marry.length ? marry[0].value : '')
                   })(
-                    <SpecSelect>
+                    <SpecSelect disabled={disabled}>
                     {
                       marry.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -390,7 +391,7 @@ class Index extends Component {
             </Col>
           </Row>
           <Row>
-            <Col span={7} >
+            <Col span={7} offset={1}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -399,7 +400,7 @@ class Index extends Component {
                   {getFieldDecorator('occupation', {
                     initialValue: patientInfo.occupation ? patientInfo.occupation : ( occupation.length ? occupation[0].value : '')
                   })(
-                    <SpecSelect>
+                    <SpecSelect disabled={disabled}>
                     {
                       occupation.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -418,7 +419,7 @@ class Index extends Component {
                   {getFieldDecorator('ABO', {
                     initialValue: patientInfo.occupation ? patientInfo.occupation : ( occupation.length ? occupation[0].value : '')
                   })(
-                    <SpecSelect>
+                    <SpecSelect disabled={disabled}>
                     {
                       occupation.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -437,7 +438,7 @@ class Index extends Component {
                   {getFieldDecorator('phoneHome', {
                     initialValue: patientInfo.phoneHome
                   })(
-                    <SpecInput />
+                    <SpecInput disabled={disabled}/>
                   )}
               </SpecFormItem>
             </Col>
@@ -453,7 +454,7 @@ class Index extends Component {
                   {getFieldDecorator('provinceid', {
                     initialValue: province.length > 0 ? {key: province[0].provid, label: province[0].provname} : {key: '', label: ''}
                   })(
-                    <SpecSelect labelInValue onChange={(e) => {this.getCityData(e.key)}}>
+                    <SpecSelect labelInValue onChange={(e) => {this.getCityData(e.key)}} disabled={disabled}>
                     {
                       province.map((item, index)=>
                         <Option key={index} value={item.provid}>{item.provname}</Option>
@@ -472,7 +473,7 @@ class Index extends Component {
                   {getFieldDecorator('cityid', {
                     initialValue: city.length > 0 ? {key: city[0].cityid, label: city[0].cityname} : {key: '', label: ''}
                   })(
-                    <SpecSelect labelInValue onChange={(e) => {this.getAreaData(e.key)}}>
+                    <SpecSelect labelInValue onChange={(e) => {this.getAreaData(e.key)}} disabled={disabled}>
                     {
                       city.map((item, index)=>
                         <Option key={index} value={item.cityid}>{item.cityname}</Option>
@@ -492,7 +493,7 @@ class Index extends Component {
                   {getFieldDecorator('areaid', {
                     initialValue: area.length > 0 ? {key: area[0].distid, label: area[0].distname} : {key: '', label: ''}
                   })(
-                    <SpecSelect labelInValue>
+                    <SpecSelect labelInValue disabled={disabled}>
                     {
                       area.map((item, index)=>
                         <Option key={index} value={item.distid}>{item.distname}</Option>
@@ -512,13 +513,13 @@ class Index extends Component {
                   {getFieldDecorator('streetdesc', {
                     initialValue: 'a'
                   })(
-                    <SpecInput />
+                    <SpecInput disabled={disabled}/>
                   )}
               </SpecFormItem>
             </Col>
           </Row>
           <Row>
-            <Col span={7} >
+            <Col span={7}  offset={1}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -527,11 +528,11 @@ class Index extends Component {
                   {getFieldDecorator('ctName', {
                     initialValue: patientInfo.ctName
                   })(
-                    <SpecInput />
+                    <SpecInput disabled={disabled}/>
                   )}
               </SpecFormItem>
             </Col>
-            <Col span={7} offset={1}>
+            <Col span={7}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -540,7 +541,7 @@ class Index extends Component {
                   {getFieldDecorator('ctRole', {
                     initialValue: patientInfo.ctRole ? patientInfo.ctRole : ( pationrel.length ? pationrel[0].value : '' )
                   })(
-                    <SpecSelect>
+                    <SpecSelect disabled={disabled}>
                     {
                       pationrel.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -559,7 +560,7 @@ class Index extends Component {
                   {getFieldDecorator('ctPhone', {
                     initialValue: patientInfo.ctPhone
                   })(
-                    <SpecInput />
+                    <SpecInput disabled={disabled}/>
                   )}
               </SpecFormItem>
             </Col>

@@ -19,6 +19,7 @@ export default class QuickAdd extends PureComponent {
     let inputProps = {};
     if(formItemProps){
       inputProps.value = formItemProps.value;
+      inputProps.disabled = formItemProps.disabled;
     }
     return (
       <Container className={this.props.className}>

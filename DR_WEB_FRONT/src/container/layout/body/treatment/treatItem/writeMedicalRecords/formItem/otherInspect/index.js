@@ -7,7 +7,7 @@ const FormItem = Form.Item;
 
 export default class Index extends Component {
   render() {
-    const { getFieldDecorator, formItemLayout, initialValue} = this.props;
+    const { getFieldDecorator, formItemLayout, initialValue, disabled = false} = this.props;
     return (
       <Row className='height'>
         <Col span={24}>
@@ -17,7 +17,7 @@ export default class Index extends Component {
             label="其它检查：">
             {getFieldDecorator('psycheck', {
                 initialValue: initialValue
-              })(<Input />)
+              })(<Input disabled={disabled}/>)
             }
           </FormItem>
         </Col>

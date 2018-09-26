@@ -16,7 +16,7 @@ class MedicalRWService {
         if(testData){
           return Simulation.GetList();
         }else{
-          Xhr.postAddUrl('/template/query/index/all', params, false, callBack);
+          Xhr.postAddUrl(config_AssistBar_url+'/template/query/index/all', params, false, callBack);
         }
     }
     /**
@@ -26,7 +26,7 @@ class MedicalRWService {
         if(testData){
           return Simulation.GetList();
         }else{
-          Xhr.post('BuPatientCaseController/getPatient', params, true, callBack);
+          Xhr.post('GET','application/json', config_service_url+'BuPatientCaseController/getPatient', params, true, callBack);
         }
     }
     /**
@@ -36,11 +36,53 @@ class MedicalRWService {
         if(testData){
           return Simulation.GetList();
         }else{
-          Xhr.post('BuTempletManageController/getList', params, false, callBack);
+          Xhr.post('GET','application/x-www-form-urlencoded;charset=utf-8',config_service_url+'BuPatientCaseController/getPatient', params, false, callBack);
         }
     }
 
+    /**
+     * 病历书写单/治疗反馈-----答题-----尧尧  "typeid": 1
+     */
+    queryAnswer(params,callBack){
+        if(testData){
+          return Simulation.GetList();
+        }else{
+          Xhr.postAddUrl(config_AssistBar_urlTwo+'BuTreatfeedbackController/getList', params, false, callBack);
+        }
+    }
 
+    /**
+     * 病历书写单/治疗反馈-----统计图----尧尧  billid:201837522770543143
+     */
+    getChart(params,callBack){
+        if(testData){
+          return Simulation.GetList();
+        }else{
+          Xhr.postAddUrl(config_AssistBar_urlTwo+'BuTreatfeedbackController/getChart', params, false, callBack);
+        }
+    }
+
+    /**
+     * 病历书写单/辅助诊断列表---------孙磊
+     */
+    GetAuxiliaryList(params,callBack){
+        if(testData){
+          return Simulation.GetList();
+        }else{
+          Xhr.post('post','application/x-www-form-urlencoded;charset=utf-8',config_InteLigenTreat_url+'TCMAE/diagnose/get/index', "content="+JSON.stringify(params), false, callBack);
+        }
+    }
+
+    /**
+     * 病历书写单/加入诊断获取疾病对象--------金野
+     */
+    QueryDiseaseList(params,callBack){
+        if(testData){
+          return Simulation.GetList();
+        }else{
+          Xhr.post('GET','application/json',config_service_url+'BaDiseaseController/getList', params, false, callBack);
+        }
+    }
 
 }
 

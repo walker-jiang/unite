@@ -41,6 +41,9 @@ const blueSemicircle = css`
 `;
 /* 保留底边框,细下拉箭头的下拉框 */
 const thinArrow = css`
+  &&&.ant-select-disabled .ant-select-selection {
+    background: #FFFFFF;
+  }
   & > .ant-select-selection {
     border-radius: 0px !important;
     width: 100% !important;

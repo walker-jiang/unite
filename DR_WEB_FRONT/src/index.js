@@ -28,9 +28,6 @@ const CureNotIll = Loadable({
   loader: () => import('./container/cureNotIll'),
   loading: loadingComponent,
 });
-function AddHerbalMedicineFunc(param){
-  alert('草药数据', param)
-};
 const App = () => (
   	<BrowserRouter>
 	    <Switch>

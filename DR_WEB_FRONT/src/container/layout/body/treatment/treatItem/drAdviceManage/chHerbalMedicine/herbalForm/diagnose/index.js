@@ -40,9 +40,11 @@ export default class Diagnose extends Component {
     this.onMainDiagnoseChange = this.onMainDiagnoseChange.bind(this);
     this.onDoubleDiagnoseChange = this.onDoubleDiagnoseChange.bind(this);
   }
-  componentWillReceiveProps(nextProps){
-    let diagnoseFinalInfo = nextProps.value.originData;// 先获取该用户的诊断明细数组
+  componentWillMount(){
+    let diagnoseFinalInfo = this.props.value.originData;// 先获取该用户的诊断明细数组
     this.setState({ diagnoseFinalInfo });
+  };
+  componentWillReceiveProps(nextProps){
   };
   /** [initialData 组件加载获取历史诊断数据] */
   initialData(){
