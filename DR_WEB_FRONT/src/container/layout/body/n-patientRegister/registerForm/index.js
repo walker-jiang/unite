@@ -13,6 +13,14 @@ import ajaxGetResource from 'commonFunc/ajaxGetResource';
 const TabPane = Tabs.TabPane;
 
 export default class Index extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      baPatient: {}, // 基本信息数据
+      buPatientCase: {}, // 病例数据
+      registerInfo: {}, // 其余挂号信息
+    };
+  };
   componentWillMount(){
     let operateType = this.props.match.params.type;
     if(operateType.indexOf('v') || operateType.indexOf('m')){
@@ -20,65 +28,58 @@ export default class Index extends Component {
     }
   };
   getPatientData(id){
-    // let self = this;
-    // let params = {
-    //   url: 'BaPatientController/getData',
-    //   data: {
-    //     id: id,
-    //   },
-    // };
-    // function callBack(res){
-    //   if(res.result){
-    //     let date = new Date();
-    //     self.setState({
-    //
-    //     });
-    //   }else{
-    //     console.log('异常响应信息', res);
-    //   }
-    // };
-    // ajaxGetResource(params, callBack);
+    let self = this;
+    let params = {
+      url: 'BuRegisterController/getData',
+      data: {
+        registerid: id,
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        let { baPatient, buPatientCase, ...registerInfo } = res.data;
+        self.setState({ baPatient, buPatientCase, registerInfo });
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
   };
   submit = (e) =>{
-    let baPatient = {};
-    let buPatientCase = {};
     let dept = {};
+    let { registerInfo = {}, baPatient = {}, buPatientCase = {} } = this.state;
+    let operateType = this.props.match.params.type;
     if(this.basicInfoForm){
       this.basicInfoForm.validateFieldsAndScroll((err, values) => {
-        console.log(values, values);
-        console.log('err', err);
         if (!err) {
-          baPatient = {
-            "addrHome": values.provinceid.label + values.cityid.label + values.areaid.label,
-            "birthday": values.birthday.format('YYYY-MM-DD'),
-            "creator": window.sessionStorage.getItem('userid'),
-            "provinceid": values.provinceid.key,
-            "cityid": values.cityid.key,
-            "areaid": values.areaid.key,
-          };
-          console.log('baPatient', baPatient);
-          baPatient = Object.assign(values, baPatient);
+          Object.assign(baPatient, values);
+          baPatient.addrHome = values.provinceid.label + values.cityid.label + values.areaid.label;
+          baPatient.birthday = values.birthday.format('YYYY-MM-DD');
+          baPatient.creator = window.sessionStorage.getItem('userid');
+          baPatient.provinceid = values.provinceid.key;
+          baPatient.cityid = values.cityid.key;
+          baPatient.areaid = values.areaid.key
         }
       });
     }
     if(this.preTreatForm){
       this.preTreatForm.validateFieldsAndScroll((err, values) => {
         if (!err) {
-          buPatientCase = {
-            "hpi": this.getString(values.allergichistory),
-            "allergichistory": this.getString(values.allergichistory),
-            "deptid": values.dept.key,
-            "doctorid": values.doctor.key,
-            "doctorname": values.doctor.label,
-            "orgid": window.sessionStorage.getItem('orgid'),
-          };
+          console.log('buPatientCase, values', buPatientCase, values);
+          Object.assign(buPatientCase, values);
+          buPatientCase.hpi = this.getString(values.hpi);
+          buPatientCase.allergichistory = this.getString(values.allergichistory);
+          buPatientCase.deptid = values.dept.key;
+          buPatientCase.doctorid = values.doctor.key;
+          buPatientCase.doctorname = values.doctor.label;
+          buPatientCase.orgid = window.sessionStorage.getItem('orgid');
           dept = {
             "deptid": values.dept.key,
             "deptname": values.dept.label,
           };
-          buPatientCase = Object.assign(values, buPatientCase);
           delete buPatientCase['dept'];
           delete buPatientCase['doctor'];
+
         }
       });
     }else {
@@ -98,12 +99,13 @@ export default class Index extends Component {
       "deptid": dept.deptid,
       "deptname": dept.deptname,
     };
+    Object.assign(registerInfo, paramData);
     this.saveTip.showModal(1);
     let self = this;
     let params = {
-      url: 'BuRegisterController/patRegister',
-      data: JSON.stringify(paramData),
-      type: 'post',
+      url: 'BuRegisterController/' + (operateType.indexOf('m') == 0 ? 'putRegister' : 'patRegister'),
+      data: JSON.stringify(registerInfo),
+      type: (operateType.indexOf('m') == 0 ? 'put' : 'post'),
     };
     function callBack(res){
       if(res.result){
@@ -129,7 +131,7 @@ export default class Index extends Component {
   };
   render() {
     let operateType = this.props.match.params.type;
-    console.log('dfdfd', operateType.indexOf('v') == 0);
+    let { baPatient, buPatientCase } = this.state;
     return (
       <Container>
         <Header>
@@ -144,10 +146,10 @@ export default class Index extends Component {
         <Content>
           <SpecTabs defaultActiveKey="1" animated={false}>
             <TabPane tab="基本信息" key="1">
-              <BasicInfoForm ref={ ref => { this.basicInfoForm = ref }} disabled={operateType.indexOf('v') == 0}></BasicInfoForm>
+              <BasicInfoForm ref={ ref => { this.basicInfoForm = ref }} disabled={operateType.indexOf('v') == 0} baPatient={baPatient}></BasicInfoForm>
             </TabPane>
             <TabPane tab="诊前信息" key="2">
-              <PreTreatForm ref={ ref => { this.preTreatForm = ref }} disabled={operateType.indexOf('v') == 0}></PreTreatForm>
+              <PreTreatForm ref={ ref => { this.preTreatForm = ref }} disabled={operateType.indexOf('v') == 0} buPatientCase={buPatientCase}></PreTreatForm>
             </TabPane>
           </SpecTabs>
           <ActionButton>

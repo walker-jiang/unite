@@ -319,7 +319,7 @@ export default class Diagnose extends Component {
     console.log(page);
   };
   render() {
-    let formItemProps = this.props;
+    let {icon, icon_right, ...formItemProps} = this.props;
     let { curTab, symptomId, diagnoseHisOriginData, diagnoseFinalInfo, repeatDiagnose, mainDiagnose, doubleDiagnose, diaCurPage, hisCurPage} = this.state;
     let diagnoseHisData =getDiagnoseDataSource(diagnoseHisOriginData, 'his'); // 历史诊断表格数据
     let diagnoseData = getDiagnoseDataSource(diagnoseFinalInfo, 'now'); // 当前诊断表格数据
@@ -335,7 +335,7 @@ export default class Diagnose extends Component {
       this.setState({ hisCurPage: page});
     }
     return (
-      <InputEnterPop displayed = {this.initialData} formItemProps={formItemProps} ref={ref=>this.inputEnterPop = ref} title='诊断' icon='#C14342' importability={false}>
+      <InputEnterPop displayed = {this.initialData} formItemProps={formItemProps} ref={ref=>this.inputEnterPop = ref} title='诊断' icon={icon} icon_right={icon_right} importability={false}>
         <Container onClick={this.hideFloatLayer}>
           <Tab>
             <TabItem current={curTab} index={0} onClick={()=>{this.toggleTabs(0)}}>✍️中医诊断</TabItem>

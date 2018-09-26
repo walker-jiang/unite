@@ -1221,7 +1221,7 @@ const SpecListIcon = styled(ListIcon)`
   margin:0px 10px;
 `;
 const BorderButton = styled(Button)`
-  ${buttonSty.semicircle}
+  ${buttonSty.white}
   border: 1px solid rgba(10, 110, 203, 1) !important;
 `;
 const CheckAction = styled.div`

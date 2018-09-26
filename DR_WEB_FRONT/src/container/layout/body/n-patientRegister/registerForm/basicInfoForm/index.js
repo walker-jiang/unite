@@ -34,8 +34,8 @@ class Index extends Component {
         patientname: '',
         patientno: '',
         mobile: '',
-        country: '',
-        nation: '',
+        countryCode: '',
+        nationCode: '',
         cardtype: '',
         cardno: '',
         sex: '',
@@ -93,6 +93,11 @@ class Index extends Component {
     this.getDictData('cardtype'); // 获取证件类型列表
     this.getDictData('pationrel'); // 获取患者关系类型列表
     this.getProvinceData(); // 获取省份数据
+  };
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      patientInfo: nextProps.baPatient
+    })
   };
   getProvinceData(){
     let self = this;
@@ -192,7 +197,7 @@ class Index extends Component {
                 >
                   {getFieldDecorator('patientname', {
                     rules: [{ required: true, message: '请填写患者姓名!' }],
-                    initialValue: ''
+                    initialValue: patientInfo.patientname
                   })(
                     <QuickAddName ref={ref => {this.quickAddName = ref}} disabled={disabled} placeholder='请选择患者信息' getQuickData = {this.addPatientData.bind(this)}/>
                   )}
@@ -248,7 +253,7 @@ class Index extends Component {
                 label="国籍："
                 >
                   {getFieldDecorator('countryCode', {
-                    initialValue: patientInfo.country ? patientInfo.country : ( country.length ? country[0].value : '')
+                    initialValue: patientInfo.countryCode ? patientInfo.countryCode : ( country.length ? country[0].value : '')
                   })(
                     <SpecSelect disabled={disabled}>
                     {
@@ -267,7 +272,7 @@ class Index extends Component {
                 label="民族："
                 >
                   {getFieldDecorator('nationCode', {
-                    initialValue: patientInfo.nation ? patientInfo.nation : ( nation.length ? nation[0].value : '')
+                    initialValue: patientInfo.nationCode ? patientInfo.nationCode : ( nation.length ? nation[0].value : '')
                   })(
                     <SpecSelect disabled={disabled}>
                     {

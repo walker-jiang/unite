@@ -34,14 +34,14 @@ export default class InputSelect extends Component {
   };
   render() {
     let { visible } = this.state;
-    let { icon , type = 'search', title = '标题', icon_right = '0px', hbgColor, icon_type, importability = true} = this.props;
+    let { icon = '#C6C6C6' , type = 'search', title = '标题', icon_right = '0px', hbgColor, icon_type, importability = true} = this.props;
     let { value, ...other } = this.props.formItemProps; // 表单属性
     if(!importability){
       other.onChange = (e) => {}
     }
     return (
       <Container >
-        <Input {...other} value={value.extractionData}onKeyDown={this.handleEnterPress}/>
+        <Input {...other} value={value.extractionData} onKeyDown={this.handleEnterPress}/>
         <Search type={type} fill={icon} right={icon_right} onClick={()=>{this.handleOpen()}}/>
         <Popout visible={visible} title ={title} onClose={this.handleClose} hbgColor={hbgColor} icon_type={icon_type}>
           {this.props.children}

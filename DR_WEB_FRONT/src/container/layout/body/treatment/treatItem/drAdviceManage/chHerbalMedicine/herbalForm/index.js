@@ -291,7 +291,7 @@ class Index extends Component {
               {getFieldDecorator('diagnose', {
                 initialValue: {originData: buDiagnosisList, extractionData: getDiagnoseText(buDiagnosisList)}
               })(
-                <Diagnose />
+                <Diagnose icon='#C14342'/>
               )}
             </FormItem>
           </Col>

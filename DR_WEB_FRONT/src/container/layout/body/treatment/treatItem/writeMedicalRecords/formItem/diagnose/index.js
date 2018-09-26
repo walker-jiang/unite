@@ -25,7 +25,7 @@ export default class Index extends Component {
                message: '请输入诊断信息',
              }],
           })(
-            <DiagnosePop />
+            <DiagnosePop icon_right='-20px'/>
           )}
           </FormItem>
         </Col>

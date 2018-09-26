@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react'; // react核心
 import styled from 'styled-components';
 import CheckableTag from 'components/antd/components/checkableTag';
 import { Radio } from 'antd';
+import FloatTip from './floatTip';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
 const RadioGroup = Radio.Group;
@@ -83,6 +84,7 @@ export default class FellCure extends Component {
     let expand = this.props.expand;
     return (
       <Container expand={expand}>
+        <FloatTip></FloatTip>
         <div >
           <RadioGroup value={curent} onChange={(e)=>{this.toggleRadio(e)}}>
             <Radio value={0}>脉象左</Radio>

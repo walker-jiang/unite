@@ -43,7 +43,40 @@ class Index extends Component {
       saved: 0, //是否点击保存按钮, 0未保存 1 保存中 2 保存成功
       tabIndex: 1, // 当前tab
       caseItems: [], // 病历指标项
-      initData: {}, // 修改前的初始化数据
+      initData: {
+        "allergichistory": '',//过敏史
+        "billid": '',
+        "breath": '',//呼吸
+        "buDiagnosisInfo": {},//诊断
+        "buTargetChooseList": [],
+        "casetype": '',
+        "chfingerprint": '',
+        "deptid": '',
+        "diastolicPressure": '',//舒张压
+        "doctorid": '',
+        "doctorname": '',
+        "familyhistory": '',//家族史
+        "heightnum": '',//身高
+        "hpi": '',//现病史
+        "inspection": '',//望诊
+        "moHistory": '',//月经婚育史
+        "orgid": '',
+        "palpation": '',//切诊
+        "pasthistory": '',//既往史
+        "personhistory": '',//个人史
+        "pridepict": '',//主诉
+        "psycheck": '',//其他检查
+        "pulse": '',//脉搏
+        "registerid": '',
+        "smelling": '',//闻诊
+        "suggession": '',//医生建议
+        "syndrome": '',//辩证要点
+        "systolicPressure": '',//收缩压
+        "temperature": '',//体温
+        "treatprinciple": '',//治疗原则
+        "treatway": '',//治疗方法
+        "weightnum": '',//体重
+      }, // 修改前的初始化数据
     };
     this.changeCaseItem = this.changeCaseItem.bind(this);
     this.changeTabs = this.changeTabs.bind(this);
@@ -92,41 +125,6 @@ class Index extends Component {
   componentWillMount(){
     this.getIndicator();
     this.getCaseData();
-    let initData = {
-      "allergichistory": '',//过敏史
-      "billid": '',
-      "breath": '',//呼吸
-      "buDiagnosisInfo": {},//诊断
-      "buTargetChooseList": [],
-      "casetype": '',
-      "chfingerprint": '',
-      "deptid": '',
-      "diastolicPressure": '',//舒张压
-      "doctorid": '',
-      "doctorname": '',
-      "familyhistory": '',//家族史
-      "heightnum": '',//身高
-      "hpi": '',//现病史
-      "inspection": '',//望诊
-      "moHistory": '',//月经婚育史
-      "orgid": '',
-      "palpation": '',//切诊
-      "pasthistory": '',//既往史
-      "personhistory": '',//个人史
-      "pridepict": '',//主诉
-      "psycheck": '',//其他检查
-      "pulse": '',//脉搏
-      "registerid": '',
-      "smelling": '',//闻诊
-      "suggession": '',//医生建议
-      "syndrome": '',//辩证要点
-      "systolicPressure": '',//收缩压
-      "temperature": '',//体温
-      "treatprinciple": '',//治疗原则
-      "treatway": '',//治疗方法
-      "weightnum": '',//体重
-    };
-    this.setState({ initData });
   };
   handleSubmit = (e) => {
     e.preventDefault();
@@ -238,7 +236,6 @@ class Index extends Component {
    * @return {[type]}          [undefined]
    */
   changeCaseItem(itemType, status){
-    console.log('caseItems',itemType, status);
     let caseItems = this.state.caseItems;
     caseItems.forEach((item) => {
       if(item.targetid == itemType){
@@ -286,7 +283,7 @@ class Index extends Component {
       palpation: this.getString(palpation),
       smelling: this.getString(smelling),
     };
-    console.log('listenFormData', listenFormData);
+    console.log('initData.buDiagnosisInfo', initData.buDiagnosisInfo);
     const formItemLayout = {
       labelCol: {
         xs: { span: 3 },
@@ -333,8 +330,7 @@ class Index extends Component {
               if(item.targetid == 10 && item.isChoose == '01'){
                 return <FeelCure key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
               }
-              if(item.targetid == 11 && item.isChoose == '01'){
-                return <div key={index}>小儿脉象</div>
+              if(item.targetid == 11 && item.isChoose == '01'){ // 小儿脉象
               }
               if(item.targetid == 12 && item.isChoose == '01'){
                 return <SmellCure key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.smelling}></SmellCure>
@@ -349,7 +345,7 @@ class Index extends Component {
                 return <OtherInspect key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.psycheck}></OtherInspect>
               }
               if(item.targetid == 16 && item.isChoose == '01'){
-                return <Diagnose key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: JSON.stringify(initData.buDiagnosisInfo) != '{}' ? initData.buDiagnosisInfo.buDiagnosisList : [], extractionData: getDiagnoseText(initData.buDiagnosisInfo ? initData.buDiagnosisInfo.buDiagnosisList : [])}}></Diagnose>
+                return <Diagnose key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: initData.buDiagnosisInfo && JSON.stringify(initData.buDiagnosisInfo) != '{}' ? initData.buDiagnosisInfo.buDiagnosisList : [], extractionData: getDiagnoseText(initData.buDiagnosisInfo && JSON.stringify(initData.buDiagnosisInfo) != '{}'  ? initData.buDiagnosisInfo.buDiagnosisList : [])}}></Diagnose>
               }
               if(item.targetid == 17 && item.isChoose == '01'){
                 return <CurePrinciple key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: {}, extractionData: initData.treatprinciple}}></CurePrinciple>
@@ -389,39 +385,39 @@ class Index extends Component {
         </SpecForm>
         <Modal>
         {
-          tabIndex == 1 ?
-          (
-            <SpecTabs key='1' defaultActiveKey='1' animated={false}>
-              <TabPane tab="病历模板" key="1">
-                <MedicalRecordTemplate changeInitData={this.changeInitData} listenFormData={listenFormData}/>
-              </TabPane>
-              <TabPane tab="历史病历" key="2">
-                <MedicalHistory changeInitData={this.changeInitData}/>
-              </TabPane>
-              <TabPane tab="辅助诊断" key="3">
-                <AuxiliaryDiagnosis changeInitDataTwo={this.changeInitDataTwo} listenFormData={listenFormData}/>
-              </TabPane>
-              <TabPane tab="病历指标" key="4">
-                <CaseIndicator changeCaseItem={this.changeCaseItem} caseItems={caseItems}></CaseIndicator>
-              </TabPane>
-            </SpecTabs>
-          ) :
-          (
-            <SpecTabs key='2' defaultActiveKey='2'animated={false}>
-              <TabPane tab="历史病历" key="1">
-                <MedicalHistory/>
-              </TabPane>
-              <TabPane tab="治疗反馈" key="2">
-                <BiofeedbckTherpy/>
-              </TabPane>
-              <TabPane tab="病历模板" key="3">
-                <MedicalRecordTemplate changeInitData={this.changeInitData} listenFormData={listenFormData}/>
-              </TabPane>
-              <TabPane tab="病历指标" key="4">
-                <CaseIndicator changeCaseItem={this.changeCaseItem} caseItems={caseItems}></CaseIndicator>
-              </TabPane>
-            </SpecTabs>
-          )
+          // tabIndex == 1 ?
+          // (
+          //   <SpecTabs key='1' defaultActiveKey='1' animated={false}>
+          //     <TabPane tab="病历模板" key="1">
+          //       <MedicalRecordTemplate changeInitData={this.changeInitData} listenFormData={listenFormData}/>
+          //     </TabPane>
+          //     <TabPane tab="历史病历" key="2">
+          //       <MedicalHistory changeInitData={this.changeInitData}/>
+          //     </TabPane>
+          //     <TabPane tab="辅助诊断" key="3">
+          //       <AuxiliaryDiagnosis changeInitDataTwo={this.changeInitDataTwo} listenFormData={listenFormData}/>
+          //     </TabPane>
+          //     <TabPane tab="病历指标" key="4">
+          //       <CaseIndicator changeCaseItem={this.changeCaseItem} caseItems={caseItems}></CaseIndicator>
+          //     </TabPane>
+          //   </SpecTabs>
+          // ) :
+          // (
+          //   <SpecTabs key='2' defaultActiveKey='2'animated={false}>
+          //     <TabPane tab="历史病历" key="1">
+          //       <MedicalHistory/>
+          //     </TabPane>
+          //     <TabPane tab="治疗反馈" key="2">
+          //       <BiofeedbckTherpy/>
+          //     </TabPane>
+          //     <TabPane tab="病历模板" key="3">
+          //       <MedicalRecordTemplate changeInitData={this.changeInitData} listenFormData={listenFormData}/>
+          //     </TabPane>
+          //     <TabPane tab="病历指标" key="4">
+          //       <CaseIndicator changeCaseItem={this.changeCaseItem} caseItems={caseItems}></CaseIndicator>
+          //     </TabPane>
+          //   </SpecTabs>
+          // )
         }
         </Modal>
       </Container>
@@ -433,7 +429,9 @@ const Container = styled.div`
   display: flex;
 `;
 const SpecForm = styled(Form)`
-  flex-grow: 1;
+  &&& {
+    width: calc(100% - 426px);
+  }
   & > div > .ant-row{
     padding-left: 20px;
     padding-right: 40px;

@@ -14,7 +14,7 @@ export default class Index extends Component {
   constructor(props){
     super(props);
     this.state = {
-      treatTab: window.herbalData ? 2 : 0,
+      treatTab: window.herbalData ? 2 : 1,
       patienttypeDic: '',
       sexDic: '',
       age: 0,
