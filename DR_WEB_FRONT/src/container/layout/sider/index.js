@@ -47,8 +47,8 @@ constructor(props) {
                 {key:"综合分析",show:true},
                 {key:"个人设置",show:true},
                 {key:"系统管理",show:true},
-                //{key:"用户管理",show:true},
-                //{key:"日志管理",show:true},
+                {key:"用户管理",show:true},
+                {key:"日志管理",show:true},
                 {key:"患者转诊",show:true},
                 {key:"治疗记录",show:true},
               ],
@@ -64,15 +64,15 @@ changeMenuItem=(value)=>{
 }
 componentDidMount(){
 
-  console.log("wwwwwww",window);
-    onresize.addEventListener("resize",this.handleHeight)   //添加窗口变化监听
-    var clientHeight=document.documentElement.clientHeight
-    var height=""
-    var dom=document.getElementById("kk")
-    if (clientHeight<dom.offsetHeight) {
-      height=`${clientHeight-56*2}px`
-      this.setState({height})
-    }
+  // console.log("wwwwwww",window);
+  //   onresize.addEventListener("resize",this.handleHeight)   //添加窗口变化监听
+  //   var clientHeight=document.documentElement.clientHeight
+  //   var height=""
+  //   var dom=document.getElementById("kk")
+  //   if (clientHeight<dom.offsetHeight) {
+  //     height=`${clientHeight-56*2}px`
+  //     this.setState({height})
+  //   }
 
 }
 componentWillMount(){
@@ -104,11 +104,9 @@ handleHeight=()=>{
     height,
   })
 }
-
-onSelect=(sss)=>{
-  console.log("sssss",sss);
-}
-
+  onSelect=(sss)=>{
+    console.log("sssss",sss);
+  }
   down=()=>{
     console.log("高度高度",this.state.height);
     var dom1=document.getElementById("kk")  //内容
@@ -140,8 +138,9 @@ onSelect=(sss)=>{
     }
   }
   render() {
+    console.log('menus123', window.menus);
     const MenuOption=[]
-    this.state.MenuItem.forEach(item=>{
+    window.menus.forEach(item=>{
       var div
       if (item.show&&item.key=="首页") {
         div=<Menu.Item key="首页"><Link to='/Layout'><StyleICon type='home'/><span>{item.key}</span></Link></Menu.Item>
@@ -205,7 +204,7 @@ onSelect=(sss)=>{
       }
       MenuOption.push(div)
     })
-
+    console.log('MenuOption', MenuOption);
     return (
         <Sider
           ref="Sider"
@@ -219,17 +218,13 @@ onSelect=(sss)=>{
         <div className="switch" style={{  height: "32px",margin: "16px",textAline:"center"}} onClick={this.onCollapse} >
            {this.state.collapsed?<i className="anticon iconfont">&#xe78b;</i>:<i className="anticon iconfont">&#xe788;</i>}
          </div>
-          <div style={{position:"absolute",left:0,top:"50px",width:"100%",zIndex:100,textAlign:"center",cursor: "pointer",color:"#fff",height:"10px"}}><Icon type="up" style={{display:`${this.state.up?"block":"none"}`}} onClick={this.up} theme="outlined" / ></div>
             <div style={{width:"120px",position:"relative",overflow:"hidden",paddingRight:"-20px",height:this.state.height}}>
-              <Menu
-                id="kk"
+              <SpecMenu
                 theme="dark"
-                className="kk"
                 defaultSelectedKeys={['1']}
                 mode="inline"
-                 onSelect={this.onSelect}
-                 style={{background:"rgba(31, 63, 105, 1)",position: "absolute",top:this.state.length,left:0}}
-                 >
+                onSelect={this.onSelect}
+               >
                 {MenuOption}
                 <Menu.Item id="height">
                   <Link to='/Layout/more'>
@@ -237,10 +232,8 @@ onSelect=(sss)=>{
                     <span>更多</span>
                   </Link>
                 </Menu.Item>
-              </Menu>
+              </SpecMenu>
           </div>
-          <div style={{position:"absolute",left:0,top:`${parseInt(this.state.height)}`,width:"100%",height:"10px",textAlign:"center",cursor: "pointer",color:"#fff",height:"40px"}}> <Icon type="down" style={{display:`${this.state.down?"block":"none"}`}} onClick={this.down} theme="outlined" /></div>
-
         </Sider>
     );
   }
@@ -249,5 +242,10 @@ const StyleICon = styled(Icon1)`
   width: 16px;
   height: 16px;
   margin-right: 5px;
+`;
+const SpecMenu = styled(Menu)`
+  &&&.ant-menu-dark, .ant-menu-dark .ant-menu-sub {
+    background-color: rgba(31, 63, 105, 1);
+  }
 `;
 export default SiderDemo

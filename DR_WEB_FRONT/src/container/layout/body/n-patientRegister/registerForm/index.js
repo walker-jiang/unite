@@ -60,6 +60,7 @@ export default class Index extends Component {
           baPatient.provinceid = values.provinceid.key;
           baPatient.cityid = values.cityid.key;
           baPatient.districtid = values.areaid.key
+          baPatient.ctsorgid = window.sessionStorage.getItem('orgid');
         }
       });
     }

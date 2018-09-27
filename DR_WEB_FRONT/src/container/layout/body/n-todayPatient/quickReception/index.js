@@ -160,6 +160,7 @@ class Index extends Component {
         values.birthday =values['birthday'].format('YYYY-MM-DD HH:mm:ss');
         let patientInfo = this.state.patientInfo;
         let {dept, doctor, ...others} = values;
+        others.ctsorgid = window.sessionStorage.getItem('orgid');
         let paramData = {
           baPatient: others,
           regUserid: window.sessionStorage.getItem('userid'),
