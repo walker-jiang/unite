@@ -99,8 +99,8 @@ export default class Index extends Component {
       key: 'recDoctorname',
     }, {
       title: '登记时间',
-      dataIndex: 'examDate',
-      key: 'examDate',
+      dataIndex: 'regDate',
+      key: 'regDate',
     }, {
       title: '就诊状态',
       dataIndex: 'rcStatus',

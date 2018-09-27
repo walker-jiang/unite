@@ -95,13 +95,14 @@ class Index extends Component {
     this.getProvinceData(); // 获取省份数据
   };
   componentWillReceiveProps(nextProps){
-    this.setState({
-      patientInfo: nextProps.baPatient
-    })
+    if(nextProps.baPatient != this.props.baPatient ){
+      this.setState({
+        patientInfo: nextProps.baPatient
+      })
+    }
   };
   getProvinceData(){
     let self = this;
-    console.log('patinentInfo', this.state.patientInfo);
     let params = {
       url: 'BaProvinceController/getList',
       data: {},

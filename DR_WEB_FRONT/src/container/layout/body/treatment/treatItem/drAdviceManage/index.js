@@ -202,10 +202,10 @@ export default class Index extends Component {
           case 5: // 中医适宜技术
             that.suitTechnology.handlePopOpen();
           break;
-          case 6: // 材料
+          case 6: // 西医治疗
             that.westernMedicine.handlePopOpen();
           break;
-          case 7: // 西医治疗
+          case 7: // 材料
             that.material.handlePopOpen();
           break;
           default:
@@ -1085,9 +1085,6 @@ export default class Index extends Component {
                   <SpecListIcon showWay={showWay} onClick={() => {this.setState({ showWay: 'list'})}}/>
                 </Toggle>
                 <Diagnose />
-                <AddRight>
-                  <AutoTreat onClick={this.modelData}>👁辨证论治</AutoTreat>
-                </AddRight>
               </Header>
               {
                 showWay == 'list' ?
@@ -1149,8 +1146,9 @@ const SpecScrollArea = styled(ScrollArea)`
   flex-direction: column;
 `;
 const List = styled.div`
-  width: 70%;
-  float: left;
+  &&& {
+    width: calc(100% - 410px);
+  }
 `;
 const Modal = styled.div`
   border: 1px solid rgba(204, 204, 204, 1);
@@ -1281,6 +1279,7 @@ const SimplePagination = styled(Pagination)`
   }
 `;
 const Footer = styled.div`
+  width: 100%;
   border-top: 1px solid #85B7E5;
   display: flex;
   justify-content: space-between;

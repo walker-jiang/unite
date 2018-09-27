@@ -38,6 +38,7 @@ export default class Index extends Component {
     function callBack(res){
       if(res.result){
         let { baPatient, buPatientCase, ...registerInfo } = res.data;
+        buPatientCase.deptname = registerInfo.deptname;
         self.setState({ baPatient, buPatientCase, registerInfo });
       }else{
         console.log('异常响应信息', res);
@@ -58,7 +59,7 @@ export default class Index extends Component {
           baPatient.creator = window.sessionStorage.getItem('userid');
           baPatient.provinceid = values.provinceid.key;
           baPatient.cityid = values.cityid.key;
-          baPatient.areaid = values.areaid.key
+          baPatient.districtid = values.areaid.key
         }
       });
     }
@@ -110,10 +111,6 @@ export default class Index extends Component {
     function callBack(res){
       if(res.result){
         self.saveTip.showModal(2);
-        // Modal.success({
-        //   title: '用户登记成功',
-        // });
-        // self.props.onOk(res.data.patientid, res.data.registerid, res.data.patientname);
       }else{
         self.saveTip.showModal(3);
         console.log('异常响应信息', res);
@@ -207,8 +204,8 @@ const SpecTabs = styled(Tabs)
   &&& .ant-tabs-ink-bar {
     display: none !important;
   }
-  .ant-tabs {
-    height: 436px;
+  &&&.ant-tabs {
+    height: 436px !important;
   }
   .ant-tabs-bar {
     margin: 0px;

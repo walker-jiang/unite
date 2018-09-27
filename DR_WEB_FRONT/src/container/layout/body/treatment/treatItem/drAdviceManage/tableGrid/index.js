@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import Draggable from 'react-draggable';
 import Item from './item';
 
 export default class Index extends Component {
@@ -75,19 +74,9 @@ export default class Index extends Component {
       <Container>
       {
         dataSource.map((item, index) =>
-          <Draggable
-            handle=".handle"
-            bounds='parent'
-            defaultPosition={{x: 0, y: 0}}
-            position={null}
-            grid={[5, 5]}
-            key={index}
-            onStart={this.handleStart}
-            onStop={this.handleStop}>
-              <Grid className='handle' source={source == item.orderid} targetOrder={target}>
-                <Item dataItem={item} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} operate={(type, record) => {this.props.operate(type, record)}}></Item>
-              </Grid>
-          </Draggable>
+          <Grid className='handle'  key={index} source={source == item.orderid} targetOrder={target}>
+            <Item dataItem={item} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} operate={(type, record) => {this.props.operate(type, record)}}></Item>
+          </Grid>
         )
       }
       </Container>
@@ -103,12 +92,12 @@ const Container = styled.div`
 const Grid = styled.div`
   position: relative;
   float: left;
-  width: 210px;
+  width: 200px;
   height: 145px;
   background-color: #FFFFFF;
   z-index: ${props => props.source ? 1 : 2};
   &:hover {
-    border: 2px solid red;
+    ${'' /* border: 2px solid red; */}
   }
 `;
 /*

@@ -131,8 +131,8 @@ class Index extends Component {
       key: 'patientname',
     }, {
       title: '就诊日期',
-      dataIndex: 'examDate',
-      key: 'examDate',
+      dataIndex: 'regDate',
+      key: 'regDate',
       render: (text, record) => text.substr(0,10)
     }, {
       title: '性别',

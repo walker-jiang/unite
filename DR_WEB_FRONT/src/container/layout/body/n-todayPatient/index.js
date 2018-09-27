@@ -219,8 +219,8 @@ export default class Index extends Component {
       key: 'recDoctorname',
     }, {
       title: '就诊类型',
-      dataIndex: 'casetype',
-      key: 'casetype',
+      dataIndex: 'casetypeDic',
+      key: 'casetypeDic',
     }, {
       title: rcStatus == 0 ? '登记时间' : '就诊时间',
       dataIndex: 'examDate',

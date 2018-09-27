@@ -23,7 +23,7 @@ export default class Index extends Component {
     let { dataItem, operate } = this.props;
     let { orderstate = '6', orderstateDic = '未提交', printstate = '02', printstateDic = '未打印', ordertype = 1, ordertypeDic = '中药处方', ordercontent = '无', checkState = false} = dataItem;
     return (
-      <Container ordertype={ordertype} onMouseOver={this.props.onMouseOver} onMouseLeave={this.props.onMouseLeave}>
+      <Container ordertype={ordertype}>
         <Header>
           <SpecCheckbox checked={checkState} onClick={this.modifyCheckState}></SpecCheckbox>
           <PayState status={orderstate}>{orderstateDic}</PayState>

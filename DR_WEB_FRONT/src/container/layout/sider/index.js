@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
+import styled from 'styled-components';
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
 import { Link } from 'react-router-dom';
 import "./fontStyle.less"
 import "./iconfont.css";
+import Icon1 from 'components/dr/icon';
 const { Header, Content, Footer, Sider } = Layout;
 const SubMenu = Menu.SubMenu;
 var onresize= window;
@@ -143,64 +145,64 @@ onSelect=(sss)=>{
     this.state.MenuItem.forEach(item=>{
       var div
       if (item.show&&item.key=="首页") {
-        div=<Menu.Item key="首页"><Link to='/Layout'><i className="anticon iconfont" style={this.state.style}>&#xe64e;</i><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="首页"><Link to='/Layout'><StyleICon type='home'/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="患者登记") {
-        div=<Menu.Item key="患者登记"><Link to='/Layout/patientRegister'><i className="anticon iconfont" style={this.state.style}>&#xe64a;</i><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="患者登记"><Link to='/Layout/patientRegister'><i className="anticon iconfont" style={this.state.style}>&#xe64b;</i><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="今日诊疗") {
-        div=<Menu.Item key="今日诊疗"><Link to='/Layout/todayPatient'><i className="anticon iconfont" style={this.state.style}>&#xe65c;</i><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="今日诊疗"><Link to='/Layout/todayPatient'><i className="anticon iconfont" style={this.state.style}>&#xe64e;</i><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="病历中心") {
-        div=<Menu.Item key="病历中心"><Link to='/Layout/electronicMedicalRecords'><i className="anticon iconfont" style={this.state.style}>&#xe64c;</i><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="病历中心"><Link to='/Layout/electronicMedicalRecords'><i className="anticon iconfont" style={this.state.style}>&#xe64d;</i><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="辨证论治") {
-        div=<Menu.Item key="辨证论治"><i className="anticon iconfont" style={this.state.style}>&#xe657;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="辨证论治"><i className="anticon iconfont" style={this.state.style}>&#xe64f;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="治未病") {
-        div=<Menu.Item key="治未病"><Link to='/Layout/cure'><i className="anticon iconfont" style={this.state.style}>&#xe69c;</i><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="治未病"><Link to='/Layout/cure'><i className="anticon iconfont" style={this.state.style}>&#xe650;</i><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="中医知识库") {
-        div=<Menu.Item key="中医知识库"><i className="anticon iconfont" style={this.state.style}>&#xe652;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="中医知识库"><i className="anticon iconfont" style={this.state.style}>&#xe651;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="健康档案") {
-        div=<Menu.Item key="健康档案"><i className="anticon iconfont" style={this.state.style}>&#xe65b;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="健康档案"><i className="anticon iconfont" style={this.state.style}>&#xe652;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="模板管理") {
-        div=<Menu.Item key="模板管理"><i className="anticon iconfont" style={this.state.style}>&#xe658;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="模板管理"><i className="anticon iconfont" style={this.state.style}>&#xe660;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="服务点评") {
-        div=<Menu.Item key="服务点评"><i className="anticon iconfont" style={this.state.style}>&#xe649;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="服务点评"><i className="anticon iconfont" style={this.state.style}>&#xe65a;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="信息上报") {
-        div=<Menu.Item key="信息上报"><i className="anticon iconfont" style={this.state.style}>&#xe65a;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="信息上报"><i className="anticon iconfont" style={this.state.style}>&#xe669;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="资源管理") {
-        div=<Menu.Item key="资源管理"><i className="anticon iconfont" style={this.state.style}>&#xe656;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="资源管理"><i className="anticon iconfont" style={this.state.style}>&#xe684;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="质控管理") {
-        div=<Menu.Item key="质控管理"><i className="anticon iconfont" style={this.state.style}>&#xe653;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="质控管理"><i className="anticon iconfont" style={this.state.style}>&#xe65f;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="综合分析") {
-        div=<Menu.Item key="综合分析"><i className="anticon iconfont" style={this.state.style}>&#xe655;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="综合分析"><i className="anticon iconfont" style={this.state.style}>&#xe66c;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="个人设置") {
-        div=<Menu.Item key="个人设置"><i className="anticon iconfont" style={this.state.style}>&#xe64b;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="个人设置"><i className="anticon iconfont" style={this.state.style}>&#xe666;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="系统管理") {
-        div=<Menu.Item key="系统管理"><i className="anticon iconfont" style={this.state.style}>&#xe64f;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="系统管理"><i className="anticon iconfont" style={this.state.style}>&#xe664;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="患者转诊") {
-        div=<Menu.Item key="患者转诊"><i className="anticon iconfont" style={this.state.style}>&#xe64d;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="患者转诊"><i className="anticon iconfont" style={this.state.style}>&#xe656;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="治疗记录") {
-        div=<Menu.Item key="治疗记录"><i className="anticon iconfont" style={this.state.style}>&#xe654;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="治疗记录"><i className="anticon iconfont" style={this.state.style}>&#xe658;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="远程教育") {
-        div=<Menu.Item key="远程教育"><i className="anticon iconfont" style={this.state.style}>&#xe651;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="远程教育"><i className="anticon iconfont" style={this.state.style}>&#xe654;</i><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="远程会诊") {
-        div=<Menu.Item key="远程会诊"><Link to='Layout/todayPatient'><i className="anticon iconfont" style={this.state.style}>&#xe650;</i><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="远程会诊"><Link to='Layout/todayPatient'><i className="anticon iconfont" style={this.state.style}>&#xe653;</i><span>{item.key}</span></Link></Menu.Item>
       }
       MenuOption.push(div)
     })
@@ -219,8 +221,6 @@ onSelect=(sss)=>{
            {this.state.collapsed?<i className="anticon iconfont">&#xe78b;</i>:<i className="anticon iconfont">&#xe788;</i>}
          </div>
           <div style={{position:"absolute",left:0,top:"50px",width:"100%",zIndex:100,textAlign:"center",cursor: "pointer",color:"#fff",height:"10px"}}><Icon type="up" style={{display:`${this.state.up?"block":"none"}`}} onClick={this.up} theme="outlined" / ></div>
-
-
             <div style={{width:"120px",position:"relative",overflow:"hidden",paddingRight:"-20px",height:this.state.height}}>
               <Menu
                 id="kk"
@@ -233,18 +233,22 @@ onSelect=(sss)=>{
                  >
                 {MenuOption}
                 <Menu.Item id="height">
+                  <Link to='/Layout/more'>
                     <i className="anticon iconfont" style={this.state.style}>&#xe999;</i>
                     <span>更多</span>
+                  </Link>
                 </Menu.Item>
               </Menu>
-
           </div>
-
-
           <div style={{position:"absolute",left:0,top:`${parseInt(this.state.height)}`,width:"100%",height:"10px",textAlign:"center",cursor: "pointer",color:"#fff",height:"40px"}}> <Icon type="down" style={{display:`${this.state.down?"block":"none"}`}} onClick={this.down} theme="outlined" /></div>
 
         </Sider>
     );
   }
 }
+const StyleICon = styled(Icon1)`
+  width: 16px;
+  height: 16px;
+  margin-right: 5px;
+`;
 export default SiderDemo

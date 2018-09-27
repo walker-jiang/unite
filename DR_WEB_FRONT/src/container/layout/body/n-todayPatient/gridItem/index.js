@@ -8,6 +8,7 @@ import ajaxGetResource from 'commonFunc/ajaxGetResource';
 export default class Index extends Component {
   render() {
     const { gridType, dataSource, doing, redo, done, view, keepDoing } = this.props;
+    dataSource.examDate = '';
     const themeType = gridType == 0 ? 'to' : 'ing_done';
     return (
       <ThemeProvider theme={theme}>
@@ -17,7 +18,7 @@ export default class Index extends Component {
             <Info>
               <Name>{dataSource.patientname}</Name>
               <div>{dataSource.sexDic} | {dataSource.casetype ? dataSource.casetype : '暂无'}｜{dataSource.mobile}</div>
-              <div>全天号 ｜ {dataSource.examDate.substr(5,2)}号</div>
+              <div>全天号 ｜ {dataSource.regDate.substr(5,2)}号</div>
             </Info>
           </Body>
           {

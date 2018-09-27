@@ -20,10 +20,41 @@ class Index extends Component {
       casetype: [], // 诊疗类型
       deptData: [], //科室数据
       docData: [], // 就诊医生数据
+      YESNO: [], // 是否
+      preInfo: { // 初始化数据
+        hpi: '', //现病史
+        allergichistory: '', // 过敏史
+        temperature: '', //体温
+        breath: '',
+        pulse: '',
+        systolicPressure: '',
+        diastolicPressure: '',
+        heightnum: '',
+        weightnum: '',
+        psycheck: '', // 其它检查
+        ispregnancy: '', // 是否孕期
+        isperiod: '', // 是否经期
+        casetype: '',
+        dept: {key: '', label: ''},
+        doctor: {key: '', label: ''},
+      }, //初始化诊前信息
     };
   };
   componentWillMount(){
+    let preInfo = this.props.buPatientCase;
+    preInfo.dept = {
+      key: preInfo.deptid,
+      label: preInfo.deptname,
+    };
+    preInfo.doctor = {
+      key: preInfo.doctorid,
+      label: preInfo.doctorname,
+    };
+    this.setState({
+      preInfo: preInfo
+    })
     this.getDictData('casetype');
+    this.getDictData('YESNO');
     this.getDept();
   };
   /** [getDept 科室数据] */
@@ -97,7 +128,8 @@ class Index extends Component {
   render() {
     const { getFieldDecorator, setFieldsValue } = this.props.form;
     let disabled = this.props.disabled
-    let { casetype, deptData, docData } = this.state;
+    let { casetype, deptData, docData, preInfo, YESNO } = this.state;
+    console.log('preInfo', preInfo);
     const formItemLayout = {
       labelCol: {
         xs: { span: 4 },
@@ -120,9 +152,9 @@ class Index extends Component {
       };
     return (
       <SpecForm>
-        <IllHistory_present title='现病史' disabled={disabled} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: ''}}/>
-        <IllHistory_allergy title='过敏史' disabled={disabled} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: ''}}/>
-        <HabitusInspect setFieldsValue={setFieldsValue} disabled={disabled} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{temperature: '', breath: '', pulse: '', systolicPressure: '', diastolicPressure: '', heightnum: '', weightnum: ''}}></HabitusInspect>
+        <IllHistory_present title='现病史' disabled={disabled} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: preInfo.hpi}}/>
+        <IllHistory_allergy title='过敏史' disabled={disabled} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: preInfo.allergichistory}}/>
+        <HabitusInspect setFieldsValue={setFieldsValue} disabled={disabled} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{temperature: preInfo.temperature, breath: preInfo.temperature, pulse: preInfo.temperature, systolicPressure: preInfo.systolicPressure, diastolicPressure: preInfo.diastolicPressure, heightnum: preInfo.heightnum, weightnum: preInfo.weightnum}}></HabitusInspect>
         <Row>
           <Col span={8} offset={3}>
             <FormItem
@@ -130,12 +162,13 @@ class Index extends Component {
               colon={false}
               label="是否孕期"
               >
-              {getFieldDecorator('pregnancy', {
-                initialValue: '2'
+              {getFieldDecorator('ispregnancy', {
+                initialValue: YESNO.length ? ( preInfo.ispregnancy ? preInfo.ispregnancy : YESNO[0].value ) : ''
               })(
                 <SpecRadioGroup disabled={disabled}>
-                  <Radio value='1'>是</Radio>
-                  <Radio value='2'>否</Radio>
+                {
+                  YESNO.map(item => <Radio value={item.value} key={item.value}>{item.vname}</Radio>)
+                }
                 </SpecRadioGroup>
               )}
             </FormItem>
@@ -146,12 +179,13 @@ class Index extends Component {
               colon={false}
               label="是否经期"
               >
-              {getFieldDecorator('menstruation', {
-                initialValue: '2'
+              {getFieldDecorator('isperiod', {
+                initialValue: YESNO.length ? ( preInfo.isperiod ? preInfo.isperiod : YESNO[0].value ) : ''
               })(
                 <SpecRadioGroup disabled={disabled}>
-                  <Radio value='1'>是</Radio>
-                  <Radio value='2'>否</Radio>
+                {
+                  YESNO.map(item => <Radio value={item.value} key={item.value}>{item.vname}</Radio>)
+                }
                 </SpecRadioGroup>
               )}
             </FormItem>
@@ -167,7 +201,7 @@ class Index extends Component {
               >
               {getFieldDecorator('casetype', {
                 rules: [{ required: true, message: '请选择患者就诊类型!' }],
-                initialValue: casetype.length ? casetype[0].value : ''
+                initialValue:casetype.length ? ( preInfo.casetype ? preInfo.casetype : casetype[0].value ) : ''
               })(
                 <SpecRadioGroup disabled={disabled}>
                 {
@@ -185,7 +219,7 @@ class Index extends Component {
               >
               {getFieldDecorator('dept', {
                 rules: [{ required: true, message: '请选择就诊科室!' }],
-                initialValue: deptData.length ? { key: deptData[0].deptid, label: deptData[0].deptname } : {key: '', label: ''}
+                initialValue: deptData.length ? ( JSON.stringify(preInfo.dept) == '{}' ? { key: deptData[0].deptid, label: deptData[0].deptname } : preInfo.dept) : {key: '', label: ''}
               })(
                 <SpecSelect disabled={disabled} onChange={e => this.getDocData(e.key)} labelInValue>
                 {
@@ -203,7 +237,7 @@ class Index extends Component {
               >
               {getFieldDecorator('doctor', {
                 rules: [{ required: true, message: '请输入接诊医生姓名!' }],
-                initialValue: docData.length ? { key: docData[0].orgUerid, label: docData[0].realname } : {key: '', label: ''}
+                initialValue: docData.length ? ( JSON.stringify(preInfo.doctor) == '{}' ? { key: docData[0].orgUerid, label: docData[0].realname } : preInfo.doctor) : {key: '', label: ''}
               })(
                 <SpecSelect disabled={disabled} labelInValue>
                 {

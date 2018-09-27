@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { Button } from 'antd';
 import buttonSty from 'components/antd/style/button';
 import Icon from 'components/dr/icon';
+import ajaxGetResource from 'commonFunc/ajaxGetResource';
+import SaveTip from 'components/dr/modal/saveTip';
 
 import BasicInfoForm from '../../../n-patientRegister/registerForm/basicInfoForm';
 
@@ -10,35 +12,67 @@ export default class Index extends Component {
   constructor(props){
     super(props);
     this.state = {
-      editable: false
+      editable: false,
+      baPatient: {}, // 基本信息数据
     };
   };
+  componentWillMount(){
+    this.getPatientData(window.patientid);
+  };
+  getPatientData(id){
+    let self = this;
+    let params = {
+      url: 'BaPatientController/getData',
+      data: {
+        id: id,
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        self.setState({ baPatient: res.data });
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
   submit = (e) =>{
-    let baPatient = {};
-    let buPatientCase = {};
-    let dept = {};
-    // if(this.basicInfoForm){
-    //   this.basicInfoForm.validateFieldsAndScroll((err, values) => {
-    //     console.log(values, values);
-    //     console.log('err', err);
-    //     if (!err) {
-    //       baPatient = {
-    //         "addrHome": values.provinceid.label + values.cityid.label + values.areaid.label,
-    //         "birthday": values.birthday.format('YYYY-MM-DD'),
-    //         "creator": window.sessionStorage.getItem('userid'),
-    //         "provinceid": values.provinceid.key,
-    //         "cityid": values.cityid.key,
-    //         "areaid": values.areaid.key,
-    //       };
-    //       console.log('baPatient', baPatient);
-    //       baPatient = Object.assign(values, baPatient);
-    //     }
-    //   });
-    // }
-    this.setState({ editable: false });
+    let baPatient = this.state.baPatient;
+    console.log('get ');
+    if(this.basicInfoForm){
+      this.basicInfoForm.validateFieldsAndScroll((err, values) => {
+        console.log('values', values);
+        if (!err) {
+          Object.assign(baPatient, values);
+          baPatient.addrHome = values.provinceid.label + values.cityid.label + values.areaid.label;
+          baPatient.birthday = values.birthday.format('YYYY-MM-DD');
+          baPatient.creator = window.sessionStorage.getItem('userid');
+          baPatient.provinceid = values.provinceid.key;
+          baPatient.cityid = values.cityid.key;
+          baPatient.districtid = values.areaid.key
+        }
+      });
+    }
+    let self = this;
+    let params = {
+      url: 'BaPatientController/putData',
+      data: JSON.stringify(baPatient),
+      type: 'put',
+    };
+    function callBack(res){
+      if(res.result){
+        self.saveTip.showModal(2);
+        self.setState({ editable: false });
+      }else{
+        self.saveTip.showModal(3);
+        console.log('异常响应信息', res);
+      }
+    };
+    // ajaxGetResource(params, callBack);
   }
   render() {
-    let { editable } = this.state;
+    let { editable, baPatient } = this.state;
+    console.log('baPatient', baPatient);
     let match = {
       params: {
         id: 'v123'
@@ -47,7 +81,7 @@ export default class Index extends Component {
     return (
       <Container>
         <FormStyle>
-          <BasicInfoForm disabled={!editable}></BasicInfoForm>
+          <BasicInfoForm disabled={!editable} baPatient={baPatient}></BasicInfoForm>
         </FormStyle>
         {
           editable ?
@@ -60,6 +94,7 @@ export default class Index extends Component {
             修改患者信息
           </ActiveEdit>
         }
+        <SaveTip ref={ ref => {this.saveTip = ref}}></SaveTip>
       </Container>
     )
   }
