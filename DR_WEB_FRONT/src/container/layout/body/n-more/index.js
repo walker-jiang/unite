@@ -8,66 +8,66 @@ const { Header, Content, Footer, Sider } = Layout;
 
 const MenuItem = Menu.Item;
 class SystemManagement extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-          visible: false,
-          MenuData:[]
-      };
+  constructor(props) {
+    super(props);
+    this.state = {
+      visible: false,
+      MenuData:[]
+    };
+  }
+  showModal = () => {
+    this.setState({
+      visible: true,
+    });
+  }
+  handleOk = (e) => {
+    console.log(e);
+    this.setState({
+      visible: false,
+    });
+  }
+  handleCancel = (e) => {
+    console.log(e);
+    this.setState({
+      visible: false,
+    });
+  }
+  handleSubmit = (e) => {
+      e.preventDefault();
+      this.props.form.validateFields((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values);
+          var tableData=[
+            {key:"首页",show:values.home},
+            {key:"患者登记",show:values.registration},
+            {key:"今日诊疗",show:values.tideyDiagnosis},
+            {key:"病历中心",show:values.medicalCenter},
+            {key:"辨证论治",show:values.differentiation},
+            {key:"治未病",show:values.cureNotIll},
+            {key:"中医知识库",show:values.medicine},
+            {key:"健康档案",show:values.healthRecords},
+            {key:"模板管理",show:values.templateManagement},
+            {key:"服务点评",show:values.serviceReview},
+            {key:"信息上报",show:values.informationReported},
+            {key:"资源管理",show:values.resourceManagement},
+            {key:"质控管理",show:values.personalSettings},
+            {key:"综合分析",show:values.comprehensiveAnalysis},
+            {key:"个人设置",show:values.personalSettings},
+            {key:"系统管理",show:values.systemManagement},
+            //{key:"用户管理",show:values.userManagement},
+            //{key:"日志管理",show:values.logManagement},
+            {key:"患者转诊",show:values.patientReferral},
+            {key:"治疗记录",show:values.medicalRecords},
+            {key:"远程教育",show:values.remoteEducation},
+            {key:"远程会诊",show:values.remoteConsultation},
+          ]
+          this.props.tranValue(tableData)
+          this.setState({
+            visible: false,
+          });
+        }
+      });
     }
-    showModal = () => {
-        this.setState({
-          visible: true,
-        });
-      }
-      handleOk = (e) => {
-        console.log(e);
-        this.setState({
-          visible: false,
-        });
-      }
-      handleCancel = (e) => {
-        console.log(e);
-        this.setState({
-          visible: false,
-        });
-      }
-      handleSubmit = (e) => {
-        e.preventDefault();
-        this.props.form.validateFields((err, values) => {
-          if (!err) {
-            console.log('Received values of form: ', values);
-            var tableData=[
-              {key:"首页",show:values.home},
-              {key:"患者登记",show:values.registration},
-              {key:"今日诊疗",show:values.tideyDiagnosis},
-              {key:"病历中心",show:values.medicalCenter},
-              {key:"辨证论治",show:values.differentiation},
-              {key:"治未病",show:values.cureNotIll},
-              {key:"中医知识库",show:values.medicine},
-              {key:"健康档案",show:values.healthRecords},
-              {key:"模板管理",show:values.templateManagement},
-              {key:"服务点评",show:values.serviceReview},
-              {key:"信息上报",show:values.informationReported},
-              {key:"资源管理",show:values.resourceManagement},
-              {key:"质控管理",show:values.personalSettings},
-              {key:"综合分析",show:values.comprehensiveAnalysis},
-              {key:"个人设置",show:values.personalSettings},
-              {key:"系统管理",show:values.systemManagement},
-              //{key:"用户管理",show:values.userManagement},
-              //{key:"日志管理",show:values.logManagement},
-              {key:"患者转诊",show:values.patientReferral},
-              {key:"治疗记录",show:values.medicalRecords},
-              {key:"远程教育",show:values.remoteEducation},
-              {key:"远程会诊",show:values.remoteConsultation},
-            ]
-            this.props.tranValue(tableData)
-            this.setState({
-              visible: false,
-            });
-          }
-        });
-      }
   render() {
     const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched } = this.props.form;
     const dataSource = [
@@ -263,99 +263,96 @@ class SystemManagement extends React.Component {
             <Menu
               theme="dark"
               defaultSelectedKeys={['1']}
-              mode="horizontal"
-               >
+              mode="horizontal">
                  <SpecMenuItem>
                      <i className="anticon iconfont">&#xe64c;</i>
                      <p>首页</p>
                  </SpecMenuItem>
-                 <MenuItem>
+                 <SpecMenuItem>
                      <i className="anticon iconfont">&#xe64b;</i>
                      <p>患者登记</p>
-                 </MenuItem>
-                 <MenuItem>
+                 </SpecMenuItem>
+                 <SpecMenuItem>
                      <i className="anticon iconfont">&#xe64b;</i>
                      <p>今日诊疗</p>
-                 </MenuItem>
-                 <MenuItem>
+                 </SpecMenuItem>
+                 <SpecMenuItem>
                      <i className="anticon iconfont">&#xe64d;</i>
                      <p>病历中心</p>
-                 </MenuItem>
-                 <MenuItem>
+                 </SpecMenuItem>
+                 <SpecMenuItem>
                      <i className="anticon iconfont">&#xe64f;</i>
                      <p>辨证论治</p>
-                 </MenuItem>
-
-               <SpecMenuItem style={{margin:"90px 0"}}>
+                 </SpecMenuItem>
+               <SpecMenuItem>
                    <i className="anticon iconfont">&#xe650;</i>
                    <p>治未病</p>
                </SpecMenuItem>
-               <MenuItem style={{margin:"90px 0"}}>
+               <SpecMenuItem>
                    <i className="anticon iconfont">&#xe654;</i>
                    <p>远程教育</p>
-               </MenuItem>
-               <MenuItem style={{margin:"90px 0"}}>
+               </SpecMenuItem>
+               <SpecMenuItem>
                    <i className="anticon iconfont">&#xe653;</i>
                    <p>远程会诊</p>
-               </MenuItem>
-               <MenuItem style={{margin:"90px 0"}}>
+               </SpecMenuItem>
+               <SpecMenuItem>
                    <i className="anticon iconfont">&#xe651;</i>
                    <p>中医知识库</p>
-               </MenuItem>
-               <MenuItem style={{margin:"90px 0"}}>
+               </SpecMenuItem>
+               <SpecMenuItem>
                    <i className="anticon iconfont">&#xe652;</i>
                    <p>健康档案</p>
-               </MenuItem>
-               <MenuItem>
+               </SpecMenuItem>
+               <SpecMenuItem>
                    <i className="anticon iconfont">&#xe660;</i>
                    <p>模板管理</p>
-               </MenuItem>
-               <MenuItem>
+               </SpecMenuItem>
+               <SpecMenuItem>
                    <i className="anticon iconfont">&#xe65a;</i>
                    <p>服务点评</p>
-               </MenuItem>
-               <MenuItem>
+               </SpecMenuItem>
+               <SpecMenuItem>
                    <i className="anticon iconfont">&#xe669;</i>
                    <p>信息上报</p>
-               </MenuItem>
-               <MenuItem>
+               </SpecMenuItem>
+               <SpecMenuItem>
                    <i className="anticon iconfont">&#xe684;</i>
                    <p>资源管理</p>
-               </MenuItem>
-               <MenuItem>
+               </SpecMenuItem>
+               <SpecMenuItem>
                    <i className="anticon iconfont">&#xe65f;</i>
                    <p>质控管理</p>
-               </MenuItem>
+               </SpecMenuItem>
             </Menu>
-              <Menu
-                theme="dark"
-                defaultSelectedKeys={['1']}
-                mode="horizontal"
-                 >
-                  <MenuItem>
-                      <i className="anticon iconfont">&#xe66c;</i>
-                      <p>综合分析</p>
-                  </MenuItem>
-                  <MenuItem>
-                      <i className="anticon iconfont">&#xe666;</i>
-                      <p>个人设置</p>
-                  </MenuItem>
-                  <MenuItem>
-                      <i className="anticon iconfont">&#xe664;</i>
-                      <p>系统管理</p>
-                  </MenuItem>
-                  <MenuItem>
-                      <i className="anticon iconfont">&#xe658;</i>
-                      <p>患者转诊</p>
-                  </MenuItem>
-                  <MenuItem>
-                      <i className="anticon iconfont">&#xe650;</i>
-                      <p>治疗记录</p>
-                  </MenuItem>
-              </Menu>
+            <Menu
+              theme="dark"
+              defaultSelectedKeys={['1']}
+              mode="horizontal"
+               >
+                <SpecMenuItem>
+                    <i className="anticon iconfont">&#xe66c;</i>
+                    <p>综合分析</p>
+                </SpecMenuItem>
+                <SpecMenuItem>
+                    <i className="anticon iconfont">&#xe666;</i>
+                    <p>个人设置</p>
+                </SpecMenuItem>
+                <SpecMenuItem>
+                    <i className="anticon iconfont">&#xe664;</i>
+                    <p>系统管理</p>
+                </SpecMenuItem>
+                <SpecMenuItem>
+                    <i className="anticon iconfont">&#xe658;</i>
+                    <p>患者转诊</p>
+                </SpecMenuItem>
+                <SpecMenuItem>
+                    <i className="anticon iconfont">&#xe650;</i>
+                    <p>治疗记录</p>
+                </SpecMenuItem>
+            </Menu>
           </Carousel>
         </div>
-
           <Modal
             className={"SystemManagement"}
             width={"50%"}
@@ -383,6 +380,8 @@ class SystemManagement extends React.Component {
   }
 }
 const SpecMenuItem = styled(MenuItem)`
-  
+  &&& {
+    float: left;
+  }
 `;
 export default Form.create()(SystemManagement)

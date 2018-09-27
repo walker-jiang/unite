@@ -138,7 +138,6 @@ onSelect=(sss)=>{
     }else {
       this.setState({up:false})
     }
-
   }
   render() {
     const MenuOption=[]
@@ -148,61 +147,61 @@ onSelect=(sss)=>{
         div=<Menu.Item key="首页"><Link to='/Layout'><StyleICon type='home'/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="患者登记") {
-        div=<Menu.Item key="患者登记"><Link to='/Layout/patientRegister'><i className="anticon iconfont" style={this.state.style}>&#xe64b;</i><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="患者登记"><Link to='/Layout/patientRegister'><StyleICon type='patient_reg'/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="今日诊疗") {
-        div=<Menu.Item key="今日诊疗"><Link to='/Layout/todayPatient'><i className="anticon iconfont" style={this.state.style}>&#xe64e;</i><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="今日诊疗"><Link to='/Layout/todayPatient'><StyleICon type='today_cure'/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="病历中心") {
-        div=<Menu.Item key="病历中心"><Link to='/Layout/electronicMedicalRecords'><i className="anticon iconfont" style={this.state.style}>&#xe64d;</i><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="病历中心"><Link to='/Layout/electronicMedicalRecords'><StyleICon type='case_center'/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="辨证论治") {
-        div=<Menu.Item key="辨证论治"><i className="anticon iconfont" style={this.state.style}>&#xe64f;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="辨证论治"><StyleICon type='dialectical_treatment'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="治未病") {
-        div=<Menu.Item key="治未病"><Link to='/Layout/cure'><i className="anticon iconfont" style={this.state.style}>&#xe650;</i><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="治未病"><Link to='/Layout/cure'><StyleICon type='prevent_ill'/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="中医知识库") {
-        div=<Menu.Item key="中医知识库"><i className="anticon iconfont" style={this.state.style}>&#xe651;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="中医知识库"><StyleICon type='knowledge_base'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="健康档案") {
-        div=<Menu.Item key="健康档案"><i className="anticon iconfont" style={this.state.style}>&#xe652;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="健康档案"><StyleICon type='health_file'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="模板管理") {
-        div=<Menu.Item key="模板管理"><i className="anticon iconfont" style={this.state.style}>&#xe660;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="模板管理"><StyleICon type='patient_reg'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="服务点评") {
-        div=<Menu.Item key="服务点评"><i className="anticon iconfont" style={this.state.style}>&#xe65a;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="服务点评"><StyleICon type='patient_reg'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="信息上报") {
-        div=<Menu.Item key="信息上报"><i className="anticon iconfont" style={this.state.style}>&#xe669;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="信息上报"><StyleICon type='patient_reg'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="资源管理") {
-        div=<Menu.Item key="资源管理"><i className="anticon iconfont" style={this.state.style}>&#xe684;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="资源管理"><StyleICon type='patient_reg'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="质控管理") {
-        div=<Menu.Item key="质控管理"><i className="anticon iconfont" style={this.state.style}>&#xe65f;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="质控管理"><StyleICon type='patient_reg'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="综合分析") {
-        div=<Menu.Item key="综合分析"><i className="anticon iconfont" style={this.state.style}>&#xe66c;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="综合分析"><StyleICon type='patient_reg'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="个人设置") {
-        div=<Menu.Item key="个人设置"><i className="anticon iconfont" style={this.state.style}>&#xe666;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="个人设置"><StyleICon type='patient_reg'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="系统管理") {
-        div=<Menu.Item key="系统管理"><i className="anticon iconfont" style={this.state.style}>&#xe664;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="系统管理"><StyleICon type='patient_reg'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="患者转诊") {
-        div=<Menu.Item key="患者转诊"><i className="anticon iconfont" style={this.state.style}>&#xe656;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="患者转诊"><StyleICon type='patient_reg'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="治疗记录") {
-        div=<Menu.Item key="治疗记录"><i className="anticon iconfont" style={this.state.style}>&#xe658;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="治疗记录"><StyleICon type='patient_reg'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="远程教育") {
-        div=<Menu.Item key="远程教育"><i className="anticon iconfont" style={this.state.style}>&#xe654;</i><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="远程教育"><StyleICon type='patient_reg'/><span>{item.key}</span></Menu.Item>
       }
       if (item.show&&item.key=="远程会诊") {
-        div=<Menu.Item key="远程会诊"><Link to='Layout/todayPatient'><i className="anticon iconfont" style={this.state.style}>&#xe653;</i><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="远程会诊"><Link to='Layout/todayPatient'><StyleICon type='patient_reg'/><span>{item.key}</span></Link></Menu.Item>
       }
       MenuOption.push(div)
     })
