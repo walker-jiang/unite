@@ -39,11 +39,13 @@ export default class Index extends Component {
       orderid: '', // 当前医嘱ID
       showWay: 'table', // 展示形式
       buOrderDtlList: [], // 辨证论治数据
+      diagnoseText: '', // 诊断文本
     };
     this.actionManager = this.actionManager.bind(this);
     this.getData = this.getData.bind(this);
     this.submit = this.submit.bind(this);
     this.modelData = this.modelData.bind(this);
+    this.diagnoseUpdate = this.diagnoseUpdate.bind(this);
   }
   componentWillMount(){
     this.getData();
@@ -1149,8 +1151,16 @@ export default class Index extends Component {
   			}],
       }
   };
+  /**
+   * [diagnoseUpdate 诊断更新后的诊断组合文本]
+   * @param  {[type]} diagnoseText [文本内容]
+   * @return {[type]}              [undefined]
+   */
+  diagnoseUpdate(diagnoseText){
+    this.setState({ diagnoseText });
+  };
   render() {
-    let { dataSource, tatalRecords, currentPage, actionType, orderid, buOrderDtlList , showWay } = this.state;
+    let { dataSource, tatalRecords, currentPage, actionType, orderid, buOrderDtlList , showWay, diagnoseText } = this.state;
     let that = this;
     let selectedRows = dataSource.filter((item) => item.checkState);
     let pagination = {
@@ -1191,7 +1201,7 @@ export default class Index extends Component {
                   <SpecTableIcon showWay={showWay} onClick={() => {this.setState({ showWay: 'table'})}}/>
                   <SpecListIcon showWay={showWay} onClick={() => {this.setState({ showWay: 'list'})}}/>
                 </Toggle>
-                <Diagnose />
+                <Diagnose diagnoseUpdate={this.diagnoseUpdate}/>
               </Header>
               {
                 showWay == 'list' ?

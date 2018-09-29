@@ -29,7 +29,6 @@ export default class Index extends Component {
   };
   /** [getPatientData 获取患者数据] */
   getPatientData(){
-    console.log('this.arrowPicker', this.arrowPicker);
     let date = this.arrowPicker ? this.arrowPicker.state.dateValue : today;
     let self = this;
     let { rcStatus, keyword, totalRecords, curPage, pageSize } = this.state;
@@ -49,7 +48,7 @@ export default class Index extends Component {
     };
     function callBack(res){
       if(res.result){
-        let patienList = res.data.records.map(item => Object.assign(item, { key: item.patientid }))
+        let patienList = res.data.records.map(item => Object.assign(item, { key: item.registerid }))
         let totalRecords = res.data.total;
         self.setState({patienList: patienList, totalRecords});
       }else{

@@ -2,10 +2,11 @@ import { Modal } from 'antd';
 import jQuery from 'jquery';
 
 function getResource(params , success, error ){
-  const { type = 'get', dataType = 'JSON',contentType = 'application/json;charset=UTF-8', async = true, server_url = config_service_url} = params;
+  const { type = 'get', dataType = 'JSON',contentType = 'application/json;charset=UTF-8', async = true, server_url = config_service_url, processData = true} = params;
   jQuery.ajax({
     type: type,
     url: server_url + params.url,
+    processData: processData,
     dataType: dataType,
     contentType: contentType,
     traditional: true, // 可以传递数组参数

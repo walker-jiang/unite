@@ -70,7 +70,7 @@ class Index extends Component {
     }
     return (
       <div className="textOwerFlow">
-      <ScrollArea height={120}>
+      <ScrollArea height={100}>
         <Row >
           <Col span={24} >
               <div>

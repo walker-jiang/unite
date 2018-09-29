@@ -60,6 +60,7 @@ class SystemManagement extends React.Component {
             //{key:"日志管理",show:values.logManagement},
             {key:"患者转诊",show:values.patientReferral, id: 'patientReferral'},
             {key:"治疗记录",show:values.medicalRecords, id: 'medicalRecords'},
+            {key:"患者档案",show:values.patientRecords, id: 'patientRecords'},
             {key:"远程教育",show:values.remoteEducation, id: 'remoteEducation'},
             {key:"远程会诊",show:values.remoteConsultation, id: 'remoteConsultation'},
           ]

@@ -38,7 +38,7 @@ constructor(props) {
                 {key:"远程教育",show:true},
                 {key:"远程会诊",show:true},
                 {key:"中医知识库",show:true},
-                {key:"健康档案",show:true},
+                {key:"患者档案",show:true},
                 {key:"模板管理",show:true},
                 {key:"服务点评",show:true},
                 {key:"信息上报",show:true},
@@ -163,8 +163,8 @@ handleHeight=()=>{
       if (item.show&&item.key=="中医知识库") {
         div=<Menu.Item key="中医知识库"><StyleICon type='knowledge_base'/><span>{item.key}</span></Menu.Item>
       }
-      if (item.show&&item.key=="健康档案") {
-        div=<Menu.Item key="健康档案"><StyleICon type='health_file'/><span>{item.key}</span></Menu.Item>
+      if (item.show&&item.key=="患者档案") {
+        div=<Menu.Item key="患者档案"><Link to='/Layout/patientRecords'><i className="anticon iconfont" style={this.state.style}>&#xe65b;</i><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="模板管理") {
         div=<Menu.Item key="模板管理"><StyleICon type='patient_reg'/><span>{item.key}</span></Menu.Item>

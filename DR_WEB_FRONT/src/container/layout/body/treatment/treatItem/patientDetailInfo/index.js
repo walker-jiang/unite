@@ -17,7 +17,7 @@ export default class Index extends Component {
     };
   };
   componentWillMount(){
-    this.getPatientData(window.patientid);
+    this.getPatientData(this.props.patientid ? this.props.patientid : window.patientid);
   };
   getPatientData(id){
     let self = this;
@@ -38,18 +38,19 @@ export default class Index extends Component {
   };
   submit = (e) =>{
     let baPatient = this.state.baPatient;
-    console.log('get ');
+    this.saveTip.showModal(1);
     if(this.basicInfoForm){
       this.basicInfoForm.validateFieldsAndScroll((err, values) => {
         console.log('values', values);
         if (!err) {
           Object.assign(baPatient, values);
-          baPatient.addrHome = values.provinceid.label + values.cityid.label + values.areaid.label;
+          baPatient.addrHome = values.province.label + values.city.label + values.district.label;
           baPatient.birthday = values.birthday.format('YYYY-MM-DD');
           baPatient.creator = window.sessionStorage.getItem('userid');
-          baPatient.provinceid = values.provinceid.key;
-          baPatient.cityid = values.cityid.key;
-          baPatient.districtid = values.areaid.key
+          baPatient.provinceid = values.province.key;
+          baPatient.cityid = values.city.key;
+          baPatient.districtid = values.district.key;
+          baPatient.ctsorgid = window.sessionStorage.getItem('orgid');
         }
       });
     }
@@ -68,7 +69,7 @@ export default class Index extends Component {
         console.log('异常响应信息', res);
       }
     };
-    // ajaxGetResource(params, callBack);
+    ajaxGetResource(params, callBack);
   }
   render() {
     let { editable, baPatient } = this.state;
@@ -81,7 +82,7 @@ export default class Index extends Component {
     return (
       <Container>
         <FormStyle>
-          <BasicInfoForm disabled={!editable} baPatient={baPatient}></BasicInfoForm>
+          <BasicInfoForm disabled={!editable} baPatient={baPatient} ref={ ref => { this.basicInfoForm = ref }}></BasicInfoForm>
         </FormStyle>
         {
           editable ?

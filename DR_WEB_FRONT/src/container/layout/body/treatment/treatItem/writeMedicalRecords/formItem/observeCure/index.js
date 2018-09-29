@@ -4,9 +4,10 @@ import { Form, Row, Col } from 'antd';
 import Icon from 'components/dr/icon';
 import ObserveTags from './observeTags';
 import Input from 'components/dr/input/basicInput';
-import shetai from './observeTags/shetai.jpg';
+import shetai from './tongueShow/shetai.jpg';
 import Camera from 'components/dr/camera';
-
+import PicureEditor from 'components/dr/picureEditor';
+import TongueShow from './tongueShow';
 
 const FormItem = Form.Item;
 
@@ -77,7 +78,8 @@ export default class Index extends Component {
    * @return {[type]}               [undefined]
    */
   returTonguePicture(tonguePicture){
-    this.setState({ tonguePicture });
+    // this.setState({ tonguePicture });
+    this.picureEditor.handleOpen(tonguePicture);
   };
   render() {
     const { getFieldDecorator, formItemLayout, initialValue, visiblePicture } = this.props;
@@ -101,8 +103,10 @@ export default class Index extends Component {
               <Thumbnail src={tonguePicture}></Thumbnail>
           </ThumbNailContanier>
         </Col>
-        <Sign type='camera' width='20px' height='20px' onClick={() =>  this.camera.handleOpen()}/>
+        <TongueShow></TongueShow>
+        <Sign type='camera' width='18px' height='18px' fill='#33CC00' onClick={() =>  this.camera.handleOpen()}/>
         <Camera ref={ref => this.camera = ref} returPicture={this.returTonguePicture}></Camera>
+        <PicureEditor src={tonguePicture} ref={ ref => { this.picureEditor = ref }}></PicureEditor>
       </SpecRow>
     );
   }

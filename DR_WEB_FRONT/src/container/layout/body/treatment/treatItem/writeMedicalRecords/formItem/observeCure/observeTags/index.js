@@ -2,8 +2,6 @@ import React, {Component, PropTypes} from 'react'; // react核心
 import CheckableTag from 'components/antd/components/checkableTag';
 import styled from 'styled-components';
 import Modal from 'react-modal';
-import selfPic from './shetai.jpg';
-import standard from './standard.jpg';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
 export default class ObserveCure extends Component {
@@ -15,7 +13,6 @@ export default class ObserveCure extends Component {
       tongueCoatedList: [], //舌苔列表
       tongueNatureList: [], //舌质列表
       visible: false, // 图片是否可见
-      url: selfPic, // 图片地址
       timeout: null, //定时器对象
     };
     this.coatedTagClick = this.coatedTagClick.bind(this);
@@ -100,7 +97,7 @@ export default class ObserveCure extends Component {
     });
   };
   render() {
-    let { tongueCoatedList, tongueNatureList, visible , url} = this.state;
+    let { tongueCoatedList, tongueNatureList, visible } = this.state;
     let expand = this.props.expand;
     return (
       <TagsContainer expand={expand}>
@@ -124,21 +121,6 @@ export default class ObserveCure extends Component {
           }
           </Row>
         </Type>
-        {
-          visible ?
-          (
-            <PicShow>
-              <Container>
-                <Discribe>标准</Discribe>
-                <Picture src={url}></Picture>
-              </Container>
-              <Container>
-                <Discribe>实际</Discribe>
-                <Picture src={standard}></Picture>
-              </Container>
-            </PicShow>
-          ) : null
-        }
       </TagsContainer>
     )
   }

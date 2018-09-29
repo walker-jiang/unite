@@ -2,14 +2,8 @@ import React, {Component} from 'react';
 import { Menu, Icon, Switch, Row, Col, Radio } from 'antd';
 import $ from 'jquery';
 import "../electronic.less";
-import styled from 'styled-components';
-import printImages from "../images/print.png";
-import xian from "../images/xian.png";
-import exportFile from "../images/exportFile.png";
 import ScrollArea from 'components/scrollArea';
-import date from "../images/date.png";
 import xinxi from "../images/xinxi.png";
-import getResource from 'commonFunc/ajaxGetResource';
 
 const RadioGroup = Radio.Group;
 const bodyHeight = document.body.clientHeight;
@@ -63,10 +57,18 @@ export default class Electronic extends Component {
     console.log('nextProps',nextProps)
     let data = nextProps.data;
     let i = nextProps.i;
+    let sexFont = null;
+    if(nextProps.sex == '01'){
+      sexFont = '女'
+    } else if (nextProps.sex == '02'){
+      sexFont = '男'
+    } else if(nextProps.sex == '09'){
+      sexFont = '未知'
+    }
     this.setState({
       name: nextProps.patientname,//患者姓名
       age: nextProps.birthday, //患者年龄
-      sex: nextProps.sex,//患者性别
+      sex: sexFont,//患者性别
       type: nextProps.patienttypeDic,//患者类型
       examDate: nextProps.examDate,//就诊日期
       casetype: nextProps.casetype,//初复诊
@@ -89,7 +91,8 @@ export default class Electronic extends Component {
       heightnum: data[i].heightnum,//身高
       weightnum: data[i].weightnum,//体重
       // diagnosisDesc: data[i].buDiagnosisInfo.diagnosisDesc,//中医诊断
-      diagnosisDesc: data[i].buDiagnosisInfo.diagnosisDesc,//西医诊断
+      // diagnosisDesc: data[i].buDiagnosisInfo.diagnosisDesc,//西医诊断
+      diagnosisDesc: '西医诊断',//西医诊断
       // syndrome: data[i].syndrome,//血常规
       // syndrome: data[i].syndrome,//尿检
       // syndrome: data[i].syndrome,//脑部CT
@@ -101,15 +104,14 @@ export default class Electronic extends Component {
   render() {
     let ss = null;
     let {name, age, sex, type, examDate, temperature, breath, pulse, systolicPressure, diastolicPressure, casetype} = this.state;
-    console.log('casetype',casetype)
     if(casetype != ''){//判断初复诊：1为初诊，2为复诊；
       var ct = casetype;
-      console.log('ct',ct)
       ss = <RadioGroup name="radiogroup" disabled defaultValue={ct}>
-            <Radio value={0}>初诊</Radio>
-            <Radio value={1}>复诊</Radio>
+            <Radio value='0'>初诊</Radio>
+            <Radio value='1'>复诊</Radio>
            </RadioGroup>
     }
+    let orgidDic = this.props.orgidDic;
     let pridepictS = this.state.pridepict ? this.state.pridepict : '暂略；';
     let hpiS = this.state.hpi ? this.state.hpi : '暂略；';
     let allergichistoryS = this.state.allergichistory ? this.state.allergichistory : '暂略；';
@@ -130,7 +132,7 @@ export default class Electronic extends Component {
           <div >
             <ScrollArea height={100}>
               <div>
-                <h2 style={styles.titleStyle}>庆阳中医馆-门诊病历</h2>
+                <h2 style={styles.titleStyle}>{orgidDic}-门诊病历</h2>
               </div>
               <div>
                 <div style={styles.borderDashed}>

@@ -1,10 +1,15 @@
 import React, { Component } from 'react';
-import { List, Button, Skeleton, Row, Col } from 'antd';
+import { Row, Col } from 'antd';
+import $ from 'jquery';
 import styled from 'styled-components';
 import ScrollArea from 'components/scrollArea';
 import ElectronicRight from '../electronicRight';
 import 'antd/lib/button/style';
 import './index.less';
+import printImages from "../images/print.png";
+import xian from "../images/xian.png";
+import exportFile from "../images/exportFile.png";
+import comeBack from "../images/comeBack.png";
 import getResource from 'commonFunc/ajaxGetResource';
 
 export default class index extends Component {
@@ -16,15 +21,11 @@ export default class index extends Component {
         valueColor: {0: 'selectColor'},
         show:'显示',
         i: '',//左侧key
+        orgidDic: '',//机构名称
     };
-    // this.handClickList = this.handClickList.bind(this);
   }
   
   componentWillMount () {
-    // var data = this.state.data;
-    // var arr = this. state.arr;  
-    // var first = data.push(arr[0]);
-    // console.log('hahah',this.props.patientid)
     var patientid = this.props.patientid;
     let params = {
       url: 'BuPatientCaseController/getPatient',
@@ -41,7 +42,7 @@ export default class index extends Component {
             that.setState({
                 arr: res.data,
                 i: 0,
-                data
+                data,
             })
       }else{
         // that.setState({data: []});
@@ -67,21 +68,53 @@ export default class index extends Component {
       })
   }
 
+  printClick(){
+    // 打印
+    // var LODOP=getLodop();
+    // LODOP.SET_PRINT_PAGESIZE(2,2100,2970,"A4");
+    // LODOP.SET_PRINT_STYLE("FontSize",12);
+    // LODOP.SET_PRINT_STYLE("Bold",1);
+    // LODOP.ADD_PRINT_HTM(0,0,1000,1900,document.getElementById("testResult").innerHTML);
+    // LODOP.PREVIEW();
+    //LODOP.PRINT();
+    window.print()
+  }
+
+  pdfClick(){
+    // 导出PDF
+    var pdf = new jsPDF('p', 'mm', 'a4');
+        var print_content = $('#eleBingLi');
+        var filename = '测评结果.pdf';
+        $('#eleBingLi').css("background", "#fff")
+        pdf.addHTML($('#eleBingLi'), function(){
+            pdf.output("save", filename)
+        })
+  }
+
+  //返回电子病历表格
+  onClickBack () {
+    let pram = 1;
+    this.props.onToggle(pram);
+  }
+
   render() { 
-    var { data, valueColor, arr, show, i } = this.state;
+    var { data, valueColor, arr, show, i, orgidDic } = this.state;
     var patientname = this.props.patientname;
     var sex = this.props.sex;
     var birthday = this.props.birthday;
     var patienttypeDic = this.props.patienttypeDic;
     var examDate = this.props.examDate;
     var casetype = this.props.casetype;
-    console.log('jhdus',data)
-    console.log('jhduscdsfsd',arr)
-    console.log('i',i)
+    var orgidDic;
+    if(data[i] != undefined) {
+        orgidDic = data[i].orgidDic;
+    }
+    // console.log('jhduscdsfsd',arr)
+    // console.log('i',i)
     var lodeData = data.map((item, i)=>{
         return (
             <ListData key={i} className= {this.state.valueColor[i]} onClick={()=>this.handClickList(i)}>
-                <First>{item.ctstamp.substr(0,10)}|永顺医师馆|医师：{item.doctorname}|{item.casetype}</First>
+                <First>{item.ctstamp.substr(0,10)}|{item.orgidDic}|医师：{item.doctorname}|{item.casetype}</First>
                 <Second>诊断：{item.ctstamp.substr(0,10)}</Second>
             </ListData>
         )
@@ -90,19 +123,40 @@ export default class index extends Component {
     return (
     <Container>
         <Title>
-          <Ele>病例中心>电子病历详情</Ele>
+          <Row>
+            <Col span={6}>
+                <Ele>
+                    <BingCenter>病例中心</BingCenter>>电子病历详情
+                </Ele>
+            </Col>
+            <Col span={4}>
+                <ImgStyle>
+                    <img src={printImages} id="snapshotButton"
+                    onClick={this.printClick.bind(this)}/>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <img src={xian}/>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <img src={exportFile}
+                    onClick={this.pdfClick.bind(this)}/>&nbsp;&nbsp;&nbsp;&nbsp;
+                </ImgStyle>    
+            </Col>
+            <Col span={2} offset={12}>
+                <RuturnBack onClick={this.onClickBack.bind(this)}>
+                    <ImageWidth src={comeBack}/>
+                    返回
+                </RuturnBack>
+            </Col>
+          </Row>
         </Title>
-        <CenterArea>
+        <CenterArea id="eleBingLi">
             <ScrollArea height={100}>
                 <Row>
                     <Col span={6}>
                         <ListBorder className="listRightLine">
                             {lodeData}
-                            <ShowHidden onClick={this.handClickShow.bind(this)}>{data.length == 1? '显示':'隐藏'}刘德华更多病例信息>></ShowHidden>
+                            <ShowHidden onClick={this.handClickShow.bind(this)}>{data.length == 1? '显示':'隐藏'}<Patientname>{patientname}</Patientname>更多病例信息>></ShowHidden>
                         </ListBorder>
                     </Col>
                     <Col span={16} offset={1}>
-                        <ElectronicRight data={data} i={i} patientname={patientname} sex={sex} birthday={birthday}  patienttypeDic={patienttypeDic} examDate={examDate} casetype={casetype}/>
+                        <ElectronicRight data={data} i={i} patientname={patientname} sex={sex} birthday={birthday}  patienttypeDic={patienttypeDic} examDate={examDate} casetype={casetype} orgidDic={orgidDic} />
                     </Col>
                 </Row>
             </ScrollArea>    
@@ -132,9 +186,26 @@ const Ele = styled.span`
     margin-top: 0.5rem;
     margin-left: 5rem;
 `;
+const BingCenter = styled.span`
+    color: #0a6ecb;
+`;
+const ImgStyle = styled.div`
+    margin-top: 0.5rem;
+`;
+const ImageWidth = styled.img`
+    width: 3rem;
+`;
+const RuturnBack = styled.div`
+    color: #0a6ecb;
+    font-size: 15px;
+    margin-top: 0.5rem;
+`;
 const CenterArea = styled.div`
     width: 100%;
     height: 900px;
+`;
+const Patientname = styled.span`
+    color: #0a6ecb;
 `;
 const ListBorder = styled.div`
     width: 100%;

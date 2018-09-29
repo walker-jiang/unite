@@ -42,17 +42,20 @@ class Index extends Component {
   };
   componentWillMount(){
     let preInfo = this.props.buPatientCase;
-    preInfo.dept = {
-      key: preInfo.deptid,
-      label: preInfo.deptname,
-    };
-    preInfo.doctor = {
-      key: preInfo.doctorid,
-      label: preInfo.doctorname,
-    };
-    this.setState({
-      preInfo: preInfo
-    })
+    console.log('preInfo', preInfo);
+    if(JSON.stringify(preInfo) != '{}'){
+      preInfo.dept = {
+        key: preInfo.deptid,
+        label: preInfo.deptname,
+      };
+      preInfo.doctor = {
+        key: preInfo.doctorid,
+        label: preInfo.doctorname,
+      };
+      this.setState({
+        preInfo: preInfo
+      })
+    }
     this.getDictData('casetype');
     this.getDictData('YESNO');
     this.getDept();
@@ -129,7 +132,6 @@ class Index extends Component {
     const { getFieldDecorator, setFieldsValue } = this.props.form;
     let disabled = this.props.disabled
     let { casetype, deptData, docData, preInfo, YESNO } = this.state;
-    console.log('preInfo', preInfo);
     const formItemLayout = {
       labelCol: {
         xs: { span: 4 },
@@ -219,7 +221,7 @@ class Index extends Component {
               >
               {getFieldDecorator('dept', {
                 rules: [{ required: true, message: '请选择就诊科室!' }],
-                initialValue: deptData.length ? ( JSON.stringify(preInfo.dept) == '{}' ? { key: deptData[0].deptid, label: deptData[0].deptname } : preInfo.dept) : {key: '', label: ''}
+                initialValue: deptData.length ? ( preInfo.dept.key ? preInfo.dept : { key: deptData[0].deptid, label: deptData[0].deptname } ) : {key: '', label: ''}
               })(
                 <SpecSelect disabled={disabled} onChange={e => this.getDocData(e.key)} labelInValue>
                 {
@@ -237,7 +239,7 @@ class Index extends Component {
               >
               {getFieldDecorator('doctor', {
                 rules: [{ required: true, message: '请输入接诊医生姓名!' }],
-                initialValue: docData.length ? ( JSON.stringify(preInfo.doctor) == '{}' ? { key: docData[0].orgUerid, label: docData[0].realname } : preInfo.doctor) : {key: '', label: ''}
+                initialValue: docData.length ? ( preInfo.doctor.key ? preInfo.doctor : { key: docData[0].orgUerid, label: docData[0].realname } ) : {key: '', label: ''}
               })(
                 <SpecSelect disabled={disabled} labelInValue>
                 {

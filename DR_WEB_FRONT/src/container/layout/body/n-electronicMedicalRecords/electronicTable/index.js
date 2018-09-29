@@ -6,6 +6,8 @@ import 'antd/lib/button/style';
 import moment from 'moment';
 import Icon from 'components/dr/iconRight';
 import { today } from 'commonFunc/defaultData';
+import zh_CN  from 'antd/lib/locale-provider/zh_CN';
+import bingLi from '../images/bingLi.png'
 import getResource from 'commonFunc/ajaxGetResource';
 
 const Search = Input.Search;
@@ -19,11 +21,15 @@ export default class index extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataSource: [],
       endOpen: false,
       startValue: formatwdate, 
       endValue: today,
-      keyword: ''
+      patienList: [], // 患者数据
+      rcStatus: 0, // 当前标签页
+      keyword: '', // 查询关键字
+      totalRecords: 0, // 总记录数
+      curPage: 1, // 当前页
+      pageSize: pageSize * 4, // 每页记录数
     };
     this.onStartChange = this.onStartChange.bind(this);
     this.handleStartOpenChange = this.handleStartOpenChange.bind(this);
@@ -43,55 +49,38 @@ getPatientData(){
 
 //第一次初始时间和改变时间
 changeTime () {
+  let { keyword, totalRecords, curPage, pageSize } = this.state;
   let beginTime = this.state.startValue;
   let endTime = this.state.endValue;
-  let keyword = this.state.keyword;
   let params = {
     url: 'BuPatientCaseController/getListByMap',
     data: {
       beginTime: beginTime,
       endTime: endTime,
-      Keyword: keyword
+      Keyword: keyword,
+      page: curPage, // 当前页
+      pageSize: pageSize, // 每页记录数
     }
   };
   let that = this;
   function callBack(res){
       if(res.result){
-      let dataSource = res.data.records.map((item, index)=>{
-        item.key = index; // 加唯一key值
-        return item
-      });
-      that.setState({dataSource});
+        let patienList = res.data.records.map((item, index)=>{
+          item.key = index; // 加唯一key值
+          return item
+        });
+        let totalRecords = res.data.total;
+        that.setState({patienList: patienList, totalRecords});
     }else{
-      that.setState({dataSource: []});
+      that.setState({patienList: []});
+        console.log('异常响应信息', res);
     }
   };
   getResource(params, callBack);
 };
 
 //操作
-operationCell (value, record, index) {
-  return (
-    <Operation key={index}>
-      <OperationSpan onClick={() => { this.handleElectronic(value, record, index) }}>电子病历详情</OperationSpan>
-    </Operation>
-  )
-}
-
-//性别
-operationCellSex (value, record, index) {
-  if(record.sex == '01'){
-    return <span>男</span>
-  } else if (record.sex == '02') {
-    return <span>女</span>
-  } else if (record.sex == '09') {
-    return <span>未知</span>
-  }
-}
-
-//点击查看电子病历详情
-handleElectronic (value, record, index) {
-  console.log('handleElectronic',record,index)
+operationCell (text, index, record) {
   let patientid = record.patientid;//患者ID
   let patientname = record.patientname;//患者姓名
   let sex = record.sex;//患者性别
@@ -99,7 +88,6 @@ handleElectronic (value, record, index) {
   let patienttypeDic = record.patienttypeDic;//患者类型
   let examDate = record.examDate.substr(0,10);//就诊日期
   let casetype = record.casetype;//初复诊
-  // window.patientid = patientid;
   let pram = 2;
   this.props.onToggle(pram,patientid,patientname,sex,birthday,patienttypeDic,examDate,casetype);
 }
@@ -151,14 +139,107 @@ disabledStartDate = (startValue) => {
     this.setState({ endOpen: open });
   }
 
+  /**
+   * [getTableColumns 获取表格列]
+   * @param  {[type]} rcStatus [接诊状态]
+   * @return {[type]}           [undefined]
+   */
+  getTableColumns(rcStatus){
+    let date = new Date();
+    const year = date.getFullYear();
+    const columns = [{
+      title: '就诊日期',
+      dataIndex: 'examDate',
+      key: 'examDate',
+    }, {
+      title: '患者编号',
+      dataIndex: 'patientno',
+      key: 'patientno',
+    }, {
+      title: '患者姓名',
+      dataIndex: 'patientname',
+      key: 'patientname',
+    }, {
+      title: '性别',
+      dataIndex: 'sex',
+      key: 'sex',
+      render: (text, record) => record.sex == "01"?'男':'女'
+    }, {
+      title: '年龄',
+      dataIndex: 'age',
+      key: 'age',
+      render: (text, record) => year - parseInt(record.birthday?record.birthday.substr(0,4):null)
+    }, {
+      title: '手机号',
+      dataIndex: 'mobile',
+      key: 'mobile',
+    }, {
+      title: '身份证号',
+      dataIndex: 'cardno',
+      key: 'cardno',
+    }, {
+      title: '患者类型',
+      dataIndex: 'patienttypeDic',
+      key: 'patienttypeDic',
+    }, {
+      title: '就诊类型',
+      dataIndex: 'casetypeDic',
+      key: 'casetypeDic',
+    }, {
+      title: '就诊医师',
+      dataIndex: 'recDoctorname',
+      key: 'recDoctorname',
+    }, {
+      title: '诊断',
+      dataIndex: 'diagnosisDesc',
+      key: 'diagnosisDesc',
+    }, {
+      title: "操作",
+      dataIndex: 'action',
+      key: 'action',
+      render: (text, record, index) => (
+        <div key={index}>
+          <OperationCell onClick={() => { this.operationCell(text, index, record) }}>电子病历详情</OperationCell> 
+        </div>
+      )
+    }
+  ];
+    return columns;
+  };
+
+  /**
+   * [onShowSizeChange 监听每页显示记录的改变事件函数]
+   * @param  {[type]} current [当前页]
+   * @param  {[type]} size    [每页记录数]
+   * @return {[type]}         [undefined]
+   */
+  onShowSizeChange = (current, size) => {
+    this.setState({ pageSize: size }, () => {
+      this.getPatientData();
+    });
+  };
+  /**
+   * [onPageChange 选择某一页事件]
+   * @param  {[type]} page     [选中页]
+   * @param  {[type]} pageSize [当前页容量]
+   * @return {[type]}          [undefined]
+   */
+  onPageChange = (page, pageSize) => {
+    this.setState({ curPage: page }, () => {
+      this.getPatientData();
+    });
+  }
+
 
   render() {
-    const { dataSource, startValue, endValue, endOpen } = this.state;
+    const { patienList, rcStatus, startValue, endValue, endOpen, totalRecords, pageSize ,curPage } = this.state;
+    const columns = this.getTableColumns(rcStatus);
     console.log('startValue',startValue)
     console.log('endValue',endValue)
     return (
       <Container>
         <Title>
+          <ImgBingLi src={bingLi}/>
           <Ele>病例中心</Ele>
           <DateDiv>
               <MedicalCenter>
@@ -187,29 +268,27 @@ disabledStartDate = (startValue) => {
             <KeywordsSreach>
                 查询关键词：
             </KeywordsSreach>
-            <SpecInput placeholder='请输入患者姓名/患者编号/身份证号/拼音' onChange={(e) => {this.setState({ keyword: e.target.value },function(){console.log('this.at',this.state.keyword)})}}></SpecInput>
+            <SpecInput placeholder='请输入姓名/手机号/患者编号快速查询' onChange={(e) => {this.setState({ keyword: e.target.value },function(){console.log('this.at',this.state.keyword)})}}></SpecInput>
             <SearchIcon type='search-thin' fill='#FFFFFF' onClick={this.getPatientData}></SearchIcon>
           </SreachKeywords>
         </Title>
         <TableDiv>
-          <Table
-          dataSource={dataSource}
-          onHeaderRow={(column) => { this.onHeaderRow() }}
-          >
-          <Table.Column key="examDate" title="就诊日期" dataIndex="examDate" />
-          <Table.Column key="patientno" title="患者编号" dataIndex="patientno" />
-          <Table.Column key="patientname" title="患者姓名" dataIndex="patientname" />
-          <Table.Column key="sex" title="性别" dataIndex="sex" render={this.operationCellSex.bind(this)} />
-          <Table.Column key="age" title="年龄" dataIndex="age" />
-          <Table.Column key="mobile" title="手机号" dataIndex="mobile" />
-          <Table.Column key="cardno" title="身份证号" dataIndex="cardno" />
-          <Table.Column key="patienttypeDic" title="患者类型" dataIndex="patienttypeDic" />
-          <Table.Column key="casetypeDic" title="就诊类型" dataIndex="casetypeDic" />
-          <Table.Column key="recDoctorname" title="就诊医师" dataIndex="recDoctorname" />
-          <Table.Column key="diagnosisDesc" title="诊断" dataIndex="diagnosisDesc" />
-          <Table.Column title="操作" render={this.operationCell.bind(this)} />
-          </Table>
+          <SpecTable dataSource={patienList} columns={columns} pagination={false}/>
         </TableDiv>
+        <LocaleProvider locale={zh_CN}>
+          <PageContainer>
+            <span>• 共有{totalRecords}位已就诊患者记录</span>
+            <SpecPagination
+              size="small"
+              total={totalRecords}
+              current={curPage}
+              defaultPageSize={pageSize}
+              showSizeChanger
+              onShowSizeChange={this.onShowSizeChange}
+              onChange={this.onPageChange}
+              showQuickJumper />
+          </PageContainer>
+        </LocaleProvider>
       </Container>
     )
   }
@@ -218,6 +297,15 @@ disabledStartDate = (startValue) => {
 const Container = styled.div`
   width: 100%
 `;
+const SpecTable = styled(Table)`
+  margin: 16px;
+  th {
+    background: #E4E4E4 !important;
+  }
+  tr {
+    height: 40px;
+  }
+`;
 const Title = styled.div`
   border: 1px solid;
   border-color: rgba(204, 204, 204, 1);
@@ -225,6 +313,12 @@ const Title = styled.div`
   width: 100%;
   height: 50px;
   position: relative;
+`;
+const ImgBingLi = styled.img`
+  width: 2rem;
+  position: absolute;
+  margin-top: 0.8rem;
+  margin-left: 2.7rem;
 `;
 const Ele = styled.span`
   color: rgb(51, 51, 51);
@@ -280,7 +374,27 @@ const TableDiv = styled.div`
   margin-top: 2rem;
   width: 100%;
 `;
-
+const PageContainer = styled.div`
+  width: 100%;
+  float: left;
+  padding: 0px 20px;
+  margin: 5px;
+  display: flex;
+  justify-content: space-between;
+`;
+const SpecPagination = styled(Pagination)`
+  margin-bottom: 10px;
+  .ant-pagination-item-active {
+    background-color: #1890ff;
+  }
+  .ant-pagination-item-active > a{
+    color: #FFFFFF;
+  }
+`;
+const OperationCell = styled.i`
+  color: #0a6ecb;
+  cursor: pointer;
+`;
 /*
 @作者：王崇琨
 @日期：2018-09-12

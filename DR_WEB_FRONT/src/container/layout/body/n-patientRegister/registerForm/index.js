@@ -38,8 +38,12 @@ export default class Index extends Component {
     function callBack(res){
       if(res.result){
         let { baPatient, buPatientCase, ...registerInfo } = res.data;
-        buPatientCase.deptname = registerInfo.deptname;
-        self.setState({ baPatient, buPatientCase, registerInfo });
+        if(buPatientCase){
+          buPatientCase.deptname = registerInfo.deptname;
+          self.setState({ baPatient, buPatientCase, registerInfo });
+        }else{ // 如果不存在诊前信息则
+          self.setState({ baPatient, registerInfo, buPatientCase });
+        }
       }else{
         console.log('异常响应信息', res);
       }
@@ -47,27 +51,30 @@ export default class Index extends Component {
     ajaxGetResource(params, callBack);
   };
   submit = (e) =>{
-    let dept = {};
+    console.log('提交操作');
+    let tempDept = {};
     let { registerInfo = {}, baPatient = {}, buPatientCase = {} } = this.state;
     let operateType = this.props.match.params.type;
     if(this.basicInfoForm){
       this.basicInfoForm.validateFieldsAndScroll((err, values) => {
         if (!err) {
           Object.assign(baPatient, values);
-          baPatient.addrHome = values.provinceid.label + values.cityid.label + values.areaid.label;
+          baPatient.addrHome = values.province.label + values.city.label + values.district.label;
           baPatient.birthday = values.birthday.format('YYYY-MM-DD');
           baPatient.creator = window.sessionStorage.getItem('userid');
-          baPatient.provinceid = values.provinceid.key;
-          baPatient.cityid = values.cityid.key;
-          baPatient.districtid = values.areaid.key
+          baPatient.provinceid = values.province.key;
+          baPatient.cityid = values.city.key;
+          baPatient.districtid = values.district.key
           baPatient.ctsorgid = window.sessionStorage.getItem('orgid');
         }
+        // delete baPatient['province'];
+        // delete baPatient['city'];
+        // delete baPatient['district'];
       });
     }
     if(this.preTreatForm){
       this.preTreatForm.validateFieldsAndScroll((err, values) => {
         if (!err) {
-          console.log('buPatientCase, values', buPatientCase, values);
           Object.assign(buPatientCase, values);
           buPatientCase.hpi = this.getString(values.hpi);
           buPatientCase.allergichistory = this.getString(values.allergichistory);
@@ -75,12 +82,12 @@ export default class Index extends Component {
           buPatientCase.doctorid = values.doctor.key;
           buPatientCase.doctorname = values.doctor.label;
           buPatientCase.orgid = window.sessionStorage.getItem('orgid');
-          dept = {
+          tempDept = {
             "deptid": values.dept.key,
             "deptname": values.dept.label,
           };
-          delete buPatientCase['dept'];
-          delete buPatientCase['doctor'];
+          // delete buPatientCase['dept'];
+          // delete buPatientCase['doctor'];
 
         }
       });
@@ -98,8 +105,8 @@ export default class Index extends Component {
       "regUserid": window.sessionStorage.getItem('userid'),
 	    "regUsername": window.sessionStorage.getItem('username'),
       regTypeid: 3, // 义诊
-      "deptid": dept.deptid,
-      "deptname": dept.deptname,
+      "deptid": tempDept.deptid,
+      "deptname": tempDept.deptname,
     };
     Object.assign(registerInfo, paramData);
     this.saveTip.showModal(1);
@@ -129,7 +136,8 @@ export default class Index extends Component {
   };
   render() {
     let operateType = this.props.match.params.type;
-    let { baPatient, buPatientCase } = this.state;
+    let { baPatient, buPatientCase, registerInfo } = this.state;
+    console.log('baPatient', baPatient);
     return (
       <Container>
         <Header>
@@ -146,9 +154,12 @@ export default class Index extends Component {
             <TabPane tab="基本信息" key="1">
               <BasicInfoForm ref={ ref => { this.basicInfoForm = ref }} disabled={operateType.indexOf('v') == 0} baPatient={baPatient}></BasicInfoForm>
             </TabPane>
-            <TabPane tab="诊前信息" key="2">
-              <PreTreatForm ref={ ref => { this.preTreatForm = ref }} disabled={operateType.indexOf('v') == 0} buPatientCase={buPatientCase}></PreTreatForm>
-            </TabPane>
+            {
+              JSON.stringify(registerInfo) == '{}' || registerInfo.rcStatus == 0   ?
+              <TabPane tab="诊前信息" key="2">
+                <PreTreatForm ref={ ref => { this.preTreatForm = ref }} disabled={operateType.indexOf('v') == 0} buPatientCase={buPatientCase}></PreTreatForm>
+              </TabPane> : null
+            }
           </SpecTabs>
           <ActionButton>
             <SureButton type="primary" onClick={this.submit} disabled={operateType.indexOf('v') == 0}>保存</SureButton>

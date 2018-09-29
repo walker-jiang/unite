@@ -2,7 +2,7 @@ const merge = require('webpack-merge');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const common = require('./webpack.common.js');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const CompressionPlugin = require('compression-webpack-plugin');
+// const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = merge(common, {
   mode: 'production',
@@ -28,6 +28,6 @@ module.exports = merge(common, {
   },
   plugins: [
     new BundleAnalyzerPlugin(), // 打包分析插件
-    new CompressionPlugin()
+    // new CompressionPlugin()
   ]
 });
