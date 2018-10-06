@@ -18,9 +18,14 @@ export default class Index extends Component {
       expand: false, // 望诊是否展开
       visiblePicture: false, // 是否展示图片
       tonguePicture: shetai, // 舌头图片
+      standard: {}, // 标准图片 文本 描述
     };
     this.observeTagsClick = this.observeTagsClick.bind(this);
     this.returTonguePicture = this.returTonguePicture.bind(this);
+    this.tagsOver = this.tagsOver.bind(this);
+    this.tagsOut = this.tagsOut.bind(this);
+    this.takePicture = this.takePicture.bind(this);
+    this.getUrl = this.getUrl.bind(this);
   };
   /**
    * [expand 点击左侧下标触发展开或者收缩按钮]
@@ -60,7 +65,7 @@ export default class Index extends Component {
     let buPatcasToncoaList = tongueCoated;
     let buPatcasTonnatList = tongueCoated;
     let originData = { buPatcasToncoaList, buPatcasTonnatList};
-    this.props.setFieldsValue({inspection: text});
+    this.props.setFieldsValue({inspection: {originData: [], extractionData: text}});
   };
   /**
    * [handleEnterPress 键盘事件]
@@ -81,33 +86,69 @@ export default class Index extends Component {
     // this.setState({ tonguePicture });
     this.picureEditor.handleOpen(tonguePicture);
   };
+  /** [takePicture 拍照函数] */
+  takePicture(){
+    this.camera.handleOpen();
+    this.tongueShow.handleClose();
+  };
+  /**
+   * [tagsOver 鼠标滑过标签]
+   * @param  {[type]} text   [文本]
+   * @param  {[type]} url    [地址]
+   * @param  {[type]} detail [详情]
+   * @return {[type]}        [undefined]
+   */
+  tagsOver(text, url, detail){
+    let standard = { text, url, detail };
+    this.setState({ standard });
+    this.tongueShow.handleOpen();
+  };
+  /** [tagsOut 鼠标画出] */
+  tagsOut(){
+    this.tongueShow.handleClose();
+  };
+  /** [getUrl 获取拍照图片路径] */
+  getUrl(url){
+    this.tongueShow.handleOpen(url);
+    this.props.setFieldsValue({
+      tongue: url
+    });
+  };
   render() {
     const { getFieldDecorator, formItemLayout, initialValue, visiblePicture } = this.props;
-    let { expand, tonguePicture } = this.state;
+    let { expand, tonguePicture, standard } = this.state;
     return (
-      <SpecRow className='height'>
-        <SpecCol span={3} onClick={(e)=>this.expand(e, 'expand', !expand)}>
-          <Arrow type={expand ? 'up-circle' : 'down-circle'}/>
-          <span>望诊：</span>
-        </SpecCol>
-        <Col span={21}>
-          <SpecFormItem className='height'>
-          {getFieldDecorator('inspection', {
-            initialValue: initialValue
-          })(
-            <Input onFocus={(e)=>this.expand(e, 'expand', !expand)} onKeyDown={this.handleEnterPress} innerRef={ref => {this.input = ref}}/>
-          )}
-          <ObserveTags onClick={this.observeTagsClick} expand={expand}/>
-          </SpecFormItem>
-          <ThumbNailContanier onClick={() => {this.input.focus()}}>
+      <div>
+        <SpecRow>
+          <SpecCol span={3} onClick={(e)=>this.expand(e, 'expand', !expand)}>
+            <Arrow type={expand ? 'up-circle' : 'down-circle'}/>
+            <span>望诊：</span>
+          </SpecCol>
+          <Col span={21}>
+            <SpecFormItem>
+              {getFieldDecorator('inspection', {
+                initialValue: initialValue.text
+              })(
+                <Input onFocus={(e)=>this.expand(e, 'expand', !expand)} onKeyDown={this.handleEnterPress} innerRef={ref => {this.input = ref}}/>
+              )}
+              <ObserveTags onClick={this.observeTagsClick} expand={expand} tagsOver={this.tagsOver} tagsOut={this.tagsOut}/>
+            </SpecFormItem>
+            <ThumbNailContanier onClick={() => {this.input.focus()}}>
               <Thumbnail src={tonguePicture}></Thumbnail>
-          </ThumbNailContanier>
-        </Col>
-        <TongueShow></TongueShow>
-        <Sign type='camera' width='18px' height='18px' fill='#33CC00' onClick={() =>  this.camera.handleOpen()}/>
-        <Camera ref={ref => this.camera = ref} returPicture={this.returTonguePicture}></Camera>
-        <PicureEditor src={tonguePicture} ref={ ref => { this.picureEditor = ref }}></PicureEditor>
-      </SpecRow>
+            </ThumbNailContanier>
+          </Col>
+          <Sign type='camera' width='18px' height='18px' fill='#33CC00' onClick={this.takePicture}/>
+          <Camera ref={ref => this.camera = ref} returPicture={this.returTonguePicture}></Camera>
+          <PicureEditor src={tonguePicture} getUrl={this.getUrl} ref={ ref => { this.picureEditor = ref }}></PicureEditor>
+        </SpecRow>
+        <FormItem>
+          {getFieldDecorator('inspectionPicture', {
+            initialValue: initialValue.urlArr
+          })(
+            <TongueShow standard={standard} ref = { ref => {this.tongueShow = ref}}></TongueShow>
+          )}
+        </FormItem>
+      </div>
     );
   }
 }
@@ -154,7 +195,9 @@ const Thumbnail = styled.img`
   height: 88px;
   width: 88px;
 `;
+const SpecSpecFormItem = styled(FormItem)`
 
+`;
 /*
 @作者：姜中希
 @日期：2018-09-03

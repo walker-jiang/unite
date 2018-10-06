@@ -15,7 +15,7 @@ import datePickerSty from 'components/antd/style/datePicker';
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-class Index extends Component {
+class PatientBasicInfo extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -67,8 +67,7 @@ class Index extends Component {
     });
   }
   componentWillMount(){
-    this.getProvinceData('init'); // 获取省份数据
-    this.getDictList(['country', 'nation', 'sex', 'marry', 'occupation', 'cardtype', 'pationtype', 'pationrel', 'blood']);
+    // this.getDictList(['country', 'nation', 'sex', 'marry', 'occupation', 'cardtype', 'pationtype', 'pationrel', 'blood']);
   };
   /**
    * [getDictList 获取字典列表]
@@ -99,25 +98,34 @@ class Index extends Component {
   componentWillReceiveProps(nextProps){
     let patientInfo = nextProps.baPatient;
     if(patientInfo != this.props.baPatient ){ // 修改时默认地址
-      patientInfo.province = {
+      let province = {
         key: patientInfo.provinceid,
         label: patientInfo.provinceidDic
       };
-      patientInfo.city = {
+      let city = {
         key: patientInfo.cityid,
         label: patientInfo.cityidDic
       };
-      patientInfo.district = {
+      let district = {
         key: patientInfo.districtid,
         label: patientInfo.districtidDic
       };
-      console.log('属性测试', patientInfo);
+      this.props.form.setFieldsInitialValue({province: province});
+      this.props.form.setFieldsInitialValue({city: city});
+      this.props.form.setFieldsInitialValue({district: district});
+      this.getProvinceData(); // 获取省份数据
+      this.getCityData(patientInfo.provinceid);
+      this.getDistrictData(patientInfo.cityid, () => {
+        this.props.form.setFieldsInitialValue({province: province});
+        this.props.form.setFieldsInitialValue({city: city});
+        this.props.form.setFieldsInitialValue({district: district});
+      });
       this.setState({
         patientInfo: patientInfo
       })
     }
   };
-  getProvinceData(triggerWay){
+  getProvinceData(){
     let self = this;
     let params = {
       url: 'BaProvinceController/getList',
@@ -126,30 +134,16 @@ class Index extends Component {
     function callBack(res){
       if(res.result && res.data.length){
         let province = res.data;
-        let defaultProvince = {
-          key: province[0].provid,
-          label: province[0].provname
-        };
-        if(triggerWay == 'init'){
-          self.setState({ province },() => {
-            self.getCityData(defaultProvince.key, triggerWay);
-          });
-        }
-        else{
-          // 更新默认值
-          let patientInfo = self.state.patientInfo;
-          patientInfo.province = defaultProvince;
-          self.setState({ province, patientInfo },() => {
-            self.getCityData(defaultProvince.key, triggerWay);
-          });
-        }
+        self.setState({ province },() => {
+          self.getCityData(province[0].provid);
+        });
       }else{
         console.log('异常响应信息', res);
       }
     };
     ajaxGetResource(params, callBack);
   };
-  getCityData(provinceId, triggerWay){
+  getCityData(provinceId){
     let self = this;
     let params = {
       url: 'BaCityController/getList',
@@ -160,30 +154,16 @@ class Index extends Component {
     function callBack(res){
       if(res.result && res.data.length){
         let city = res.data;
-        let defaultCity = {
-          key: city[0].cityid,
-          label: city[0].cityname
-        };
-        if(triggerWay == 'init'){
-          self.setState({ city }, () => {
-            self.getDistrictData(defaultCity.key, triggerWay);
-          });
-        }else {
-          // 更新默认值
-          let patientInfo = self.state.patientInfo;
-          patientInfo.city = defaultCity;
-          self.setState({ city, patientInfo }, () => {
-            self.getDistrictData(defaultCity.key, triggerWay);
-          });
-        }
-
+        self.setState({ city }, () => {
+          self.getDistrictData(city[0].cityid);
+        });
       }else{
         console.log('异常响应信息', res);
       }
     };
     ajaxGetResource(params, callBack);
   };
-  getDistrictData(cityId, triggerWay){
+  getDistrictData(cityId, setValueFunc){
     let self = this;
     let params = {
       url: 'BaDistrictController/getList',
@@ -194,19 +174,11 @@ class Index extends Component {
     function callBack(res){
       if(res.result){
         let district = res.data;
-        let defaultDistrict = {
-          key: district[0].distid,
-          label: district[0].distname
-        };
-        if(triggerWay == 'init'){
-          self.setState({ district });
-        }else{
-          console.log('动没动', triggerWay);
-          // 更新默认值
-          let patientInfo = self.state.patientInfo;
-          patientInfo.district = defaultDistrict;
-          self.setState({ district, patientInfo });
-        }
+        self.setState({ district }, () => {
+          if(setValueFunc){
+            setValueFunc();
+          }
+        });
       }else{
         console.log('异常响应信息', res);
       }
@@ -228,7 +200,7 @@ class Index extends Component {
     const { getFieldDecorator } = this.props.form;
     let disabled = this.props.disabled;
     let { country, nation, sex, marry, occupation, pationtype, cardtype, pationrel, blood, province, city, district, patientInfo } = this.state;
-    console.log('blood', blood);
+    console.log('province', province);
     let date = new Date();
     const age = date.getFullYear() - parseInt(patientInfo.birthday.substr(0,4));
     const formItemLayout = {
@@ -513,9 +485,9 @@ class Index extends Component {
                 label="住址："
                 >
                   {getFieldDecorator('province', {
-                    initialValue: province.length > 0 ? ( patientInfo.province.key ? patientInfo.province : {key: province[0].provid, label: province[0].provname}) : {key: '', label: ''}
+                    initialValue: province.length > 0 ? {key: province[0].provid, label: province[0].provname} : {key: '', label: ''}
                   })(
-                    <SpecSelect labelInValue onChange={(e) => {this.getCityData(e.key, 'select')}} disabled={disabled}>
+                    <SpecSelect labelInValue onChange={(e) => {this.getCityData(e.key)}} disabled={disabled}>
                     {
                       province.map((item, index)=>
                         <Option key={index} value={item.provid}>{item.provname}</Option>
@@ -532,9 +504,9 @@ class Index extends Component {
                 colon={false}
                 >
                   {getFieldDecorator('city', {
-                    initialValue: city.length > 0 ? ( patientInfo.city.key ? patientInfo.city : {key: city[0].cityid, label: city[0].cityname}) : {key: '', label: ''}
+                    initialValue: city.length > 0 ? {key: city[0].cityid, label: city[0].cityname}: {key: '', label: ''}
                   })(
-                    <SpecSelect labelInValue onChange={(e) => {this.getDistrictData(e.key, 'select')}} disabled={disabled}>
+                    <SpecSelect labelInValue onChange={(e) => {this.getDistrictData(e.key)}} disabled={disabled}>
                     {
                       city.map((item, index)=>
                         <Option key={index} value={item.cityid}>{item.cityname}</Option>
@@ -552,7 +524,7 @@ class Index extends Component {
                 label=' '
                 >
                   {getFieldDecorator('district', {
-                    initialValue: district.length > 0 ? ( patientInfo.district.key ? patientInfo.district : {key: district[0].distid, label: district[0].distname}) : {key: '', label: ''}
+                    initialValue: district.length > 0 ? {key: district[0].distid, label: district[0].distname} : {key: '', label: ''}
                   })(
                     <SpecSelect labelInValue disabled={disabled}>
                     {
@@ -663,7 +635,7 @@ const SpecDatePicker = styled(DatePicker)`
 /*
 @作者：姜中希
 @日期：2018-07-23
-@描述：患者信息弹框form表单组件
+@描述：患者信息表单组件
 */
-const InfoForm = Form.create()(Index);
+const InfoForm = Form.create()(PatientBasicInfo);
 export default InfoForm;

@@ -68,6 +68,8 @@ export default class PictureEditor extends Component {
     function callBack(res){
       if(res.result && res.data){
         self.saveTip.showModal(2);
+        self.handleClose();
+        self.props.getUrl(res.data.url);
       }else{
         self.saveTip.showModal(3);
         console.log('异常响应信息', res);

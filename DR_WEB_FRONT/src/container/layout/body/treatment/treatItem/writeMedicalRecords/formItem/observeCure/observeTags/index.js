@@ -34,7 +34,7 @@ export default class ObserveCure extends Component {
     function callBack(res){
       if(res.result){
         let tongueCoatedList = res.data.map((item)=>{
-          return {id: item.coatingid, name: item.coaTypename, color: item.coaTypedesc, url: item.coaTypeurl}
+          return {id: item.coatingid, name: item.coaTypename, color: item.showColor, url: item.coaTypeurl, detail: item.coaTypedesc}
         });
         self.setState({tongueCoatedList});
       }else{
@@ -53,7 +53,7 @@ export default class ObserveCure extends Component {
     function callBack(res){
       if(res.result){
         let tongueNatureList = res.data.map((item)=>{
-          return {id: item.natureid, name: item.natTypename, color: item.natTypedesc, url: item.natTypeurl}
+          return {id: item.natureid, name: item.natTypename, color: item.showColor, url: item.natTypeurl, detail: item.natTypedesc}
         });
         self.setState({tongueNatureList});
       }else{
@@ -82,19 +82,23 @@ export default class ObserveCure extends Component {
     let {tongueCoatedSelected, tongueNatureSelected} = this.state;
     this.props.onClick(tongueCoatedSelected, tongueNatureSelected);
   };
-  tagsOver(status, url){
+  /**
+   * [tagsOver 鼠标滑过标签2后触发另一个事件]
+   * @param  {[type]} text   [文本]
+   * @param  {[type]} url    [地址]
+   * @param  {[type]} detail [详情]
+   * @return {[type]}        [undefined]
+   */
+  tagsOver(text, url, detail){
+    let self = this;
     window.timeout = setTimeout(() => {
-      this.setState({
-        visible: status,
-        url: config_service_url + url
-      });
+      self.props.tagsOver(text, url, detail);
     }, 2000);
   };
+  /** [tagsOut 鼠标画出] */
   tagsOut(){
+    this.props.tagsOut();
     clearTimeout(window.timeout);
-    this.setState({
-      visible: false,
-    });
   };
   render() {
     let { tongueCoatedList, tongueNatureList, visible } = this.state;
@@ -106,7 +110,7 @@ export default class ObserveCure extends Component {
           <Row>
             {
               tongueNatureList.map((item, index) => {
-                return <CheckableTag onMouseEnter={this.tagsOver} onMouseOut={this.tagsOut} url={item.url} key={index} id={item.id } color={item.color} onClick={this.coatedTagClick} text={item.name}></CheckableTag>
+                return <CheckableTag onMouseEnter={this.tagsOver} onMouseOut={this.tagsOut} url={item.url} key={index} id={item.id } color={item.color} onClick={this.coatedTagClick} text={item.name} detail={item.detail}></CheckableTag>
               })
             }
           </Row>
@@ -116,7 +120,7 @@ export default class ObserveCure extends Component {
           <Row>
           {
             tongueCoatedList.map((item, index) => {
-              return <CheckableTag onMouseEnter={this.tagsOver} onMouseOut={this.tagsOver} url={item.url} key={index} id={item.id} color={item.color} onClick={this.natureTagClick} text={item.name}></CheckableTag>
+              return <CheckableTag onMouseEnter={this.tagsOver} onMouseOut={this.tagsOver} url={item.url} key={index} id={item.id} color={item.color} onClick={this.natureTagClick} text={item.name} detail={item.detail}></CheckableTag>
             })
           }
           </Row>

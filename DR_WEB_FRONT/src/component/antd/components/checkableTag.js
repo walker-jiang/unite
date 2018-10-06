@@ -20,13 +20,13 @@ export default class CheckableTag extends Component {
   };
   render() {
     let checkable = this.state.checkable;
-    let { text, color, url = 'rong' } = this.props;
+    let { text, color, url = 'rong', detail = '' } = this.props;
     let func = {};
     if(this.props.onClick){
       func.onClick = (e)=>this.handleTagClick(e, checkable);
     }
     if(this.props.onMouseEnter){
-      func.onMouseEnter = (e) => {this.props.onMouseEnter(true, url)};
+      func.onMouseEnter = (e) => {this.props.onMouseEnter(text, url, detail)};
     }
     if(this.props.onMouseOut){
       func.onMouseOut = (e) => {this.props.onMouseOut()};
