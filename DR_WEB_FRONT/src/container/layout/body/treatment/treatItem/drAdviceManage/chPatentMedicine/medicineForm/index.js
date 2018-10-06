@@ -72,6 +72,10 @@ class Index extends Component {
     ajaxGetResource(params, callBack);
   };
   componentWillMount(){
+    let buOrderDtlList = this.props.buOrderDtlList;
+    this.setState({
+      ...buOrderDtlList
+    });
     this.getDiagnoseData();
     this.getSpecialUsage();
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
@@ -312,7 +316,7 @@ class Index extends Component {
           return originalElement;
         }
     };
-    if(baMedicines == [] || baMedicines == '' || baMedicines == undefined){
+    if(false || baMedicines == [] || baMedicines == '' || baMedicines == undefined){
       return (
         <SpecForm className='not-draggable' onClick={()=>{this.quickAddMedicine.hideResult()}}>
           <Row>
@@ -382,7 +386,7 @@ class Index extends Component {
         </SpecForm>
       )
     } else {
-      let mergeArray = baMedicines.concat(medicineData);
+      // let mergeArray = baMedicines.concat(medicineData);
       return (
         <SpecForm className='not-draggable' onClick={()=>{this.quickAddMedicine.hideResult()}}>
           <Row>

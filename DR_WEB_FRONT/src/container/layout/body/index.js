@@ -40,6 +40,11 @@ const More = Loadable({
   loading: loadingComponent,
 });
 
+const PantientRecords = Loadable({
+  loader: () => import('./n-patientRecords'),
+  loading: loadingComponent,
+});
+
 export default class Body extends Component {
   constructor(props){
     super(props);
@@ -59,6 +64,7 @@ export default class Body extends Component {
           <Route path='/Layout/treatment/:id' component={TreatManage}></Route>
           <Route path='/Layout/electronicMedicalRecords' component={Electronic}></Route>
           <Route path='/Layout/cure' component={Cure}></Route>
+          <Route path='/Layout/patientRecords' component={PantientRecords}></Route>
           <Route path='/Layout/more' component={More}></Route>
       </Container>
     );

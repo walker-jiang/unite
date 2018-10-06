@@ -2,8 +2,6 @@ import React, {Component, PropTypes} from 'react'; // react核心
 import CheckableTag from 'components/antd/components/checkableTag';
 import styled from 'styled-components';
 import Modal from 'react-modal';
-import selfPic from './shetai.jpg';
-import standard from './standard.jpg';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
 export default class ObserveCure extends Component {
@@ -15,7 +13,6 @@ export default class ObserveCure extends Component {
       tongueCoatedList: [], //舌苔列表
       tongueNatureList: [], //舌质列表
       visible: false, // 图片是否可见
-      url: selfPic, // 图片地址
       timeout: null, //定时器对象
     };
     this.coatedTagClick = this.coatedTagClick.bind(this);
@@ -37,7 +34,7 @@ export default class ObserveCure extends Component {
     function callBack(res){
       if(res.result){
         let tongueCoatedList = res.data.map((item)=>{
-          return {id: item.coatingid, name: item.coaTypename, color: item.coaTypedesc, url: item.coaTypeurl}
+          return {id: item.coatingid, name: item.coaTypename, color: item.showColor, url: item.coaTypeurl, detail: item.coaTypedesc}
         });
         self.setState({tongueCoatedList});
       }else{
@@ -56,7 +53,7 @@ export default class ObserveCure extends Component {
     function callBack(res){
       if(res.result){
         let tongueNatureList = res.data.map((item)=>{
-          return {id: item.natureid, name: item.natTypename, color: item.natTypedesc, url: item.natTypeurl}
+          return {id: item.natureid, name: item.natTypename, color: item.showColor, url: item.natTypeurl, detail: item.natTypedesc}
         });
         self.setState({tongueNatureList});
       }else{
@@ -85,22 +82,26 @@ export default class ObserveCure extends Component {
     let {tongueCoatedSelected, tongueNatureSelected} = this.state;
     this.props.onClick(tongueCoatedSelected, tongueNatureSelected);
   };
-  tagsOver(status, url){
+  /**
+   * [tagsOver 鼠标滑过标签2后触发另一个事件]
+   * @param  {[type]} text   [文本]
+   * @param  {[type]} url    [地址]
+   * @param  {[type]} detail [详情]
+   * @return {[type]}        [undefined]
+   */
+  tagsOver(text, url, detail){
+    let self = this;
     window.timeout = setTimeout(() => {
-      this.setState({
-        visible: status,
-        url: config_service_url + url
-      });
+      self.props.tagsOver(text, url, detail);
     }, 2000);
   };
+  /** [tagsOut 鼠标画出] */
   tagsOut(){
+    this.props.tagsOut();
     clearTimeout(window.timeout);
-    this.setState({
-      visible: false,
-    });
   };
   render() {
-    let { tongueCoatedList, tongueNatureList, visible , url} = this.state;
+    let { tongueCoatedList, tongueNatureList, visible } = this.state;
     let expand = this.props.expand;
     return (
       <TagsContainer expand={expand}>
@@ -109,7 +110,7 @@ export default class ObserveCure extends Component {
           <Row>
             {
               tongueNatureList.map((item, index) => {
-                return <CheckableTag onMouseEnter={this.tagsOver} onMouseOut={this.tagsOut} url={item.url} key={index} id={item.id } color={item.color} onClick={this.coatedTagClick} text={item.name}></CheckableTag>
+                return <CheckableTag onMouseEnter={this.tagsOver} onMouseOut={this.tagsOut} url={item.url} key={index} id={item.id } color={item.color} onClick={this.coatedTagClick} text={item.name} detail={item.detail}></CheckableTag>
               })
             }
           </Row>
@@ -119,26 +120,11 @@ export default class ObserveCure extends Component {
           <Row>
           {
             tongueCoatedList.map((item, index) => {
-              return <CheckableTag onMouseEnter={this.tagsOver} onMouseOut={this.tagsOver} url={item.url} key={index} id={item.id} color={item.color} onClick={this.natureTagClick} text={item.name}></CheckableTag>
+              return <CheckableTag onMouseEnter={this.tagsOver} onMouseOut={this.tagsOver} url={item.url} key={index} id={item.id} color={item.color} onClick={this.natureTagClick} text={item.name} detail={item.detail}></CheckableTag>
             })
           }
           </Row>
         </Type>
-        {
-          visible ?
-          (
-            <PicShow>
-              <Container>
-                <Discribe>标准</Discribe>
-                <Picture src={url}></Picture>
-              </Container>
-              <Container>
-                <Discribe>实际</Discribe>
-                <Picture src={standard}></Picture>
-              </Container>
-            </PicShow>
-          ) : null
-        }
       </TagsContainer>
     )
   }

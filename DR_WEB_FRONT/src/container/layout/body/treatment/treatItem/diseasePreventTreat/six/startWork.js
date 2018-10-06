@@ -183,7 +183,7 @@ export default class StartWork extends Component {
     }
     return (
       <div className="all">
-        <ScrollArea height={200}>
+        <ScrollArea height={100}>
           <Row type="flex" justify="start">
             <Col lg={24} xl={24} xxl={24}>
               <div>

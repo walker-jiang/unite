@@ -24,10 +24,6 @@ const Mobile = Loadable({
   loader: () => import('./container/layout/body/treatment/treatItem/diseasePreventTreat/mobile'),
   loading: loadingComponent,
 });
-const CureNotIll = Loadable({
-  loader: () => import('./container/cureNotIll'),
-  loading: loadingComponent,
-});
 const App = () => (
   	<BrowserRouter>
 	    <Switch>
@@ -36,7 +32,6 @@ const App = () => (
         <Route path='/layout' component={Layout} ></Route>
         <Route path='/systemOption' component={SystemOption} exact></Route>
         <Route path='/Mobile' component={Mobile} exact></Route>
-        <Route path='/cureNotIll' component={CureNotIll} ></Route>
 	    </Switch>
   	</BrowserRouter>
 );

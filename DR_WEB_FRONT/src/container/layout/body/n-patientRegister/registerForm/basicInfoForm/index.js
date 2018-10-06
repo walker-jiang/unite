@@ -15,7 +15,7 @@ import datePickerSty from 'components/antd/style/datePicker';
 const Option = Select.Option;
 const FormItem = Form.Item;
 
-class Index extends Component {
+class PatientBasicInfo extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -27,9 +27,10 @@ class Index extends Component {
       pationtype: [], // 患者类型
       cardtype: [], // 证件类型
       pationrel: [], //与患者关系
+      blood: [], // 血型
       province: [], // 省数据
       city: [], // 城市数据
-      area: [], //县数据
+      district: [], //县数据
       patientInfo: {
         patientname: '',
         patientno: '',
@@ -45,9 +46,9 @@ class Index extends Component {
         occupation: '', // 职业
         ABO: '', // 血型
         phoneHome: '', // 座机
-        provinceid: '', // 所属省份
-        cityid: '', // 所属城市
-        districtid: '', // 区县,
+        province: {key: '', label:''}, // 所属省份
+        city: {key: '', label:''}, // 所属城市
+        district: {key: '', label:''}, // 区县,
         streetdesc: '', //详细
         ctName: '', // 联系人
         ctRole: '', //与患者关系
@@ -65,39 +66,62 @@ class Index extends Component {
       }
     });
   }
-  getDictData(dictNo){
+  componentWillMount(){
+    // this.getDictList(['country', 'nation', 'sex', 'marry', 'occupation', 'cardtype', 'pationtype', 'pationrel', 'blood']);
+  };
+  /**
+   * [getDictList 获取字典列表]
+   * @param  {[type]} DictTypeList [字典项数组]
+   * @return {[type]}              [undefined]
+   */
+  getDictList(DictTypeList){
     let self = this;
     let params = {
-      url: 'BaDatadictController/getData',
+      url: 'BaDatadictController/getListData',
       data: {
-        dictNo: dictNo
+        dictNoList: DictTypeList
       },
     };
     function callBack(res){
       if(res.result){
-        let arr = res.data.baDatadictDetailList;
-        self.setState({[dictNo]: arr});
+        let dictListObj = {};
+        res.data.forEach(item => {
+          dictListObj[item.dictno.toLowerCase()] = item.baDatadictDetailList;
+        });
+        self.setState({...dictListObj});
       }else{
         console.log('异常响应信息', res);
       }
     };
     ajaxGetResource(params, callBack);
   };
-  componentWillMount(){
-    this.getDictData('country'); // 获取国籍列表
-    this.getDictData('nation'); // 获取民族列表
-    this.getDictData('sex'); // 获取性别列表
-    this.getDictData('marry'); // 获取婚姻列表
-    this.getDictData('occupation'); // 获取职业列表
-    this.getDictData('pationtype');
-    this.getDictData('cardtype'); // 获取证件类型列表
-    this.getDictData('pationrel'); // 获取患者关系类型列表
-    this.getProvinceData(); // 获取省份数据
-  };
   componentWillReceiveProps(nextProps){
-    if(nextProps.baPatient != this.props.baPatient ){
+    let patientInfo = nextProps.baPatient;
+    if(patientInfo != this.props.baPatient ){ // 修改时默认地址
+      let province = {
+        key: patientInfo.provinceid,
+        label: patientInfo.provinceidDic
+      };
+      let city = {
+        key: patientInfo.cityid,
+        label: patientInfo.cityidDic
+      };
+      let district = {
+        key: patientInfo.districtid,
+        label: patientInfo.districtidDic
+      };
+      this.props.form.setFieldsInitialValue({province: province});
+      this.props.form.setFieldsInitialValue({city: city});
+      this.props.form.setFieldsInitialValue({district: district});
+      this.getProvinceData(); // 获取省份数据
+      this.getCityData(patientInfo.provinceid);
+      this.getDistrictData(patientInfo.cityid, () => {
+        this.props.form.setFieldsInitialValue({province: province});
+        this.props.form.setFieldsInitialValue({city: city});
+        this.props.form.setFieldsInitialValue({district: district});
+      });
       this.setState({
-        patientInfo: nextProps.baPatient
+        patientInfo: patientInfo
       })
     }
   };
@@ -110,9 +134,8 @@ class Index extends Component {
     function callBack(res){
       if(res.result && res.data.length){
         let province = res.data;
-        let defaultProvince = self.state.patientInfo.provinceid ? self.state.patientInfo.provinceid : province[0].provid;
-        self.setState({province},() => {
-          self.getCityData(defaultProvince);
+        self.setState({ province },() => {
+          self.getCityData(province[0].provid);
         });
       }else{
         console.log('异常响应信息', res);
@@ -131,9 +154,8 @@ class Index extends Component {
     function callBack(res){
       if(res.result && res.data.length){
         let city = res.data;
-        let defaultCity = self.state.patientInfo.cityid ? self.state.patientInfo.cityid : city[0].cityid;
-        self.setState({city}, () => {
-          self.getAreaData(defaultCity);
+        self.setState({ city }, () => {
+          self.getDistrictData(city[0].cityid);
         });
       }else{
         console.log('异常响应信息', res);
@@ -141,7 +163,7 @@ class Index extends Component {
     };
     ajaxGetResource(params, callBack);
   };
-  getAreaData(cityId){
+  getDistrictData(cityId, setValueFunc){
     let self = this;
     let params = {
       url: 'BaDistrictController/getList',
@@ -151,8 +173,12 @@ class Index extends Component {
     };
     function callBack(res){
       if(res.result){
-        let area = res.data;
-        self.setState({area});
+        let district = res.data;
+        self.setState({ district }, () => {
+          if(setValueFunc){
+            setValueFunc();
+          }
+        });
       }else{
         console.log('异常响应信息', res);
       }
@@ -173,7 +199,8 @@ class Index extends Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     let disabled = this.props.disabled;
-    let { country, nation, sex, marry, occupation, pationtype, cardtype, pationrel, province, city, area, patientInfo } = this.state;
+    let { country, nation, sex, marry, occupation, pationtype, cardtype, pationrel, blood, province, city, district, patientInfo } = this.state;
+    console.log('province', province);
     let date = new Date();
     const age = date.getFullYear() - parseInt(patientInfo.birthday.substr(0,4));
     const formItemLayout = {
@@ -423,11 +450,11 @@ class Index extends Component {
                 label="ABO血型："
                 >
                   {getFieldDecorator('ABO', {
-                    initialValue: patientInfo.occupation ? patientInfo.occupation : ( occupation.length ? occupation[0].value : '')
+                    initialValue: patientInfo.ABO ? patientInfo.occupation : ( blood.length ? blood[0].value : '')
                   })(
                     <SpecSelect disabled={disabled}>
                     {
-                      occupation.map((item, index)=>
+                      blood.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
                       )
                     }
@@ -457,7 +484,7 @@ class Index extends Component {
                 colon={false}
                 label="住址："
                 >
-                  {getFieldDecorator('provinceid', {
+                  {getFieldDecorator('province', {
                     initialValue: province.length > 0 ? {key: province[0].provid, label: province[0].provname} : {key: '', label: ''}
                   })(
                     <SpecSelect labelInValue onChange={(e) => {this.getCityData(e.key)}} disabled={disabled}>
@@ -476,10 +503,10 @@ class Index extends Component {
                 wrapperCol={{span: 22}}
                 colon={false}
                 >
-                  {getFieldDecorator('cityid', {
-                    initialValue: city.length > 0 ? {key: city[0].cityid, label: city[0].cityname} : {key: '', label: ''}
+                  {getFieldDecorator('city', {
+                    initialValue: city.length > 0 ? {key: city[0].cityid, label: city[0].cityname}: {key: '', label: ''}
                   })(
-                    <SpecSelect labelInValue onChange={(e) => {this.getAreaData(e.key)}} disabled={disabled}>
+                    <SpecSelect labelInValue onChange={(e) => {this.getDistrictData(e.key)}} disabled={disabled}>
                     {
                       city.map((item, index)=>
                         <Option key={index} value={item.cityid}>{item.cityname}</Option>
@@ -496,12 +523,12 @@ class Index extends Component {
                 colon={false}
                 label=' '
                 >
-                  {getFieldDecorator('areaid', {
-                    initialValue: area.length > 0 ? {key: area[0].distid, label: area[0].distname} : {key: '', label: ''}
+                  {getFieldDecorator('district', {
+                    initialValue: district.length > 0 ? {key: district[0].distid, label: district[0].distname} : {key: '', label: ''}
                   })(
                     <SpecSelect labelInValue disabled={disabled}>
                     {
-                      area.map((item, index)=>
+                      district.map((item, index)=>
                         <Option key={index} value={item.distid}>{item.distname}</Option>
                       )
                     }
@@ -608,7 +635,7 @@ const SpecDatePicker = styled(DatePicker)`
 /*
 @作者：姜中希
 @日期：2018-07-23
-@描述：患者信息弹框form表单组件
+@描述：患者信息表单组件
 */
-const InfoForm = Form.create()(Index);
+const InfoForm = Form.create()(PatientBasicInfo);
 export default InfoForm;

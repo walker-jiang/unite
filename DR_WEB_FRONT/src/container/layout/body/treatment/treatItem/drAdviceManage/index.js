@@ -39,11 +39,13 @@ export default class Index extends Component {
       orderid: '', // 当前医嘱ID
       showWay: 'table', // 展示形式
       buOrderDtlList: [], // 辨证论治数据
+      diagnoseText: '', // 诊断文本
     };
     this.actionManager = this.actionManager.bind(this);
     this.getData = this.getData.bind(this);
     this.submit = this.submit.bind(this);
     this.modelData = this.modelData.bind(this);
+    this.diagnoseUpdate = this.diagnoseUpdate.bind(this);
   }
   componentWillMount(){
     this.getData();
@@ -1042,8 +1044,123 @@ export default class Index extends Component {
   			}],
       }
   };
+  /** [PatentSampleData 中成药数据项] */
+  PatentSampleData(){
+    return {
+    	medicineData: [
+        {
+        	"approveNo": "2",
+        	"baUsage": {
+        		"ctstamp": "2018-07-16 17:18:59",
+        		"orgid": "6",
+        		"pinyin": "ronghua",
+        		"seqno": 4,
+        		"usagecode": 6,
+        		"usagedesc": "融化",
+        		"usageid": 6,
+        		"usagename": "融化",
+        		"useflag": "1",
+        		"utstamp": "2018-07-16 17:35:04",
+        		"utype": 2
+        	},
+        	"baseUnit": 2,
+        	"baseflag": "1",
+        	"ctstamp": "2018-08-21 15:54:37",
+        	"defQty": 2,
+        	"defTakedays": 3,
+        	"doseid": 3,
+        	"dosename": "3",
+        	"feeFactor": 2,
+        	"feeUnit": "2",
+        	"freqid": 2,
+        	"freqname": "",
+        	"mSortid": 3,
+        	"manuid": "32",
+        	"mediFactor": 2,
+        	"mediUnit": 2,
+        	"medicinecode": 105,
+        	"medicineid": "105",
+        	"medicinename": "急支糖浆",
+        	"medicinetype": "1",
+        	"medinslevel": "01",
+        	"medinsrem": "无",
+        	"orgid": "1",
+        	"otherPinyin": "123",
+        	"packageUnit": "2",
+        	"pinyin": "123",
+        	"remarks": "",
+        	"rxflag": "1",
+        	"seqno": 123,
+        	"specification": "1g",
+        	"supplierid": "1",
+        	"unitprice": 1,
+        	"usageid": 6,
+        	"useflag": "1",
+        	"utstamp": "2018-08-22 11:30:36",
+        	"validDate": "2018-08-21 15:54:58",
+        	"medinslevelDic": "一级",
+        	"baseUnitDic": "钱",
+        	"key": 1,
+        	"status": 2,
+        	"usagename": "融化"
+        }
+      ],
+      recipename: '处方名称', // 处方名称
+      remark: '嘱托', // 嘱托
+      treatway: '开水煮', // 治疗方法
+      countnum: 3, // 付数
+      freq: {key: '1', label: '每日一次'}, // 频次
+    	"buDiagnosisList": [{
+  				"buDiagnosisDismainfList": [{
+  					"ctstamp": "2018-09-22 10:55:46",
+  					"diagnosisid": "201837584946816406",
+  					"diseaseid": 18,
+  					"id": "201837584946816407",
+  					"manifcode": "ZBXM10",
+  					"manifdesc": "身热，微恶风，汗少，肢体酸重或疼痛，头昏重胀痛，咳嗽痰黏，鼻流浊涕，心烦口渴，或口中黏腻，渴不多饮，",
+  					"manifid": 29,
+  					"manifname": "暑湿伤表证",
+  					"registerid": "201837493347470156",
+  					"useflag": "1",
+  					"utstamp": "2018-09-22 10:55:46"
+  				}],
+  				"cmDiagnosisType": null,
+  				"codetype": "",
+  				"ctstamp": "2018-09-22 10:55:46",
+  				"diacode": "",
+  				"diadesc": "",
+  				"diagnosisCode": "BNW010",
+  				"diagnosisName": "感冒",
+  				"diagnosisNo": null,
+  				"diagnosisType": null,
+  				"diagnosisWay": 1,
+  				"diagnosisid": "201837584946816406",
+  				"diaid": null,
+  				"dianame": "",
+  				"discode": "BNW010",
+  				"disdesc": "感冒",
+  				"diseaseid": 18,
+  				"disname": "感冒",
+  				"doubtDiaType": "",
+  				"mainDiaType": "",
+  				"registerid": "201837493347470156",
+  				"seqno": 4,
+  				"useflag": "1",
+  				"utstamp": "2018-09-22 10:55:46",
+  				"diagnosisWayDic": "中医"
+  			}],
+      }
+  };
+  /**
+   * [diagnoseUpdate 诊断更新后的诊断组合文本]
+   * @param  {[type]} diagnoseText [文本内容]
+   * @return {[type]}              [undefined]
+   */
+  diagnoseUpdate(diagnoseText){
+    this.setState({ diagnoseText });
+  };
   render() {
-    let { dataSource, tatalRecords, currentPage, actionType, orderid, buOrderDtlList , showWay } = this.state;
+    let { dataSource, tatalRecords, currentPage, actionType, orderid, buOrderDtlList , showWay, diagnoseText } = this.state;
     let that = this;
     let selectedRows = dataSource.filter((item) => item.checkState);
     let pagination = {
@@ -1084,7 +1201,7 @@ export default class Index extends Component {
                   <SpecTableIcon showWay={showWay} onClick={() => {this.setState({ showWay: 'table'})}}/>
                   <SpecListIcon showWay={showWay} onClick={() => {this.setState({ showWay: 'list'})}}/>
                 </Toggle>
-                <Diagnose />
+                <Diagnose diagnoseUpdate={this.diagnoseUpdate}/>
               </Header>
               {
                 showWay == 'list' ?

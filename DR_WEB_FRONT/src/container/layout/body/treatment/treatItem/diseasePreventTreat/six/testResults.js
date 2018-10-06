@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import ReactDom from "react-dom"
-import { Button, Input, Radio, Progress, Row, Col, Menu, Icon } from 'antd'
+import { Row, Col, Menu, Icon } from 'antd'
 import $ from 'jquery';
 import echarts from 'echarts/lib/echarts';
 import 'echarts/lib/chart/bar';
@@ -112,6 +111,8 @@ export default class TestResults extends Component {
             reminder: res.data.solution.reminder,//温馨提示
             lifeWay: res.data.solution.lifeWay,//生活方式
             imgUrl: res.data.resultStr,//二维码
+          },function(){
+            this.onEcharts();
           })
         };
 
@@ -188,13 +189,14 @@ export default class TestResults extends Component {
 
   printClick(){
     // 打印
-    var LODOP=getLodop();
-    LODOP.SET_PRINT_PAGESIZE(2,2100,2970,"A4");
-    LODOP.SET_PRINT_STYLE("FontSize",12);
-    LODOP.SET_PRINT_STYLE("Bold",1);
-    LODOP.ADD_PRINT_HTM(0,0,1000,1900,document.getElementById("testResult").innerHTML);
-    LODOP.PREVIEW();
+    // var LODOP=getLodop();
+    // LODOP.SET_PRINT_PAGESIZE(2,2100,2970,"A4");
+    // LODOP.SET_PRINT_STYLE("FontSize",12);
+    // LODOP.SET_PRINT_STYLE("Bold",1);
+    // LODOP.ADD_PRINT_HTM(0,0,1000,1900,document.getElementById("testResult").innerHTML);
+    // LODOP.PREVIEW();
     //LODOP.PRINT();
+    window.print()
   }
 
   pdfClick(){
@@ -335,13 +337,16 @@ export default class TestResults extends Component {
     }
     return (
       <div id="testResult" style={styles.names}>
-          <Row type="flex" justify="start">
-            <Col lg={24} xl={24} xxl={24}>
+          <Row type="flex" justify="start" style={styles.rowMarginTop}>
+            {/* <Col lg={24} xl={24} xxl={24}>
               <div>
                 <div>
                   <img src={duihao} style={styles.duihao}/>
                   <span style={styles.testTip}>该患者本次体质辨析测评已完成，结果如下：</span>
                 </div>
+                <div>
+                  <img src={imgUrl} style={styles.erweima}/>
+                </div>  
                 <div id="noPrint" style={styles.testResult2}>
                   <img src={s} style={styles.history}
                   onClick={this.iconClick.bind(this)}/>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -356,10 +361,35 @@ export default class TestResults extends Component {
                   onClick={this.pdfClick.bind(this)}/>&nbsp;&nbsp;&nbsp;&nbsp;
                 </div>
               </div>
+            </Col> */}
+            <Col lg={2} xl={2} xxl={2} offset={1}>
+              <div>
+                <img src={duihao} style={styles.duihao}/>
+              </div>
+            </Col>  
+            <Col lg={8} xl={8} xxl={8} style={styles.long}>
+              <div>
+                <span style={styles.testTip}>该患者本次体质辨析测评已完成，结果如下：</span>
+                </div>
+            </Col>    
+            <Col lg={2} xl={2} xxl={2} offset={6}> 
+                <img src={imgUrl} style={styles.erweima}/>
+            </Col>  
+            <Col lg={5} xl={5} xxl={5} style={styles.rightImage}> 
+              <div id="noPrint">
+                <img src={s}
+                onClick={this.iconClick.bind(this)}/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <img src={xian} style={styles.xian}/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <img src={test} style={styles.test}
+                onClick={this.handClick}/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <img src={xian} style={styles.xian}/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <img src={printImages} style={styles.printImages} id="snapshotButton"
+                onClick={this.printClick.bind(this)}/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <img src={xian} style={styles.xian}/>&nbsp;&nbsp;&nbsp;&nbsp;
+                <img src={exportFile} style={styles.exportFile}
+                onClick={this.pdfClick.bind(this)}/>&nbsp;&nbsp;&nbsp;&nbsp;
+              </div>
             </Col>
-          </Row>
-          <Row>
-            <img src={imgUrl}/>
           </Row>
           <Row type="flex" justify="start">
             <Col lg={24} xl={24} xxl={24}>
@@ -374,7 +404,7 @@ export default class TestResults extends Component {
                   </div>
                 </div>
                 <div style={styles.threeBorder}>
-                  <ScrollArea height={280}>
+                  <ScrollArea height={170}>
                     <div style={styles.allStyle}>
                       <div style={styles.allStyle1}>
                         <div style={styles.jielun}>
@@ -450,12 +480,21 @@ export default class TestResults extends Component {
 
 const styles = {
   names:{
-    marginLeft: '6.5%',
     overflow: 'hidden'
   },
   testResult2:{
     float: 'right',
-    marginTop: '-3%'
+    marginTop: '-5rem'
+  },
+  long:{
+    marginLeft: '-3rem',
+    marginTop: '1rem'
+  },
+  rowMarginTop:{
+    marginTop: '1rem'
+  },
+  rightImage: {
+    marginTop: '1rem'
   },
   test:{
     width: '33px',
@@ -471,7 +510,12 @@ const styles = {
     fontStyle: 'normal',
     fontSize: '20px',
     color: 'black',
-    marginLeft: '1.5%'
+    // marginLeft: '1.5%'
+  },
+  erweima: {
+    width: '5rem',
+    // marginLeft: '74rem',
+    // marginTop: '-5rem'
   },
   allStyle:{
     overflow: 'hidden',
@@ -603,7 +647,9 @@ const styles = {
   },
   flexStyle:{
     width: '100%',
-    display: 'flex'
+    display: 'flex',
+    marginLeft: '2.5rem',
+    marginRight: '2.5rem'
   },
   historyRemember:{
     width: '128px',

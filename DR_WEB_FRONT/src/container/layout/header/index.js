@@ -15,7 +15,7 @@ export default class Header extends Component {
   }
 }
 const Container = styled.div`
-  height: 40px;
+  height: 50px;
   width: 100%;
   background-color: rgba(255, 255, 255, 1);
   color: #0A6ECB;

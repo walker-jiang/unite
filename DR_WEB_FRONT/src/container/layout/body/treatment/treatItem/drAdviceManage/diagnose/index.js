@@ -55,12 +55,15 @@ class Index extends Component {
     let that = this;
     function success(res) {
       that.getDiagnoseData();
+      that.props.diagnoseUpdate(formValue.extractionData)
     };
     ajaxGetResource(params, success);
   }
   render () {
     let { buDiagnosisList } = this.state;
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, getFieldsValue } = this.props.form;
+    let { diagnose = '' } = getFieldsValue();
+
     const formItemLayout = {
       labelCol: {
         xs: { span: 2 },

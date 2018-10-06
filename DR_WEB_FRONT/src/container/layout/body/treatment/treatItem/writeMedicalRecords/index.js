@@ -59,6 +59,8 @@ class Index extends Component {
         "heightnum": '',//身高
         "hpi": '',//现病史
         "inspection": '',//望诊
+        "facephoto": '', // 舌头图片
+        "sidephoto": '', // 舌头图片
         "moHistory": '',//月经婚育史
         "orgid": '',
         "palpation": '',//切诊
@@ -188,7 +190,9 @@ class Index extends Component {
           heightnum: values.heightnum,
           weightnum: values.weightnum,
           psycheck: values.psycheck,
-          BuTargetChooseList: selectedItems
+          BuTargetChooseList: selectedItems,
+          facephoto: values.inspectionPicture[0],
+          sidephoto: values.inspectionPicture[1]
         };
         Object.assign(initData, finalObj);
         let self = this;
@@ -218,7 +222,7 @@ class Index extends Component {
             console.log('异常响应信息', res);
           }
         };
-        ajaxGetResource(params, callBack);
+        // ajaxGetResource(params, callBack);
       }
     });
   }
@@ -326,7 +330,7 @@ class Index extends Component {
                 return <IllHistory_familyhis key={index} title='家族史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.familyhistory}}/>
               }
               if(item.targetid == 9 && item.isChoose == '01'){
-                return <ObserveCure key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.inspection}></ObserveCure>
+                return <ObserveCure key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: [initData.facephoto, initData.sidephoto], text: initData.inspection}}></ObserveCure>
               }
               if(item.targetid == 10 && item.isChoose == '01'){
                 return <FeelCure key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
