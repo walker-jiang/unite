@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { withRouter } from 'react-router-dom';
-import { Icon, Button, Modal, Carousel } from 'antd';
+import { Icon, Button, Modal } from 'antd';
 import getResource from 'commonFunc/ajaxGetResource';
 import HisList from './hisList';
 import UnbindTip from './unbindTip';

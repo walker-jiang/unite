@@ -371,6 +371,7 @@ const RowLine = styled.div`
   flex-direction: row;
   justify-content: space-around;
   width: 100%;
+  margin: 40px;
 `;
 const SpecTable = styled(Table)`
   .ant-table-body {

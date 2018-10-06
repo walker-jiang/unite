@@ -7,7 +7,18 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 // const ProgressBarPlugin = require('progress-bar-webpack-plugin');
 
 module.exports = {
-  entry: ['./src/index.js'],
+  entry: {
+    app: './src/index.js',
+    // vendor: [
+    //   'react',
+    //   'react-dom',
+    //   'react-router'
+    // ],
+    // antd: [
+    //   'antd/lib/button',
+    //   'antd/lib/icon'
+    // ]
+  },
   output: {
     path: path.resolve(__dirname, 'ROOT'), // 打包输出目录
     publicPath: '/',
@@ -122,7 +133,7 @@ module.exports = {
   },
   devServer: {
     compress: true,
-    hot: true,
+    // hot: true,
     host: '0.0.0.0', // 配置可以让同一局域网的ip访问
     historyApiFallback: true, // 当路由不匹配时自动找到dist/index.html， 如果使用其它服务器也需要配置404匹配dist/index.html
     port: 8987
