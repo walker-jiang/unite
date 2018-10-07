@@ -39,9 +39,9 @@ ReactDOM.render(
     <App />,
     document.getElementById('app')
 );
-if (module.hot) {
-  module.hot.accept();
-}
+// if (module.hot) {
+//   module.hot.accept();
+// }
 /*
 @作者：姜中希
 @日期：2018-06-05
