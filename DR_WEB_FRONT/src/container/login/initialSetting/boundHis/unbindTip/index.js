@@ -16,12 +16,12 @@ export default class Index extends Component {
   handleOk(){
     let userId = window.sessionStorage.getItem('userid'); // 用户ID
     let paramsData = {
-      userId: userId
+      orguserid: userId
     };
     let params = {
-      type: 'post',
-      url: 'sysBindController/unBindHisSys',
-      data: JSON.stringify(paramsData)
+      type: 'delete',
+      url: 'baOrguserUnionController/unBindHisSys',
+      data: userId
     };
     let that = this;
     function success(res) {

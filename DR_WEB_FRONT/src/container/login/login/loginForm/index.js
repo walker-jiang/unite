@@ -69,10 +69,11 @@ class Index extends Component {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
+        let code = this.state.code;
         let paramsData = {
           username: values.userName,
           password: values.password,
-          code: 1,
+          code: code,
           verificationCode: values.verificationCode,
         };
         this.loginAction(paramsData);
@@ -88,31 +89,53 @@ class Index extends Component {
       data: JSON.stringify(paramsData)
     }
     function success(res) {
-      if (res.data != null) {
-        window.orgUserid = res.data.baOrguserUnion[0].orgUserid; // 保存为全局变量
-        let { rememberPass, autoLogin } = that.state;
-        if(rememberPass || autoLogin){ // 记住密码和自动登陆都需要保存用户名、密码
-          window.localStorage.setItem('username', paramsData.username);
-          window.localStorage.setItem('password', paramsData.password);
-        }
-        window.localStorage.setItem('rememberPass', rememberPass);
-        window.localStorage.setItem('autoLogin', autoLogin);
-        let id = res.data.baOrguserUnion[0].orgUserid;
-        let path = {
-          pathname:'/login/initialSetting',
-          state: {
-            orgUserid: id
+      if(res.result){
+        // 将当前用户的信息保存供其它组件用
+        window.sessionStorage.setItem('username', res.data.baOrguser.realname); // 用户名
+        window.sessionStorage.setItem('deptid', res.data.baOrguser.deptid); // 科室ID
+        window.sessionStorage.setItem('orgid', res.data.baOrguser.orgid); // 机构ID
+        window.sessionStorage.setItem('userid', res.data.baOrguser.orgUerid); // 用户ID
+        window.sessionStorage.setItem('post', res.data.baOrguser.post); // 医生级别
+        // 选择要跳转的路由
+        let path = '/login/initialSetting';
+        if(res.data.baOrguser.initcomplete != '0'){ // 跳过初始化组件
+          path = '/layout';
+          if(window.loginSystem){ // 客户端存在
+            that.setUserInfo(res.data.baOrguser.deptid, res.data.baOrguser.orgid, res.data.baOrguser.orgUserid, res.data.baOrguser.post, res.data.baOrguser.realname, res.data.baOrguser.photo);
           }
         }
         that.props.history.push(path); // 跳转到初始化设置组件
-      } else {
+      }else{
         that.tipModal.showModal({
           content: '请核对输入是否正确，如果重试问题依然存在，请跟系统管理员联系~',
-          stressContent: '用户不存在，'
+          stressContent: res.desc
         });
       }
+      // if (res.data != null) {
+      //   window.orgUserid = res.data.baOrguserUnion[0].orgUserid; // 保存为全局变量
+      //   let { rememberPass, autoLogin } = that.state;
+      //   if(rememberPass || autoLogin){ // 记住密码和自动登陆都需要保存用户名、密码
+      //     window.localStorage.setItem('username', paramsData.username);
+      //     window.localStorage.setItem('password', paramsData.password);
+      //   }
+      //   window.localStorage.setItem('rememberPass', rememberPass);
+      //   window.localStorage.setItem('autoLogin', autoLogin);
+      //   let id = res.data.baOrguserUnion[0].orgUserid;
+      // } else {
+      // }
     };
     getResource(params, success);
+  };
+  setUserInfo(deptid, orgid , userid, post, username, photo){
+    let obj = {
+      userid: userid,
+      orgid: orgid,
+      deptid: deptid,
+      post: post,
+      username: username,
+      photo: photo
+    };
+    window.loginSystem(JSON.stringify(obj));
   };
   /* 记住密码 */
   rememberPass(checked) {

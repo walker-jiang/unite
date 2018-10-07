@@ -12,6 +12,7 @@ export default class Index extends Component {
     this.state = {
       visible: false,
       saved: 0, // 0 未保存， 1保存中， 2保存成功 3， 保存失败
+      info: '保存', // 类型
     };
   };
   hideModal(){
@@ -19,10 +20,11 @@ export default class Index extends Component {
       visible: false
     });
   };
-  showModal(status){
+  showModal(status, info = '保存'){
     this.setState({
       visible: true,
-      saved: status
+      saved: status,
+      info: info,
     }, () => { // 一段时间后消失
       if(status == 2 || status == 3){
         window.setTimeout(() => {
@@ -32,7 +34,7 @@ export default class Index extends Component {
     });
   };
   render() {
-    let { visible, saved } = this.state;
+    let { visible, saved, info } = this.state;
     return (
       <WindowModal
          className="Modal"
@@ -41,14 +43,14 @@ export default class Index extends Component {
          ariaHideApp={false}>
          {
            saved == 1 ?
-            <Loading loading={true} size='40px' info='正在保存数据，请稍后...'></Loading>
+            <Loading loading={true} size='40px' info={'正在' + info + '数据，请稍后...'}></Loading>
            : saved == 2 ?
            <SuccessTip>
-             <SuccessIcon type='success' />保存成功！
+             <SuccessIcon type='success' />{info}成功！
            </SuccessTip> : (
              saved == 3 ?
              <SuccessTip>
-               <FailIcon type='fail' />保存失败，请检查网络连接！
+               <FailIcon type='fail' />{info}失败，请检查网络连接！
              </SuccessTip> : null
            )
          }

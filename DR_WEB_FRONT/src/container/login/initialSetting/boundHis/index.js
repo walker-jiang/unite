@@ -7,17 +7,14 @@ import HisList from './hisList';
 import UnbindTip from './unbindTip';
 import UnfinishedTip from './unfinishedTip';
 import buttonSty from 'components/antd/style/button';
+import TipModal from 'components/dr/modal/tip';
 
 class BindHis extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userData: [], // 用户信息
-      bindData: [], // 绑定信息
+      boundData: null, // 已绑定信息
       supportSysData: [], // 支持系统系统
-      unionId: '', // 联合登录 ID
-      sysName: '', // 系统名称
-      orgUserid: '', // 用户ID
     };
     this.handleClick = this.handleClick.bind(this);
     this.getUnionData =  this.getUnionData.bind(this);
@@ -34,64 +31,31 @@ class BindHis extends Component {
     let params = {
       url: 'BaOrguserController/getUnionData',
       type: 'post',
-      data: window.orgUserid,
+      data: window.sessionStorage.getItem('userid'),
     };
     let that = this;
     function success(res) {
       if(res.result){
-        // 将当前用户的信息保存供其它组件用
-        window.sessionStorage.setItem('username', res.data.baOrguser.realname); // 用户名
-        window.sessionStorage.setItem('deptid', res.data.baOrguser.deptid); // 科室ID
-        window.sessionStorage.setItem('orgid', res.data.baOrguser.orgid); // 机构ID
-        window.sessionStorage.setItem('userid', window.orgUserid); // 用户ID
-        window.sessionStorage.setItem('post', res.data.baOrguser.post); // 医生级别
-        if(res.data.baOrguser.initcomplete != '0'){
-          if(bundleMode == 'CS'){
-            that.setUserInfo();
-          }
-        }
         that.setState({
-          userData: res.data.baOrguser,
-          bindData: res.data.baOrguserUnion,
+          boundData: res.data.baOrguserUnion,
           supportSysData: res.data.sySupportsys,
-          unionId: res.data.baOrguserUnion[0].uionid,
-          sysName: res.data.baOrguserUnion[0].sysname,
-          orgUserid: res.data.baOrguserUnion[0].orgUserid,
         })
       }
     };
     getResource(params, success);
   }
-  setUserInfo(){
-    let deptid = window.sessionStorage.getItem('deptid'); // 科室id
-    let orgid = window.sessionStorage.getItem('orgid'); // 机构id
-    let userid = window.sessionStorage.getItem('userid'); // 用户id
-    let post = window.sessionStorage.getItem('post'); // 医生级别
-    let username = window.sessionStorage.getItem('username'); // 用户名
-    let obj = {
-      userid: userid,
-      orgid: orgid,
-      deptid: deptid,
-      post: post,
-      username: username,
-      photo: ''
-    };
-    // console.log(obj);
-    window.loginSystem(JSON.stringify(obj));
-  };
   handleClick() {
-    let unionId = this.props.unionId;
-    if (unionId != '') {
+    if (this.props.boundData) {
       this.props.onToggle();
     } else {
-      const modal = Modal.error({
-        title: '请您先绑定HIS，绑定后才能继续下一步设置',
+      this.tipModal.showModal({
+        content: '绑定后才能进行下一步设置',
+        stressContent: '请您先绑定HIS，'
       });
-      setTimeout(() => modal.destroy(), 1000);
     }
   }
   render() {
-    let {unionId, sysName, supportSysData} = this.state;
+    let {boundData, supportSysData} = this.state;
     return (
       <div>
         <Tip>
@@ -99,10 +63,10 @@ class BindHis extends Component {
           注册本系统前，您需要先绑定一个HIS系统：
         </Tip>
         <Content>
-          <HisList supportSysData={supportSysData} unionId={unionId}>
+          <HisList supportSysData={supportSysData} sysid={boundData ?　boundData.sysid : ''}>
           </HisList>
           {
-            !unionId ? null :
+            !boundData ? null :
             (
               <AlreadyBind>
                 <AlreadyBindTip>
@@ -111,7 +75,7 @@ class BindHis extends Component {
                 </AlreadyBindTip>
                 <AlBindTip>
                   HIS系统名称：
-                  <SpecialColor>{sysName}</SpecialColor>  | HIS用户名：
+                  <SpecialColor>{boundData.sysName}</SpecialColor>  | HIS用户名：
                   <SpecialColor>daniel</SpecialColor>
                 </AlBindTip>
                 <Unbind onClick={()=>{this.unbindTip.handleOpen()}} >解除绑定</Unbind>
@@ -125,6 +89,7 @@ class BindHis extends Component {
         </Footer>
         <UnbindTip ref={ref=>{this.unbindTip = ref}} handleOk={this.getUnionData}></UnbindTip>
         <UnfinishedTip ref={ref=>{this.unfinishedTip = ref}}></UnfinishedTip>
+        <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </div>
     );
   }
@@ -231,7 +196,8 @@ const Unbind = styled.p`
 `;
 const Footer = styled.div`
   width: 708px;
-  height: 80px;
+  height: 60px;
+  padding-top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;

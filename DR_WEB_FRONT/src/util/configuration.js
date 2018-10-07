@@ -4,9 +4,9 @@
 // 219.234.5.58:8087
 // 192.168.1.146:8087
 // 10.10.200.114:8087
-// 10.192.3.10
+// http://10.192.5.107:8086/
 //219.234.5.58:8765
-const config_service_url = 'http://219.234.5.58:8087/'; // 后台服务地址 10.192.4.233:8088   219.234.5.58:8087
+const config_service_url = 'http://10.192.5.107:8086/'; // 后台服务地址 10.192.4.233:8088   219.234.5.58:8087
 const config_AssistBar_url = 'http://219.234.5.58:8088/'; // 测试病历书写-----易超文
 const config_AssistBar_urlTwo = 'http://219.234.5.58:8088/'; // 测试病历书写-----尧尧
 const config_CureService_url = 'http://219.234.5.58:8098/'; // 治未病后台服务地址
@@ -21,6 +21,7 @@ window.menus = [
   {key:"患者登记",show:true, id: 'registration'},
   {key:"今日诊疗",show:true, id: 'tideyDiagnosis'},
   {key:"病历中心",show:true, id: 'medicalCenter'},
+  {key:"辨证论治",show:true, id: 'differentiation'},
   {key:"治未病",show:true, id: 'cureNotIll'},
   {key:"中医知识库",show:true, id: 'medicine'},
   {key:"个人设置",show:true, id: 'personalSettings'},

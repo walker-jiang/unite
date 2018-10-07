@@ -5,6 +5,8 @@ import { Icon, Button } from 'antd';
 import buttonSty from 'components/antd/style/button';
 import Loading from 'components/dr/loading';
 import bind from './bind.png';
+import getResource from 'commonFunc/ajaxGetResource';
+import SaveTip from 'components/dr/modal/saveTip';
 
 class Index extends Component {
   constructor(props){
@@ -17,30 +19,26 @@ class Index extends Component {
   /** [bindImmediately 立即绑定] */
   bindImmediately(){
     let self = this;
-    self.setState({
-      bindStatus: true
-    }, ()=>{
-      setTimeout(()=>{
-        self.setState({
-          bindStatus: false
-        });
-        self.props.history.push('/initialSetting'); // 跳转到初始化设置组件
-      },1000);
-    });
     let userId = window.sessionStorage.getItem('userid');
+    self.saveTip.showModal(1, '绑定');
+    const data = {
+      orgUserid: userId,
+      sysid: this.props.sysid
+    };
     let params = {
-      url: 'sysBindController/bindHisSys',
-      data: {
-        userId: userId
-      },
+      url: 'baOrguserUnionController/bindHisSys',
+      type: 'post',
+      data: JSON.stringify(data),
     };
-    function success(res) {
-      self.props.history.push('/initialSetting'); // 跳转到初始化设置组件
+    function callBack(res) {
+      if(res.result){
+        self.saveTip.showModal(2, '绑定');
+        self.props.history.push('/login/initialSetting'); // 跳转到初始化设置组件
+      }else{
+        self.saveTip.showModal(3, '绑定');
+      }
     };
-    function error(res) {
-      console.log('身份验证失败');
-    };
-    // getResource(params, success, error);
+    getResource(params, callBack);
   };
   render() {
     let bindStatus = this.state.bindStatus;
@@ -71,6 +69,7 @@ class Index extends Component {
             ，请稍后
           </div>
         </Loading>
+        <SaveTip ref={ ref => {this.saveTip = ref}}></SaveTip>
       </div>
     );
   }

@@ -55,7 +55,7 @@ class Index extends Component {
       };
       if (!err) {
         let params = {
-          url: 'loginController/updatePassword',
+          url: 'BaOrguserController/updatePassword',
           type: 'post',
           data: JSON.stringify(paramsData),
         }
@@ -164,6 +164,7 @@ const WarmTip = styled.p`
 `;
 const Footer = styled.div`
   width: 708px;
+  padding-top: 20px;
   height: 80px;
   display: flex;
   align-items: center;

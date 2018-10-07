@@ -25,12 +25,14 @@ const RegisterForm = Loadable({
   loader: () => import('./n-patientRegister/registerForm'),
   loading: loadingComponent,
 });
-
 const Electronic = Loadable({
   loader: () => import('./n-electronicMedicalRecords'),
   loading: loadingComponent,
 });
-
+const SyndromeTreatment = Loadable({
+  loader: () => import('./n-syndromeTreatment'),
+  loading: loadingComponent,
+});
 const Cure = Loadable({
   loader: () => import('./n-cure'),
   loading: loadingComponent,
@@ -64,6 +66,7 @@ export default class Body extends Component {
           <Route path='/Layout/treatment/:id' component={TreatManage}></Route>
           <Route path='/Layout/electronicMedicalRecords' component={Electronic}></Route>
           <Route path='/Layout/cure' component={Cure}></Route>
+          <Route path='/Layout/syndromeTreatment' component={SyndromeTreatment}></Route>
           <Route path='/Layout/patientRecords' component={PantientRecords}></Route>
           <Route path='/Layout/more' component={More}></Route>
       </Container>

@@ -14,7 +14,7 @@ function getBase64(img, callback) {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
-  console.log("ok", img)
+  // console.log("ok", img)
 }
 
 class Index extends Component {
@@ -25,12 +25,53 @@ class Index extends Component {
       orgUserid: this.props.orgUserid,
     };
   }
+  componentWillMount(){
+    this.getDept();
+  };
+  /** [getDept 科室数据] */
+  getDept() {
+    let params = {
+      url: 'BaDepartmentController/getList',
+      data: {
+        keyword: '',
+        orgid: window.sessionStorage.getItem('orgid')
+      }
+    };
+    let that = this;
+    function success(res) {
+      if(res.result){
+        let deptData = res.data;
+        let defaultDept = {};
+        let deptname = '';
+        deptData.forEach(item => {
+          if(item.deptid == window.sessionStorage.getItem('deptid')){
+            deptname = item.deptname;
+          }
+        });
+        defaultDept = {
+          key: window.sessionStorage.getItem('deptid'),
+          label: deptname
+        }
+        that.setState({ deptData, defaultDept }, () => {
+          that.getDocData('init', window.sessionStorage.getItem('deptid'));
+        })
+      }
+    };
+    ajaxGetResource(params, success);
+  }
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
         let userId = window.sessionStorage.getItem('userid');
+        let data = {
+          "deptid": 0,
+          "orgName": "string", //
+          "orgUerid": 0,
+          "realname": "string"
+        };
+
         let params = {
           url: 'BaOrguserController/getData',
           type: 'post',
@@ -57,7 +98,6 @@ class Index extends Component {
     }
   }
   render() {
-    console.log('window.sessionStorage.getItem', window.sessionStorage.getItem('userid'));
     const props = {
       action: config_service_url + 'BaUploadController/upload',
       data: {
@@ -150,13 +190,13 @@ class Index extends Component {
           {...formItemLayout}
           colon={false}
           label="当前科室：">
-          {getFieldDecorator('section', {
+          {getFieldDecorator('dept', {
             rules: [{
               required: true, message: '请选择所在科室',
             }],
-            initialValue: {key: '1', label: '中医科'}
+            initialValue: '1'
           })(
-            <SpecSelect  labelInValue>
+            <SpecSelect>
               <Option value="1">中医科</Option>
               <Option value="2">适宜技术服务科</Option>
               <Option value="3">全科</Option>
@@ -240,9 +280,10 @@ const RequestTitle = styled.div`
   line-height: 25px;
 `;
 const Footer = styled.div`
-  border-top: 1px solid #FFF;
+  border-top: 1px solid #FFFFFF;
+  padding-top: 20px;
   width: 100%;
-  height: 80px;
+  height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;

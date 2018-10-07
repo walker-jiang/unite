@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import { Form, Input, Button } from 'antd';
 import inputSty from 'components/antd/style/input';
 import buttonSty from 'components/antd/style/button';
+import getResource from 'commonFunc/ajaxGetResource';
+import TipModal from 'components/dr/modal/tip';
 
 const FormItem = Form.Item;
 
@@ -16,28 +18,31 @@ class Index extends Component {
         console.log('Received values of form: ', values);
         let orguserID = window.sessionStorage.getItem('userid');
         let hisID = this.props.sysid;
-        let userName = values.userName;
+        let userName = values.username;
         let password = values.password;
+        let data = {
+          orguserID: orguserID,
+          hisID: this.props.sysid,
+          userName: userName,
+          password: password
+        };
         let params = {
           url: 'sysBindController/hisValid',
-          data: {
-            orguserID: orguserID,
-            hisID: hisID,
-            userName: userName,
-            password: password
-          },
+          type: 'post',
+          data: JSON.stringify(data),
         };
         let that = this;
-        function success(res) {
+        function callBack(res) {
           if(res.result){
-            // that.props.next();
+            that.props.next();
+          }else{
+            that.tipModal.showModal({
+              content: '请核对输入是否正确，如果重试问题依然存在，请跟系统管理员联系~',
+              stressContent: res.desc
+            });
           }
         };
-        function error(res) {
-          console.log('身份验证失败');
-        };
-        // getResource(params, success, error);
-        that.props.next();
+        getResource(params, callBack);
       }
     });
   }
@@ -78,6 +83,7 @@ class Index extends Component {
             </Footer>
           </FormItem>
         </StepsForm>
+        <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </div>
     );
   }

@@ -27,7 +27,7 @@ export default class Index extends Component {
           <Route path='/login' component={Login} exact></Route>
           <Route path='/login/initialSetting' component={InitialSetting} exact></Route>
           <Route path='/login/getPassword' component={RetakePassword} exact></Route>
-          <Route path='/login/bindingHis' component={BindingHis} exact></Route>
+          <Route path='/login/bindingHis/:id' component={BindingHis} exact></Route>
         </Switch>
       </Window>
 

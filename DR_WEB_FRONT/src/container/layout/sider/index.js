@@ -155,7 +155,7 @@ handleHeight=()=>{
         div=<Menu.Item key="病历中心"><Link to='/Layout/electronicMedicalRecords'><StyleICon type='case_center'/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="辨证论治") {
-        div=<Menu.Item key="辨证论治"><StyleICon type='dialectical_treatment'/><span>{item.key}</span></Menu.Item>
+        div=<Menu.Item key="辨证论治"><Link to='/Layout/syndromeTreatment'><StyleICon type='dialectical_treatment'/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="治未病") {
         div=<Menu.Item key="治未病"><Link to='/Layout/cure'><StyleICon type='prevent_ill'/><span>{item.key}</span></Link></Menu.Item>

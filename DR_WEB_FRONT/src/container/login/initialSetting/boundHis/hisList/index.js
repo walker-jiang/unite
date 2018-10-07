@@ -12,30 +12,21 @@ class Index extends Component {
   };
   // his系统绑定
   handleBindClick(value) {
-    let sysid = value.sysid;
-    let newUnionId = value.sysid;
-    let unionId = this.props.unionId;
-    let path = {
-      pathname: '/login/bindingHis',
-      state: {
-        sysid: sysid,
-        unionId: unionId,
-        newUnionId: newUnionId
-      }
-    }
-    this.props.history.push(path);
-    if (unionId == '') {
-    }
-    else{
+    let sysid = this.props.sysid;
+    if (sysid) {
       const modal = Modal.warning({
         title: '暂时不支持绑定多个HIS',
       });
       setTimeout(() => modal.destroy(), 1000);
       console.log("暂时不支持绑定多个HIS")
+    }else{
+      let newSysid = value.sysid;
+      let newUnionId = value.sysid;
+      this.props.history.push('/login/bindingHis/' + newSysid);
     }
   }
   render() {
-    let {supportSysData, unionId} = this.props;
+    let {supportSysData, sysid} = this.props;
     let Arrow = (props) => { // 切换箭头
       const {currentSlide, slideCount, ...arrowProps} = props;
       const direction = (props.className == 'slick-arrow slick-next') ? 'right' : 'left';
@@ -58,7 +49,6 @@ class Index extends Component {
         leftSysData.push('无');
       }
     }
-    console.log('supportSysData', supportSysData);
     return (
       <Container>
         <SliderCenter
@@ -69,12 +59,12 @@ class Index extends Component {
               <HisSystem key={value.sysid}>
                 <HisName background = {colorData[index]}>{value.developer}社区HIS</HisName>
                 {
-                  value.sysid == unionId ?
+                  value.sysid == sysid ?
                   <AlreadyBindBtn>
                     <AlreadyBindIcon type="check"/>
                     <i>已绑定</i>
                   </AlreadyBindBtn>
-                  : <BindBtn onClick={()=>{this.handleBindClick(value)}} >绑定</BindBtn>
+                  : <BindBtn onClick={()=>{this.handleBindClick(value)}} disabled>绑定</BindBtn>
                 }
               </HisSystem>
             )

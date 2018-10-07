@@ -1,19 +1,21 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { Input, Table, Pagination, LocaleProvider } from 'antd';
+import { Input, Table, Pagination, LocaleProvider, Steps } from 'antd';
 import TableIcon from 'components/dr/icon/icons/table';
 import ListIcon from 'components/dr/icon/icons/list';
 import QuickReception from './quickReception';
 import ArrowPicker from 'components/dr/datePicker/arrowPicker';
 import inputSty from 'components/antd/style/input';
 import Icon from 'components/dr/icon';
-import GridItem from './gridItem';
+import Grid from './grid';
 import { today } from 'commonFunc/defaultData';
 import zh_CN  from 'antd/lib/locale-provider/zh_CN';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
-export default class Index extends Component {
+const Step = Steps.Step;
+
+export default class SyndromeTreatment extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -27,11 +29,6 @@ export default class Index extends Component {
       numbers: {}, // 各个状态的患者数量
     };
     this.getPatientData = this.getPatientData.bind(this);
-    this.doing = this.doing.bind(this);
-    this.redo = this.redo.bind(this);
-    this.done = this.done.bind(this);
-    this.view = this.view.bind(this);
-    this.keepDoing = this.keepDoing.bind(this);
   };
   componentDidMount(){
     this.getPatientData();
@@ -99,84 +96,6 @@ export default class Index extends Component {
     ajaxGetResource(params, callBack);
   };
   /**
-   * [modifyRcState 修改接诊状态的函数]
-   * @param  {[type]} rcStatus [将要修改为的接诊状态u]
-   * @param  {[type]} registerid [接诊ID]
-   * @return {[type]}          [undefined]
-   */
-  modifyRcState(rcStatus, registerid){
-    let self = this;
-    let params = {
-      url: 'BuRegisterController/receive',
-      async: false,
-      data: {
-        rcStatus: rcStatus, // 接诊状态
-        registerid: registerid, // 就诊id
-        doctorid: window.sessionStorage.getItem('userid'), // 接诊医生
-        doctorname: window.sessionStorage.getItem('username'), // 接诊医生
-      },
-    };
-    function callBack(res){
-      console.log('接诊状态修改为0-待接诊 1-接诊中2-已接诊）', rcStatus);
-    };
-    ajaxGetResource(params, callBack);
-  };
-  /**
-   * [doing 接诊函数]
-   * @param  {[type]} registerid [接诊ID]
-   * @return {[type]}            [undefined]
-   */
-  doing(registerid, patientid){
-    console.log('接诊');
-    window.registerID = registerid;
-    window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
-    window.patientid = patientid;
-    this.modifyRcState(1, registerid);
-  };
-  /**
-   * [redo 重新接诊函数]
-   * @param  {[type]} registerid [接诊ID]
-   * @return {[type]}            [undefined]
-   */
-  redo(registerid, patientid){
-    console.log('重新接诊');
-    window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
-    window.registerID = registerid;
-    window.patientid = patientid;
-    this.modifyRcState(1, registerid);
-  };
-  /**
-   * [done 完成接诊函数]
-   * @param  {[type]}   registerid [接诊ID]
-   * @return {Function}            [undefined]
-   */
-  done(registerid){
-    console.log('完成接诊');
-    this.modifyRcState(2, registerid);
-    this.getPatientData();
-  };
-  /**
-   * [view 查看接诊信息]
-   * @param  {[type]} registerid [接诊ID]
-   * @return {[type]}            [undefined]
-   */
-  view(registerid){
-    console.log('查看你信息');
-    window.registerID = registerid;
-    window.modifyPermission = 0; // 治疗书写权限0只读 1 可写
-  };
-  /**
-   * [keepDoing 续诊函数]
-   * @param  {[type]} registerid [接诊ID]
-   * @return {[type]}            [undefined]
-   */
-  keepDoing(registerid, patientid){
-    console.log('续诊', patientid);
-    window.registerID = registerid;
-    window.patientid = patientid;
-    window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
-  };
-  /**
    * [getTableColumns 获取表格列]
    * @param  {[type]} rcStatus [接诊状态]
    * @return {[type]}           [undefined]
@@ -232,7 +151,6 @@ export default class Index extends Component {
       render: (text, record) =>
         rcStatus == 0 ?
         <StyledLink
-          onClick={() => this.doing(record.registerid, patientid)}
           to={'/Layout/treatment/' + record.patientid}>
           接诊
         </StyledLink>
@@ -241,7 +159,6 @@ export default class Index extends Component {
           rcStatus == 1 ?
             <span>
               <StyledLink
-                onClick={() => this.keepDoing(record.registerid, record.patientid)}
                 to={'/Layout/treatment/' + record.patientid}>
                 继续接诊
               </StyledLink>|
@@ -251,18 +168,7 @@ export default class Index extends Component {
                 完成接诊
               </StyledLink>
             </span>
-          : <span>
-              <StyledLink
-                onClick={() => this.redo(record.registerid)}
-                to={'/Layout/treatment/' + record.patientid}>
-                重新接诊
-              </StyledLink>|
-              <StyledLink
-                onClick={() => this.view(record.registerid)}
-                to={'/Layout/treatment/' + record.patientid}>
-                信息查看
-              </StyledLink>
-            </span>
+          : null
         )
     }];
     if(rcStatus == 2){
@@ -312,43 +218,54 @@ export default class Index extends Component {
   render() {
     let { showWay, patienList, numbers, rcStatus,totalRecords, curPage, pageSize } = this.state;
     const columns = this.getTableColumns(rcStatus);
-    console.log('numbers', numbers);
     return (
       <Container>
-        <Header>
-          <Left>
-            <Toggle>
-              <SpecTableIcon showWay={showWay} onClick={() => {this.setState({ showWay: 'grid'})}}/>
-              <SpecListIcon showWay={showWay} onClick={() => {this.setState({ showWay: 'table'})}}/>
-            </Toggle>
-            <SpecTabs>
-              <TabPane activeTab={rcStatus} _key={0} onClick={(e) => this.toggleTabs(0)}>待接诊（{numbers.noVisit}）</TabPane>
-              <TabPane activeTab={rcStatus} _key={1} onClick={(e) => this.toggleTabs(1)}>接诊中（{numbers.visiting}）</TabPane>
-              <TabPane activeTab={rcStatus} _key={2} onClick={(e) => this.toggleTabs(2)}>已完成（{numbers.visited}）</TabPane>
-            </SpecTabs>
-          </Left>
-          <Right>
-            <QuickReception></QuickReception>
-            <ArrowPicker ref={ref => {this.arrowPicker = ref}}></ArrowPicker>
-            <SpecInput placeholder='请输入患者姓名/患者编号/身份证号/拼音' onChange={(e) => {this.setState({ keyword: e.target.value })}}></SpecInput>
-            <SearchIcon type='search-thin' fill='#FFFFFF' onClick={this.getPatientData}></SearchIcon>
-          </Right>
-        </Header>
-        <Content>
-        {
-          showWay == 'grid' ?
-          (
-            <Grid>
+        <Top>
+          <StyledIcon type='syndrome_treatment'/>
+          <Title>辨证论治</Title>
+          <SpecSteps current={0}>
+            <Step title="患者确认"/>
+            <Step title="病情病历确认"/>
+            <Step title="智能辩证"/>
+            <Step title="智能论治"/>
+            <Step title="完成"/>
+          </SpecSteps>
+        </Top>
+        <Body>
+          <Header>
+            <Left>
+              <Toggle>
+                <SpecTableIcon showWay={showWay} onClick={() => {this.setState({ showWay: 'grid'})}}/>
+                <SpecListIcon showWay={showWay} onClick={() => {this.setState({ showWay: 'table'})}}/>
+              </Toggle>
+              <Bread></Bread>
+              <SpecTabs>
+                <TabPane activeTab={rcStatus} _key={0} onClick={(e) => this.toggleTabs(0)}>待接诊（{numbers.noVisit}）</TabPane>
+                <TabPane activeTab={rcStatus} _key={1} onClick={(e) => this.toggleTabs(1)}>接诊中（{numbers.visiting}）</TabPane>
+              </SpecTabs>
+            </Left>
+            <Right>
+              <QuickReception></QuickReception>
+              <ArrowPicker ref={ref => {this.arrowPicker = ref}}></ArrowPicker>
+              <SpecInput placeholder='请输入患者姓名/患者编号/身份证号/拼音' onChange={(e) => {this.setState({ keyword: e.target.value })}}></SpecInput>
+              <SearchIcon type='search-thin' fill='#FFFFFF' onClick={this.getPatientData}></SearchIcon>
+            </Right>
+          </Header>
+          <Content>
             {
-              patienList.map(item => <GridItem gridType={rcStatus} key={item.patientid} dataSource={item} doing={this.doing} redo={this.redo} done={this.done} view={this.view} keepDoing={this.keepDoing}></GridItem>)
+              showWay == 'grid' ?
+              (
+                <Grid patienList={patienList}>
+                  {
+                  }
+                </Grid>
+              ) :
+              (
+                <SpecTable dataSource={patienList} columns={columns} pagination={false}/>
+              )
             }
-            </Grid>
-          ) :
-          (
-            <SpecTable dataSource={patienList} columns={columns} pagination={false}/>
-          )
-        }
-        </Content>
+          </Content>
+        </Body>
         <LocaleProvider locale={zh_CN}>
           <PageContainer>
             <span>• 共有{totalRecords}位已就诊患者记录</span>
@@ -372,14 +289,69 @@ const Container = styled.div`
   width: 100%;
   overflow: hidden;
 `;
+const Top = styled.div`
+  height: 50px;
+  background-color: rgba(242, 242, 242, 1);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0px 20px;
+`;
+const StyledIcon = styled(Icon)`
+  width: 25px;
+  height: 25px;
+  margin-top: 5px;
+`;
+const Title = styled.div`
+  font-size: 20px;
+  margin-left: 5px;
+  width: 100px;
+  color: black;
+`;
+const SpecSteps = styled(Steps)`
+  .ant-steps-item-icon {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    border-radius: 50%;
+    margin-top: 3px;
+  }
+  .ant-steps-item-title {
+    font-size: 14px;
+  }
+  .ant-steps-item-process .ant-steps-item-icon {
+    background-color: #0066CC;
+  }
+  .ant-steps-item-process > .ant-steps-item-content > .ant-steps-item-title {
+    color: #0066CC;
+    font-weight: 500;
+  }
+  .ant-steps-item-process > .ant-steps-item-content > .ant-steps-item-title:after {
+    background-color: #0066CC;
+  }
+  .ant-steps-item-wait .ant-steps-item-icon {
+    border-color: #898989;
+  }
+  .ant-steps-item-wait .ant-steps-item-icon .ant-steps-icon{
+    color: #898989;
+  }
+  .ant-steps-item-wait > .ant-steps-item-content > .ant-steps-item-title {
+    color: rgb(153, 153, 153);
+    font-weight: 500;
+  }
+  .ant-steps-item-wait > .ant-steps-item-content > .ant-steps-item-title:after {
+    background-color: #898989;
+  }
+`;
+const Body = styled.div`
+  padding: 0px 22px;
+`;
 const Header = styled.div`
   height: 50px;
   width: 100%;
   display: flex;
   justify-content: space-between;
-  background-color: rgba(242, 242, 242, 1);
-  padding: 0px 10px;
-  box-shadow: rgba(0, 0, 0, 0.35) 1px 1px 5px;
 `;
 const Left = styled.div`
   height: 100%;
@@ -398,6 +370,12 @@ const SpecListIcon = styled(ListIcon)`
   }
   border-color: ${props => props.showWay == 'table' ? 'rgba(10, 110, 203, 1)' : '#999999'};
   margin:0px 10px;
+`;
+const Bread = styled.div`
+  height: 25px;
+  width: 1px;
+  margin-left: 5px;
+  background-color: #999999;
 `;
 const SpecTabs = styled.div`
   font-size: 13px;
@@ -438,9 +416,7 @@ const SearchIcon = styled(Icon)`
 const Content = styled.div`
   width: 100%;
   position: relative;
-`;
-const Grid = styled.div`
-  margin: 8px auto;
+  border: 1px solid #CCCCCC;
 `;
 const SpecTable = styled(Table)`
   margin: 16px;
@@ -472,6 +448,6 @@ const StyledLink = styled(Link)`
 `;
 /*
 @作者：姜中希
-@日期：2018-09-12
-@描述：今日诊疗
+@日期：2018-10-07
+@描述：辩证论治
 */

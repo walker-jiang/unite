@@ -27,11 +27,11 @@ class Binding extends Component {
     const steps = [{
       title: '身份验证',
       headerTitle: <span> 请输入<Stress>中科软社区HIS</Stress>用户名和密码进行身份验证</span>,
-      content: <IdentifyVerify sysid = {this.props.location.state.sysid} next={this.next}/>
+      content: <IdentifyVerify sysid = {this.props.match.params.id} next={this.next}/>
     }, {
       title: '绑定确认',
       headerTitle: <span> 绑定确认</span>,
-      content: <BindVerify />
+      content: <BindVerify sysid = {this.props.match.params.id}/>
     }];
     return (
       <Container>
