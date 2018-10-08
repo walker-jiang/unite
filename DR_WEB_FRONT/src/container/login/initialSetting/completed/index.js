@@ -4,6 +4,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { Button, Icon } from 'antd';
 import buttonSty from 'components/antd/style/button';
 import finishIcon from './finish-icon.png';
+import getResource from 'commonFunc/ajaxGetResource';
 
 class Index extends Component {
     constructor(props) {
@@ -12,24 +13,39 @@ class Index extends Component {
     }
     /** [startTreat 跳到诊疗系统,客户端跳转通过window.loginSystem] */
     startTreat(){
-      if(bundleMode == 'CS'){
-        this.setUserInfo();
-      }else{
-        this.props.history.push('/layout');
-      }
+      let that = this;
+      let params = {
+        url: 'BaOrguserController/getDataByidAndToken',
+        data: {
+          orgUerid: window.sessionStorage.getItem('userid'),
+          serviceToken: window.sessionStorage.getItem('token')
+        }
+      };
+      function success(res) {
+        if(window.loginSystem){ // 监测客户端方法
+          console.log('监测到客户端loginSystem方法');
+          that.setUserInfo(res.data.baOrguser.deptid, res.data.baOrguser.orgid, res.data.baOrguser.orgUserid, res.data.baOrguser.post, res.data.baOrguser.realname, res.data.baOrguser.photo);
+        }else{
+          // 将当前用户的信息保存供其它组件用
+          window.sessionStorage.setItem('username', res.data.baOrguser.realname); // 用户名
+          window.sessionStorage.setItem('deptid', res.data.baOrguser.deptid); // 科室ID
+          window.sessionStorage.setItem('orgid', res.data.baOrguser.orgid); // 机构ID
+          window.sessionStorage.setItem('userid', res.data.baOrguser.orgUerid); // 用户ID
+          window.sessionStorage.setItem('post', res.data.baOrguser.post); // 医生级别
+          window.sessionStorage.setItem('token', res.data.serviceToken); // 医生级别
+          that.props.history.push('/layout');
+        }
+      };
+      getResource(params, success);
     };
-    setUserInfo(){
-      let deptid = window.sessionStorage.getItem('deptid'); // 科室id
-      let orgid = window.sessionStorage.getItem('orgid'); // 机构id
-      let userid = window.sessionStorage.getItem('userid'); // 用户id
-      let post = window.sessionStorage.getItem('post'); // 医生级别
-      let username = window.sessionStorage.getItem('username'); // 用户名
+    etUserInfo(deptid, orgid , userid, post, username, photo){
       let obj = {
         userid: userid,
         orgid: orgid,
         deptid: deptid,
         post: post,
-        username: username
+        username: username,
+        photo: photo
       };
       window.loginSystem(JSON.stringify(obj));
     };

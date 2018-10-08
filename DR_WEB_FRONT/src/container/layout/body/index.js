@@ -41,7 +41,6 @@ const More = Loadable({
   loader: () => import('./n-more'),
   loading: loadingComponent,
 });
-
 const PantientRecords = Loadable({
   loader: () => import('./n-patientRecords'),
   loading: loadingComponent,

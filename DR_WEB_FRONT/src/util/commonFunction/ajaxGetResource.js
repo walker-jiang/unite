@@ -18,7 +18,6 @@ function getResource(params , success, error ){
   });
 }
 function error(res){
-  alert();
   if(window.modal == undefined || window.modal == null){ // 避免同时出现多个网络异常弹框的请求
     window.modal = Modal.error({
       title: '网络异常，请您检查网络连接情况！',

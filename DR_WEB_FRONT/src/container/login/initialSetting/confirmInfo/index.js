@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Icon, Button, Upload, message, Form, Input, Select } from 'antd';
-import getResource from 'commonFunc/ajaxGetResource';
+import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import buttonSty from 'components/antd/style/button';
 import inputSty from 'components/antd/style/input';
 
@@ -23,6 +23,7 @@ class Index extends Component {
     this.state = {
       loading: false,
       orgUserid: this.props.orgUserid,
+      deptData: [], //科室数据
     };
   }
   componentWillMount(){
@@ -41,20 +42,7 @@ class Index extends Component {
     function success(res) {
       if(res.result){
         let deptData = res.data;
-        let defaultDept = {};
-        let deptname = '';
-        deptData.forEach(item => {
-          if(item.deptid == window.sessionStorage.getItem('deptid')){
-            deptname = item.deptname;
-          }
-        });
-        defaultDept = {
-          key: window.sessionStorage.getItem('deptid'),
-          label: deptname
-        }
-        that.setState({ deptData, defaultDept }, () => {
-          that.getDocData('init', window.sessionStorage.getItem('deptid'));
-        })
+        that.setState({ deptData })
       }
     };
     ajaxGetResource(params, success);
@@ -66,22 +54,22 @@ class Index extends Component {
         console.log('Received values of form: ', values);
         let userId = window.sessionStorage.getItem('userid');
         let data = {
-          "deptid": 0,
-          "orgName": "string", //
-          "orgUerid": 0,
-          "realname": "string"
+          "deptid": values.dept,
+          "orgName": values.userName, //
+          "orgUerid": window.sessionStorage.getItem('userid'),
+          "realname": values.realName
         };
-
+        console.log('data', data);
         let params = {
-          url: 'BaOrguserController/getData',
-          type: 'post',
-          data: userId
+          url: 'BaOrguserController/putData',
+          type: 'put',
+          data: JSON.stringify(data)
         }
         let that = this;
         function success(res) {
           that.props.onToggle();
         };
-        getResource(params, success);
+        ajaxGetResource(params, success);
       }
     });
   }
@@ -129,7 +117,7 @@ class Index extends Component {
         <div className="ant-upload-text upload-tip">点击上传头像</div>
       </div>
     );
-    const imageUrl = this.state.imageUrl;
+    const { imageUrl, deptData } = this.state;
     const formItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -194,12 +182,12 @@ class Index extends Component {
             rules: [{
               required: true, message: '请选择所在科室',
             }],
-            initialValue: '1'
+            initialValue: deptData.length ? deptData[0].deptid : ''
           })(
             <SpecSelect>
-              <Option value="1">中医科</Option>
-              <Option value="2">适宜技术服务科</Option>
-              <Option value="3">全科</Option>
+            {
+              deptData.map(item => <Option key={item.deptid} value={item.deptid}>{item.deptname}</Option>)
+            }
             </SpecSelect>
           )}
         </SpecFormItem>

@@ -45,7 +45,7 @@ class BindHis extends Component {
     getResource(params, success);
   }
   handleClick() {
-    if (this.props.boundData) {
+    if (this.state.boundData) {
       this.props.onToggle();
     } else {
       this.tipModal.showModal({
