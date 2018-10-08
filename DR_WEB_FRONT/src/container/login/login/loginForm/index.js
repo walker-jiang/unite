@@ -73,7 +73,7 @@ class Index extends Component {
         let paramsData = {
           username: values.userName,
           password: values.password,
-          code: code,
+          code: '1',
           verificationCode: values.verificationCode,
         };
         this.loginAction(paramsData);
