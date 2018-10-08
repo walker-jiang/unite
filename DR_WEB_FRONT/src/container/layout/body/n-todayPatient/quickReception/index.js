@@ -46,13 +46,6 @@ class Index extends Component {
     this.addPatientData = this.addPatientData.bind(this);
     this.changeDate = this.changeDate.bind(this);
   };
-  componentWillMount(){
-    this.getDictData('sex');
-    this.getDictData('pationtype');
-    this.getDictData('cardtype');
-    this.getDictData('casetype');
-    this.getDept();
-  };
   /** [getDept 科室数据] */
   getDept() {
     let params = {
@@ -142,6 +135,11 @@ class Index extends Component {
     ajaxGetResource(params, callBack);
   };
   quickReceive(){
+    this.getDictData('sex');
+    this.getDictData('pationtype');
+    this.getDictData('cardtype');
+    this.getDictData('casetype');
+    this.getDept();
     this.setState({ visible: true });
   };
   closeModal(){

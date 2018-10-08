@@ -24,8 +24,67 @@ class Index extends Component {
   }
   componentWillMount() {
     this.verifyAutoLogin();
-    this.getVerificationCode()
+    this.getVerificationCode();
   }
+  componentDidMount(){
+    if(window.setDefaultMenu){ // 加载完登陆组件后通知客户端默认菜单
+      let defaultSysModuleList = [
+        {
+          "callurl": "/Layout/syndromeTreatment",
+          "ctstamp": "2018-09-10 16:28:43",
+          "lastflag": 0,
+          "level": 1,
+          "moddesc": "syndrome_treatment",
+          "modid": 5,
+          "modname": "辩证论治",
+          "modno": "cs005",
+          "modtype": "1",
+          "seqno": 5,
+          "superid": 0,
+          "syModuleList": [],
+          "syWorkList": [],
+          "uctstamp": "2018-10-07 10:45:36",
+          "useflag": "1",
+          "user": null
+        }, {
+          "callurl": "/Layout/chKnowledge",
+          "ctstamp": "2018-09-10 16:32:46",
+          "lastflag": 0,
+          "level": 1,
+          "moddesc": "ch_knowledge",
+          "modid": 7,
+          "modname": "中医知识库",
+          "modno": "cs007",
+          "modtype": "1",
+          "seqno": 7,
+          "superid": 0,
+          "syModuleList": [],
+          "syWorkList": [],
+          "uctstamp": "2018-10-07 10:45:36",
+          "useflag": "1",
+          "user": null
+        }, {
+          "callurl": "/Layout/cureNotIll",
+          "ctstamp": "2018-09-10 16:30:41",
+          "lastflag": 0,
+          "level": 1,
+          "moddesc": "cure_not_ill",
+          "modid": 6,
+          "modname": "治未病",
+          "modno": "cs006",
+          "modtype": "1",
+          "seqno": 6,
+          "superid": 0,
+          "syModuleList": [],
+          "syWorkList": [],
+          "uctstamp": "2018-10-07 10:45:36",
+          "useflag": "1",
+          "user": null
+        }
+      ];
+      window.setDefaultMenu(JSON.stringify(defaultSysModuleList));
+    }
+  };
   // 校验是否进行自动登陆 和 初始化用户名、密码
   verifyAutoLogin(){
     let autoLogin = window.localStorage.getItem('autoLogin');
@@ -73,7 +132,7 @@ class Index extends Component {
         let paramsData = {
           username: values.userName,
           password: values.password,
-          code: '1',
+          code: code,
           verificationCode: values.verificationCode,
         };
         this.loginAction(paramsData);
@@ -96,6 +155,80 @@ class Index extends Component {
           path = '/layout';
           if(window.loginSystem){ // 客户端存在
             console.log('监测到客户端loginSystem方法');
+            if(window.setMenu){ // 通知客户端当前登录用户的菜单
+              let rightSysModuleList = [
+                {
+                  "callurl": "/Layout/syndromeTreatment",
+                  "ctstamp": "2018-09-10 16:28:43",
+                  "lastflag": 0,
+                  "level": 1,
+                  "moddesc": "syndrome_treatment",
+                  "modid": 5,
+                  "modname": "辩证论治",
+                  "modno": "cs005",
+                  "modtype": "1",
+                  "seqno": 5,
+                  "superid": 0,
+                  "syModuleList": [],
+                  "syWorkList": [],
+                  "uctstamp": "2018-10-07 10:45:36",
+                  "useflag": "1",
+                  "user": null
+                }, {
+                  "callurl": "/Layout/chKnowledge",
+                  "ctstamp": "2018-09-10 16:32:46",
+                  "lastflag": 0,
+                  "level": 1,
+                  "moddesc": "ch_knowledge",
+                  "modid": 7,
+                  "modname": "中医知识库",
+                  "modno": "cs007",
+                  "modtype": "1",
+                  "seqno": 7,
+                  "superid": 0,
+                  "syModuleList": [],
+                  "syWorkList": [],
+                  "uctstamp": "2018-10-07 10:45:36",
+                  "useflag": "1",
+                  "user": null
+                }, {
+                  "callurl": "/Layout/cureNotIll",
+                  "ctstamp": "2018-09-10 16:30:41",
+                  "lastflag": 0,
+                  "level": 1,
+                  "moddesc": "cure_not_ill",
+                  "modid": 6,
+                  "modname": "治未病",
+                  "modno": "cs006",
+                  "modtype": "1",
+                  "seqno": 6,
+                  "superid": 0,
+                  "syModuleList": [],
+                  "syWorkList": [],
+                  "uctstamp": "2018-10-07 10:45:36",
+                  "useflag": "1",
+                  "user": null
+                }, {
+            			"callurl": "/Layout/treatManage",
+            			"ctstamp": "2018-09-10 16:35:00",
+            			"lastflag": 0,
+            			"level": 1,
+            			"moddesc": "treat_manage",
+            			"modid": 8,
+            			"modname": "治疗管理",
+            			"modno": "cs008",
+            			"modtype": "1",
+            			"seqno": 8,
+            			"superid": 0,
+            			"syModuleList": [],
+            			"syWorkList": [],
+            			"uctstamp": "2018-10-07 10:45:36",
+            			"useflag": "1",
+            			"user": null
+            		}
+              ];
+              window.setMenu(JSON.stringify(rightSysModuleList));
+            }
             that.setUserInfo(res.data.baOrguser.deptid, res.data.baOrguser.orgid, res.data.baOrguser.orgUserid, res.data.baOrguser.post, res.data.baOrguser.realname, res.data.baOrguser.photo);
           }else{
             // 将当前用户的信息保存供其它组件用
@@ -105,7 +238,7 @@ class Index extends Component {
             window.sessionStorage.setItem('userid', res.data.baOrguser.orgUerid); // 用户ID
             window.sessionStorage.setItem('post', res.data.baOrguser.post); // 医生级别
             window.sessionStorage.setItem('token', res.data.serviceToken); // 医生级别
-            console.log('res', res);
+            console.log('res', JSON.stringify(res.data.baOrguser));
           }
         }
         that.props.history.push(path); // 跳转到初始化设置组件
