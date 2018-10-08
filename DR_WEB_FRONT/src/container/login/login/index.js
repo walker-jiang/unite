@@ -19,6 +19,9 @@ export default class Login extends Component {
       console.log('非客户端模式无法关闭当前窗体');
     }
   }
+  componentDidMount(){
+    console.log('是否离开2');
+  };
   render() {
     return (
       <LoginWrapper>

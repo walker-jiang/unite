@@ -90,18 +90,22 @@ class Index extends Component {
     }
     function success(res) {
       if(res.result){
-        // 将当前用户的信息保存供其它组件用
-        window.sessionStorage.setItem('username', res.data.baOrguser.realname); // 用户名
-        window.sessionStorage.setItem('deptid', res.data.baOrguser.deptid); // 科室ID
-        window.sessionStorage.setItem('orgid', res.data.baOrguser.orgid); // 机构ID
-        window.sessionStorage.setItem('userid', res.data.baOrguser.orgUerid); // 用户ID
-        window.sessionStorage.setItem('post', res.data.baOrguser.post); // 医生级别
         // 选择要跳转的路由
         let path = '/login/initialSetting';
         if(res.data.baOrguser.initcomplete != '0'){ // 跳过初始化组件
           path = '/layout';
           if(window.loginSystem){ // 客户端存在
+            console.log('监测到客户端loginSystem方法');
             that.setUserInfo(res.data.baOrguser.deptid, res.data.baOrguser.orgid, res.data.baOrguser.orgUserid, res.data.baOrguser.post, res.data.baOrguser.realname, res.data.baOrguser.photo);
+          }else{
+            // 将当前用户的信息保存供其它组件用
+            window.sessionStorage.setItem('username', res.data.baOrguser.realname); // 用户名
+            window.sessionStorage.setItem('deptid', res.data.baOrguser.deptid); // 科室ID
+            window.sessionStorage.setItem('orgid', res.data.baOrguser.orgid); // 机构ID
+            window.sessionStorage.setItem('userid', res.data.baOrguser.orgUerid); // 用户ID
+            window.sessionStorage.setItem('post', res.data.baOrguser.post); // 医生级别
+            window.sessionStorage.setItem('token', res.data.serviceToken); // 医生级别
+            console.log('res', res);
           }
         }
         that.props.history.push(path); // 跳转到初始化设置组件
@@ -144,6 +148,9 @@ class Index extends Component {
   /* 自动登录 */
   autoLogin(checked){
     this.setState({ autoLogin: '' + checked });
+  };
+  componentDidMount(){
+    console.log('是否离开1');
   };
   render() {
     const { username, password, verificationCode, rememberPass, autoLogin} = this.state;
