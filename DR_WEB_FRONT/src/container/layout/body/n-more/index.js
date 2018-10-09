@@ -179,7 +179,7 @@ class SystemManagement extends React.Component {
     rowLenght = totalLength % cols ? ( rowLenght + 1 ) : rowLenght; // 条件含义是如果敲好是cols的整数倍直接返回商， 否则的将商 加1 补最后一行（最后一行肯定不满）
     for(let i = 0; i < rowLenght; i++){
       let RowLinesItem = (
-        <RowLine key={i}>
+        <RowLine key={i} width={(StyledLinks.slice(i * cols, ( i + 1 ) * cols)).length}>
           {
             StyledLinks.slice(i * cols, ( i + 1 ) * cols).map( item => item)
           }
@@ -449,7 +449,7 @@ const RowLine = styled.div `
   display: flex !important;
   flex-direction: row;
   justify-content: space-around;
-  width: 100%;
+  width: ${props => props.width * 20 + '%'};
 `;
 const SecondRowLine = RowLine.extend`
   justify-content: start;

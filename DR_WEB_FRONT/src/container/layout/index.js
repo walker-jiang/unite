@@ -14,8 +14,8 @@ class Index extends Component {
   AddHerbalMedicineFunc(params){
     window.herbalData = params; // 将知识库传过来的草药数据存为全局变量
     if(window.sessionStorage.getItem('userid')){ // 当前为已经登陆状态
-      if(window.patientid){ // 已接诊跳转到诊疗页
-        this.props.history.push('/Layout/treatment/' + window.patientid)
+      if(window.patientID){ // 已接诊跳转到诊疗页
+        this.props.history.push('/Layout/treatment/' + window.patientID)
       }else{ // 未接诊跳转到接诊页
         this.props.history.push('/Layout/todayPatient')
       }

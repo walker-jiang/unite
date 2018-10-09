@@ -17,7 +17,7 @@ export default class Index extends Component {
     };
   };
   componentWillMount(){
-    this.getPatientData(this.props.patientid ? this.props.patientid : window.patientid);
+    this.getPatientData(this.props.patientid ? this.props.patientid : window.patientID);
   };
   getPatientData(id){
     let self = this;

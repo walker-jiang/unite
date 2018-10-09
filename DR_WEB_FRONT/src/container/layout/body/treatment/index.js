@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button } from 'antd';
 import Icon from 'components/dr/icon';
@@ -10,7 +11,7 @@ import DiseasePreventTreat from './treatItem/diseasePreventTreat';
 import PatientList from './patientList';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
-export default class Index extends Component {
+class Index extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -20,6 +21,7 @@ export default class Index extends Component {
       age: 0,
       visible: false, // 患者列表是否可见
     };
+    this.finishTreat = this.finishTreat.bind(this);
   };
   componentWillMount(){
     this.getUserInfo();
@@ -29,11 +31,12 @@ export default class Index extends Component {
   };
   /** [getUserInfo 获取患者信息] */
   getUserInfo(){
+    console.log('window.patientID', window.patientID);
     let self = this;
     let params = {
       url: 'BaPatientController/getData',
       data: {
-        id: this.props.match.params.id,
+        id: window.patientID,
       },
     };
     function callBack(res){
@@ -67,6 +70,33 @@ export default class Index extends Component {
       treatTab: curTab
     });
   };
+  /**
+   * [modifyRcState 修改接诊状态的函数]
+   * @param  {[type]} rcStatus [将要修改为的接诊状态u]
+   * @param  {[type]} registerid [接诊ID]
+   * @return {[type]}          [undefined]
+   */
+  modifyRcState(rcStatus, registerid){
+    let self = this;
+    let params = {
+      url: 'BuRegisterController/receive',
+      async: false,
+      data: {
+        rcStatus: rcStatus, // 接诊状态
+        registerid: registerid, // 就诊id
+        doctorid: window.sessionStorage.getItem('userid'), // 接诊医生
+        doctorname: window.sessionStorage.getItem('username'), // 接诊医生
+      },
+    };
+    function callBack(res){
+      // 跳转到今日就诊组建
+      self.props.history.push('/Layout/todayPatient');
+    };
+    ajaxGetResource(params, callBack);
+  };
+  finishTreat(){
+    this.modifyRcState(2, window.registerID);
+  };
   render() {
     let { treatTab, patienttypeDic, sexDic, age, visible } = this.state;
     let curTabComponet = null;
@@ -94,7 +124,7 @@ export default class Index extends Component {
             <span>• 诊疗中</span>
             <DownIcon type='down' onClick={() => {this.setState({ visible: !visible })}}></DownIcon>
           </TreatStatus>
-          <RegisterButton>完成诊疗</RegisterButton>
+          <RegisterButton onClick={this.finishTreat}>完成诊疗</RegisterButton>
           <SpecTabs>
             <TabPane activeTab={treatTab} _key={0} onClick={(e) => this.toggleTabs(0)}>患者信息</TabPane>
             <TabPane activeTab={treatTab} _key={1} onClick={(e) => this.toggleTabs(1)}>书写病历</TabPane>
@@ -174,3 +204,4 @@ const Content = styled.div`
 @日期：2018-09-23
 @描述：诊疗容器包括患者信息，书写病历，医嘱管理，治未病
 */
+export default withRouter(Index);

@@ -130,78 +130,76 @@ class SiderDemo extends React.Component {
     }
   }
   render() {
-    console.log('menus123', window.menus);
+    let { collapsed } = this.state;
     const MenuOption=[]
     window.menus.forEach(item=>{
       var div
       if (item.show&&item.key=="首页") {
-        div=<Menu.Item key="首页"><Link to='/Layout'><StyleICon type='home'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="首页"><Link to='/Layout'><StyleICon type='home' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="患者登记") {
-        div=<Menu.Item key="患者登记"><Link to='/Layout/patientRegister'><StyleICon type='patient_register'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="患者登记"><Link to='/Layout/patientRegister'><StyleICon type='patient_register' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="今日诊疗") {
-        div=<Menu.Item key="今日诊疗"><Link to='/Layout/todayPatient'><StyleICon type='today_patient'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="今日诊疗"><Link to='/Layout/todayPatient'><StyleICon type='today_patient' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="病历中心") {
-        div=<Menu.Item key="病历中心"><Link to='/Layout/electronicMedicalRecords'><StyleICon type='case_center'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="病历中心"><Link to='/Layout/electronicMedicalRecords'><StyleICon type='case_center' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="辨证论治") {
-        div=<Menu.Item key="辨证论治"><Link to='/Layout/syndromeTreatment'><StyleICon type='syndrome_treatment'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="辨证论治"><Link to='/Layout/syndromeTreatment'><StyleICon type='syndrome_treatment' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="治未病") {
-        div=<Menu.Item key="治未病"><Link to='/Layout/cure'><StyleICon type='cure_not_ill'/><span>{item.key}</span></Link>d</Menu.Item>
+        div=<Menu.Item key="治未病"><Link to='/Layout/cure'><StyleICon type='cure_not_ill' value={collapsed}/><span>{item.key}</span></Link>d</Menu.Item>
       }
       if (item.show&&item.key=="中医知识库") {
-        div=<Menu.Item key="中医知识库"><Link to='/Layout/chKnowledge'><StyleICon type='ch_knowledge'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="中医知识库"><Link to='/Layout/chKnowledge'><StyleICon type='ch_knowledge' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="患者档案") {
-        div=<Menu.Item key="患者档案"><Link to='/Layout/patientRecords'><StyleICon type='patient_archives'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="患者档案"><Link to='/Layout/patientRecords'><StyleICon type='patient_archives' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="模板管理") {
-        div=<Menu.Item key="模板管理"><Link to='/Layout/modelManage'><StyleICon type='model_manage'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="模板管理"><Link to='/Layout/modelManage'><StyleICon type='model_manage' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="综合分析") {
-        div=<Menu.Item key="综合分析"><Link to='/Layout/comprehensiveAnalysis'><StyleICon type='comprehensive_analysis'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="综合分析"><Link to='/Layout/comprehensiveAnalysis'><StyleICon type='comprehensive_analysis' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="个人设置") {
-        div=<Menu.Item key="个人设置"><Link to='/Layout/personalSetting'><StyleICon type='personal_setting'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="个人设置"><Link to='/Layout/personalSetting'><StyleICon type='personal_setting' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="系统管理") {
-        div=<Menu.Item key="系统管理"><Link to='/Layout/systemManage'><StyleICon type='system_manage'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="系统管理"><Link to='/Layout/systemManage'><StyleICon type='system_manage' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="远程教育") {
-        div=<Menu.Item key="远程教育"><Link to='/Layout/remoteEducation'><StyleICon type='remote_education'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="远程教育"><Link to='/Layout/remoteEducation'><StyleICon type='remote_education' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="患者转诊") {
-        div=<Menu.Item key="患者转诊"><Link to='/Layout'><StyleICon type='patient_referral'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="患者转诊"><Link to='/Layout'><StyleICon type='patient_referral' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="治疗记录") {
-        div=<Menu.Item key="治疗记录"><Link to='/Layout'><StyleICon type='acography'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="治疗记录"><Link to='/Layout'><StyleICon type='acography' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="远程会诊") {
-        div=<Menu.Item key="远程会诊"><Link to='/Layout'><StyleICon type='patient_reg'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="远程会诊"><Link to='/Layout'><StyleICon type='patient_reg' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="服务点评") {
-        div=<Menu.Item key="服务点评"><Link to='/Layout'><StyleICon type='service_review'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="服务点评"><Link to='/Layout'><StyleICon type='service_review' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="信息上报") {
-        div=<Menu.Item key="信息上报"><Link to='/Layout'><StyleICon type='information_reported'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="信息上报"><Link to='/Layout'><StyleICon type='information_reported' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="资源管理") {
-        div=<Menu.Item key="资源管理"><Link to='/Layout'><StyleICon type='resource_administration'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="资源管理"><Link to='/Layout'><StyleICon type='resource_administration' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="质控管理") {
-        div=<Menu.Item key="质控管理"><Link to='/Layout'><StyleICon type='quality_management'/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="质控管理"><Link to='/Layout'><StyleICon type='quality_management' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       MenuOption.push(div)
     })
-    console.log('MenuOption', MenuOption);
     return (
-        <Sider
+        <SpecSider
           ref="Sider"
           style={{background:"rgba(31, 63, 105, 1)"}}
-          className="fontStyle"
           collapsible
           collapsed={this.state.collapsed}
           trigger={null}
@@ -220,20 +218,44 @@ class SiderDemo extends React.Component {
                 {MenuOption}
                 <Menu.Item id="height">
                   <Link to='/Layout/more'>
-                    <i className="anticon iconfont" style={this.state.style}>&#xe999;</i>
+                    <StyleICon type='more' value={collapsed}/>
                     <span>更多</span>
                   </Link>
                 </Menu.Item>
               </SpecMenu>
           </div>
-        </Sider>
+        </SpecSider>
     );
   }
 }
+const SpecSider = styled(Sider)`
+  .switch{
+    color :#91BEE2
+  }
+  .switch:hover{
+    color:#fff
+  }
+  .ant-menu-item {
+    color: #91BEE2  !important;
+    padding-left: 16px !important;
+    width: 50px;
+  }
+  .ant-menu-item-selected {
+    color:#fff !important;
+    background:rgba(10, 110, 203, 1) !important;
+  }
+  .ant-menu-item-active {
+    color: #C0D6E2 !important;
+  }
+  .ant-menu-inline-collapsed{
+    width: 50px;
+  }
+`;
 const StyleICon = styled(Icon1)`
-  width: 16px;
-  height: 16px;
+  width: ${ props => props.value ? '20px' : '16px'};
+  height: ${ props => props.value ? '20px' : '16px'};
   margin-right: 14px;
+  margin-left: ${ props => props.value ? '-20px' : '0px'};
 `;
 const SpecMenu = styled(Menu)`
   &&&.ant-menu-dark, .ant-menu-dark .ant-menu-sub {

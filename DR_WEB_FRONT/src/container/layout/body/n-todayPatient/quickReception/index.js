@@ -111,24 +111,27 @@ class Index extends Component {
     ajaxGetResource(params, callBack);
   };
   /**
-   * [getDictData 表单字典数据]
-   * @param  {[type]} dictNo [字典类型]
-   * @return {[type]}        [undefined]
+   * [getDictList 获取字典列表]
+   * @param  {[type]} DictTypeList [字典项数组]
+   * @return {[type]}              [undefined]
    */
-  getDictData(dictNo){
+  getDictList(DictTypeList){
     let self = this;
     let params = {
-      url: 'BaDatadictController/getData',
+      url: 'BaDatadictController/getListData',
       data: {
-        dictNo: dictNo
+        dictNoList: DictTypeList
       },
     };
     function callBack(res){
       if(res.result){
-        let arr = res.data.baDatadictDetailList;
+        let dictListObj = {};
         let patientInfo = self.state.patientInfo;
-        patientInfo[dictNo] = arr.length ? arr[0].value : '';
-        self.setState({ [dictNo]: arr, patientInfo });
+        res.data.forEach(item => {
+          dictListObj[item.dictno.toLowerCase()] = item.baDatadictDetailList;
+          patientInfo[item.dictno.toLowerCase()] = item.baDatadictDetailList.length ? item.baDatadictDetailList[0].value : '';
+        });
+        self.setState({...dictListObj, patientInfo});
       }else{
         console.log('异常响应信息', res);
       }
@@ -136,10 +139,7 @@ class Index extends Component {
     ajaxGetResource(params, callBack);
   };
   quickReceive(){
-    this.getDictData('sex');
-    this.getDictData('pationtype');
-    this.getDictData('cardtype');
-    this.getDictData('casetype');
+    this.getDictList(['sex', 'pationtype', 'cardtype', 'casetype']);
     this.getDept();
     this.setState({ visible: true });
   };
@@ -183,6 +183,7 @@ class Index extends Component {
               pathname: '/layout/treatment/' + res.data.patientid,
             };
             window.registerID = res.data.registerid;
+            window.patientID = res.data.patientid;
             // 跳转到诊疗界面
             self.props.history.push(path);
           }else{

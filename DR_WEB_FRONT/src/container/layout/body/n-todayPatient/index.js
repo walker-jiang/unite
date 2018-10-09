@@ -130,7 +130,7 @@ export default class Index extends Component {
     console.log('接诊');
     window.registerID = registerid;
     window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
-    window.patientid = patientid;
+    window.patientID = patientid;
     this.modifyRcState(1, registerid);
   };
   /**
@@ -142,7 +142,7 @@ export default class Index extends Component {
     console.log('重新接诊');
     window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
     window.registerID = registerid;
-    window.patientid = patientid;
+    window.patientID = patientid;
     this.modifyRcState(1, registerid);
   };
   /**
@@ -160,9 +160,10 @@ export default class Index extends Component {
    * @param  {[type]} registerid [接诊ID]
    * @return {[type]}            [undefined]
    */
-  view(registerid){
+  view(registerid, patientid){
     console.log('查看你信息');
     window.registerID = registerid;
+    window.patientID = patientid;
     window.modifyPermission = 0; // 治疗书写权限0只读 1 可写
   };
   /**
@@ -173,7 +174,7 @@ export default class Index extends Component {
   keepDoing(registerid, patientid){
     console.log('续诊', patientid);
     window.registerID = registerid;
-    window.patientid = patientid;
+    window.patientID = patientid;
     window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
   };
   /**
@@ -233,7 +234,7 @@ export default class Index extends Component {
         rcStatus == 0 ?
         <StyledLink
           onClick={() => this.doing(record.registerid, patientid)}
-          to={'/Layout/treatment/' + record.patientid}>
+          to='/Layout/treatment'>
           接诊
         </StyledLink>
         :
@@ -242,7 +243,7 @@ export default class Index extends Component {
             <span>
               <StyledLink
                 onClick={() => this.keepDoing(record.registerid, record.patientid)}
-                to={'/Layout/treatment/' + record.patientid}>
+                to='/Layout/treatment/'>
                 继续接诊
               </StyledLink>|
               <StyledLink
@@ -253,13 +254,13 @@ export default class Index extends Component {
             </span>
           : <span>
               <StyledLink
-                onClick={() => this.redo(record.registerid)}
-                to={'/Layout/treatment/' + record.patientid}>
+                onClick={() => this.redo(record.registerid, record.patientid)}
+                to='/Layout/treatment/'>
                 重新接诊
               </StyledLink>|
               <StyledLink
-                onClick={() => this.view(record.registerid)}
-                to={'/Layout/treatment/' + record.patientid}>
+                onClick={() => this.view(record.registerid, record.patientid)}
+                to='/Layout/treatment/'>
                 信息查看
               </StyledLink>
             </span>
@@ -309,9 +310,33 @@ export default class Index extends Component {
       this.getPatientData();
     });
   }
+  getGridList(patienList){
+    const cols = 5; // 每行多少列
+    const totalLength = patienList.length;
+    let girds = [];
+    let rowLines = [];
+    patienList.map(item => {
+      let girdItem = <GridItem gridType={item.rcStatus} key={item.patientid} dataSource={item} doing={this.doing} redo={this.redo} done={this.done} view={this.view} keepDoing={this.keepDoing}></GridItem>
+      girds.push(girdItem);
+    })
+    let rowLength = parseInt(totalLength / cols);
+    rowLength = totalLength % cols ? ( rowLength + 1 ) : rowLength; // 条件含义是如果敲好是cols的整数倍直接返回商， 否则的将商 加1 补最后一行（最后一行肯定不满）
+    for(let i = 0; i < rowLength; i++){
+      let RowLinesItem = (
+        <RowLine key={i} width={(girds.slice(i * cols, ( i + 1 ) * cols)).length}>
+          {
+            girds.slice(i * cols, ( i + 1 ) * cols).map( item => item)
+          }
+        </RowLine>
+      );
+      rowLines.push(RowLinesItem);
+    }
+    return rowLines;
+  };
   render() {
     let { showWay, patienList, numbers, rcStatus,totalRecords, curPage, pageSize } = this.state;
     const columns = this.getTableColumns(rcStatus);
+    let girds = this.getGridList(patienList);
     console.log('numbers', numbers);
     return (
       <Container>
@@ -339,9 +364,7 @@ export default class Index extends Component {
           showWay == 'grid' ?
           (
             <Grid>
-            {
-              patienList.map(item => <GridItem gridType={rcStatus} key={item.patientid} dataSource={item} doing={this.doing} redo={this.redo} done={this.done} view={this.view} keepDoing={this.keepDoing}></GridItem>)
-            }
+              {girds}
             </Grid>
           ) :
           (
@@ -441,6 +464,11 @@ const Content = styled.div`
 `;
 const Grid = styled.div`
   margin: 8px auto;
+`;
+const RowLine = styled.div`
+  display: flex;
+  justify-content: space-around;
+  width: ${ props => props.width * 20 + '%'};
 `;
 const SpecTable = styled(Table)`
   margin: 16px;

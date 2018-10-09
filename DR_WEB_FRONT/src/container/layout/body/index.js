@@ -69,11 +69,11 @@ export default class Body extends Component {
     let pathname = this.props.location.pathname; // 只有我的诊疗界面展示左侧浮框
     return (
       <Container>
-          <Route   path='/Layout/todayPatient' component={TodayPatient} exact></Route>
+          <Route path='/Layout/todayPatient' component={TodayPatient} exact></Route>
           <Route path='/Layout/patientRegister' component={PatientRegister} exact></Route>
           <Route path='/Layout/registerForm/:type' component={RegisterForm} exact></Route>
           <Route path='/Layout' component={Home} exact></Route>
-          <Route path='/Layout/treatment/:id' component={TreatManage}></Route>
+          <Route path='/Layout/treatment' component={TreatManage}></Route>
           <Route path='/Layout/electronicMedicalRecords' component={Electronic}></Route>
           <Route path='/Layout/cure' component={Cure}></Route>
           <Route path='/Layout/syndromeTreatment' component={SyndromeTreatment}></Route>
