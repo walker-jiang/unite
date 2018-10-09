@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react'; // react核心
 import CheckableTag from 'components/antd/components/checkableTag';
+import { Input } from 'antd';
 import styled from 'styled-components';
 import Modal from 'react-modal';
 import Icon from 'components/dr/icon';
@@ -21,10 +22,8 @@ export default class ObserveCure extends Component {
     this.next = this.next.bind(this);
     this.prev = this.prev.bind(this);
   };
-  componentWillReceiveProps(nextProps){
-    if(this.props.value.length != nextProps.value.length){
-      this.setState({ urlArr: nextProps.value });
-    }
+  componentWillMount(){
+    this.setState({ urlArr: this.props.value });
   };
   /** [handleClose 关闭本组件] */
   handleClose(){
@@ -37,6 +36,7 @@ export default class ObserveCure extends Component {
     if(url){
       let urlArr = this.state.urlArr;
       urlArr.unshift(url);
+      this.props.onChange(urlArr);
       this.setState({
         visible: true,
         urlArr
@@ -72,6 +72,7 @@ export default class ObserveCure extends Component {
     let { url, text, detail } = this.props.standard;
     return (
       <div>
+        <SpecInput {...this.props} />
         {
           visible ?
             <PicShow>
@@ -112,6 +113,11 @@ export default class ObserveCure extends Component {
     )
   }
 }
+const SpecInput = styled(Input)`
+  &&&.ant-input {
+    display: none;
+  }
+`;
 const PicShow = styled.div`
   display: flex;
   flex-direction: column;

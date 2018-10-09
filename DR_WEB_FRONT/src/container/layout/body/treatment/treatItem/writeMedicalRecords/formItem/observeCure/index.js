@@ -19,6 +19,7 @@ export default class Index extends Component {
       visiblePicture: false, // 是否展示图片
       tonguePicture: shetai, // 舌头图片
       standard: {}, // 标准图片 文本 描述
+      urlIndex: 0, // 地址在地址数组中的索引
     };
     this.observeTagsClick = this.observeTagsClick.bind(this);
     this.returTonguePicture = this.returTonguePicture.bind(this);
@@ -26,6 +27,15 @@ export default class Index extends Component {
     this.tagsOut = this.tagsOut.bind(this);
     this.takePicture = this.takePicture.bind(this);
     this.getUrl = this.getUrl.bind(this);
+  };
+  componentWillMount(){
+    let urlIndex = this.state.urlIndex; // 初始化确定可以点击拍照次数
+    this.props.initialValue.urlArr.forEach( item => {
+      if(item != ''){
+        urlIndex ++;
+      }
+    });
+    this.setState({ urlIndex });
   };
   /**
    * [expand 点击左侧下标触发展开或者收缩按钮]
@@ -88,8 +98,10 @@ export default class Index extends Component {
   };
   /** [takePicture 拍照函数] */
   takePicture(){
-    this.camera.handleOpen();
-    this.tongueShow.handleClose();
+    if(this.state.urlIndex < 2){
+      this.camera.handleOpen();
+      this.tongueShow.handleClose();
+    }
   };
   /**
    * [tagsOver 鼠标滑过标签]
@@ -109,10 +121,10 @@ export default class Index extends Component {
   };
   /** [getUrl 获取拍照图片路径] */
   getUrl(url){
+    let urlIndex = this.state.urlIndex
+    urlIndex++;
+    this.setState({ urlIndex });
     this.tongueShow.handleOpen(url);
-    this.props.setFieldsValue({
-      tongue: url
-    });
   };
   render() {
     const { getFieldDecorator, formItemLayout, initialValue, visiblePicture } = this.props;

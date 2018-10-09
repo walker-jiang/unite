@@ -93,7 +93,7 @@ export default class ObserveCure extends Component {
     let self = this;
     window.timeout = setTimeout(() => {
       self.props.tagsOver(text, url, detail);
-    }, 2000);
+    }, 1000);
   };
   /** [tagsOut 鼠标画出] */
   tagsOut(){
