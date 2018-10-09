@@ -160,6 +160,7 @@ module.exports = {
     new webpack.NamedModulesPlugin(), //显示模块的相对路径
   ],
   resolve: {
+    extensions: ['.js', '.jsx', '.less', '.css'], //后缀名自动补全
     alias: { // 对间隔比较远的文件可以进行重命名
       components: path.resolve(__dirname, 'src/component/'),
       commonFunc: path.resolve(__dirname, 'src/util/commonFunction/'),

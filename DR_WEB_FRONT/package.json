@@ -48,6 +48,7 @@
     "progress-bar-webpack-plugin": "^1.11.0",
     "rc-form": "^2.2.0",
     "rc-inputs": "^0.7.5",
+    "rc-queue-anim": "^1.6.6",
     "react": "^16.2.0",
     "react-avatar-editor": "^11.0.4",
     "react-back-top": "^1.0.4",

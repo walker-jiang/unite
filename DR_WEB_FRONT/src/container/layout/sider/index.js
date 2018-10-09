@@ -10,60 +10,57 @@ const SubMenu = Menu.SubMenu;
 var onresize= window;
 
 class SiderDemo extends React.Component {
-
-constructor(props) {
-  super(props);
-    this.state = {
-      collapsed: false,
-      style:{},
-      MenuItem:[
-                //{key:"首页",show:true},
-                //{key:"病人登记",show:true},
-                //{key:"今日就诊",show:true},
-                //{key:"电子病历",show:true},
-              //  {key:"辨证论治",show:true},
-                //{key:"治未病",show:true},
-                //{key:"知识库",show:true},
-                //{key:"健康档案",show:true},
-                //{key:"远程教育",show:true},
-                //{key:"远程会诊",show:true},
-                //{key:"转诊",show:true},
-                //
-                {key:"首页",show:true},
-                {key:"患者登记",show:true},
-                {key:"今日诊疗",show:true},
-                {key:"病历中心",show:true},
-                {key:"辨证论治",show:true},
-                {key:"治未病",show:true},
-                {key:"远程教育",show:true},
-                {key:"远程会诊",show:true},
-                {key:"中医知识库",show:true},
-                {key:"患者档案",show:true},
-                {key:"模板管理",show:true},
-                {key:"服务点评",show:true},
-                {key:"信息上报",show:true},
-                {key:"资源管理",show:true},
-                {key:"质控管理",show:true},
-                {key:"综合分析",show:true},
-                {key:"个人设置",show:true},
-                {key:"系统管理",show:true},
-                {key:"用户管理",show:true},
-                {key:"日志管理",show:true},
-                {key:"患者转诊",show:true},
-                {key:"治疗记录",show:true},
-              ],
-      height:"",//外层高度
-      length:0,//移动的距离,
-      up:false,
-      down:true
-    };
-}
-changeMenuItem=(value)=>{
-
-  this.setState({MenuItem:value})
-}
-componentDidMount(){
-
+  constructor(props) {
+    super(props);
+      this.state = {
+        collapsed: false,
+        style:{},
+        MenuItem:[
+          //{key:"首页",show:true},
+          //{key:"病人登记",show:true},
+          //{key:"今日就诊",show:true},
+          //{key:"电子病历",show:true},
+        //  {key:"辨证论治",show:true},
+          //{key:"治未病",show:true},
+          //{key:"知识库",show:true},
+          //{key:"健康档案",show:true},
+          //{key:"远程教育",show:true},
+          //{key:"远程会诊",show:true},
+          //{key:"转诊",show:true},
+          //
+          {key:"首页",show:true},
+          {key:"患者登记",show:true},
+          {key:"今日诊疗",show:true},
+          {key:"病历中心",show:true},
+          {key:"辨证论治",show:true},
+          {key:"治未病",show:true},
+          {key:"远程教育",show:true},
+          {key:"远程会诊",show:true},
+          {key:"中医知识库",show:true},
+          {key:"患者档案",show:true},
+          {key:"模板管理",show:true},
+          {key:"服务点评",show:true},
+          {key:"信息上报",show:true},
+          {key:"资源管理",show:true},
+          {key:"质控管理",show:true},
+          {key:"综合分析",show:true},
+          {key:"个人设置",show:true},
+          {key:"系统管理",show:true},
+          {key:"用户管理",show:true},
+          {key:"日志管理",show:true},
+          {key:"患者转诊",show:true},
+          {key:"治疗记录",show:true},
+        ],
+        height:"",//外层高度
+        length:0,//移动的距离,
+        up:false,
+        down:true
+      };
+  }
+  changeMenuItem=(value)=>{
+    this.setState({MenuItem:value})
+  }
+  componentDidMount(){
   // console.log("wwwwwww",window);
   //   onresize.addEventListener("resize",this.handleHeight)   //添加窗口变化监听
   //   var clientHeight=document.documentElement.clientHeight
@@ -73,28 +70,25 @@ componentDidMount(){
   //     height=`${clientHeight-56*2}px`
   //     this.setState({height})
   //   }
-
 }
-componentWillMount(){
-  onresize.removeEventListener("resize",this.handleHeight) //清楚窗口变化监听
-}
-//侧边抽屉打开与关闭
-onCollapse = (collapsed) => {
-  console.log(collapsed);
-  var style
-  if (!this.state.collapsed) {
-    style={fontSize:"20px"}
-  }else {
-    style={fontSize:"16px"}
+  componentWillMount(){
+    onresize.removeEventListener("resize",this.handleHeight) //清楚窗口变化监听
   }
-  this.setState({ collapsed:!this.state.collapsed,style });
-}
-//检测浏览器窗口大小变化
-handleHeight=()=>{
+  //侧边抽屉打开与关闭
+  onCollapse = (collapsed) => {
+    console.log(collapsed);
+    var style
+    if (!this.state.collapsed) {
+      style={fontSize:"20px"}
+    }else {
+      style={fontSize:"16px"}
+    }
+    this.setState({ collapsed:!this.state.collapsed,style });
+  }
+  //检测浏览器窗口大小变化
+  handleHeight=()=>{
   const screenHeight=document.documentElement.clientHeight;
-  console.log("我变化了",screenHeight);
   var dom=document.getElementById("kk")
-  console.log("yanghsi",dom.offsetHeight);
   let  height="auto"
   if (screenHeight<dom.offsetHeight) {
 
@@ -105,7 +99,6 @@ handleHeight=()=>{
   })
 }
   onSelect=(sss)=>{
-    console.log("sssss",sss);
   }
   down=()=>{
     console.log("高度高度",this.state.height);
@@ -124,7 +117,6 @@ handleHeight=()=>{
     }else{
       this.setState({down:false,up:true})
     }
-
   }
   up=()=>{
     if (this.state.length<0) {

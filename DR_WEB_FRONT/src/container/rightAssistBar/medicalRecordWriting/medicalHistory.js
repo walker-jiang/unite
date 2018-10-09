@@ -24,7 +24,7 @@ export default class template extends Component {
   searchList = (content) =>{
     var self = this;
     let params = {
-      patientid:"201837451711775113",
+      patientid:window.patientID,//"201837451711775113",
     };
     function callBack(res){
       if(res.result && res.data){
@@ -114,7 +114,7 @@ export default class template extends Component {
     return (
       <div class="rightAssistBar_medicalHistory">
         <div class="medicalHistory_data">
-          <p class="data_p">共<span>2</span>次病历记录</p>
+          <p class="data_p">共<span>{content.length}</span>次病历记录</p>
           {
             content.map((item,index)=>{
               return(

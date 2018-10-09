@@ -37,7 +37,29 @@ export default class IntelligentTreat extends Component {
     };
   };
   componentWillMount(){
-
+    console.log("名医医案json========",this.props.dataSource);
+    if(this.props.dataSource.dataList){
+      var array = [];
+      this.props.dataSource.dataList.forEach((item,index)=>{//辩证论治套的一层
+        if(this.props.dataSource.dataList){
+          var objectList = JSON.parse(item).objectList;
+          objectList.forEach((j,k)=>{//知识库套的一层
+            console.log("名医医案json一条=============",j);
+            console.log("=========",j.tm_DetailAndDoctor.doctorList[0].name);
+            array.push({
+             title:j.tm_title_all,
+             // name:j.tm_DetailAndDoctor.doctorList[0].name,
+             // company:j.tm_DetailAndDoctor.doctorList[0].company,
+             // isauthor:j.tm_DetailAndDoctor.doctorList[0].isauthor,
+             initData:j
+            })
+          })
+        }
+      })
+      this.setState({ content:array });
+    }else{
+      console.log("方剂暂无数据");
+    }
   }
 
   callback(key) {
@@ -46,23 +68,23 @@ export default class IntelligentTreat extends Component {
   render() {
     var { content } = this.state;
     return (
-      <div class="prescription">
-        <div class="data">
+      <div className="prescription">
+        <div className="data">
           {
             content.map((item,index)=>{
               return(
-                <div style={{paddingBottom:8}}>
-                  <div class="medicalHistory_content">
-                    <div class="medicalHistory_content-title">
+                <div style={{paddingBottom:8}} key={index}>
+                  <div className="medicalHistory_content">
+                    <div className="medicalHistory_content-title">
                       <Row style={{height:26}}>
                         <Col span={24}>
-                          <span class="content-p">蔡连香治疗风寒感冒经典医案</span>
-                          <span class="content-div">匹配指数:<Rate value="5" disabled style={{fontSize:10,marginLeft:5}}/></span>
+                          <span className="content-p">{item.title}</span>
+                          <span className="content-div">匹配指数:<Rate value={5} disabled style={{fontSize:10,marginLeft:5}}/></span>
                         </Col>
                       </Row>
                     </div>
                   </div>
-                  <ContentDetailFive item={item}/>
+                  <ContentDetailFive item={item.initData} bu={this.props.bu}/>
                 </div>
               )
             })

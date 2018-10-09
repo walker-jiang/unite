@@ -70,6 +70,7 @@ export default class Index extends Component {
    * @return {[type]}              [description]
    */
   getData (nextPage = 1){
+    console.log("获取医嘱列表信息====");
     let registerid = window.registerID;
     let params = {
       url: 'BuOrderController/getList',
@@ -81,6 +82,7 @@ export default class Index extends Component {
     };
     let that = this;
     function success(res) {
+      console.log("获取医嘱列表信息成功");
       if(res.result && res.data){
         let dataSource = res.data.records.map((item, index)=>{
           item.key = index; // 加唯一key值
@@ -94,7 +96,10 @@ export default class Index extends Component {
         that.setState({dataSource: [], tatalRecords: 0});
       }
     };
-    getResource(params, success);
+    function error(res) {
+      console.log("获取医嘱列表信息失败",res);
+    }
+    getResource(params, success, error);
   }
   /**
    * [onDelete 删除医嘱信息]
@@ -164,6 +169,9 @@ export default class Index extends Component {
   }
   // 初始化模板数据打开添加弹框
   modelData(buOrderDtlList, ordertype){
+    console.log("buOrderDtlList111111111111111111",buOrderDtlList);
+    // ordertype = 1,
+    buOrderDtlList = this.examinSampleData();
     this.actionManager('add', {orderid:'', ordertype: ordertype}, buOrderDtlList)
   };
   previewClick (printData) {
@@ -444,7 +452,7 @@ export default class Index extends Component {
     	}],
     	aim: 'jiang',
     	miType: '0', // 0 医保内， 1医保外
-    	"buDiagnosisList": [{
+    	buDiagnosisList: [{
   				"buDiagnosisDismainfList": [{
   					"ctstamp": "2018-09-22 10:55:46",
   					"diagnosisid": "201837584946816406",
@@ -489,114 +497,114 @@ export default class Index extends Component {
   inspectionSampleData(){
     return {
     	inspectionData: [
-      { // 非医嘱套
-      	"aim": "医疗服务目标",
-      	"baseUnit": "5",
-      	"count": 1,
-      	"ctstamp": "2018-07-27 16:58:25",
-      	"deptid": 1,
-      	"deptname": "内科",
-      	"medicalTypeid": 2,
-      	"medicalcode": "26",
-      	"medicaldesc": "CT",
-      	"medicalid": 26,
-      	"medicalname": "CT",
-      	"medinslevel": "1",
-      	"medinsrem": "无",
-      	"miType": "1",
-      	"orgid": "1",
-      	"seqno": 26,
-      	"spbody": "",
-      	"specification": "规格",
-      	"unitprice": 200,
-      	"useflag": "1",
-      	"utstamp": "2018-08-22 14:02:05",
-      	"medinslevelDic": "未知的字典",
-      	"baseUnitDic": "项",
-      	"key": 0,
-      	"status": 0
-      },
-      { // 医嘱套
-      	"baMedicalDtlList": [{
-      		"aim": "医疗服务目标",
-      		"baseUnit": "5",
-      		"count": 1,
-      		"ctstamp": "2018-07-08 16:09:33",
-      		"deptid": 1,
-      		"deptname": "内科",
-      		"medicalTypeid": 2,
-      		"medicalcode": "16",
-      		"medicaldesc": "成像",
-      		"medicalid": 16,
-      		"medicalname": "B超",
-      		"medinslevel": "1",
-      		"medinsrem": "无",
-      		"miType": "1",
-      		"orgid": "1",
-      		"seqno": 16,
-      		"spbody": "腹部",
-      		"specification": "规格",
-      		"unitprice": 15.5,
-      		"useflag": "1",
-      		"utstamp": "2018-08-22 14:02:05",
-      		"medinslevelDic": "未知的字典",
-      		"baseUnitDic": "项"
-      	}, {
-      		"aim": "医疗服务目标",
-      		"baseUnit": "5",
-      		"count": 1,
-      		"ctstamp": "2018-07-08 16:08:26",
-      		"deptid": 1,
-      		"deptname": "内科",
-      		"medicalTypeid": 2,
-      		"medicalcode": "15",
-      		"medicaldesc": "成像",
-      		"medicalid": 15,
-      		"medicalname": "彩超",
-      		"medinslevel": "1",
-      		"medinsrem": "无",
-      		"miType": "1",
-      		"orgid": "1",
-      		"seqno": 15,
-      		"spbody": "腹部",
-      		"specification": "规格",
-      		"unitprice": 15.5,
-      		"useflag": "1",
-      		"utstamp": "2018-08-22 14:02:05",
-      		"medinslevelDic": "未知的字典",
-      		"baseUnitDic": "项"
-      	}],
-      	"baseUnit": "5",
-      	"count": 1,
-      	"ctstamp": "2018-07-09 11:02:42",
-      	"depaid": "1",
-      	"deptname": "检验科",
-      	"execDepaid": "1",
-      	"feesum": 50,
-      	"islock": "1",
-      	"medicaldesc": "医疗服务描述",
-      	"medinslevel": "1",
-      	"medinsrem": "无",
-      	"miType": "0",
-      	"orderSuitcode": "cj",
-      	"orderSuitid": 4,
-      	"orderSuitname": "产检",
-      	"orgid": "1",
-      	"osSortid": "2",
-      	"osTypeid": 2,
-      	"pinyin": "chanjian",
-      	"printmode": "0",
-      	"seqno": 1,
-      	"spbody": "子宫",
-      	"specification": "规格",
-      	"useflag": "1",
-      	"utstamp": "2018-08-21 10:55:01",
-      	"medinslevelDic": "未知的字典",
-      	"baseUnitDic": "项",
-      	"key": 4,
-      	"status": 2
-      }
-    ],
+        { // 非医嘱套
+        	"aim": "医疗服务目标",
+        	"baseUnit": "5",
+        	"count": 1,
+        	"ctstamp": "2018-07-27 16:58:25",
+        	"deptid": 1,
+        	"deptname": "内科",
+        	"medicalTypeid": 2,
+        	"medicalcode": "26",
+        	"medicaldesc": "CT",
+        	"medicalid": 26,
+        	"medicalname": "CT",
+        	"medinslevel": "1",
+        	"medinsrem": "无",
+        	"miType": "1",
+        	"orgid": "1",
+        	"seqno": 26,
+        	"spbody": "",
+        	"specification": "规格",
+        	"unitprice": 200,
+        	"useflag": "1",
+        	"utstamp": "2018-08-22 14:02:05",
+        	"medinslevelDic": "未知的字典",
+        	"baseUnitDic": "项",
+        	"key": 0,
+        	"status": 0
+        },
+        { // 医嘱套
+        	"baMedicalDtlList": [{
+        		"aim": "医疗服务目标",
+        		"baseUnit": "5",
+        		"count": 1,
+        		"ctstamp": "2018-07-08 16:09:33",
+        		"deptid": 1,
+        		"deptname": "内科",
+        		"medicalTypeid": 2,
+        		"medicalcode": "16",
+        		"medicaldesc": "成像",
+        		"medicalid": 16,
+        		"medicalname": "B超",
+        		"medinslevel": "1",
+        		"medinsrem": "无",
+        		"miType": "1",
+        		"orgid": "1",
+        		"seqno": 16,
+        		"spbody": "腹部",
+        		"specification": "规格",
+        		"unitprice": 15.5,
+        		"useflag": "1",
+        		"utstamp": "2018-08-22 14:02:05",
+        		"medinslevelDic": "未知的字典",
+        		"baseUnitDic": "项"
+        	}, {
+        		"aim": "医疗服务目标",
+        		"baseUnit": "5",
+        		"count": 1,
+        		"ctstamp": "2018-07-08 16:08:26",
+        		"deptid": 1,
+        		"deptname": "内科",
+        		"medicalTypeid": 2,
+        		"medicalcode": "15",
+        		"medicaldesc": "成像",
+        		"medicalid": 15,
+        		"medicalname": "彩超",
+        		"medinslevel": "1",
+        		"medinsrem": "无",
+        		"miType": "1",
+        		"orgid": "1",
+        		"seqno": 15,
+        		"spbody": "腹部",
+        		"specification": "规格",
+        		"unitprice": 15.5,
+        		"useflag": "1",
+        		"utstamp": "2018-08-22 14:02:05",
+        		"medinslevelDic": "未知的字典",
+        		"baseUnitDic": "项"
+        	}],
+        	"baseUnit": "5",
+        	"count": 1,
+        	"ctstamp": "2018-07-09 11:02:42",
+        	"depaid": "1",
+        	"deptname": "检验科",
+        	"execDepaid": "1",
+        	"feesum": 50,
+        	"islock": "1",
+        	"medicaldesc": "医疗服务描述",
+        	"medinslevel": "1",
+        	"medinsrem": "无",
+        	"miType": "0",
+        	"orderSuitcode": "cj",
+        	"orderSuitid": 4,
+        	"orderSuitname": "产检",
+        	"orgid": "1",
+        	"osSortid": "2",
+        	"osTypeid": 2,
+        	"pinyin": "chanjian",
+        	"printmode": "0",
+        	"seqno": 1,
+        	"spbody": "子宫",
+        	"specification": "规格",
+        	"useflag": "1",
+        	"utstamp": "2018-08-21 10:55:01",
+        	"medinslevelDic": "未知的字典",
+        	"baseUnitDic": "项",
+        	"key": 4,
+        	"status": 2
+        }
+      ],
     	aim: 'jiang',
     	miType: '0', // 0 医保内， 1医保外
     	"buDiagnosisList": [{
@@ -1246,10 +1254,10 @@ export default class Index extends Component {
               <IntelligentTreat/>
             </TabPane>
             <TabPane tab="历史模板" key="2">
-              <MedicalHistoryTwo/>
+              <MedicalHistoryTwo actionManager= {this.actionManager} getData={this.getData}/>
             </TabPane>
             <TabPane tab="医嘱模板" key="3">
-              <DoctorAdviceTemplate/>
+              <DoctorAdviceTemplate actionManager= {this.actionManager} getData={this.getData}/>
             </TabPane>
           </SpecTabs>
         </Modal>

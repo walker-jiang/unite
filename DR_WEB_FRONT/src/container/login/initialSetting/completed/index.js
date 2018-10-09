@@ -16,6 +16,7 @@ class Index extends Component {
       let that = this;
       let params = {
         url: 'BaOrguserController/getDataByidAndToken',
+        server_url: config_login_url,
         data: {
           orgUerid: window.sessionStorage.getItem('userid'),
           serviceToken: window.sessionStorage.getItem('token')
@@ -38,7 +39,7 @@ class Index extends Component {
       };
       getResource(params, success);
     };
-    etUserInfo(deptid, orgid , userid, post, username, photo){
+    setUserInfo(deptid, orgid , userid, post, username, photo){
       let obj = {
         userid: userid,
         orgid: orgid,

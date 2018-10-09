@@ -21,6 +21,7 @@ class Index extends Component {
       username: '', // 用户名
       password: '', // 密码
     };
+    this.ignoreLogin = this.ignoreLogin.bind(this);
   }
   componentWillMount() {
     this.verifyAutoLogin();
@@ -30,58 +31,95 @@ class Index extends Component {
     if(window.setDefaultMenu){ // 加载完登陆组件后通知客户端默认菜单
       let defaultSysModuleList = [
         {
-          "callurl": "/Layout/syndromeTreatment",
-          "ctstamp": "2018-09-10 16:28:43",
-          "lastflag": 0,
-          "level": 1,
-          "moddesc": "syndrome_treatment",
-          "modid": 5,
-          "modname": "辩证论治",
-          "modno": "cs005",
-          "modtype": "1",
-          "seqno": 5,
-          "superid": 0,
-          "syModuleList": [],
-          "syWorkList": [],
-          "uctstamp": "2018-10-07 10:45:36",
-          "useflag": "1",
-          "user": null
+        	"ctstamp": "2018-10-09 10:46:33",
+        	"menuid": "7",
+        	"menustate": "01",
+        	"menutype": "01",
+        	"modid": 7,
+        	"seqno": 1,
+        	"syModule": {
+        		"callurl": "/Layout/chKnowledge",
+        		"ctstamp": "2018-09-10 16:32:46",
+        		"lastflag": 0,
+        		"level": 1,
+        		"moddesc": "ch_knowledge",
+        		"modid": 7,
+        		"modname": "中医知识库",
+        		"modno": "cs007",
+        		"modtype": "1",
+        		"seqno": 7,
+        		"superid": 0,
+        		"syModuleList": [],
+        		"syWorkList": [],
+        		"uctstamp": "2018-10-07 10:45:36",
+        		"useflag": "1",
+        		"user": null
+        	},
+        	"uctstamp": "2018-10-09 10:56:20",
+        	"useflag": "1",
+        	"userid": "1"
         }, {
-          "callurl": "/Layout/chKnowledge",
-          "ctstamp": "2018-09-10 16:32:46",
-          "lastflag": 0,
-          "level": 1,
-          "moddesc": "ch_knowledge",
-          "modid": 7,
-          "modname": "中医知识库",
-          "modno": "cs007",
-          "modtype": "1",
-          "seqno": 7,
-          "superid": 0,
-          "syModuleList": [],
-          "syWorkList": [],
-          "uctstamp": "2018-10-07 10:45:36",
-          "useflag": "1",
-          "user": null
+        	"ctstamp": "2018-10-09 10:46:31",
+        	"menuid": "5",
+        	"menustate": "01",
+        	"menutype": "01",
+        	"modid": 5,
+        	"seqno": 1,
+        	"syModule": {
+        		"callurl": "/Layout/syndromeTreatment",
+        		"ctstamp": "2018-09-10 16:28:43",
+        		"lastflag": 0,
+        		"level": 1,
+        		"moddesc": "syndrome_treatment",
+        		"modid": 5,
+        		"modname": "辩证论治",
+        		"modno": "cs005",
+        		"modtype": "1",
+        		"seqno": 5,
+        		"superid": 0,
+        		"syModuleList": [],
+        		"syWorkList": [],
+        		"uctstamp": "2018-10-07 10:45:36",
+        		"useflag": "1",
+        		"user": null
+        	},
+        	"uctstamp": "2018-10-09 10:56:19",
+        	"useflag": "1",
+        	"userid": "1"
         }, {
-          "callurl": "/Layout/cureNotIll",
-          "ctstamp": "2018-09-10 16:30:41",
-          "lastflag": 0,
-          "level": 1,
-          "moddesc": "cure_not_ill",
-          "modid": 6,
-          "modname": "治未病",
-          "modno": "cs006",
-          "modtype": "1",
-          "seqno": 6,
-          "superid": 0,
-          "syModuleList": [],
-          "syWorkList": [],
-          "uctstamp": "2018-10-07 10:45:36",
-          "useflag": "1",
-          "user": null
+        	"ctstamp": "2018-10-09 10:46:32",
+        	"menuid": "6",
+        	"menustate": "01",
+        	"menutype": "01",
+        	"modid": 6,
+        	"seqno": 1,
+        	"syModule": {
+        		"callurl": "/Layout/cureNotIll",
+        		"ctstamp": "2018-09-10 16:30:41",
+        		"lastflag": 0,
+        		"level": 1,
+        		"moddesc": "cure_not_ill",
+        		"modid": 6,
+        		"modname": "治未病",
+        		"modno": "cs006",
+        		"modtype": "1",
+        		"seqno": 6,
+        		"superid": 0,
+        		"syModuleList": [],
+        		"syWorkList": [],
+        		"uctstamp": "2018-10-07 10:45:36",
+        		"useflag": "1",
+        		"user": null
+        	},
+        	"uctstamp": "2018-10-09 10:56:20",
+        	"useflag": "1",
+        	"userid": "1"
         }
       ];
+      defaultSysModuleList.forEach(item => {
+        // if(item.syModule.modid )
+        item.syModule.callurl = 'http://10.192.5.155:8987' + item.syModule.callurl;
+      });
       window.setDefaultMenu(JSON.stringify(defaultSysModuleList));
     }
   };
@@ -112,6 +150,7 @@ class Index extends Component {
     let that = this;
     let params = {
       type: 'GET',
+      server_url: config_login_url,
       url: 'verificationCodeController/getVerificationCode',
       data: {}
     };
@@ -144,6 +183,7 @@ class Index extends Component {
     let that = this;
     let params = {
       url: 'loginController/login',
+      server_url: config_login_url,
       type: 'post',
       data: JSON.stringify(paramsData)
     }
@@ -151,96 +191,34 @@ class Index extends Component {
       if(res.result){
         // 选择要跳转的路由
         let path = '/login/initialSetting';
+        // 将当前用户的信息保存供其它组件用
+        window.sessionStorage.setItem('username', res.data.baOrguser.realname); // 用户名
+        window.sessionStorage.setItem('deptid', res.data.baOrguser.deptid); // 科室ID
+        window.sessionStorage.setItem('orgid', res.data.baOrguser.orgid); // 机构ID
+        window.sessionStorage.setItem('userid', res.data.baOrguser.orgUerid); // 用户ID
+        window.sessionStorage.setItem('post', res.data.baOrguser.post); // 医生级别
+        window.sessionStorage.setItem('token', res.data.serviceToken); // 医生级别
         if(res.data.baOrguser.initcomplete != '0'){ // 跳过初始化组件
           path = '/layout';
+          // console.log('res.data.baOrguser.quickMenu.leftMenuList', JSON.stringify(res.data.baOrguser.quickMenu.leftMenuList));
           if(window.loginSystem){ // 客户端存在
+            // alert('window.loginSystem');
             console.log('监测到客户端loginSystem方法');
             if(window.setMenu){ // 通知客户端当前登录用户的菜单
-              let rightSysModuleList = [
-                {
-                  "callurl": "/Layout/syndromeTreatment",
-                  "ctstamp": "2018-09-10 16:28:43",
-                  "lastflag": 0,
-                  "level": 1,
-                  "moddesc": "syndrome_treatment",
-                  "modid": 5,
-                  "modname": "辩证论治",
-                  "modno": "cs005",
-                  "modtype": "1",
-                  "seqno": 5,
-                  "superid": 0,
-                  "syModuleList": [],
-                  "syWorkList": [],
-                  "uctstamp": "2018-10-07 10:45:36",
-                  "useflag": "1",
-                  "user": null
-                }, {
-                  "callurl": "/Layout/chKnowledge",
-                  "ctstamp": "2018-09-10 16:32:46",
-                  "lastflag": 0,
-                  "level": 1,
-                  "moddesc": "ch_knowledge",
-                  "modid": 7,
-                  "modname": "中医知识库",
-                  "modno": "cs007",
-                  "modtype": "1",
-                  "seqno": 7,
-                  "superid": 0,
-                  "syModuleList": [],
-                  "syWorkList": [],
-                  "uctstamp": "2018-10-07 10:45:36",
-                  "useflag": "1",
-                  "user": null
-                }, {
-                  "callurl": "/Layout/cureNotIll",
-                  "ctstamp": "2018-09-10 16:30:41",
-                  "lastflag": 0,
-                  "level": 1,
-                  "moddesc": "cure_not_ill",
-                  "modid": 6,
-                  "modname": "治未病",
-                  "modno": "cs006",
-                  "modtype": "1",
-                  "seqno": 6,
-                  "superid": 0,
-                  "syModuleList": [],
-                  "syWorkList": [],
-                  "uctstamp": "2018-10-07 10:45:36",
-                  "useflag": "1",
-                  "user": null
-                }, {
-            			"callurl": "/Layout/treatManage",
-            			"ctstamp": "2018-09-10 16:35:00",
-            			"lastflag": 0,
-            			"level": 1,
-            			"moddesc": "treat_manage",
-            			"modid": 8,
-            			"modname": "治疗管理",
-            			"modno": "cs008",
-            			"modtype": "1",
-            			"seqno": 8,
-            			"superid": 0,
-            			"syModuleList": [],
-            			"syWorkList": [],
-            			"uctstamp": "2018-10-07 10:45:36",
-            			"useflag": "1",
-            			"user": null
-            		}
-              ];
+              // alert('window.setMenu');
+              // console.log('JSON.stringify(res.data.rightMenuList)', JSON.stringify(res.data.rightMenuList));
+              let rightSysModuleList = res.data.baOrguser.quickMenu.rightMenuList;
+              rightSysModuleList.forEach(item => {
+                item.syModule.callurl = 'http://10.192.5.155:8987' + item.syModule.callurl;
+              });
               window.setMenu(JSON.stringify(rightSysModuleList));
             }
-            that.setUserInfo(res.data.baOrguser.deptid, res.data.baOrguser.orgid, res.data.baOrguser.orgUserid, res.data.baOrguser.post, res.data.baOrguser.realname, res.data.baOrguser.photo);
+            that.setUserInfo(res.data.baOrguser.deptid, res.data.baOrguser.orgid, res.data.baOrguser.orgUerid, res.data.baOrguser.post, res.data.baOrguser.realname, res.data.baOrguser.photo);
           }else{
-            // 将当前用户的信息保存供其它组件用
-            window.sessionStorage.setItem('username', res.data.baOrguser.realname); // 用户名
-            window.sessionStorage.setItem('deptid', res.data.baOrguser.deptid); // 科室ID
-            window.sessionStorage.setItem('orgid', res.data.baOrguser.orgid); // 机构ID
-            window.sessionStorage.setItem('userid', res.data.baOrguser.orgUerid); // 用户ID
-            window.sessionStorage.setItem('post', res.data.baOrguser.post); // 医生级别
-            window.sessionStorage.setItem('token', res.data.serviceToken); // 医生级别
-            console.log('res', JSON.stringify(res.data.baOrguser));
+            // console.log('res', JSON.stringify(res.data.baOrguser));
           }
         }
+        // console.log('res', res.data);
         that.props.history.push(path); // 跳转到初始化设置组件
       }else{
         that.tipModal.showModal({
@@ -272,6 +250,8 @@ class Index extends Component {
       username: username,
       photo: photo
     };
+    // console.log('1', obj);
+    // alert('登陆前', obj);
     window.loginSystem(JSON.stringify(obj));
   };
   /* 记住密码 */
@@ -282,8 +262,11 @@ class Index extends Component {
   autoLogin(checked){
     this.setState({ autoLogin: '' + checked });
   };
-  componentDidMount(){
-    console.log('是否离开1');
+  /** [ignoreLogin 忽略登录] */
+  ignoreLogin(){
+    if(window.skipLogin){
+      window.skipLogin();
+    }
   };
   render() {
     const { username, password, verificationCode, rememberPass, autoLogin} = this.state;
@@ -334,7 +317,7 @@ class Index extends Component {
           </Checkbox>
           <RetakeLink to="/login/getPassword">🔑找回密码</RetakeLink>
           <LoginAction type="primary" htmlType="submit">立即登录</LoginAction>
-          <CancelAction type="primary">忽略，稍后登录</CancelAction>
+          <CancelAction type="primary" onClick={this.ignoreLogin}>忽略，稍后登录</CancelAction>
         </FormItem>
         <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </FormLogin>

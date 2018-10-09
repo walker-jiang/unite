@@ -9,16 +9,156 @@ const testData = false;
 class DoctorAdviceService {
 
     /**
-     * 病历书写单----病历模板（和搜索）-----易超文
+     * 医嘱模板-----历史病例-----金野
      */
-    QueryTable(params,callBack){
+    GetList(params,callBack){
         if(testData){
           return Simulation.GetList();
         }else{
-          Xhr.postAddUrl(config_AssistBar_url+'/template/query/index/all', params, false, callBack);
+          Xhr.post('GET','application/x-www-form-urlencoded;charset=utf-8',config_service_url+'BuOrderController/getBuOrderHistory', params, false, callBack);
         }
     }
 
+    /**
+     * 医嘱模板-----获取医嘱单详细信息-----金野
+     */
+    GetData(params,callBack){
+        if(testData){
+          return Simulation.GetList();
+        }else{
+          Xhr.post('GET','application/x-www-form-urlencoded;charset=utf-8',config_service_url+'BuOrderController/getData', params, false, callBack);
+        }
+    }
+
+    /**
+     * 医嘱模板-----获取医嘱模板列表----易超文
+     */
+    Medicalordertemplate(params,callBack){
+        if(testData){
+          return Simulation.GetList();
+        }else{
+          Xhr.postAddUrl(config_service_url+'/medicalordertemplate/query/index/all', params, false, callBack);
+        }
+    }
+
+    /**
+     * 医嘱模板-----导入患者历史医嘱列表-----金野
+     */
+    ImportList(params,callBack){
+        if(testData){
+          return Simulation.GetList();
+        }else{
+          Xhr.post('get','application/x-www-form-urlencoded;charset=utf-8',config_service_url+'BuOrderController/importList', params, false, callBack);
+        }
+    }
+    /**
+     * 医嘱模板-----获取证侯对应治法列表-----孙磊
+     */
+    ImtreatprelistGetList(params,callBack){
+        //callBack(Simulation.ImtreatprelistGetList())
+        if(testData){
+          return Simulation.ImtreatprelistGetList(callBack);
+        }else{
+          Xhr.post(
+            'get',
+            'application/x-www-form-urlencoded;charset=utf-8',
+            config_InteLigenTreat_url+'TCMAE/api/Imtreatprelist/GetImtreatList',
+            params,
+            false,
+            callBack
+          );
+        }
+    }
+    /**
+     * 草药引入
+     */
+    getcmdrugs(params,callBack){
+        //callBack(Simulation.ImtreatprelistGetList())  http://10.192.1.115:8080/
+        if(testData){
+          return Simulation.getcmdrugs(callBack);
+        }else{
+          Xhr.post(
+            'get',
+            'application/x-www-form-urlencoded;charset=utf-8',
+            config_InteLigenTreat_url+'TCMAE/api/scheme/getcmdrugs',
+            params,
+            false,
+            callBack
+          );
+        }
+    }
+    /**
+     * 中成药引入
+     */
+    getCpm(params,callBack){
+        //callBack(Simulation.ImtreatprelistGetList())
+        if(testData){
+          return Simulation.getCpm(callBack);
+        }else{
+          Xhr.post(
+            'get',
+            'application/x-www-form-urlencoded;charset=utf-8',
+            config_InteLigenTreat_url+'TCMAE/api/scheme/getCpm',
+            params,
+            false,
+            callBack
+          );
+        }
+    }
+    /**
+     * 适宜技术引入
+     */
+    getSt(params,callBack){
+        //callBack(Simulation.ImtreatprelistGetList())
+        if(testData){
+          return Simulation.getSt(callBack);
+        }else{
+          Xhr.post(
+            'get',
+            'application/x-www-form-urlencoded;charset=utf-8',
+            config_InteLigenTreat_url+'TCMAE/api/scheme/getSt',
+            params,
+            false,
+            callBack
+          );
+        }
+    }
+    /**
+     * 医嘱模板引入
+     */
+    importTem(params,callBack){
+        //callBack(Simulation.ImtreatprelistGetList())
+        if(testData){
+          return Simulation.getSt(callBack);
+        }else{
+          Xhr.post(
+            'get',
+            'application/x-www-form-urlencoded;charset=utf-8',
+            config_InteLigenTreat_url+'BuOrderController/importTem',
+            params,
+            false,
+            callBack
+          );
+        }
+    }
+    /**
+     * 名医医案引入
+     */
+    addPrescription(params,callBack){
+        //callBack(Simulation.ImtreatprelistGetList())
+        if(testData){
+          return Simulation.getSt(callBack);
+        }else{
+          Xhr.post(
+            'get',
+            'application/x-www-form-urlencoded;charset=utf-8',
+            config_InteLigenTreat_url+'TCMAE/MedicalCase/addPrescription',
+            params,
+            false,
+            callBack
+          );
+        }
+    }
 }
 
 // 实例化再导出

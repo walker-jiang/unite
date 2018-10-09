@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import {Link, withRouter} from 'react-router-dom';
-import {Layout, Menu, Breadcrumb, Icon,Carousel,  Row,Col,  Button, Modal,  Table,  Form,  Checkbox } from 'antd';
-import "./SystemManagement.less";
-import "../../sider/fontStyle.less";
-import Icon1 from 'components/dr/icon';
+import { Link, withRouter } from 'react-router-dom';
+import { Layout, Menu, Breadcrumb, Icon, Carousel, Row, Col, Button, Modal, Table, Form, Checkbox } from 'antd';
 const FormItem = Form.Item;
-const {Header, Content, Footer, Sider} = Layout;
+const { Header, Content, Footer, Sider } = Layout;
+import ajaxGetResource from 'commonFunc/ajaxGetResource';
+// import "../../sider/fontStyle.less";
+// import './SystemManagement.less';
+import Icon1 from 'components/dr/icon';
+import StyButton from 'components/antd/style/button';
 
 const MenuItem = Menu.Item;
 class SystemManagement extends React.Component {
@@ -14,9 +16,32 @@ class SystemManagement extends React.Component {
     super(props);
     this.state = {
       visible: false,
-      MenuData: []
+      MenuData: [],
+      totalModules: [], // 所有菜单
     };
   }
+  componentWillMount(){
+    this.getTotalMoules();
+  };
+  /** [getTotalMoules 获取所有菜单] */
+  getTotalMoules(){
+    let self = this;
+    let params = {
+      url: 'ModuleController/getUserModule',
+      server_url: config_login_url,
+      data: {
+        userid: window.sessionStorage.getItem('userid')
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        self.setState({ totalModules: res.data });
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
   showModal = () => {
     this.setState({visible: true});
   }
@@ -129,8 +154,57 @@ class SystemManagement extends React.Component {
       }
     });
   }
+  /**
+   * [getCarouselCom 获取分好组的所有菜单模块]
+   * @param  {[type]} totalModules [所有菜单数据]
+   * @return {[type]}              [component数据]
+   */
+  getCarouselCom(totalModules){
+    const rows = 3; // 每页多少行
+    const cols = 5; // 每行多少列
+    const totalLength = totalModules.length;
+    let Pages = [];
+    let RowLines = []; // 所有行组件
+    let StyledLinks = [];
+    totalModules.forEach((item, index) => {
+      let StyledLinkItem = (
+        <StyledLink to={item.callurl} key={index}>
+          <StyleIcon type={'m_' + item.moddesc}/>
+          <Label>{item.modname}</Label>
+        </StyledLink>
+      )
+      StyledLinks.push(StyledLinkItem);
+    });
+    let rowLenght = parseInt(totalLength / cols);
+    rowLenght = totalLength % cols ? ( rowLenght + 1 ) : rowLenght; // 条件含义是如果敲好是cols的整数倍直接返回商， 否则的将商 加1 补最后一行（最后一行肯定不满）
+    for(let i = 0; i < rowLenght; i++){
+      let RowLinesItem = (
+        <RowLine key={i}>
+          {
+            StyledLinks.slice(i * cols, ( i + 1 ) * cols).map( item => item)
+          }
+        </RowLine>
+      );
+      RowLines.push(RowLinesItem);
+    }
+    let pageLength = parseInt(totalLength / ( cols * rows ));
+    pageLength = totalLength % ( cols * rows ) ? ( pageLength + 1 ) : pageLength; // 条件含义是如果敲好是cols的整数倍直接返回商， 否则的将商 加1 补最后一行（最后一行肯定不满）
+    for(let i = 0; i < pageLength; i++){
+      let PagesItems = (
+        <Page key={i}>
+          {
+            RowLines.slice(i * rows, ( i + 1 ) * rows).map( item => item)
+          }
+        </Page>
+      );
+      Pages.push(PagesItems);
+    }
+    return Pages;
+  };
   render() {
     const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form;
+    let { totalModules } = this.state;
+    let CarouselCom = this.getCarouselCom(totalModules);
     const dataSource = [
       {
         key: 'home',
@@ -253,9 +327,8 @@ class SystemManagement extends React.Component {
         dataIndex: 'index',
         key: 'index',
         width: "10%",
-        render: (text, record, index) => {
-          return (<span>{index + 1}</span>)
-        }
+        align: 'center',
+        render: (text, record, index) => <span>{index + 1}</span>
       }, {
         title: '菜单名称',
         dataIndex: 'menuName',
@@ -273,7 +346,6 @@ class SystemManagement extends React.Component {
         width: "20%",
         render: (text, record, index) => {
           const exist = window.menus.some(item => item.id == record.key);
-          console.log('exist', exist);
           return (<FormItem>
             {getFieldDecorator(record.key, {initialValue: exist})(<Checkbox defaultChecked={exist}></Checkbox>)}
           </FormItem>)
@@ -287,171 +359,89 @@ class SystemManagement extends React.Component {
           return (<div style={{
               color: "#3366ff"
             }}>
-            <span>上移
+            <span >上移
             </span>
             <span>下移</span>
           </div>)
         }
       }
     ];
-    return (<div style={{
-        width: "80%",
-        margin: "2% auto  "
-      }} className="SystemManagement">
-      <Row style={{
-          marginBottom: "10px"
-        }}>
+    return (
+      <Container className="SystemManagement">
+      <Row>
         <Col span={12}>
-          <span style={{
-              fontSize: "20px",
-              display: "inlineBlock",
-              height: "35px",
-              lineHeight: "35px",
-              borderBottom: "2px solid #3190B0"
-            }}>
-            <i className="anticon iconfont" style={{
-                marginRight: "10px",
-                fontSize: "20px"
-              }}>&#xe999;</i>应用中心</span>
+          <Title>
+            <MoreIcon type='more_more'/>应用中心
+          </Title>
         </Col>
         <Col span={12}>
-          <span style={{
-              float: "right",
-              fontSize: "20px",
-              display: "inlineBlock",
-              height: "30px",
-              lineHeight: "30px",
-              color: " #3190B0",
-              cursor: "pointer"
-            }} onClick={this.showModal}>应用设置</span>
+          <AppSet onClick={this.showModal}>
+            <StyIcon type='appSet'/>应用设置
+          </AppSet>
         </Col>
       </Row>
-      <div style={{
-          border: "1px solid #E4E4E4"
-        }} className="select">
-        <Carousel>
-          <Page >
-            <RowLine>
-              <Link to='/Layout'>
-                <StyleIcon type='m_home'/>
-                <p>首页</p>
-              </Link>
-              <Link to='/Layout/patientRegister'>
-                <StyleIcon type='m_patient_register'/>
-                <p>患者登记</p>
-              </Link>
-              <Link to='/Layout/todayPatient'>
-                <StyleIcon type='m_today_patient'/>
-                <p>今日诊疗</p>
-              </Link>
-              <Link to='/Layout/electronicMedicalRecords'>
-                <StyleIcon type='m_case_center'/>
-                <p>病历中心</p>
-              </Link>
-              <Link to='/Layout/syndromeTreatment'>
-                <StyleIcon type='m_syndrome_treatment'/>
-                <p>辨证论治</p>
-              </Link>
-            </RowLine>
-            <RowLine>
-              <Link to='/Layout/cure'>
-                <StyleIcon type='m_cure_not_ill'/>
-                <p>治未病</p>
-              </Link>
-              <Link to='/Layout/chKnowledge'>
-                <StyleIcon type='m_ch_knowledge'/>
-                <p>中医知识库</p>
-              </Link>
-              <Link to='/Layout/treatManage'>
-                <StyleIcon type='m_treat_manage'/>
-                <p>治疗记录</p>
-              </Link>
-              <Link to='/Layout/modelManage'>
-                <StyleIcon type='m_model_manage'/>
-                <p>模板管理</p>
-              </Link>
-              <Link to='/Layout/remoteEducation'>
-                <StyleIcon type='m_remote_education'/>
-                <p>远程教育</p>
-              </Link>
-
-            </RowLine>
-            <RowLine>
-              <Link to='/Layout/patientArchives'>
-                <StyleIcon type='m_patient_archives'/>
-                <p>患者档案</p>
-              </Link>
-              <Link to='/Layout/comprehensiveAnalysis'>
-                <StyleIcon type='m_comprehensive_analysis'/>
-                <p>综合分析</p>
-              </Link>
-              <Link to='/Layout/systemManage'>
-                <StyleIcon type='m_system_manage'/>
-                <p>系统管理</p>
-              </Link>
-              <Link to='/Layout/personalSetting'>
-                <StyleIcon type='m_personal_setting'/>
-                <p>个人设置</p>
-              </Link>
-              <Link to='/Layout'>
-                <StyleIcon type='m_user_manage'/>
-                <p>用户管理</p>
-              </Link>
-            </RowLine>
-          </Page>
-          <Page>
-            <RowLine className="a_left">
-              <Link to='/Layout/logManage'>
-                <StyleIcon type='m_log_manage'/>
-                <p>日志管理</p>
-              </Link>
-            </RowLine>
-          </Page>
-        </Carousel>
-      </div>
-      <Modal className={"SystemManagement"} width={"50%"} maskStyle={{
-          background: "rgba(0,0,0,.3)"
-        }} title="应用设置" maskClosable={false} visible={this.state.visible} onOk={this.handleOk} onCancel={this.handleCancel} footer={false}>
+      <Body>
+        <SpecCarousel>
+        { CarouselCom.map(item => item) }
+        </SpecCarousel>
+      </Body>
+      <SpecModal width={"50%"} maskStyle={{ background: "rgba(0,0,0,.3)" }} title="应用设置" maskClosable={false} visible={this.state.visible} onOk={this.handleOk} onCancel={this.handleCancel} footer={false}>
         <Form layout="inline" onSubmit={this.handleSubmit}>
-          <Row style={{
-              color: "#0A6ECB",
-              marginBottom: "10px"
-            }}>
+          <SpecRow>
             <span>恢复默认设置</span>
-            <span style={{
-                margin: "0 10px",
-                color: "#ccc"
-              }}>|</span>
-            <span>在菜单中隐藏【登录后可用】的应用</span>
-          </Row>
+            <TipText>在菜单中隐藏【登录后可用】的应用</TipText>
+          </SpecRow>
           <SpecTable dataSource={dataSource} pagination={false} columns={columns}/>
           <Row style={{
               marginTop: "10px"
             }}>
             <center>
-              <Button htmlType="submit" style={{
-                  width: "100px",
-                  height: "30px",
-                  borderRadius: "15px",
-                  background: "#0A6ECB",
-                  color: "#fff"
-                }}>保存</Button>
-              <Button style={{
-                  width: "100px",
-                  border: "none",
-                  height: "30px",
-                  borderRadius: "15px",
-                  marginLeft: "10px",
-                  background: "#F2F2F2",
-                  color: "#0A6ECB"
-                }} onClick={this.handleCancel}>取消</Button>
+              <SureButton htmlType="submit">保存</SureButton>
+              <CancelButton onClick={this.handleCancel}>取消</CancelButton>
             </center>
           </Row>
         </Form>
-      </Modal>
-    </div>)
+      </SpecModal>
+    </Container>)
   }
 }
+const Container = styled.div`
+  width: 80%;
+  margin: 2% auto;
+`;
+const Body = styled.div`
+  border: 1px solid #E4E4E4;
+  margin-top: 20px;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+`;
+const Title = styled.span`
+  font-size: 20px;
+  display: inline-block;
+  height: 35px;
+  line-height: 35px;
+  border-bottom: 2px solid #3190B0;
+`;
+const AppSet = styled.span`
+  float: right;
+  font-size: 13px;
+  display: inline-block;
+  height: 30px;
+  line-height: 30px;
+  padding-top: 10px;
+  color:  #3190B0;
+  cursor: pointer
+`;
+const StyIcon = styled(Icon1)`
+  width: 28px;
+  height: 28px;
+`;
+const MoreIcon = styled(Icon1)`
+  width: 24px;
+  height: 24px;
+`;
 const Page = styled.div `
   padding: 4% 0%;
 `;
@@ -461,18 +451,121 @@ const RowLine = styled.div `
   justify-content: space-around;
   width: 100%;
 `;
+const SecondRowLine = RowLine.extend`
+  justify-content: start;
+  margin-left: 70px;
+`;
 const SpecTable = styled(Table)`
   .ant-table-body {
     height: calc(60vh - 56px) !important;
     overflow-y: scroll;
   }
 `;
+const StyledLink = styled(Link)`
+  display: flex;
+  flex-direction: column;
+`;
 const StyleIcon = styled(Icon1)`
-  width: 60px;
-  height: 60px;
-  font-size:60px;
-  font-style:normal;
+  width: 50px;
+  height: 50px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+`;
+const Label = styled.div`
+  font-style:normal;
+  color:#000;
+  font-weight: 600;
+  margin-bottom: 20px;
+`;
+const SpecCarousel = styled(Carousel)`
+  border: 1px solid red;
+  &&&.slick-slide {
+    text-align: center;
+    background: #fff;
+    overflow: hidden;
+  }
+  &&&.slick-slide h3 {
+    color: #fff;
+  }
+  &&& .slick-dots{
+    margin-bottom: 3%;
+  }
+  &&&  .slick-dots li button{
+    display: inline-block;
+    margin-left: 10px;
+    background-color: #C7CFD1;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
+  &&& .slick-dots li.slick-active button{
+    width: 20px;
+    background-color: #217CD1;
+  }
+`;
+const SpecModal = styled(Modal)`
+  .ant-checkbox-inner{
+    border-color: #000;
+    background: #fff;
+  }
+  .ant-checkbox-wrapper:hover .ant-checkbox-inner, .ant-checkbox:hover .ant-checkbox-inner, .ant-checkbox-input:focus + .ant-checkbox-inner{
+    border-color: #000
+  }
+  .ant-checkbox-checked .ant-checkbox-inner:after{
+    border-color: #000
+  }
+  .ant-checkbox-checked .ant-checkbox-inner, .ant-checkbox-indeterminate .ant-checkbox-inner {
+    background-color: transparent;
+  }
+  .ant-modal-title{
+    color: #fff
+  }
+  .ant-table-tbody>tr>td{
+    height: 40px;
+    padding: 0 16px;
+    border-bottom: 1px dashed #D2D2D2;
+    color:#000
+  }
+  .ant-table-thead>tr>th{
+    background: #F2F2F2;
+    border-right: 1px solid #fff
+  }
+  .ant-table-fixed-header .ant-table-scroll .ant-table-header{
+    background: #f2f2f2;
+    overflow: inherit;
+    padding-right: 15px;
+  }
+  .ant-table-thead>tr>th:last-child{
+    border:none
+  }
+  .ant-modal-content{
+    border-radius:15px 15px 0 0;
+    .ant-modal-close-x:before{
+      color: #fff
+    }
+    .ant-modal-header {
+        border-radius:15px 15px 0 0;
+      background: #0A6ECB !important;
+
+      #rcDialogTitle0{
+        color: #fff ;
+      }
+    }
+  }
+`;
+const TipText = styled.span`
+  margin-left: 10px;
+  padding-left: 10px;
+  border-left: 1px solid #ccc;
+`;
+const SpecRow = styled(Row)`
+  color: #0A6ECB;
+  margin-bottom: 10px
+`;
+const SureButton = styled(Button)`
+  ${StyButton.semicircle}
+`;
+const CancelButton = styled(Button)`
+  ${StyButton.gray}
 `;
 export default Form.create()(SystemManagement)

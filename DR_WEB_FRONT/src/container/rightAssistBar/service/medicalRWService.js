@@ -69,7 +69,14 @@ class MedicalRWService {
         if(testData){
           return Simulation.GetList();
         }else{
-          Xhr.post('post','application/x-www-form-urlencoded;charset=utf-8',config_InteLigenTreat_url+'TCMAE/diagnose/get/index', "content="+JSON.stringify(params), false, callBack);
+          Xhr.post(
+            'post',
+            'application/x-www-form-urlencoded;charset=utf-8',
+            config_InteLigenTreat_url+'TCMAE/diagnose/get/index',
+            "content="+JSON.stringify(params),
+            false,
+            callBack
+          );
         }
     }
 

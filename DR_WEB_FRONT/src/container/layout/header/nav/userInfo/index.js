@@ -18,7 +18,8 @@ const Container = styled.div`
   display: flex;
   align-items: center;
   color: #1770C8;
-  height: 100%
+  height: 100%;
+  margin-right: 20px;
 `;
 const Item = styled.span`
   padding: 0px 12px;

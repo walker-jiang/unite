@@ -30,6 +30,7 @@ class BindHis extends Component {
   getUnionData() {
     let params = {
       url: 'BaOrguserController/getUnionData',
+      server_url: config_login_url,
       type: 'post',
       data: window.sessionStorage.getItem('userid'),
     };

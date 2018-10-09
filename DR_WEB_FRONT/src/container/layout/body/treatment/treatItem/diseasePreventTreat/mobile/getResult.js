@@ -14,6 +14,9 @@ import 'echarts/lib/component/tooltip';
 import 'echarts/lib/component/toolbox';
 import 'echarts/lib/component/title';
 import { Picker, List, WhiteSpace } from 'antd-mobile';
+import 'antd-mobile/lib/picker/style/css';        // 加载 CSS
+import 'antd-mobile/lib/list/style/css';        // 加载 CSS
+import 'antd-mobile/lib/white-space/style/css';        // 加载 CSS
 import getResource from 'commonFunc/ajaxGetResource';
 import '../css/getResult.less'
 
@@ -254,6 +257,17 @@ export default class GetResult extends Component {
   render() {
     let {url, status, yearSeven, yearEight, bodyType, performance, diet, motion, reminder, lifeWay, newData, sValue} = this.state;
     let time = sValue||yearEight[0];
+    let name = this.props.name;
+    let s = this.props.sex;
+    let sex = null;
+    if (s == 1) {
+      sex = "女"
+    } else if (s == 2){
+      sex = "男"
+    } else if (s == 9){
+      sex = "未知"
+    }
+    let age = this.props.age;
     return (
       <div style={styles.borderHeight}>
         <div style={styles.evaluationResultReport}>
@@ -309,7 +323,7 @@ export default class GetResult extends Component {
           <Row type="flex" justify="start">
             <Col xs={24} sm={24}>
               <div>
-                <p style={styles.message}>患者名字：<span style={styles.name}>王琰龙</span>&nbsp;&nbsp;&nbsp;性别：<span style={styles.sex}>男</span>&nbsp;&nbsp;&nbsp;年龄：<span style={styles.age}>35岁</span></p>
+                <p style={styles.message}>患者名字：<span style={styles.name}>{name}</span>&nbsp;&nbsp;&nbsp;性别：<span style={styles.sex}>{sex}</span>&nbsp;&nbsp;&nbsp;年龄：<span style={styles.age}>{age}</span></p>
               </div>
             </Col>
           </Row>
@@ -460,7 +474,7 @@ const styles = {
     color: 'white',
     fontSize: '17px',
     marginLeft: '3.5rem',
-    marginTop: '-3.2rem',
+    marginTop: '-3rem',
     position: 'absolute'
   },
   testAgainTip: {
@@ -578,7 +592,7 @@ const styles = {
   },
   snapshotImageElement: {
     width: '90%',
-    height: '12.5rem',
+    height: '15.5rem',
     backgroundColor: 'white'
   },
   specificSuggestions: {

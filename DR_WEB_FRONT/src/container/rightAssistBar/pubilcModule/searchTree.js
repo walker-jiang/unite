@@ -10,7 +10,13 @@ const TreeNode = Tree.TreeNode;
 const Search = Input.Search;
 
 export default class SearchTree extends Component {
-   onSelect = (selectedKeys, info) => {
+  constructor(props){
+    super(props);
+    // this.state = {
+    //   TreeNodeDate:this.props.
+    // };
+  };
+  onSelect = (selectedKeys, info) => {
     console.log('selected', selectedKeys, info);
   }
 
@@ -27,13 +33,13 @@ export default class SearchTree extends Component {
       >
         <TreeNode title="我的模板" key="0-0">
           <TreeNode title="风热感冒" key="0-0-0">
-            <TreeNode title="风热感冒" key="0-0-0-0" />
-            <TreeNode title="风热感冒" key="0-0-0-1" />
+            <TreeNode title="金银花主方" key="0-0-0-0" />
+            <TreeNode title="薄荷片主方" key="0-0-0-1" />
           </TreeNode>
           <TreeNode title="公共模板" key="0-0-1">
             <TreeNode title="风热感冒" key="0-0-0">
-              <TreeNode title="风热感冒" key="0-0-0-0" />
-              <TreeNode title="风热感冒" key="0-0-0-1" />
+              <TreeNode title="金银花主方" key="0-0-0-0" />
+              <TreeNode title="薄荷片主方" key="0-0-0-1" />
             </TreeNode>
           </TreeNode>
         </TreeNode>

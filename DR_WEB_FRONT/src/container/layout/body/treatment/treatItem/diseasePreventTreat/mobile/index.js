@@ -69,7 +69,7 @@ export default class Mobile extends Component {
     } else if (visible == 4) {
       t = <GetQuestionList onToggle={this.handleClick.bind(this)} userId={userId} sex={sex} />
     } else if (visible == 5){
-      t = <GetResult onToggle={this.handleClick.bind(this)} userId={userId} />
+      t = <GetResult onToggle={this.handleClick.bind(this)} userId={userId} name={name} sex={sex} age={age}/>
     } else if (visible == 6){
       t = <TestCompleted onToggle={this.handleClick.bind(this)} handleClickResult={this.handleClickResult.bind(this)} />
     }

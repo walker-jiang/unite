@@ -51,6 +51,7 @@ class Index extends Component {
   getDept() {
     let params = {
       url: 'BaDepartmentController/getList',
+      server_url: config_login_url,
       data: {
         keyword: 1
       }
@@ -535,6 +536,7 @@ const Total = styled.div`
   line-height: 35px;
 `;
 const Add = styled.span`
+
   color: #0A6ECB;
 `;
 const SpecRadioGroup = styled(RadioGroup)`

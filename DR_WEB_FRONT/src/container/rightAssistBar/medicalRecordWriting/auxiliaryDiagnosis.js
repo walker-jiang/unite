@@ -87,17 +87,25 @@ export default class template extends Component {
       if(res.result){
         console.log("获取西医疾病对象成功==============",res);
         var newArray = [];
-        res.data[0]['key'] = res.data[0].diseaseid;
-        newArray.push(res.data[0])
-        item['buDiagnosisDismainfList'] = newArray;//buDiagnosisList
-        item['diagnosisName'] = item.disname;
-        item['diagnosisCode'] = item.discode;
-        item['diaid'] = "";
-        item['diagnosisWay'] = 1;//中医
-        item['key'] = item.discode;//诊疗系统循环用
-        item['status'] = 2;
-        console.log("最终的对象为========",item);
-        self.props.changeInitDataTwo(item);
+        if(res.data.length != 0 ){
+          res.data[0]['key'] = res.data[0].diseaseid;
+          newArray.push(res.data[0])
+          item['buDiagnosisDismainfList'] = newArray;//buDiagnosisList
+          item['diagnosisName'] = item.disname;
+          item['diagnosisCode'] = item.discode;
+          item['diaid'] = "";
+          item['diagnosisWay'] = 1;//中医
+          item['key'] = item.discode;//诊疗系统循环用
+          item['status'] = 2;
+          var buDiagnosisList = [];
+          buDiagnosisList.push(item);
+          var newItem = {};
+          newItem['buDiagnosisList'] = buDiagnosisList;
+          console.log("最终的对象为========",newItem);
+          self.props.changeInitDataTwo(newItem);
+        }else{
+          alert("中医疾病对象获取成功，获取西医疾病对象为空");
+        }
       }else{
         console.log('获取西医疾病对象失败', res);
       }

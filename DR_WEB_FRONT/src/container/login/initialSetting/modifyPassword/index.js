@@ -55,6 +55,7 @@ class Index extends Component {
         let params = {
           url: 'BaOrguserController/updatePassword',
           type: 'post',
+          server_url: config_login_url,
           data: JSON.stringify(paramsData),
         }
         let that = this;

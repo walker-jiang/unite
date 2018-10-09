@@ -94,7 +94,6 @@ const Container = styled.div`
   border: 1px solid rgba(204, 204, 204, 1);
   width: 750px;
   height: 480px;
-  border: 1px solid yellow;
 `;
 const HeaderTitle = styled.div`
   width: 100%;

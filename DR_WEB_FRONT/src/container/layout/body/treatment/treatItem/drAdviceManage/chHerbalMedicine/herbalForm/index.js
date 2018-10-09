@@ -49,6 +49,7 @@ class Index extends Component {
     window.AddHerbalMedicineFunc = (params) => this.AddHerbalMedicineFunc(params)
   }
   AddHerbalMedicineFunc(params){
+    alert('个体');
     let herbalData =params;
     if(herbalData){
       herbalData = JSON.parse(herbalData);

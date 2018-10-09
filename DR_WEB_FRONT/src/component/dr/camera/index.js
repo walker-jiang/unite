@@ -19,19 +19,40 @@ export default class Index extends Component {
   };
   /** [getCameraDevice 开启摄像头] */
   getCameraDevice(){
-    var constraints = {video: { width: 570, height: 535 } };
+    var videoObj = {video: { width: 570, height: 535 } };
     var video = null;
     let self = this;
-		navigator.mediaDevices.getUserMedia(constraints)
-		.then(function(mediaStream) {
-		  video = self.video;
-		  video.srcObject = mediaStream;
-		  video.onloadedmetadata = function(e) {
-			     video.play();
-		  };
-      self.setState({ video });
-		})
-		.catch(function(err) { console.log(err.name + ": " + err.message); }); // 总是在最后检查错误
+    if(navigator.getUserMedia) { // 标准的API
+      console.log('标准');
+       navigator.getUserMedia(videoObj, function(stream) {
+         video = self.video;
+   		   video.srcObject = stream;
+   		   video.onloadedmetadata = function(e) {
+   			     video.play();
+   		   };
+         self.setState({ video });
+       }, ()=>{});
+     } else if(navigator.webkitGetUserMedia) { // WebKit 核心的API
+       console.log('WebKit');
+       navigator.webkitGetUserMedia(videoObj, function(stream){
+         video = self.video;
+   		   video.srcObject = window.webkitURL.createObjectURL(stream);
+   		   video.onloadedmetadata = function(e) {
+   			     video.play();
+   		   };
+         self.setState({ video });
+       }, ()=>{});
+     }
+		// navigator.mediaDevices.getUserMedia(constraints)
+		// .then(function(mediaStream) {
+		//   video = self.video;
+		//   video.srcObject = mediaStream;
+		//   video.onloadedmetadata = function(e) {
+		// 	     video.play();
+		//   };
+    //   self.setState({ video });
+		// })
+		// .catch(function(err) { console.log(err.name + ": " + err.message); }); // 总是在最后检查错误
   };
   /** [takePicture 拍照并显示在canvas中] */
   takePicture(){

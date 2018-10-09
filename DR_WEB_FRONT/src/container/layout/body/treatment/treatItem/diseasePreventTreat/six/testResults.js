@@ -513,7 +513,7 @@ const styles = {
     // marginLeft: '1.5%'
   },
   erweima: {
-    width: '5rem',
+    width: '8rem',
     // marginLeft: '74rem',
     // marginTop: '-5rem'
   },

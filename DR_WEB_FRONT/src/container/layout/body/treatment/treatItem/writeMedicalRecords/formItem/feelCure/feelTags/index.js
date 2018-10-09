@@ -14,6 +14,8 @@ export default class FellCure extends Component {
       rightSelected: [], // 右脉象
       list: [], // 脉象列表
       curent: 0, // 0代表左，1代表右
+      pulseCondition: false ,// 脉象开关
+      details:''  //脉象详情数据
     };
     this.checkBoxClick = this.checkBoxClick.bind(this);
   };
@@ -34,6 +36,7 @@ export default class FellCure extends Component {
           list.push({
             key: item.conditionid,
             name: item.condTypename,
+            details: item.condTypedesc  // 详细信息
             // color: item.
           });
         });
@@ -79,13 +82,31 @@ export default class FellCure extends Component {
       curent: (this.state.curent == 0)?1:0
     });
   };
+  // 鼠标停留两秒后显示右侧脉象详情
+  handleMouseOver = (key) => {
+    setTimeout(
+      () => {
+        this.setState({
+          pulseCondition: true,
+          details: key
+        })
+      },
+      1000
+    );
+  }
+  // 点击关闭右侧脉象详情页
+  onClose = () => {
+    this.setState({
+      pulseCondition: false,
+    })
+  }
   render() {
-    let {curent, list} = this.state;
+    let {curent, list,pulseCondition,details} = this.state;
     let expand = this.props.expand;
     return (
       <Container expand={expand}>
-        <FloatTip></FloatTip>
-        <div >
+        <FloatTip  onClose={this.onClose} pulseCondition={pulseCondition} details={details}></FloatTip>
+        <div>
           <RadioGroup value={curent} onChange={(e)=>{this.toggleRadio(e)}}>
             <Radio value={0}>脉象左</Radio>
             <Radio value={1}>脉象右</Radio>
@@ -94,7 +115,7 @@ export default class FellCure extends Component {
         <PulseLeft curent={curent}>
           {
             list.map((item, index) => {
-              return <CheckableTag key={index} id={item.key} color="blue" onClick={this.checkBoxClick} text={item.name}></CheckableTag>
+              return <CheckableTag key={index} id={item.key} color="blue" onClick={this.checkBoxClick} text={item.name} onMouseEnter={() => {this.handleMouseOver(item.details)}}></CheckableTag>
             })
           }
         </PulseLeft>

@@ -33,8 +33,10 @@ class Index extends Component {
   getDept() {
     let params = {
       url: 'BaDepartmentController/getList',
+      server_url: config_login_url,
       data: {
         keyword: '',
+        server_url: config_login_url,
         orgid: window.sessionStorage.getItem('orgid')
       }
     };
@@ -56,6 +58,7 @@ class Index extends Component {
         let data = {
           "deptid": values.dept,
           "orgName": values.userName, //
+          "photourl": values.file ? values.file.file.response.data.url : '',
           "orgUerid": window.sessionStorage.getItem('userid'),
           "realname": values.realName
         };
@@ -63,6 +66,7 @@ class Index extends Component {
         let params = {
           url: 'BaOrguserController/putData',
           type: 'put',
+          server_url: config_login_url,
           data: JSON.stringify(data)
         }
         let that = this;
@@ -74,6 +78,7 @@ class Index extends Component {
     });
   }
   handleChange = (info) => {
+    console.log('info', info);
     if (info.file.status === 'uploading') {
       this.setState({ loading: true });
       return;
@@ -87,7 +92,7 @@ class Index extends Component {
   }
   render() {
     const props = {
-      action: config_service_url + 'BaUploadController/upload',
+      action: config_login_url + 'BaUploadController/upload',
       data: {
         orguserid: window.sessionStorage.getItem('userid'),
         serviceType: 'userPhoto'

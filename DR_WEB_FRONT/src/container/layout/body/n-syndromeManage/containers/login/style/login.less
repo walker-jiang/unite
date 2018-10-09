@@ -1,0 +1,171 @@
+.login-container {
+    background-image: url('./Bg.png');
+    //position:fixed;
+    top: 0;
+    left: 0;
+    width:100%;
+    height:100vh;
+    min-width: 1000px;
+    z-index:-9999;
+    zoom: 1;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -o-background-size: cover;
+    background-position: center 0;
+}
+.top {
+  text-align: center;
+}
+
+.header {
+  height: 44px;
+  line-height: 44px;
+  a {
+    text-decoration: none;
+  }
+}
+
+.logo {
+  height: 30px;
+  width: 55px;
+  margin-left:2%;
+  margin-top:2%;
+  margin-right: 0.5%;
+}
+
+.title {
+  font-size: 33px;
+  color: white;
+  font-family: Myriad Pro,Helvetica Neue,Arial,Helvetica,sans-serif;
+  font-weight: 900;
+  position: relative;
+  top: 50%;
+}
+
+.desc {
+  font-size: 20;
+  margin-top: 12px;
+  margin-bottom: 40px;
+}
+
+.login-form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -160px 0 0 -160px;
+    width: 320px;
+    height: 320px;
+    padding: 36px;
+    box-shadow: 0 0 100px rgba(0, 0, 0, .08);
+    background-color: #fff;
+    border-radius: 4px;
+    button {
+        width: 100%;
+    }
+    .login-account {
+        color: #999;
+        text-align: center;
+        margin-top: 16px;
+        span {
+            &:first-child {
+                margin-right: 16px;
+            }
+        }
+    }
+}
+.ant-tabs-nav-container {
+  font-size: 16px;
+  text-align: center;
+}
+.ant-tabs-nav .ant-tabs-tab {
+  margin-left: 35px;
+}
+.login-logo {
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+    cursor: pointer;
+    margin-bottom: 24px;
+    img {
+        width: 40px;
+        margin-right: 8px;
+    }
+    span {
+        vertical-align: text-bottom;
+        font-size: 16px;
+        text-transform: uppercase;
+        display: inline-block;
+    }
+}
+
+.ant-spin-container,
+.ant-spin-nested-loading {
+    height: 100%;
+}
+
+.username,.password {
+  height: 40px;
+  font-size: 16px;
+  width:400px;
+  margin-bottom: 10px;
+}
+.ant-form-item {
+  margin-bottom: 15px;
+}
+.Checkbox{
+  font-size: 14px;
+}
+.clsString{
+  width: 109%;
+  margin-top: 20px;
+  color: #fff;
+  background-color: #1890ff;
+  border-color: #1890ff;
+  line-height: 1.5;
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  height:40px;
+  font-size: 16px;
+}
+
+.main {
+  width: 368px;
+  margin: 0 auto;
+  font-size: 14px;
+  line-height: 1.5;
+  .icon {
+    font-size: 24px;
+    color: rgba(0, 0, 0, 0.2);
+    margin-left: 16px;
+    vertical-align: middle;
+    cursor: pointer;
+
+    &:hover {
+      color: red;
+      transition: color .3s;
+    }
+  }
+
+  .other {
+    text-align: left;
+    margin-top: 24px;
+    line-height: 22px;
+
+    .register {
+      float: right;
+    }
+  }
+}
+.globalFooter {
+  bottom:50px;
+  text-align: center;
+  position:absolute;
+  width: 100%;
+  .copyright {
+    color: #fff;
+    font-size: 14px;
+  }
+}

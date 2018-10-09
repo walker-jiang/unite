@@ -168,7 +168,7 @@ disabledStartDate = (startValue) => {
       title: '年龄',
       dataIndex: 'age',
       key: 'age',
-      render: (text, record) => year - parseInt(record.birthday?record.birthday.substr(0,4):null)
+      render: (text, record) => year - parseInt(record.birthday?record.birthday.substr(0,4):year)
     }, {
       title: '手机号',
       dataIndex: 'mobile',

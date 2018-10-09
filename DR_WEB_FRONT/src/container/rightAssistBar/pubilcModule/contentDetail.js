@@ -88,7 +88,7 @@ class ContentDetail extends Component {
     console.log("item@@@@@@@",item);
     return (
       <div>
-        <div class="content-icon">
+        <div className="content-icon">
           <Icon type={unfold?"up":"down"} onClick={()=>{ this.pullDown(unfold) }}/>
         </div>
         {
@@ -99,7 +99,7 @@ class ContentDetail extends Component {
           (
             isUnfoldAll
             ?
-            <div class="content-detail">
+            <div className="content-detail">
               {
                 item.map((item,index)=>{
                   return(
@@ -110,7 +110,7 @@ class ContentDetail extends Component {
               <p className="queryDetail" onClick={()=>this.unfoldAll(isUnfoldAll)}>查看详细<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" /></p>
             </div>
             :
-            <div class="content-detail">
+            <div className="content-detail">
               {
                 item.slice(0,6).map((item,index)=>{
                   return(

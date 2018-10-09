@@ -5,7 +5,7 @@
 */
 import React, {Component} from 'react';
 import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, Alert, Modal } from 'antd';
-//import './style/rightAssistBar.less';
+import doctorAdviceService from '../service/doctorAdviceService.js';
 import SearchTree from './searchTree.js';
 
 const Search = Input.Search;
@@ -14,9 +14,9 @@ export default class ContentDetail extends Component {
   constructor(props){
     super(props);
     this.state = {
-      one:false,
-      two:false,
-      three:false,
+      drugName:false,
+      treatname:false,
+      therapy:false,
       four:false,
       five:false,
       six:false,
@@ -35,9 +35,9 @@ export default class ContentDetail extends Component {
   }
   unfold = (number,isUnfold) =>{
     switch (number) {
-      case "one":this.setState({one:!isUnfold});break;
-      case "two":this.setState({two:!isUnfold});break;
-      case "three":this.setState({three:!isUnfold});break;
+      case "drugName":this.setState({drugName:!isUnfold});break;
+      case "treatname":this.setState({treatname:!isUnfold});break;
+      case "therapy":this.setState({therapy:!isUnfold});break;
       case "four":this.setState({four:!isUnfold});break;
       case "five":this.setState({five:!isUnfold});break;
       case "six":this.setState({six:!isUnfold});break;
@@ -48,32 +48,51 @@ export default class ContentDetail extends Component {
     this.setState({isUnfoldAll:!isUnfoldAll})
   }
   cutOut = (value) =>{
-    if(value.length > 24){
-      return value.substr(0,24)+"...";
+    //console.log("value=======",value);
+    if(value == "" || value == null || JSON.stringify(value) == "undefined" ){
+      return "无";//空格占位
     }else{
-      return value;
+      if(value.length > 24){
+        return value.substr(0,24)+"...";
+      }else{
+        return value;
+      }
     }
   }
   pullDown = (unfold) =>{
     console.log("pullDown====================",unfold);
     this.setState({unfold:!unfold});
   }
+  getCpm = () =>{
+    var self = this;
+    let params = {
+      imtreatprelist:JSON.stringify(this.props.item),
+      bu:this.props.bu
+    };
+    function callBack(res){
+      if(res.flag == 1){
+        alert("中药转换成功==============");
+        self.setState({ dataSource:res.data });
+      }else{
+        console.log('中药转换失败', res);
+      }
+    };
+    doctorAdviceService.getCpm(params, callBack);
+  }
   render() {
-    var { isCut, isUnfoldAll, one, two, three, four, five, six, seven, item, unfold  } = this.state;
+    var { isCut, isUnfoldAll, drugName, treatname, therapy, four, five, six, seven, item, unfold  } = this.state;
     return (
       <div>
         <div class="content-detail-two">
-          <p onClick={()=>this.unfold("one",one)}><Icon type={one?"down":"right"}/>成分：</p>
-          <p>{ one?item.one:this.cutOut(item.one) }</p>
-          <p onClick={()=>this.unfold("two",two)}><Icon type={two?"down":"right"}/>主治：</p>
-          <p>{ two?item.two:this.cutOut(item.two) }</p>
-          <p onClick={()=>this.unfold("three",three)}><Icon type={three?"down":"right"}/>治则治法：</p>
-          <p>{ three?item.three:this.cutOut(item.three) }</p>
-          <p onClick={()=>this.unfold("four",four)}><Icon type={four?"down":"right"}/>用法/频次：</p>
-          <p>{ four?item.four:this.cutOut(item.four) }</p>
+          <p onClick={()=>this.unfold("drugName",drugName)}><Icon type={drugName?"down":"right"}/>成分：</p>
+          <p>{ drugName?item.drugName:this.cutOut(item.drugName) }</p>
+          <p onClick={()=>this.unfold("treatname",treatname)}><Icon type={treatname?"down":"right"}/>主治：</p>
+          <p>{ treatname?item.treatname:this.cutOut(item.treatname) }</p>
+          <p onClick={()=>this.unfold("therapy",therapy)}><Icon type={therapy?"down":"right"}/>治则治法：</p>
+          <p>{ therapy?item.therapy:this.cutOut(item.therapy) }</p>
         </div>
         <div class="content-detail-two-Button">
-          <Button style={{marginTop:20}}>引入</Button>
+          <Button style={{marginTop:20}} onClick={()=>{ this.getCpm(this.props.item) }}>引入</Button>
         </div>
       </div>
     );

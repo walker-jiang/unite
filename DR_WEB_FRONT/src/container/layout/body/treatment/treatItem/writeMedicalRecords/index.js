@@ -28,7 +28,6 @@ import Template from "roots/rightAssistBar/medicalRecordWriting/medicalRecordTem
 import MedicalHistory from "roots/rightAssistBar/medicalRecordWriting/medicalHistory.js";
 import BiofeedbckTherpy from "roots/rightAssistBar/medicalRecordWriting/BiofeedbckTherpy.js";
 import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
-import MedicalHistoryTwo from "roots/rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
 import DoctorAdviceTemplate from "roots/rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
 import IntelligentTreat from "roots/rightAssistBar/doctorAdvice/intelligentTreat.js";
 
@@ -222,7 +221,7 @@ class Index extends Component {
             console.log('异常响应信息', res);
           }
         };
-        // ajaxGetResource(params, callBack);
+        ajaxGetResource(params, callBack);
       }
     });
   }

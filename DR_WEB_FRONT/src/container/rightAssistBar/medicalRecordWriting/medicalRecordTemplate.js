@@ -31,7 +31,7 @@ export default class MedicalRecordTemplate extends Component {
     };
   };
   componentWillMount(){
-    console.log("componentWillMount====this.props.item",this.props.item);
+    console.log("componentWillMount====this.props.item1111",this.props.item);
     var { searchValue, page, size, listenFormData } = this.state;
     this.queryTable(searchValue, page, size, listenFormData);//获取table列表
   }
@@ -107,6 +107,7 @@ export default class MedicalRecordTemplate extends Component {
     medicalRWService.QueryTable(params, callBack);
   }
   queryTree = () =>{
+    var self = this;
     console.log("开始获取树状图==========");
     let params = {
       patientid:window.sessionStorage.getItem('userid'),
@@ -114,6 +115,7 @@ export default class MedicalRecordTemplate extends Component {
     function callBack(res){
       if(res.result && res.data){
         console.log("获取树状图成功==============",res);
+        self.setState({ dataSource:res.data })
       }else{
         console.log('获取树状图成功失败', res);
       }
@@ -171,7 +173,7 @@ export default class MedicalRecordTemplate extends Component {
     this.setState({unfold:!unfold});
   }
   render() {
-    var { content, isCut, unfold, searchValue, page, size, listenFormData } = this.state;
+    var { content, isCut, unfold, searchValue, page, size, listenFormData, dataSource } = this.state;
 
     return (
       <div class="rightAssistBar_template">
@@ -212,7 +214,7 @@ export default class MedicalRecordTemplate extends Component {
               )
             })
             :
-            <div><SearchTree/></div>
+            <div><SearchTree dataSource={dataSource}/></div>
           }
           {
             content.length>10

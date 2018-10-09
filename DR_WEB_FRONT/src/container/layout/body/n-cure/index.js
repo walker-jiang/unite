@@ -6,6 +6,7 @@ import { today } from 'commonFunc/defaultData';
 import Input from 'components/dr/input/basicInput';
 import selectSty from 'components/antd/style/select';
 import calendar from '-!file-loader!components/dr/icon/icons/calendar.svg';
+import cureIcon from './images/cureIcon.png';
 import buttonSty from 'components/antd/style/button';
 import moment from 'moment';
 import CureButton from './diseasePreventTreat';
@@ -104,6 +105,7 @@ class Index extends Component {
      if (visible == 0) {
       c = <SpecForm onSubmit={this.handleSubmit.bind(this)} className='not-draggable'>
             <FormBorder>
+              <RowTopH>
               <Row>
                 <Col span={12}>
                   <FormItem
@@ -137,6 +139,7 @@ class Index extends Component {
                   </FormItem>
                 </Col>
               </Row>
+              </RowTopH>
               <Row>
                 <Col span={12}>
                   <SpecFormItem
@@ -202,8 +205,7 @@ class Index extends Component {
                 </Col>
               </Row>
               <Footer>
-                <SureButton type="primary"  htmlType="submit">接诊</SureButton>
-                <CancelButton type="primary" onClick={this.handleReset}>清空</CancelButton>
+                <SureButton type="primary"  htmlType="submit">开始中医体质辨析测评</SureButton>
               </Footer>
             </FormBorder>        
           </SpecForm>
@@ -213,6 +215,7 @@ class Index extends Component {
     return (
       <Container>
         <Title>
+            <ImgBingLi src={cureIcon}/>
             <Cure>治未病</Cure>
             <Line></Line>
         </Title>
@@ -221,6 +224,18 @@ class Index extends Component {
     );
   }
 }
+
+
+const ImgBingLi = styled.img`
+  width: 2rem;
+  position: absolute;
+  margin-top: 0.8rem;
+  margin-left: 2.7rem;
+`;
+
+const RowTopH = styled.div`
+  margin-top: 5.5rem;
+`;
 const Container = styled.div`
   width: 100%;
   background-color: white;
@@ -234,10 +249,12 @@ const Title = styled.div`
   position: relative;
 `;
 const FormBorder = styled.div`
-  margin-top: 129px;
+  margin-top: 105px;
   width: 839px;
+  height: 31rem;
   margin-left: 17rem;
   margin-right: 34rem;
+  border: 1px solid #cccccc;
 `;
 const Cure = styled.span`
   color: rgb(51, 51, 51);
@@ -322,11 +339,16 @@ const CancelButton = styled(Button)`
   ${buttonSty.gray}
 `;
 const Footer = styled.div`
-  width: 600px;
-  height: 56px;
-  display: flex;
-  justify-content: center;
-  align-items: center
+  // width: 600px;
+  // height: 56px;
+  // display: flex;
+  // justify-content: center;
+  // align-items: center
+    float: left;
+    margin-left: 4.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 /*
 @作者：姜中希

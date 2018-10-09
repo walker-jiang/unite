@@ -20,6 +20,7 @@ export default class index extends Component {
         arr: [],//后台数据
         valueColor: {0: 'selectColor'},
         show:'显示',
+        disable: true,
         i: '',//左侧key
         orgidDic: '',//机构名称
     };
@@ -98,7 +99,7 @@ export default class index extends Component {
   }
 
   render() { 
-    var { data, valueColor, arr, show, i, orgidDic } = this.state;
+    var { data, valueColor, arr, show, i, orgidDic, disable } = this.state;
     var patientname = this.props.patientname;
     var sex = this.props.sex;
     var birthday = this.props.birthday;

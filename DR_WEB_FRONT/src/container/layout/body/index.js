@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Router  } from 'react-router-dom';
 import Loadable from 'react-loadable'; // 加载时进行模块分离
+import layout from './n-syndromeManage/component/layout/layout'; // 布局界面
 
 const loadingComponent = () => (<div>Loading...</div>);
 const TodayPatient = Loadable({
@@ -46,6 +47,16 @@ const PantientRecords = Loadable({
   loading: loadingComponent,
 });
 
+const layoutSub = Loadable({
+  loader: () => import('./n-syndromeManage/component/layout/layout.jsx'),
+  loading: loadingComponent,
+});
+
+const ModelManage= Loadable({
+  loader: () => import('./n-modelManage'),
+  loading: loadingComponent,
+});
+
 export default class Body extends Component {
   constructor(props){
     super(props);
@@ -58,7 +69,7 @@ export default class Body extends Component {
     let pathname = this.props.location.pathname; // 只有我的诊疗界面展示左侧浮框
     return (
       <Container>
-          <Route path='/Layout/todayPatient' component={TodayPatient} exact></Route>
+          <Route   path='/Layout/todayPatient' component={TodayPatient} exact></Route>
           <Route path='/Layout/patientRegister' component={PatientRegister} exact></Route>
           <Route path='/Layout/registerForm/:type' component={RegisterForm} exact></Route>
           <Route path='/Layout' component={Home} exact></Route>
@@ -68,6 +79,8 @@ export default class Body extends Component {
           <Route path='/Layout/syndromeTreatment' component={SyndromeTreatment}></Route>
           <Route path='/Layout/patientRecords' component={PantientRecords}></Route>
           <Route path='/Layout/more' component={More}></Route>
+          <Route path="/Layout/sub" component={layoutSub}></Route>
+          <Route path='/Layout/modelManage' component={ModelManage}></Route>
       </Container>
     );
   }

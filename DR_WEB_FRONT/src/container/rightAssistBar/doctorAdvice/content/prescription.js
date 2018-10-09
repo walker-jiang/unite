@@ -14,34 +14,26 @@ export default class IntelligentTreat extends Component {
   constructor(props){
     super(props);
     this.state = {
-      content:[
-        {
-          title:"风寒感冒-风寒侵袭证诊疗模板",
-          one:"金银花10g、柴胡10g、栀子20g、枸杞10g、党参10g、黄芪20g",
-          two:"感冒/风寒感冒",
-          three:"扶正祛邪",
-          four:"口服/一日2次",
-          five:[
-            {name:"病情：恶心、呕吐",value:"甘草（+）、党参（+）、柴胡（-）"},
-            {name:"病情：恶心、呕吐",value:"甘草（+）、党参（+）、柴胡（-）"},
-          ]
-        },
-        {
-          title:"风寒感冒-风寒侵袭证诊疗模板",
-          one:"金银花10g、柴胡10g、栀子20g、枸杞10g、党参10g、黄芪20g",
-          two:"感冒/风寒感冒",
-          three:"扶正祛邪",
-          four:"口服/一日2次",
-          five:[
-            {name:"病情：恶心、呕吐",value:"甘草（+）、党参（+）、柴胡（-）"},
-            {name:"病情：恶心、呕吐",value:"甘草（+）、党参（+）、柴胡（-）"},
-          ]
-        }
-      ],
+      content:[],
+      bu:{},
     };
   };
   componentWillMount(){
-
+    console.log("方剂的json为",this.props.dataSource);
+    if(this.props.dataSource.dataList){
+      var array = [];
+      this.props.dataSource.dataList.forEach((item,index)=>{
+        array.push({
+         title:item.preName,
+         priors:item.priors == "1" ? "有临证加减":"无临证加减",
+         stars:item.stars,
+         initData:item
+        })
+      })
+      this.setState({ content:array });
+    }else{
+      console.log("方剂暂无数据");
+    }
   }
 
   callback(key) {
@@ -50,23 +42,23 @@ export default class IntelligentTreat extends Component {
   render() {
     var { content } = this.state;
     return (
-      <div class="prescription">
-        <div class="data">
+      <div className="prescription">
+        <div className="data">
           {
             content.map((item,index)=>{
               return(
-                <div style={{paddingBottom:8}}>
-                  <div class="medicalHistory_content">
-                    <div class="medicalHistory_content-title">
+                <div style={{paddingBottom:8}} key={index}>
+                  <div className="medicalHistory_content">
+                    <div className="medicalHistory_content-title">
                       <Row style={{height:26}}>
                         <Col span={24}>
-                          <span class="content-p">金银花主方<span>(有临证加减)</span></span>
-                          <span class="content-div">匹配指数:<Rate value="5" disabled style={{fontSize:10,marginLeft:5}}/></span>
+                          <span className="content-p">{item.title}<span>({item.priors})</span></span>
+                          <span className="content-div">匹配指数:<Rate value={item.stars} disabled style={{fontSize:10,marginLeft:5}}/></span>
                         </Col>
                       </Row>
                     </div>
                   </div>
-                  <ContentDetailTwo item={item}/>
+                  <ContentDetailTwo item={item.initData} bu={this.props.bu}/>
                 </div>
               )
             })

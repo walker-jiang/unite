@@ -6,91 +6,190 @@
 import React, {Component} from 'react';
 import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, Alert, Modal } from 'antd';
 import './style/doctorAdvice.less';
-import ContentDetail from '../pubilcModule/contentDetail.js';
-import medicalRWService from '../service/medicalRWService.js';
+import ContentDetailSeven from '../pubilcModule/contentDetailSeven.js';
+import doctorAdviceService from '../service/doctorAdviceService.js';
 const Search = Input.Search;
 
 export default class template extends Component {
   constructor(props){
     super(props);
     this.state = {
-      content:[
-        {
-          title:"风寒感冒-风寒侵袭证诊疗模板",
-          one:"头晕、发烧、头痛、四肢无力、流清鼻涕、嗓子疼、浑身发冷、四肢无力、流清鼻涕、嗓子疼、浑身发冷",
-          two:"舌苔（薄）；舌质（白）",
-          three:"左（浮、紧）；右（浮、紧）",
-          four:"扁桃体肿大",
-          five:"风寒侵袭症",
-          six:"风寒侵袭症XXXXXX",
-          seven:"风寒侵袭症XXXXXXXXXXXXXXXXXXX",
-        },
-        {
-          title:"风寒感冒-风寒侵袭证诊疗模板",
-          one:"头晕、发烧、头痛、四肢无力、流清鼻涕、嗓子疼、浑身发冷、四肢无力、流清鼻涕、嗓子疼、浑身发冷",
-          two:"舌苔（薄）；舌质（白）",
-          three:"左（浮、紧）；右（浮、紧）",
-          four:"扁桃体肿大",
-          five:"风寒侵袭症",
-          six:"风寒侵袭症XXXXXX",
-          seven:"风寒侵袭症XXXXXXXXXXXXXXXXXXX",
-        },
-        {
-          title:"风寒感冒-风寒侵袭证诊疗模板",
-          one:"头晕、发烧、头痛、四肢无力、流清鼻涕、嗓子疼、浑身发冷、四肢无力、流清鼻涕、嗓子疼、浑身发冷",
-          two:"舌苔（薄）；舌质（白）",
-          three:"左（浮、紧）；右（浮、紧）",
-          four:"扁桃体肿大",
-          five:"风寒侵袭症",
-          six:"风寒侵袭症XXXXXX",
-          seven:"风寒侵袭症XXXXXXXXXXXXXXXXXXX",
-        },
-      ],
+      content : {},
       unfold:false
     };
   };
-  componentDidMount(){
+  componentWillMount(){
     this.searchList();
   }
+  /**
+   * 数据解析
+   * @method analysisData
+   * @param  {[type]}     data [description]
+   * @return {Boolean}         [description]
+   */
+  analysisData = (data) => {
+    var content = {};
+    console.log("data[0]=========",data[0]);
+    //debugger;
+    var orgid = data[0].orgid;
+    var ctstamp = data[0].ctstamp.substr(0,11);
+    var org_username = data[0].org_username;
+    var casetype = data[0].casetype;
+    var diagnosisDesc = data[0].buDiagnosisInfo.diagnosisDesc;
+    console.log("============@@@",data);
+    var checkout=[];
+    var examine=[];
+    var chineseMedicine=[];
+    var chinesePatentMedicine=[];
+    var appropriateTechnology=[];
+    var westernMedicine=[];
+    var materials=[];;
+    data.forEach((item,index)=>{
+      console.log("item.ordertype=======",item.ordertype);
+      //医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-材料
+      switch (item.ordertype) {
+        case 1: checkout.push(item);break;
+        case 2: examine.push(item);break;
+        case 3: chineseMedicine.push(item);break;
+        case 4: chinesePatentMedicine.push(item);break;
+        case 5: appropriateTechnology.push(item);break;
+        case 6: westernMedicine.push(item);break;
+        default: materials.push(item);break;
+      }
+    });
+    var newItem = [
+      { name:"检验",value:checkout },
+      { name:"检查",value:examine },
+      { name:"中药",value:chineseMedicine },
+      { name:"中成药",value:chinesePatentMedicine },
+      { name:"适宜技术",value:appropriateTechnology },
+      { name:"西药",value:westernMedicine },
+      { name:"材料",value:materials },
+    ];
+    content={
+      data:newItem,
+      orgid:orgid,
+      ctstamp:ctstamp,
+      org_username:org_username,
+      casetype:casetype,
+      diagnosisDesc:diagnosisDesc,
+      initData:data
+    };
+    console.log("==================",content);
+    return content;
+  }
+
   searchList = (content) =>{
+    var self = this;
     let params = {
-      personid:window.sessionStorage.getItem('userid'),
-      orgid: window.sessionStorage.getItem('orgid'),
-      temtype: "0",//0：病历模板，1：医嘱订单
+      patientid:window.patientID,
+      registerid:window.registerID,//201837501200516148
     };
     function callBack(res){
       if(res.result && res.data){
-        console.log("@@@@@@@@@成功==============",res);
+        console.log("获取历史病历成功==============",res);
+        var arr = [];
+        res.data.forEach((item,index)=>{
+          arr.push(self.analysisData(item));
+        })
+        self.setState({
+          content:arr
+        })
       }else{
-        console.log('异常响应信息', res);
+        console.log('获取历史病历异常响应信息', res);
       }
     };
-    medicalRWService.GetList(params, callBack);
+    doctorAdviceService.GetList(params, callBack);
+  }
+  /**
+   * 左右联动（和书写诊疗单）
+   * @method changeInitData
+   * @param  {[type]}       item [表单内容]
+   */
+  changeInitData = (item) =>{
+    var self = this;
+    let params = {
+      orderidList:item.orderid,//医嘱id集合  //201837501200516147
+      registerid:window.registerID,//当前挂号id 201837501200516148
+    };
+    function callBack(res){
+      if(res.result){
+        console.log("获取历史病历详情成功==============",res.data);
+        var record = {
+          ordertype:item.ordertype,
+          orderid:item.orderid,
+        }
+        self.props.actionManager("modify",record);
+      }else{
+        console.log('获取历史病历详情异常响应信息', res);
+      }
+    };
+    doctorAdviceService.ImportList(params, callBack);
+  }
+  /**
+   * 引入全部病历
+   * @method changeAllInitData
+   * @param  {[type]}       item [表单内容]
+   */
+  changeAllInitData = (item) =>{
+    console.log("item====",item);
+    var self = this;
+    var orderidList = [];
+    item.initData.forEach((item,index)=>{
+      orderidList.push(item.orderid);
+    })
+    let params = {
+      orderidList:orderidList,//医嘱id集合  //201837501200516147
+      registerid:window.registerID,//当前挂号id 201837501200516148
+    };
+    function callBack(res){
+      if(res.result){
+        console.log("历史病历导入成功==============",res);
+        self.props.getData();
+      }else{
+        console.log('历史病历导入异常响应信息', res);
+      }
+    };
+    doctorAdviceService.ImportList(params, callBack);
   }
   render() {
     var { content, unfold } = this.state;
+    // console.log("content",content);
+    // console.log("content.data.length",content.data);
     return (
       <div class="rightAssistBar_medicalHistory">
         <div class="medicalHistory_data">
-          <p class="data_p">共<span>2</span>次病历记录</p>
+          <p class="data_p">共<span>{content.length}</span>次病历记录</p>
           {
+            content.length >0
+            ?
             content.map((item,index)=>{
+              //console.log("item.ctstamp==",item);
               return(
-                <div class="medicalHistory_content">
+                <div class="medicalHistory_content" key={index}>
                   <div class="medicalHistory_content-title">
                     <Row>
-                      <Col span={16}><p class="content-p">2018-08-06 | 永顺中医馆 | 医师：张保全 | <span>复诊</span></p></Col>
+                      <Col span={16}>
+                        <p class="content-p">
+                          {item.ctstamp} | {item.orgid} | 医师：{item.org_username} |  <span>{item.casetype == 0?"初诊":"复诊"}</span>
+                        </p>
+                      </Col>
                       <Col span={8}>
-                        <Button>引入病历</Button>
+                        <Button  onClick={()=>{ this.changeAllInitData(item) }}>引入病历</Button>
                         <Divider type="vertical" />
                       </Col>
                     </Row>
-                    <Row><Col span={24}><p>诊断：小儿感冒/风寒感冒</p></Col></Row>
+                    <Row><Col span={24}><p>诊断：{item.diagnosisDesc}</p></Col></Row>
                   </div>
-                  <ContentDetail item={item}/>
+                  <ContentDetailSeven
+                    changeInitData ={this.changeInitData}
+                    item ={item.data}
+                  />
                 </div>
               )
             })
+            :
+            null
           }
         </div>
       </div>
