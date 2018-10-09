@@ -147,7 +147,6 @@ class Index extends Component {
             selectedItems.push(selectedItem);
           }
         });
-        console.log(' values.diagnose.initData',  initData);
         let buDiagnosisInfo = initData.buDiagnosisInfo ? initData.buDiagnosisInfo : {};
         buDiagnosisInfo.buDiagnosisList = values.diagnose.originData;
         buDiagnosisInfo.cardno = window.cardno;
@@ -329,7 +328,7 @@ class Index extends Component {
                 return <IllHistory_familyhis key={index} title='家族史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.familyhistory}}/>
               }
               if(item.targetid == 9 && item.isChoose == '01'){
-                return <ObserveCure key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: [initData.facephoto, initData.sidephoto], text: initData.inspection}}></ObserveCure>
+                return <ObserveCure key={index} setFieldsValue={setFieldsValue} getFieldsValue={getFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: [initData.facephoto, initData.sidephoto], text: initData.inspection}}></ObserveCure>
               }
               if(item.targetid == 10 && item.isChoose == '01'){
                 return <FeelCure key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
