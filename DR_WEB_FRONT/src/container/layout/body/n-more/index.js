@@ -478,7 +478,6 @@ const Label = styled.div`
   margin-bottom: 20px;
 `;
 const SpecCarousel = styled(Carousel)`
-  border: 1px solid red;
   &&&.slick-slide {
     text-align: center;
     background: #fff;
