@@ -63,11 +63,19 @@ class PatientBasicInfo extends Component {
   /** [handleSubmit 返回患者信息数据] */
   handleSubmit = (e) => {
     e.preventDefault();
+    let data = {};
     this.props.form.validateFieldsAndScroll((err, values) => {
+      console.log('values', values);
       if (!err) {
-        return values;
+        // let patientInfo = this.state.patientInfo;
+        // if(patientInfo.patientname != ''){
+        //   Object.assign(patientInfo, values);
+        // }
+        data = values;
+        // return values;
       }
     });
+    return data;
   }
   componentWillMount(){
     this.getDictList(['country', 'nation', 'sex', 'marry', 'occupation', 'cardtype', 'pationtype', 'pationrel', 'blood']);
@@ -155,7 +163,7 @@ class PatientBasicInfo extends Component {
       if(city.length){ // 保证有数据
         district = this.getDistrictData(patientInfo.cityid);
       }
-      this.setState({ province, city, district }, () => {
+      this.setState({ province, city, district, patientInfo }, () => {
         this.props.form.setFieldsValue({province: provinceObj}); // 给省级表单选择框赋值
         this.props.form.setFieldsValue({city: cityObj}); // 给市级表单选择框赋值
         this.props.form.setFieldsValue({district: districtObj}); // 给县级表单选择框赋值
@@ -637,7 +645,7 @@ class PatientBasicInfo extends Component {
                 label=" "
                 >
                   {getFieldDecorator('streetdesc', {
-                    initialValue: 'a'
+                    initialValue: ''
                   })(
                     <SpecInput disabled={disabled}/>
                   )}

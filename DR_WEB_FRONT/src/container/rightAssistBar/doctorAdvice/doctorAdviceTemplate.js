@@ -9,6 +9,11 @@ import '../medicalRecordWriting/style/rightAssistBar.less';
 import SearchTree from '../pubilcModule/searchTree.js';
 import ContentDetailSeven from '../pubilcModule/contentDetailSeven.js';
 import doctorAdviceService from '../service/doctorAdviceService.js';
+import medicalRWService from '../service/medicalRWService.js';
+import pingpu1 from './style/pingpu1.png';
+import pingpu2 from './style/pingpu2.png';
+import shuzhuang1 from './style/shuzhuang1.png';
+import shuzhuang2 from './style/shuzhuang2.png';
 const Search = Input.Search;
 
 export default class template extends Component {
@@ -17,12 +22,15 @@ export default class template extends Component {
     this.state = {
       content:[],
       isCut:true,
+      pingpu:true,
+      shuzhuang:false,
       unfold:false,
       searchValue:"",
     };
   };
   componentWillMount(){
     this.searchList("");
+    this.queryTree();
   }
   /**
    * 数据解析
@@ -104,9 +112,16 @@ export default class template extends Component {
     };
     doctorAdviceService.Medicalordertemplate(params, callBack);
   }
-  cut = (isCut) =>{
+  cut = (isCut, type) =>{
     console.log("isCut",isCut);
-    this.setState({isCut})
+    if(type == "pingpu"){
+      var pingpu = true;
+      var shuzhuang = false;
+    }else{
+      var pingpu = false;
+      var shuzhuang = true;
+    }
+    this.setState({isCut, pingpu, shuzhuang});
   }
   unfold = (unfold) =>{
     this.setState({unfold:!unfold});
@@ -141,31 +156,87 @@ export default class template extends Component {
   changeInitData = (item) =>{
     var self = this;
     let params = {
-      orderid:item.orderid,
+      orderidList:item.orderid,//医嘱id集合  //201837501200516147
+      registerid:window.registerID,//当前挂号id 201837501200516148
     };
     function callBack(res){
-      if(res.result && res.data){
+      if(res.result){
         console.log("获取历史病历详情成功==============",res.data);
         var record = {
-          ordertype:item.ordertype,
+          ordertype:parseInt(item.ordertype),
           orderid:item.orderid,
         }
+        console.log("record===",record);
         self.props.actionManager("modify",record);
       }else{
         console.log('获取历史病历详情异常响应信息', res);
       }
     };
-    doctorAdviceService.GetData(params, callBack);
+    doctorAdviceService.importTem(params, callBack);
+  }
+  queryTree = () =>{
+    var self = this;
+    console.log("开始获取树状图==========");
+    let params = {
+      temtype:1,//模板类型 0代表病历模板 1代表医嘱模板
+      personid:window.sessionStorage.getItem('userid'),
+      orgid:window.sessionStorage.getItem('orgid')
+    };
+    function callBack(res){
+      if(res.result && res.data){
+        console.log("获取树状图成功==============",res);
+        self.setState({ dataSource:res.data })
+      }else{
+        console.log('获取树状图失败', res);
+      }
+    };
+    medicalRWService.QueryTree(params, callBack);
+  }
+  TreeChangeInitData = (temmanageid) =>{
+    var self = this;
+    console.log("开始获取医嘱树状图详情==========");
+    let params = {
+      temmanageid:temmanageid
+    };
+    function callBack(res){
+      if(res.result && res.data){
+        console.log("获取医嘱树状图成功详情==============",res);
+        var recipeList = [];
+        if(res.data.buOrderTempletList.length == 0){
+          alert("该条数据没有查到orderid，无法添加，请检查数据库");
+          return;
+        }
+        res.data.buOrderTempletList.forEach((item,index)=>{
+          recipeList.push({orderid:item.orderid})
+        })
+        var item = {
+          initData:{
+            recipeList:recipeList
+          }
+        }
+        self.importTem(item);//引入模板
+      }else{
+        console.log('获取医嘱树状图详情失败', res);
+        alert(`获取医嘱树状图详情失败,temmanageid为${temmanageid},请检查数据库`);
+      }
+    };
+    doctorAdviceService.QueryTreeDetail(params, callBack);
   }
   render() {
-    var { content, isCut, unfold } = this.state;
+    var { content, isCut, unfold, pingpu, shuzhuang, dataSource, searchValue } = this.state;
     return (
       <div class="rightAssistBar_template">
         <div class="tab">
           <Row>
             <Col span={4}>
-              <Icon type="bars" onClick={()=>{ this.cut(true) }}/>
-              <Icon type="bars" onClick={()=>{ this.cut(false) }}/>
+              <Row>
+                <Col span={11}>
+                  <img className="anticon-bars" src={pingpu?pingpu2:pingpu1}onClick={()=>{ this.cut(true,"pingpu") }}/>
+                </Col>
+                <Col span={11}>
+                  <img className="anticon-bars" src={shuzhuang?shuzhuang1:shuzhuang2} onClick={()=>{ this.cut(false,"shuzhuang") }}/>
+                </Col>
+              </Row>
             </Col>
             <Col span={20}>
               <Search
@@ -188,7 +259,7 @@ export default class template extends Component {
                   <div class="content" key={index}>
                     <div class="content-title">
                       <Row>
-                        <Col span={12}><p class="content-p">{item.diagnose}</p></Col>
+                        <Col span={12}><p class="content-p"><div dangerouslySetInnerHTML = {{ __html:item.diagnose }}></div></p></Col>
                         <Col span={4}><p class="content-p-two">• {item.temlevelDic}</p></Col>
                         <Col span={8}>
                           <Button onClick={()=>{ this.importTem(item) }}>引入模板</Button>
@@ -202,7 +273,13 @@ export default class template extends Component {
               })
             )
             :
-            <div><SearchTree/></div>
+            <div>
+              <SearchTree
+                dataSource={dataSource}
+                searchValue={searchValue}
+                TreeChangeInitData={this.TreeChangeInitData}
+              />
+            </div>
           }
         </div>
       </div>

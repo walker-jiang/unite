@@ -33,31 +33,31 @@ export default class template extends Component {
         var content = [];
         data.forEach((item,index)=>{
           var newItem = [ //主键 billid
-            { name:"主诉",value:item.pridepict },
-            { name:"现病史",value:item.hpi },
-            { name:"既往史",value:item.pasthistory },
-            { name:"过敏史",value:item.allergichistory },
-            { name:"个人史",value:item.personhistory },
-            { name:"月经婚育史",value:item.moHistory },
-            { name:"家庭史",value:item.familyhistory },
-            { name:"体温",value:item.temperature },
-            { name:"脉搏",value:item.pulse },
-            { name:"呼吸",value:item.breath },
-            { name:"收缩压",value:item.systolicPressure },
-            { name:"舒张压",value:item.diastolicPressure },
-            { name:"望诊",value:item.inspection },
-            { name:"闻诊",value:item.smelling },
-            { name:"切诊",value:item.palpation },
-            { name:"辩证要点",value:item.syndrome },
-            { name:"其他检查",value:item.psycheck },
-            { name:"医生建议",value:item.suggession },
-            { name:"治疗原则",value:item.treatprinciple },
-            { name:"身高",value:item.heightnum },
-            { name:"体重",value:item.weightnum },
-            { name:"儿童指纹描述",value:item.chfingerprint },
-            { name:"治疗方法",value:item.treatway },
-            { name:"主视图路径",value:item.facephoto },
-            { name:"侧视图路径",value:item.sidephoto }
+            { name:"主诉",value:item.pridepict,nameDesc:"pridepict" },
+            { name:"现病史",value:item.hpi,nameDesc:"hpi" },
+            { name:"既往史",value:item.pasthistory,nameDesc:"pasthistory" },
+            { name:"过敏史",value:item.allergichistory,nameDesc:"allergichistory" },
+            { name:"个人史",value:item.personhistory,nameDesc:"personhistory" },
+            { name:"月经婚育史",value:item.moHistory,nameDesc:"moHistory" },
+            { name:"家庭史",value:item.familyhistory,nameDesc:"familyhistory" },
+            { name:"体温",value:item.temperature,nameDesc:"temperature" },
+            { name:"脉搏",value:item.pulse,nameDesc:"pulse" },
+            { name:"呼吸",value:item.breath,nameDesc:"breath" },
+            { name:"收缩压",value:item.systolicPressure,nameDesc:"systolicPressure" },
+            { name:"舒张压",value:item.diastolicPressure,nameDesc:"diastolicPressure" },
+            { name:"望诊",value:item.inspection,nameDesc:"inspection" },
+            { name:"闻诊",value:item.smelling,nameDesc:"smelling" },
+            { name:"切诊",value:item.palpation,nameDesc:"palpation" },
+            { name:"辩证要点",value:item.syndrome,nameDesc:"syndrome" },
+            { name:"其他检查",value:item.psycheck,nameDesc:"psycheck" },
+            { name:"医生建议",value:item.suggession,nameDesc:"suggession" },
+            { name:"治疗原则",value:item.treatprinciple,nameDesc:"treatprinciple" },
+            { name:"身高",value:item.heightnum,nameDesc:"heightnum" },
+            { name:"体重",value:item.weightnum,nameDesc:"weightnum" },
+            { name:"儿童指纹描述",value:item.chfingerprint,nameDesc:"chfingerprint" },
+            { name:"治疗方法",value:item.treatway,nameDesc:"treatway" },
+            { name:"主视图路径",value:item.facephoto,nameDesc:"facephoto" },
+            { name:"侧视图路径",value:item.sidephoto,nameDesc:"sidephoto" },
           ];
           content.push({
             data:newItem,
@@ -100,11 +100,15 @@ export default class template extends Component {
    * @param  {[type]}       item [表单内容]
    */
   changeInitData = (item) =>{
-    console.log("item",item);
+    console.log("左右联动item=",item);
     var newItem={}
     var key;
     for(key in item){
-      newItem[key] = this.repalceHtml(item[key])
+      if(key == "ctstamp" || key == "utstamp"){
+        newItem[key] = item[key];
+      }else{
+        newItem[key] = this.repalceHtml(item[key])
+      }
     }
     newItem['buDiagnosisInfo'] = {};//暂无信息
     this.props.changeInitData(newItem);
@@ -133,7 +137,7 @@ export default class template extends Component {
                     </Row>
                     <Row><Col span={24}><p>诊断：{item.diagnosisDesc}</p></Col></Row>
                   </div>
-                  <ContentDetail item={item.data}/>
+                  <ContentDetail item={item.data} changeInitData={this.changeInitData}/>
                 </div>
               )
             })

@@ -9,7 +9,7 @@ export default class Index extends Component {
   render() {
     const { gridType, dataSource, doing, redo, done, view, keepDoing } = this.props;
     dataSource.examDate = '';
-    const themeType = gridType == 0 ? 'to' : 'ing_done';
+    const themeType = gridType == 0 ? 'to' : ( gridType == 1 ? 'ing_done' : 'done' );
     return (
       <ThemeProvider theme={theme}>
         <Container themeType={themeType}>
@@ -17,7 +17,7 @@ export default class Index extends Component {
             <SexIocn themeType={themeType}></SexIocn>
             <Info>
               <Name>{dataSource.patientname}</Name>
-              <div>{dataSource.sexDic} | {dataSource.casetype ? dataSource.casetype : '暂无'}｜{dataSource.mobile}</div>
+              <div>{dataSource.sexDic} | {dataSource.casetype ? dataSource.casetype : '未知'}｜{dataSource.mobile}</div>
               <div>全天号 ｜ {dataSource.regDate.substr(5,2)}号</div>
             </Info>
           </Body>
@@ -72,6 +72,11 @@ const theme = {
     bg1: '#FFCC7F',
     bg3: '#F2F2F2',
   },
+  done: {
+    bg: '#33CC00',
+    bg1: '#FFCC7F',
+    bg3: '#F2F2F2',
+  }
 };
 const Container = styled.div`
   float: left;

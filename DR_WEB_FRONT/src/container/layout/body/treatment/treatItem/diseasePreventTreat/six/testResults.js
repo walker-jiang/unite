@@ -36,7 +36,6 @@ export default class TestResults extends Component {
       url: '',
       openKeys: ['2018'],
       time: '',
-      yearSeven: [],
       yearEight: [],
       bodyType: '',
       performance: '',
@@ -59,6 +58,7 @@ export default class TestResults extends Component {
   //加载时间菜单
   getTimeMenuData(){
     let userId = this.props.userId;//子组件拿到父组件的属性
+    console.log('+++++++',userId)
     let params = {
           type: 'GET',
           async : true,
@@ -72,7 +72,6 @@ export default class TestResults extends Component {
         let that = this;
         function success(res){
           that.setState({
-            yearSeven: res.data[2017],
             yearEight: res.data[2018]
           }, function(){
             this.getResultsData();
@@ -297,7 +296,7 @@ export default class TestResults extends Component {
   }
 
   render() {
-    let { imgUrl, url, status, yearSeven, yearEight, bodyType, performance, diet, motion, reminder, lifeWay} = this.state;
+    let { imgUrl, url, status, yearEight, bodyType, performance, diet, motion, reminder, lifeWay} = this.state;
     let s = null;
     if(status == 0){
       s = history
@@ -318,15 +317,6 @@ export default class TestResults extends Component {
                 <SubMenu key="2018" title="2018" className="fugai" onTitleClick={this.titleClick}>
                   {
                     this.state.yearEight.map((value,index)=>{
-                      return(
-                        <Menu.Item key={value} className="cureMenuItem">{value}</Menu.Item>
-                      )
-                    })
-                  }
-                </SubMenu>
-                <SubMenu key="2017" title="2017" className="fugai" onTitleClick={this.titleClick}>
-                  {
-                    this.state.yearSeven.map((value,index)=>{
                       return(
                         <Menu.Item key={value} className="cureMenuItem">{value}</Menu.Item>
                       )

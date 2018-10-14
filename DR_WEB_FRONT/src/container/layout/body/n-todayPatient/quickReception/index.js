@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { Button, Form, Row, Col, Radio, Select, DatePicker  } from 'antd';
 import PopModal from 'components/popout/basePop';
 import QuickAddName from './quickAddName';
+import TipModal from 'components/dr/modal/tip';
 import Input from 'components/dr/input/basicInput';
 import selectSty from 'components/antd/style/select';
 import calendar from '-!file-loader!components/dr/icon/icons/calendar.svg';
@@ -11,6 +12,7 @@ import buttonSty from 'components/antd/style/button';
 import radioSty from 'components/antd/style/radio';
 import datePickerSty from 'components/antd/style/datePicker';
 import moment from 'moment';
+import extractDataFromIdentityCard from 'commonFunc/extractDataFromIdentityCard';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
 const FormItem = Form.Item;
@@ -26,7 +28,7 @@ class Index extends Component {
         patientname: '',
         sex: 1,
         mobile: '',
-        patienttype: 1,
+        patienttype: '01',
         cardtype: 1,
         cardno: '',
         birthday: '1992-08-21',
@@ -45,6 +47,7 @@ class Index extends Component {
     this.closeModal = this.closeModal.bind(this);
     this.addPatientData = this.addPatientData.bind(this);
     this.changeDate = this.changeDate.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   };
   /** [getDept 科室数据] */
   getDept() {
@@ -141,7 +144,17 @@ class Index extends Component {
   quickReceive(){
     this.getDictList(['sex', 'pationtype', 'cardtype', 'casetype']);
     this.getDept();
-    this.setState({ visible: true });
+    let patientInfo = {
+      patientname: '',
+      sex: 1,
+      mobile: '',
+      patienttype: '01',
+      cardtype: 1,
+      cardno: '',
+      birthday: '1992-08-21',
+      casetype: 1,
+    };
+    this.setState({ visible: true, patientInfo });
   };
   closeModal(){
     this.setState({ visible: false });
@@ -160,12 +173,14 @@ class Index extends Component {
         let patientInfo = this.state.patientInfo;
         let {dept, doctor, ...others} = values;
         others.ctsorgid = window.sessionStorage.getItem('orgid');
+        Object.assign(patientInfo, others);
         let paramData = {
-          baPatient: others,
+          baPatient: patientInfo,
           regUserid: window.sessionStorage.getItem('userid'),
           regUsername: window.sessionStorage.getItem('username'),
           orgid: window.sessionStorage.getItem('orgid'),
           deptid: dept.key,
+          patientid: patientInfo.patientid,
           regTypeid: doctor ? 1 : 2,
           deptname: dept.label,
           patienttype: values.patienttype,
@@ -174,22 +189,29 @@ class Index extends Component {
         };
         let params = {
           url: 'BuRegisterController/quickRecive',
-          data: JSON.stringify(Object.assign(patientInfo,paramData)),
+          data: JSON.stringify(paramData),
           type: 'post',
         };
         function callBack(res){
           if(res.result){
+            const { getFieldValue } = self.props.form
             let path = {
-              pathname: '/layout/treatment/' + res.data.patientid,
+              pathname: '/layout/treatment',
             };
+            window.casetype = getFieldValue('casetype');
             window.registerID = res.data.registerid;
             window.patientID = res.data.patientid;
             // 跳转到诊疗界面
             self.props.history.push(path);
           }else{
+            self.tipModal.showModal({
+              content: '已存在该患者挂号信息',
+              stressContent: res.desc
+            });
             console.log('异常响应信息', res);
           }
         };
+        console.log('params', params);
         ajaxGetResource(params, callBack);
       }
     });
@@ -202,11 +224,34 @@ class Index extends Component {
     patientInfo['birthday'] = moment.format('YYYY-MM-DD');
     this.setState({ patientInfo });
   };
+  validateCardno = (rule, value, callback) => {
+        const { getFieldValue, setFieldsInitialValue } = this.props.form
+        var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+        let validateResult = true;
+        if(value.trim() == ''){ // 非空校验
+          validateResult = false;
+          callback('请输入身份证！');
+        }
+        if(reg.test(value) === false) // 格式校验
+        {
+          validateResult = false;
+          callback('身份证输入不合法！');
+        }
+        if(validateResult){
+          let birthday = extractDataFromIdentityCard.getBirthdayFromIdCard(value);
+          let sex = extractDataFromIdentityCard.getSexFromIdCard(value);
+          let patientInfo = this.state.patientInfo;
+          patientInfo.birthday = birthday;
+          patientInfo.sex = sex;
+          this.setState({ patientInfo });
+        }
+        // Note: 必须总是返回一个 callback，否则 validateFieldsAndScroll 无法响应
+        callback()
+ }
   render() {
     let { visible, patientInfo, pationtype, cardtype, casetype, sex, deptData, docData, defaultDept, defaultDoc } = this.state;
     const { getFieldDecorator } = this.props.form;
-    let date = new Date();
-    const age = date.getFullYear() - parseInt(patientInfo.birthday.substr(0,4));
+    let age = extractDataFromIdentityCard.getAgeFromBirthday(patientInfo.birthday);
     const formItemLayout = {
       labelCol: {
         xs: { span: 8 },
@@ -217,7 +262,6 @@ class Index extends Component {
         sm: { span: 16 },
       },
     };
-
     return (
       <Container>
         <RegisterButton onClick={this.quickReceive}>快速接诊</RegisterButton>
@@ -248,7 +292,7 @@ class Index extends Component {
                     rules: [{ required: true, message: '请输入患者性别!' }],
                     initialValue: patientInfo.sex
                   })(
-                    <SpecRadioGroup>
+                    <SpecRadioGroup disabled>
                     {
                       sex.map(item => <Radio value={item.value} key={item.value}>{item.vname}</Radio>)
                     }
@@ -265,7 +309,7 @@ class Index extends Component {
                   label="移动电话："
                   >
                   {getFieldDecorator('mobile', {
-                    rules: [{ required: true, message: '请输入患者移动电话!' }],
+                    rules: [{ required: true, message: '请输入正确格式的移动电话!', pattern: /^1(3|4|5|7|8)\d{9}$/ }],
                     initialValue: patientInfo.mobile
                   })(
                     <Input placeholder='请输入患者移动电话' />
@@ -317,9 +361,9 @@ class Index extends Component {
                   label="证件号码："
                   >
                   {getFieldDecorator('cardno', {
-                    rules: [{ required: true, message: '请输入证件号码!' }],
-                    initialValue: patientInfo.cardno
-                  })(<Input placeholder='请输入患者证件号码' />)}
+                    rules: [{
+                        validator: this.validateCardno
+                      }], initialValue: patientInfo.cardno })(<Input placeholder='请输入患者证件号码' />)}
                 </FormItem>
               </Col>
             </Row>
@@ -334,9 +378,9 @@ class Index extends Component {
                     rules: [{ type: 'object', required: true, message: '请输入选择生日!' }],
                     initialValue: moment(patientInfo.birthday, 'YYYY-MM-DD')
                   })(
-                    <SpecDatePicker onChange={this.changeDate} allowClear={false}/>
+                    <SpecDatePicker disabled onChange={this.changeDate} allowClear={false}/>
                   )}
-                  <SpecInput placeholder='年龄' value={age} onChange={() => {}}/>
+                  <SpecInput placeholder='年龄' disabled value={age} onChange={() => {}}/>
                 </SpecFormItem>
               </Col>
               <Col span={11}>
@@ -396,8 +440,9 @@ class Index extends Component {
                 </FormItem>
               </Col>
             </Row>
+            <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
             <Footer>
-              <SureButton type="primary"  htmlType="submit">接诊</SureButton>
+              <SureButton type="primary" onClick={this.handleSubmit}>接诊</SureButton>
               <CancelButton type="primary" onClick={this.handleReset}>清空</CancelButton>
             </Footer>
           </SpecForm>

@@ -175,7 +175,7 @@ export default class MainSpeech extends Component {
           <SimplePop ref={ref=>this.simplePop = ref} onOk={this.simplePopSure} returnFocus={()=>{ this.input.focus() }}/>
           <Header innerRef={ref => this.header = ref}>
             <Key>主症：</Key>
-            <SemiCircleInput className='not-draggable' ref={ref => {this.input = ref}} autoFocus='autofocus' onKeyDown={this.handleEnterPress} onChange={(e)=>{this.filter(e.target.value)}} value={key} />
+            <SemiCircleInput className='not-draggable' ref={ref => {this.input = ref}} autoFocus='autofocus' onKeyDown={this.handleEnterPress} onChange={(e)=>{this.filter(e.target.value)}}  />
           </Header>
           <Result innerRef={ref => this.result = ref} lines={8} totalLines={totalLines} onKeyDown={this.handleEnterPress}>
           {

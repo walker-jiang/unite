@@ -2,7 +2,10 @@ import React, {Component} from 'react';
 import styled from 'styled-components';
 import ElectronicList from '../electronicList/index.js';
 import Cure from '../../n-cure/diseasePreventTreat';
+// import Ssc from '../profiled';
+import Ssc from '../patientDetailInfo';
 import people from '../images/people.png'
+import Addtip from '../images/addtip.png';
 import { Link } from 'react-router-dom';
 import { Input, Table, Pagination, LocaleProvider } from 'antd';
 import TableIcon from 'components/dr/icon/icons/table';
@@ -12,7 +15,7 @@ import inputSty from 'components/antd/style/input';
 import Icon from 'components/dr/icon';
 import { today } from 'commonFunc/defaultData';
 import zh_CN  from 'antd/lib/locale-provider/zh_CN';
-import ajaxGetResource from 'commonFunc/ajaxGetResource';
+import getResource from 'commonFunc/ajaxGetResource';
 
 export default class Index extends Component {
   constructor(props){
@@ -25,11 +28,32 @@ export default class Index extends Component {
       totalRecords: 0, // 总记录数
       curPage: 1, // 当前页
       pageSize: pageSize * 4, // 每页记录数
+      data: []
     };
   };
-  componentDidMount(){
-    
-  };
+
+  componentWillMount () {
+    var patientid = this.props.patientid;
+    let params = {
+      url: 'BuPatientCaseController/getPatient',
+      data: {
+        patientid: patientid
+      }
+    };
+    let that = this;
+    function callBack(res){
+        if(res.result){
+            console.log('成功')
+            that.setState({
+                data: res.data
+            })
+      }else{
+        that.setState({data: []});
+      }
+    };
+    getResource(params, callBack);
+  }
+
   /**
    * [toggleTabs 三个tab页切换函数]
    * @param  {[type]} curTab [当前页]
@@ -63,7 +87,7 @@ export default class Index extends Component {
     });
   }
   render() {
-    let { rcStatus} = this.state;
+    let { rcStatus, data} = this.state;
     let patientid = this.props.patientid;
     let ctsorgidDic = this.props.ctsorgidDic;
     let upstamp = this.props.upstamp;
@@ -72,9 +96,17 @@ export default class Index extends Component {
     let birthday = this.props.birthday;
     let patienttypeDic = this.props.patienttypeDic;
     let curTabComponet = null;
+    console.log('data',data);
+    
     if(rcStatus == 0) {
-        curTabComponet = "hello"
+        curTabComponet = <Ssc patientid = {patientid} />
     } else if(rcStatus == 1) {
+      if(data == [] || data == "" || data == null){
+        curTabComponet =<NullData> 
+                          <TipImg src={Addtip} />
+                          <TipTitle>该患者还没有电子病历</TipTitle>
+                        </NullData>
+      } else {
         curTabComponet = <ElectronicList 
                           patientid = {patientid} 
                           ctsorgidDic = {ctsorgidDic}
@@ -84,6 +116,7 @@ export default class Index extends Component {
                           birthday = {birthday}
                           patienttypeDic = {patienttypeDic}
                           />
+      }
     } else if(rcStatus == 2) {
         curTabComponet = <Cure/>
     }
@@ -163,6 +196,22 @@ const TabPane = styled.div`
 const Content = styled.div`
   width: 100%;
   position: relative;
+`;
+const TipImg = styled.img`
+  width: 109px;
+  height: 130px;
+  margin-left: 44%;
+`;
+const TipTitle = styled.div`
+  font-size: 16px;
+  color: #666666;
+  text-align: center;
+  line-height: 24px;
+`;
+const NullData = styled.div`
+  width: 100%;
+  margin-top: 17rem;
+  margin-bottom: 17rem;
 `;
 /*
 @作者：王崇琨

@@ -56,6 +56,10 @@ const ModelManage= Loadable({
   loader: () => import('./n-modelManage'),
   loading: loadingComponent,
 });
+const PersonalSetting= Loadable({
+  loader: () => import('./n-personalSettings'),
+  loading: loadingComponent,
+});
 
 export default class Body extends Component {
   constructor(props){
@@ -80,6 +84,7 @@ export default class Body extends Component {
           <Route path='/Layout/patientRecords' component={PantientRecords}></Route>
           <Route path='/Layout/more' component={More}></Route>
           <Route path="/Layout/sub" component={layoutSub}></Route>
+            <Route path="/Layout/personalSetting" component={PersonalSetting}></Route>
           <Route path='/Layout/modelManage' component={ModelManage}></Route>
       </Container>
     );

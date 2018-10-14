@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import "./fontStyle.less"
 import "./iconfont.css";
 import Icon1 from 'components/dr/icon';
+import ajaxGetResource from 'commonFunc/ajaxGetResource';
 const { Header, Content, Footer, Sider } = Layout;
 const SubMenu = Menu.SubMenu;
 var onresize= window;
@@ -15,6 +16,7 @@ class SiderDemo extends React.Component {
       this.state = {
         collapsed: false,
         style:{},
+        leftModules: [], // 左侧菜单项
         MenuItem:[
           //{key:"首页",show:true},
           //{key:"病人登记",show:true},
@@ -73,7 +75,27 @@ class SiderDemo extends React.Component {
 }
   componentWillMount(){
     onresize.removeEventListener("resize",this.handleHeight) //清楚窗口变化监听
+    this.getLeftMoules();
   }
+  /** [getLeftMoules 获取左侧菜单] */
+  getLeftMoules(){
+    let self = this;
+    let params = {
+      url: 'SyQuickmenuController/getQuickMenu',
+      server_url: config_login_url,
+      data: {
+        userid: window.sessionStorage.getItem('userid')
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        self.setState({ leftModules: res.data });
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
   //侧边抽屉打开与关闭
   onCollapse = (collapsed) => {
     console.log(collapsed);
@@ -153,7 +175,7 @@ class SiderDemo extends React.Component {
         div=<Menu.Item key="治未病"><Link to='/Layout/cure'><StyleICon type='cure_not_ill' value={collapsed}/><span>{item.key}</span></Link>d</Menu.Item>
       }
       if (item.show&&item.key=="中医知识库") {
-        div=<Menu.Item key="中医知识库"><Link to='/Layout/chKnowledge'><StyleICon type='ch_knowledge' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
+        div=<Menu.Item key="中医知识库"><a href='http://www.xiaotangren.com:9999/index1.html' target="view_window"><StyleICon type='ch_knowledge' value={collapsed}/>中医知识库</a></Menu.Item>
       }
       if (item.show&&item.key=="患者档案") {
         div=<Menu.Item key="患者档案"><Link to='/Layout/patientRecords'><StyleICon type='patient_archives' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
@@ -173,8 +195,8 @@ class SiderDemo extends React.Component {
       if (item.show&&item.key=="远程教育") {
         div=<Menu.Item key="远程教育"><Link to='/Layout/remoteEducation'><StyleICon type='remote_education' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
-      if (item.show&&item.key=="患者转诊") {
-        div=<Menu.Item key="患者转诊"><Link to='/Layout'><StyleICon type='patient_referral' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
+      if (item.show&&item.key=="辨证论治管理") {
+        div=<Menu.Item key="辨证论治管理"><Link to='/Layout/sub'><StyleICon type='patient_referral' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
       }
       if (item.show&&item.key=="治疗记录") {
         div=<Menu.Item key="治疗记录"><Link to='/Layout'><StyleICon type='acography' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
@@ -203,16 +225,17 @@ class SiderDemo extends React.Component {
           collapsible
           collapsed={this.state.collapsed}
           trigger={null}
-          width="120px"
+          width="140px"
         >
         <div className="switch" style={{  height: "32px",margin: "16px",textAline:"center"}} onClick={this.onCollapse} >
            {this.state.collapsed?<i className="anticon iconfont">&#xe78b;</i>:<i className="anticon iconfont">&#xe788;</i>}
          </div>
-            <div style={{width:"120px",position:"relative",overflow:"hidden",paddingRight:"-20px",height:this.state.height}}>
+            <div style={{width:"140px",position:"relative",overflow:"hidden",paddingRight:"-20px",height:this.state.height}}>
               <SpecMenu
                 theme="dark"
                 defaultSelectedKeys={['1']}
                 mode="inline"
+                collaps={collapsed}
                 onSelect={this.onSelect}
                >
                 {MenuOption}

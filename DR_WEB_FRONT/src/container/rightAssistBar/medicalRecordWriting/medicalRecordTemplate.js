@@ -1,7 +1,7 @@
 /*
 @作者：fuguolin
 @日期：2018-09-12
-@描述：右侧辅助栏
+@描述：右侧辅助栏----病历模板
 */
 import React, {Component} from 'react';
 import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, Alert, Modal } from 'antd';
@@ -9,6 +9,11 @@ import './style/rightAssistBar.less';
 import SearchTree from '../pubilcModule/searchTree.js';
 import ContentDetail from '../pubilcModule/contentDetail.js';
 import medicalRWService from '../service/medicalRWService.js';
+import doctorAdviceService from '../service/doctorAdviceService.js';
+import pingpu1 from './style/pingpu1.png';
+import pingpu2 from './style/pingpu2.png';
+import shuzhuang1 from './style/shuzhuang1.png';
+import shuzhuang2 from './style/shuzhuang2.png';
 const Search = Input.Search;
 
 export default class MedicalRecordTemplate extends Component {
@@ -17,7 +22,9 @@ export default class MedicalRecordTemplate extends Component {
     this.state = {
       content:[],
       isCut:true,
-      unfold:false,
+      unfold:true,
+      pingpu:true,
+      shuzhuang:false,
       searchValue:"",
       page:1,
       size:10,
@@ -41,7 +48,7 @@ export default class MedicalRecordTemplate extends Component {
       listenFormData:this.props.listenFormData
     })
     var { searchValue, page, size } = this.state;
-    this.queryTable(searchValue, page, size, nextProps);
+    this.queryTable(searchValue, page, size, nextProps.listenFormData);
   }
   queryTable = (content, page, size, listenFormData) =>{
     var self = this;
@@ -49,7 +56,7 @@ export default class MedicalRecordTemplate extends Component {
     let params = {
       page:page,
       size:size,
-      personid:window.sessionStorage.getItem('userid'),
+      personid:window.sessionStorage.getItem('userid'),//window.patientID
       orgid: window.sessionStorage.getItem('orgid'),
       diseaseid: window.sessionStorage.getItem('deptid'),
       content:content,
@@ -66,30 +73,30 @@ export default class MedicalRecordTemplate extends Component {
         var content = [];
         data.forEach((item,index)=>{
           var newItem = [
-            { name:"模板级别",value:item.temlevel },
-            { name:"主诉",value:item.pridepict },
-            { name:"望诊",value:item.inspection },
-            { name:"闻诊",value:item.smelling },
-            { name:"切诊",value:item.palpation },
-            { name:"体温",value:item.temperature },
-            { name:"呼吸",value:item.breath },
-            { name:"脉搏",value:item.pulse },
-            { name:"收缩压",value:item.systolicPressure },
-            { name:"舒张压",value:item.diastolicPressure },
-            { name:"身高",value:item.heightnum },
-            { name:"体重",value:item.weightnum },
-            { name:"诊断",value:item.diagnosisDesc },
-            { name:"现病史",value:item.hpi },
-            { name:"过敏史",value:item.allergichistory },
-            { name:"既往史",value:item.pasthistory },
-            { name:"个人史",value:item.personhistory },
-            { name:"月经婚育史",value:item.moHistory },
-            { name:"家族史",value:item.familyhistory },
-            { name:"辩证要点",value:item.syndrome },
-            { name:"其他检查",value:item.psycheck },
-            { name:"治疗原则",value:item.treatprinciple },
-            { name:"治疗方法",value:item.treatway },
-            { name:"医生建议",value:item.suggession }
+            { name:"模板级别",value:item.temlevel,nameDesc:"temlevel" },
+            { name:"主诉",value:item.pridepict,nameDesc:"pridepict" },
+            { name:"望诊",value:item.inspection,nameDesc:"inspection" },
+            { name:"闻诊",value:item.smelling,nameDesc:"smelling" },
+            { name:"切诊",value:item.palpation,nameDesc:"palpation" },
+            { name:"体温",value:item.temperature,nameDesc:"temperature" },
+            { name:"呼吸",value:item.breath,nameDesc:"breath" },
+            { name:"脉搏",value:item.pulse,nameDesc:"pulse" },
+            { name:"收缩压",value:item.systolicPressure,nameDesc:"systolicPressure" },
+            { name:"舒张压",value:item.diastolicPressure,nameDesc:"diastolicPressure" },
+            { name:"身高",value:item.heightnum,nameDesc:"heightnum" },
+            { name:"体重",value:item.weightnum,nameDesc:"weightnum" },
+            { name:"诊断",value:item.diagnosisDesc,nameDesc:"diagnosisDesc" },
+            { name:"现病史",value:item.hpi,nameDesc:"hpi" },
+            { name:"过敏史",value:item.allergichistory,nameDesc:"allergichistory" },
+            { name:"既往史",value:item.pasthistory,nameDesc:"pasthistory" },
+            { name:"个人史",value:item.personhistory,nameDesc:"personhistory" },
+            { name:"月经婚育史",value:item.moHistory,nameDesc:"moHistory" },
+            { name:"家族史",value:item.familyhistory,nameDesc:"familyhistory" },
+            { name:"辩证要点",value:item.syndrome,nameDesc:"syndrome" },
+            { name:"其他检查",value:item.psycheck,nameDesc:"psycheck" },
+            { name:"治疗原则",value:item.treatprinciple,nameDesc:"treatprinciple" },
+            { name:"治疗方法",value:item.treatway,nameDesc:"treatway" },
+            { name:"医生建议",value:item.suggession,nameDesc:"suggession" }
           ];
           content.push({
             data:newItem,
@@ -110,14 +117,16 @@ export default class MedicalRecordTemplate extends Component {
     var self = this;
     console.log("开始获取树状图==========");
     let params = {
-      patientid:window.sessionStorage.getItem('userid'),
+      temtype:0,//模板类型 0代表病历模板 1代表医嘱模板
+      personid:window.sessionStorage.getItem('userid'),
+      orgid:window.sessionStorage.getItem('orgid')
     };
     function callBack(res){
       if(res.result && res.data){
         console.log("获取树状图成功==============",res);
         self.setState({ dataSource:res.data })
       }else{
-        console.log('获取树状图成功失败', res);
+        console.log('获取树状图失败', res);
       }
     };
     medicalRWService.QueryTree(params, callBack);
@@ -156,7 +165,7 @@ export default class MedicalRecordTemplate extends Component {
    * @param  {[type]}       item [表单内容]
    */
   changeInitData = (item) =>{
-    console.log("item",item);
+    console.log("左右联动item",item);
     var newItem={}
     var key;
     for(key in item){
@@ -165,28 +174,60 @@ export default class MedicalRecordTemplate extends Component {
     newItem['buDiagnosisInfo'] = {};//暂无信息
     this.props.changeInitData(newItem);
   }
-  cut = (isCut) =>{
+  cut = (isCut,type) =>{
     console.log("isCut",isCut);
-    this.setState({isCut})
+    if(type == "pingpu"){
+      var pingpu = true;
+      var shuzhuang = false;
+    }else{
+      var pingpu = false;
+      var shuzhuang = true;
+    }
+    this.setState({isCut, pingpu, shuzhuang});
   }
   unfold = (unfold) =>{
     this.setState({unfold:!unfold});
   }
+  TreeChangeInitData = (temmanageid) =>{
+    var self = this;
+    console.log("开始获取树状图详情==========");
+    let params = {
+      temmanageid:temmanageid
+    };
+    function callBack(res){
+      if(res.result && res.data){
+        console.log("获取树状图成功详情==============",res);
+        self.props.changeInitData(res.data);
+      }else{
+        console.log('获取树状图详情失败', res);
+      }
+    };
+    medicalRWService.QueryTreeDetail(params, callBack);
+  }
   render() {
-    var { content, isCut, unfold, searchValue, page, size, listenFormData, dataSource } = this.state;
-
+    var { content, isCut, unfold, searchValue, page, size, listenFormData, dataSource, pingpu, shuzhuang } = this.state;
+    console.log("=========================",content);
     return (
       <div class="rightAssistBar_template">
         <div class="tab">
           <Row>
             <Col span={4}>
-              <Icon type="bars" onClick={()=>{ this.cut(true) }}/>
-              <Icon type="bars" onClick={()=>{ this.cut(false) }}/>
+              <Row>
+                <Col span={11}>
+                  <img className="anticon-bars" src={pingpu?pingpu2:pingpu1}onClick={()=>{ this.cut(true,"pingpu") }}/>
+                </Col>
+                <Col span={11}>
+                  <img className="anticon-bars" src={shuzhuang?shuzhuang1:shuzhuang2} onClick={()=>{ this.cut(false,"shuzhuang") }}/>
+                </Col>
+              </Row>
             </Col>
             <Col span={20}>
               <Search
                 placeholder="请输入模板名称或症状快速查询"
-                onSearch={value => { this.queryTable(value, page, size, listenFormData) }}
+                onSearch={value => {
+                  this.setState({searchValue:value},()=>{ console.log("searchValue!!@@@",searchValue); });
+                  this.queryTable(value, page, size, listenFormData)
+                }}
               />
             </Col>
           </Row>
@@ -209,12 +250,18 @@ export default class MedicalRecordTemplate extends Component {
                       </Col>
                     </Row>
                   </div>
-                  <ContentDetail item={item.data} unfold={unfold}/>
+                  <ContentDetail item={item.data} unfold={unfold} changeInitData={this.changeInitData}/>
                 </div>
               )
             })
             :
-            <div><SearchTree dataSource={dataSource}/></div>
+            <div>
+              <SearchTree
+                dataSource={dataSource}
+                searchValue={searchValue}
+                TreeChangeInitData={this.TreeChangeInitData}
+              />
+            </div>
           }
           {
             content.length>10

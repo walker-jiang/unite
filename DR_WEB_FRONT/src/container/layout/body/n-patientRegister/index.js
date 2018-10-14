@@ -48,7 +48,7 @@ export default class Index extends Component {
     };
     function callBack(res){
       if(res.result){
-        let patienList = res.data.records.map(item => Object.assign(item, { key: item.registerid }))
+        let patienList = res.data.records.map((item, index) => Object.assign(item, { key: index }))
         let totalRecords = res.data.total;
         self.setState({patienList: patienList, totalRecords});
       }else{

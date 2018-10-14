@@ -29,11 +29,19 @@ class ContentOne extends Component {
     }
   }
   unfold = (isUnfold) =>{
-    this.setState({isUnfold:!this.state.isUnfold});
+    this.setState({isUnfold:!isUnfold});
+  }
+  changeInitData(item){
+    console.log("===============",item);
+    var params = {};
+    params[item.nameDesc] = item.value;
+    console.log("params=====",params);
+    this.props.changeInitData(params);
   }
   render(){
     var name = this.props.oneItem.name;
     var value = this.props.oneItem.value;
+    console.log("value@@@@@@@@@@@=======",value);
     var { isUnfold } = this.state;
     return (
       <div>
@@ -43,16 +51,17 @@ class ContentOne extends Component {
         null
         :
         <div>
-          <p className="odd" onClick={()=>this.unfold("isUnfold",isUnfold)}>
+          <p className="odd">
             {
               value.length > 24
               ?
-              <Icon type={isUnfold?"down":"right"} style={{float:'left',marginLeft:-15}}/>
+              <Icon type={isUnfold?"down":"right"} style={{float:'left',marginLeft:-15}} onClick={()=>this.unfold("isUnfold",isUnfold)}/>
               :
               null
             }
-            <p style={{fontWeight:700,float:'left'}}>{name}：</p>
-            <p className="even">{ isUnfold?value:this.cutOut(value) }</p>
+            <p style={{fontWeight:700,float:'left'}} onClick={()=>{ this.changeInitData(this.props.oneItem) }}>{name}：</p>
+            <p className="even"><div dangerouslySetInnerHTML = {{ __html:value }}></div></p>
+            {/*<p className="even">{ isUnfold?value:this.cutOut(value) }</p>*/}
           </p>
         </div>
       }
@@ -72,6 +81,10 @@ class ContentDetail extends Component {
       isUnfoldAll:false,//是否展开全部
     };
   };
+  componentWillReceiveProps(nextProps){
+    console.log("!!!!!!!!!!!!",nextProps.item);
+    this.setState({item:nextProps.item  })
+  }
   cut = (isCut) =>{
     console.log("isCut",isCut);
     this.setState({isCut})
@@ -103,7 +116,7 @@ class ContentDetail extends Component {
               {
                 item.map((item,index)=>{
                   return(
-                    <ContentOne oneItem={item} key={index}/>
+                    <ContentOne oneItem={item} key={index} changeInitData={this.props.changeInitData}/>
                   )
                 })
               }
@@ -114,7 +127,7 @@ class ContentDetail extends Component {
               {
                 item.slice(0,6).map((item,index)=>{
                   return(
-                    <ContentOne oneItem={item}/>
+                    <ContentOne oneItem={item} changeInitData={this.props.changeInitData}/>
                   )
                 })
               }

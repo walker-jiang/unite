@@ -1,7 +1,7 @@
-/* @font-face{
+@font-face{
     font-family: 'YaHei Consolas Hybrid';
-    src : url("C:/huawenxingkai.ttf");
-} 没有该字体文件，先注释掉*/
+    src : url("./huawenxingkai.ttf");
+}
 div, span, p, a, strong {
   font-weight: 400;
   font-style: normal;

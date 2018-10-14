@@ -17,7 +17,7 @@ export default class UserInfo extends Component {
 const Container = styled.div`
   display: flex;
   align-items: center;
-  color: #1770C8;
+  color: #0A6ECB;
   height: 100%;
   margin-right: 20px;
 `;

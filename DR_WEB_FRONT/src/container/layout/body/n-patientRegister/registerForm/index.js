@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import { Tabs, Button } from 'antd';
 import ReactModal from 'react-modal';
 import Icon from 'components/dr/icon';
@@ -11,8 +11,9 @@ import SaveTip from 'components/dr/modal/saveTip';
 import Tip from 'components/dr/modal/tip';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 const TabPane = Tabs.TabPane;
+import deepClone from 'commonFunc/deepClone';
 
-export default class Index extends Component {
+class Index extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -23,7 +24,7 @@ export default class Index extends Component {
   };
   componentWillMount(){
     let operateType = this.props.match.params.type;
-    if(operateType.indexOf('v') || operateType.indexOf('m')){
+    if(operateType.indexOf('v') > 0 || operateType.indexOf('m') > 0){
       this.getPatientData(operateType.substr(1, operateType.length - 1));
     }
   };
@@ -55,22 +56,22 @@ export default class Index extends Component {
     let tempDept = {};
     let { registerInfo = {}, baPatient = {}, buPatientCase = {} } = this.state;
     let operateType = this.props.match.params.type;
+    let patientInfo = deepClone(this.basicInfoForm.state.patientInfo);
     if(this.basicInfoForm){
-      this.basicInfoForm.validateFieldsAndScroll((err, values) => {
-        if (!err) {
-          Object.assign(baPatient, values);
-          baPatient.addrHome = values.province.label + values.city.label + values.district.label;
-          baPatient.birthday = values.birthday.format('YYYY-MM-DD');
-          baPatient.creator = window.sessionStorage.getItem('userid');
-          baPatient.provinceid = values.province.key;
-          baPatient.cityid = values.city.key;
-          baPatient.districtid = values.district.key
-          baPatient.ctsorgid = window.sessionStorage.getItem('orgid');
-        }
-        // delete baPatient['province'];
-        // delete baPatient['city'];
-        // delete baPatient['district'];
-      });
+      let values = this.basicInfoForm.handleSubmit(e);
+      if(patientInfo.patientname != ''){
+        Object.assign(patientInfo, values);
+        Object.assign(baPatient, patientInfo);
+      }else{
+        Object.assign(baPatient, values);
+      }
+      baPatient.addrHome = values.province.label + values.city.label + values.district.label;
+      baPatient.birthday = values.birthday.format('YYYY-MM-DD');
+      baPatient.creator = window.sessionStorage.getItem('userid');
+      baPatient.provinceid = values.province.key;
+      baPatient.cityid = values.city.key;
+      baPatient.districtid = values.district.key
+      baPatient.ctsorgid = window.sessionStorage.getItem('orgid');
     }
     if(this.preTreatForm){
       this.preTreatForm.validateFieldsAndScroll((err, values) => {
@@ -108,6 +109,9 @@ export default class Index extends Component {
       "deptid": tempDept.deptid,
       "deptname": tempDept.deptname,
     };
+    if(patientInfo.patientname != ''){
+      paramData.patientid = patientInfo.patientid;
+    }
     Object.assign(registerInfo, paramData);
     this.saveTip.showModal(1);
     let self = this;
@@ -119,6 +123,7 @@ export default class Index extends Component {
     function callBack(res){
       if(res.result){
         self.saveTip.showModal(2);
+        self.props.history.push('/Layout/patientRegister');
       }else{
         self.saveTip.showModal(3);
         console.log('异常响应信息', res);
@@ -137,7 +142,6 @@ export default class Index extends Component {
   render() {
     let operateType = this.props.match.params.type;
     let { baPatient, buPatientCase, registerInfo } = this.state;
-    console.log('baPatient', baPatient);
     return (
       <Container>
         <Header>
@@ -152,7 +156,7 @@ export default class Index extends Component {
         <Content>
           <SpecTabs defaultActiveKey="1" animated={false}>
             <TabPane tab="基本信息" key="1">
-              <BasicInfoForm ref={ ref => { this.basicInfoForm = ref }} disabled={operateType.indexOf('v') == 0} baPatient={baPatient}></BasicInfoForm>
+              <BasicInfoForm wrappedComponentRef={ ref => { this.basicInfoForm = ref }} disabled={operateType.indexOf('v') == 0} baPatient={baPatient}></BasicInfoForm>
             </TabPane>
             {
               JSON.stringify(registerInfo) == '{}' || registerInfo.rcStatus == 0   ?
@@ -251,3 +255,4 @@ const CancelButton = styled(Button)`
 @日期：2018-09-21
 @描述：患者登记form
 */
+export default withRouter(Index);

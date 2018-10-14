@@ -24,7 +24,8 @@ const StyledLink = styled(Link)`
   height: 17px;
   display: flex;
   align-items: center;
-  cursor: pointer
+  cursor: pointer;
+  color: #0A6ECB !important;
 `;
 /*
 @作者：姜中希

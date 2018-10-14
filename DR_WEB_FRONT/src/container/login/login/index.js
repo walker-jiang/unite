@@ -12,11 +12,8 @@ import logo from './img/logo.jpg';
 export default class Login extends Component {
   /** [onClose 右上角关闭按钮触发的函数] */
   onClose() {
-    if(bundleMode == 'CS'){
+    if(window.closeBrowser){
       window.closeBrowser();
-    }else{
-      window.top.loginInfo();
-      console.log('非客户端模式无法关闭当前窗体');
     }
   }
   componentDidMount(){
@@ -34,7 +31,7 @@ export default class Login extends Component {
             <LoginLogoPic src={logo} />
             <LoginLogoTxt>
               <TxtChinese>中科软科技</TxtChinese>
-              <TxtEnglish>Sinosoft Co,.Ltd.1.0</TxtEnglish>
+              <TxtEnglish>Sinosoft Co,.Ltd.10.12.v1</TxtEnglish>
             </LoginLogoTxt>
           </div>
         </Left>

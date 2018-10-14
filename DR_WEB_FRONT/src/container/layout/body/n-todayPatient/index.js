@@ -33,7 +33,7 @@ export default class Index extends Component {
     this.view = this.view.bind(this);
     this.keepDoing = this.keepDoing.bind(this);
   };
-  componentDidMount(){
+  componentWillMount(){
     this.getPatientData();
   };
   /** [getPatientData 获取患者] */
@@ -57,7 +57,8 @@ export default class Index extends Component {
     };
     function callBack(res){
       if(res.result){
-        let patienList = res.data.records.map(item => Object.assign(item, { key: item.patientid }))
+        let patienList = res.data.records.map((item, index) => Object.assign(item, { key: index }));
+        console.log('patienList', patienList);
         let totalRecords = res.data.total;
         self.getPatientNumber();
         self.setState({patienList: patienList, totalRecords});
@@ -233,7 +234,7 @@ export default class Index extends Component {
       render: (text, record) =>
         rcStatus == 0 ?
         <StyledLink
-          onClick={() => this.doing(record.registerid, patientid)}
+          onClick={() => this.doing(record.registerid, record.patientid)}
           to='/Layout/treatment'>
           接诊
         </StyledLink>
@@ -310,13 +311,16 @@ export default class Index extends Component {
       this.getPatientData();
     });
   }
+  onKeyDown = (e) => {
+    console.log('键盘码', e.keyCode);
+  };
   getGridList(patienList){
     const cols = 5; // 每行多少列
     const totalLength = patienList.length;
     let girds = [];
     let rowLines = [];
-    patienList.map(item => {
-      let girdItem = <GridItem gridType={item.rcStatus} key={item.patientid} dataSource={item} doing={this.doing} redo={this.redo} done={this.done} view={this.view} keepDoing={this.keepDoing}></GridItem>
+    patienList.map((item, index) => {
+      let girdItem = <GridItem gridType={item.rcStatus} key={index} dataSource={item} doing={this.doing} redo={this.redo} done={this.done} view={this.view} keepDoing={this.keepDoing}></GridItem>
       girds.push(girdItem);
     })
     let rowLength = parseInt(totalLength / cols);
@@ -355,8 +359,8 @@ export default class Index extends Component {
           <Right>
             <QuickReception></QuickReception>
             <ArrowPicker ref={ref => {this.arrowPicker = ref}}></ArrowPicker>
-            <SpecInput placeholder='请输入患者姓名/患者编号/身份证号/拼音' onChange={(e) => {this.setState({ keyword: e.target.value })}}></SpecInput>
-            <SearchIcon type='search-thin' fill='#FFFFFF' onClick={this.getPatientData}></SearchIcon>
+            <SpecInput placeholder='请输入患者姓名/患者编号/身份证号/拼音' onChange={(e) => {this.setState({ keyword: e.target.value })}} onKeyDown={ e => { e.keyCode == 13 ? this.getPatientData() : null }}></SpecInput>
+            <SearchIcon type='search-thin' fill='#FFFFFF' onClick={this.getPatientData} ></SearchIcon>
           </Right>
         </Header>
         <Content>

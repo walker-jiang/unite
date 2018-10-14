@@ -28,6 +28,8 @@ export default class StartWork extends Component {
   };
 
   getLogin(){//患者是否存在 0或者1
+    let cardtype = window.certificatesType;
+    let cardno = window.certificatesNumber;
     let params = {
       type: 'GET',
       url: 'healthcabin/user/qrcode',
@@ -36,8 +38,8 @@ export default class StartWork extends Component {
       xhrFields:{withCredentials:true},
       crossDoman:true,
       data:{
-        certificatesType: '1',
-        certificatesNumber: '653024198209249589'
+        certificatesType: cardtype,
+        certificatesNumber: cardno
       }
     };
     let that = this;
@@ -64,7 +66,7 @@ export default class StartWork extends Component {
             xhrFields:{withCredentials:true},
             crossDoman:true,
             data: {
-              qSex: 1
+              qSex: window.qSex
             }
         };
         let that = this;
@@ -124,12 +126,17 @@ export default class StartWork extends Component {
         this.handClick();
       }
     }
-    this.setState({
-      startQuestion: this.state.startQuestion+1,
-      end: this.state.end-1,
-      index: this.state.index + 1,
-      percent: Math.round(((this.state.index+1)/this.state.length) * 100)
-    });
+    this.setState({ value:e.target.value },()=>{
+      setTimeout(() => {
+        this.setState({
+          value: null,
+          startQuestion: this.state.startQuestion+1,
+          end: this.state.end-1,
+          index: this.state.index + 1,
+          percent: Math.round(((this.state.index+1)/this.state.length) * 100)
+        });
+      }, 200);
+    })
   }
 
   handClick(){//切换组件，跳转到结果页面testResults.js

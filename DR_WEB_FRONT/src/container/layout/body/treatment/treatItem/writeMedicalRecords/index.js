@@ -188,12 +188,15 @@ class Index extends Component {
           heightnum: values.heightnum,
           weightnum: values.weightnum,
           psycheck: values.psycheck,
-          BuTargetChooseList: selectedItems,
+          buTargetChooseList: selectedItems,
           facephoto: values.inspectionPicture[0],
           sidephoto: values.inspectionPicture[1]
         };
         Object.assign(initData, finalObj);
         let self = this;
+        this.setState({
+          saved: 1
+        });
         let params = {
           url: 'BuPatientCaseController/' + (initData.billid ? 'putData' : 'postData'),
           data: JSON.stringify(initData),
@@ -201,21 +204,17 @@ class Index extends Component {
         };
         function callBack(res){
           if(res.result){
-            self.setState({
-              saved: 1
-            },()=>{
-              setTimeout(function(){
-                self.setState({
-                  saved: 2,
-                }, ()=>{
-                  setTimeout(function(){
-                    self.setState({
-                      saved: 0,
-                    });
-                  }, 1000);
-                });
-              },2000);
-            });
+            setTimeout(function(){
+              self.setState({
+                saved: 2,
+              }, ()=>{
+                setTimeout(function(){
+                  self.setState({
+                    saved: 0,
+                  });
+                }, 1000);
+              });
+            },2000);
           }else{
             console.log('异常响应信息', res);
           }
@@ -240,6 +239,7 @@ class Index extends Component {
    */
   changeCaseItem(itemType, status){
     let caseItems = this.state.caseItems;
+    console.log('改变指标项', caseItems);
     caseItems.forEach((item) => {
       if(item.targetid == itemType){
         item.isChoose = status ? '01' : '02';
@@ -262,7 +262,7 @@ class Index extends Component {
    * @param  {[type]} initData
    */
   changeInitData = (initData) =>{
-    console.log("!!!!!!!!!!!!!!!!!!",initData);
+    console.log('initData', initData);
     this.setState({initData})
   }
   /**
@@ -272,7 +272,6 @@ class Index extends Component {
   changeInitDataTwo = (buDiagnosisInfo) =>{
     var initData = this.state.initData;
     initData['buDiagnosisInfo'] = buDiagnosisInfo;
-    console.log("!!!!!!!!!!!!!!!!!!",initData);
     this.setState({initData});
   }
   render() {
@@ -286,7 +285,6 @@ class Index extends Component {
       palpation: this.getString(palpation),
       smelling: this.getString(smelling),
     };
-    console.log('initData.buDiagnosisInfo', !!initData.buDiagnosisInfo);
     const formItemLayout = {
       labelCol: {
         xs: { span: 3 },
@@ -297,6 +295,14 @@ class Index extends Component {
         sm: { span: 21 },
       },
      };
+     // 患者本人舌头图片
+     let tongueUrls = [];
+     if(initData.facephoto != '' && initData.facephoto){
+       tongueUrls.push(initData.facephoto);
+     }
+     if(initData.sidephoto != '' && initData.sidephoto){
+       tongueUrls.push(initData.sidephoto);
+     }
     return (
       <Container>
         <SpecForm onSubmit={this.handleSubmit} >
@@ -328,7 +334,7 @@ class Index extends Component {
                 return <IllHistory_familyhis key={index} title='家族史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.familyhistory}}/>
               }
               if(item.targetid == 9 && item.isChoose == '01'){
-                return <ObserveCure key={index} setFieldsValue={setFieldsValue} getFieldsValue={getFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: [initData.facephoto, initData.sidephoto], text: initData.inspection}}></ObserveCure>
+                return <ObserveCure key={index} setFieldsValue={setFieldsValue} getFieldsValue={getFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: tongueUrls, text: initData.inspection}}></ObserveCure>
               }
               if(item.targetid == 10 && item.isChoose == '01'){
                 return <FeelCure key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
@@ -358,33 +364,33 @@ class Index extends Component {
               }
             })
           }
-          <Row>
-            <Col span={13}>
-              <SureButton type="primary" htmlType="submit" disabled={!window.modifyPermission}>保存</SureButton>
-              <BorderButton type="primary" onClick={this.handleReset}>打印</BorderButton>
-              <BorderButton type="primary" onClick={this.handleReset}>另存成模板</BorderButton>
-            </Col>
-            <Saving span={11}>
-              {
-                saved == 0 ? null :
-                (
-                  saved == 1 ?
-                  <SaveTip>
-                    <Loading loading={true}><span>正在保存诊疗单数据，请稍后</span></Loading>
-                  </SaveTip>
-                  :
-                  <SaveTip>
-                    <Success type="check-circle"/>
-                    <span>诊疗单保存成功</span>
-                  </SaveTip>
-                )
-              }
-            </Saving>
-          </Row>
+          {
+            !caseItems.length ? null :
+            <Row>
+              <Col span={14}>
+                <SureButton type="primary" htmlType="submit" disabled={!window.modifyPermission}>保存</SureButton>
+                <BorderButton type="primary" onClick={this.handleReset}>打印</BorderButton>
+                <BorderButton type="primary" onClick={this.handleReset}>另存成模板</BorderButton>
+              </Col>
+              <Saving span={10}>
+                {
+                  saved == 0 ? null :
+                  (
+                    saved == 1 ?
+                    <SaveTip>
+                      <Loading loading={true}><span>正在保存诊疗单数据，请稍后</span></Loading>
+                    </SaveTip>
+                    :
+                    <SaveTip>
+                      <Success type="check-circle"/>
+                      <span>诊疗单保存成功</span>
+                    </SaveTip>
+                  )
+                }
+              </Saving>
+            </Row>
+          }
           </ScrollArea>
-          <Indicator>
-            设置病历指标
-          </Indicator>
         </SpecForm>
         <Modal>
         {
@@ -471,6 +477,9 @@ const SaveTip = styled.div`
   height: 50px;
   display: flex;
   align-items: center;
+  div {
+    padding: 0px;
+  }
   span {
     color: #c467da;
   }
@@ -489,13 +498,6 @@ const Saving = styled(Col)`
   display: flex;
   align-items: center;
   justify-content: space-around
-`;
-const Indicator = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  color: rgb(22, 155, 213);
-  font-size: 13px;
-  margin-right: 20px;
 `;
 const SureButton = styled(Button)`
   ${buttonSty.semicircle}

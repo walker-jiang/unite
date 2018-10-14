@@ -25,7 +25,7 @@ render(){
           <Table columns={this.props.columns3} pagination={{pageSize:8}} dataSource={this.props.data3}  />
         </TabPane>
       </Tabs>
-      <div style={{marginTop:"-47px",background:"#F9F9F9",border:"1px solid #D7D7D7",height:"50px",lineHeight:"50px",paddingLeft:"10px"}}>• 共有8位已就诊患者记录</div>
+      <div style={{marginTop:"-47px",background:"#F9F9F9",border:"1px solid #D7D7D7",height:"50px",lineHeight:"50px",paddingLeft:"10px"}}>• 共有{this.props.date}位已就诊患者记录</div>
     </div>
   )
 }

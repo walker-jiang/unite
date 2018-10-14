@@ -86,19 +86,21 @@ export default class index extends Component {
     return (
     <Container>
         <CenterArea id="eleBingLi">
-            <ScrollArea height={100}>
-                <Row>
-                    <Col span={6}>
+            <Row>
+                <Col span={6}>
+                    <ScrollArea height={100}>
                         <ListBorder className="listRightLine">
                             {lodeData}
                             <ShowHidden onClick={this.handClickShow.bind(this)}>{data.length == 1? '显示':'隐藏'}<Patientname>{patientname}</Patientname>更多病例信息>></ShowHidden>
                         </ListBorder>
-                    </Col>
-                    <Col span={16} offset={1}>
+                    </ScrollArea>
+                </Col>   
+                <Col span={16} offset={1}>
+                    <ScrollArea height={100}>
                         <ElectronicRight data={data} i={i} patientname={patientname} sexDic={sexDic} birthday={birthday}  patienttypeDic={patienttypeDic} upstamp={upstamp} />
-                    </Col>
-                </Row>
-            </ScrollArea>    
+                    </ScrollArea>
+                </Col>
+            </Row>  
         </CenterArea>
       </Container>
     )
@@ -141,7 +143,6 @@ const RuturnBack = styled.div`
 `;
 const CenterArea = styled.div`
     width: 100%;
-    height: 900px;
 `;
 const Patientname = styled.span`
     color: #0a6ecb;
@@ -150,8 +151,6 @@ const ListBorder = styled.div`
     width: 100%;
     height: 56rem;
     background-color: rgb(242,242,242);
-    overflow-x: hidden;
-    overflow-y: scroll;
     border: 1px solid;
     border-top:none;
     border-left:none;

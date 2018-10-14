@@ -36,14 +36,38 @@ class Index extends Component {
     this.getPatienList();
   };
   /**
+   * [modifyRcState 修改接诊状态的函数]
+   * @param  {[type]} rcStatus [将要修改为的接诊状态u]
+   * @param  {[type]} registerid [接诊ID]
+   * @return {[type]}          [undefined]
+   */
+  modifyRcState(rcStatus, registerid){
+    let self = this;
+    let params = {
+      url: 'BuRegisterController/receive',
+      async: false,
+      data: {
+        rcStatus: rcStatus, // 接诊状态
+        registerid: registerid, // 就诊id
+        doctorid: window.sessionStorage.getItem('userid'), // 接诊医生
+        doctorname: window.sessionStorage.getItem('username'), // 接诊医生
+      },
+    };
+    function callBack(res){
+      console.log('接诊状态修改为0-待接诊 1-接诊中2-已接诊）', rcStatus);
+    };
+    ajaxGetResource(params, callBack);
+  };
+  /**
    * [doing 接诊函数]
    * @param  {[type]} registerid [接诊ID]
    * @return {[type]}            [undefined]
    */
-  doing(registerid){
+  doing(registerid, patientid){
     console.log('接诊');
     window.registerID = registerid;
     window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
+    window.patientID = patientid;
     this.modifyRcState(1, registerid);
   };
   /**
@@ -51,10 +75,11 @@ class Index extends Component {
    * @param  {[type]} registerid [接诊ID]
    * @return {[type]}            [undefined]
    */
-  redo(registerid){
+  redo(registerid, patientid){
     console.log('重新接诊');
     window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
     window.registerID = registerid;
+    window.patientID = patientid;
     this.modifyRcState(1, registerid);
   };
   /**
@@ -72,9 +97,10 @@ class Index extends Component {
    * @param  {[type]} registerid [接诊ID]
    * @return {[type]}            [undefined]
    */
-  view(registerid){
+  view(registerid, patientid){
     console.log('查看你信息');
     window.registerID = registerid;
+    window.patientID = patientid;
     window.modifyPermission = 0; // 治疗书写权限0只读 1 可写
   };
   /**
@@ -82,9 +108,10 @@ class Index extends Component {
    * @param  {[type]} registerid [接诊ID]
    * @return {[type]}            [undefined]
    */
-  keepDoing(registerid){
-    console.log('续诊');
+  keepDoing(registerid, patientid){
+    console.log('续诊', patientid);
     window.registerID = registerid;
+    window.patientID = patientid;
     window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
   };
   getPatienList(){ // 当前日期， 默认是当天
@@ -153,8 +180,8 @@ class Index extends Component {
       render: (text, record, index)=>
       record.rcStatus == 0 ?
       <StyledLink
-        onClick={() => this.doing(record.registerid)}
-        to={'/Layout/treatment/' + record.patientid}>
+        onClick={() => this.doing(record.registerid, record.patientid)}
+        to={'/Layout/treatment'}>
         接诊
       </StyledLink>
       :
@@ -162,8 +189,8 @@ class Index extends Component {
         record.rcStatus == 1 ?
           <span>
             <StyledLink
-              onClick={() => this.keepDoing(record.registerid)}
-              to={'/Layout/treatment/' + record.patientid}>
+              onClick={() => this.keepDoing(record.registerid, record.patientid)}
+              to={'/Layout/treatment'}>
               续诊
             </StyledLink>|
             <StyledLink
@@ -174,13 +201,13 @@ class Index extends Component {
           </span>
         : <span>
             <StyledLink
-              onClick={() => this.redo(record.registerid)}
-              to={'/Layout/treatment/' + record.patientid}>
+              onClick={() => this.redo(record.registerid, record.patientid)}
+              to={'/Layout/treatment'}>
               重诊
             </StyledLink>|
             <StyledLink
-              onClick={() => this.view(record.registerid)}
-              to={'/Layout/treatment/' + record.patientid}>
+              onClick={() => this.view(record.registerid, record.patientid)}
+              to={'/Layout/treatment'}>
               查看
             </StyledLink>
           </span>

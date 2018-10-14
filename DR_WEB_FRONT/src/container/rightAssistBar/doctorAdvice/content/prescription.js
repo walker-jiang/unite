@@ -35,7 +35,6 @@ export default class IntelligentTreat extends Component {
       console.log("方剂暂无数据");
     }
   }
-
   callback(key) {
     console.log(key);
   }
@@ -58,7 +57,7 @@ export default class IntelligentTreat extends Component {
                       </Row>
                     </div>
                   </div>
-                  <ContentDetailTwo item={item.initData} bu={this.props.bu}/>
+                  <ContentDetailTwo item={item.initData} bu={this.props.bu} changeInitData={this.props.changeInitData}/>
                 </div>
               )
             })

@@ -72,7 +72,6 @@ export default class TestResults extends Component {
         let that = this;
         function success(res){
           that.setState({
-            yearSeven: res.data[2017],
             yearEight: res.data[2018]
           }, function(){
             this.getResultsData();
@@ -297,7 +296,7 @@ export default class TestResults extends Component {
   }
 
   render() {
-    let { imgUrl, url, status, yearSeven, yearEight, bodyType, performance, diet, motion, reminder, lifeWay} = this.state;
+    let { imgUrl, url, status, yearEight, bodyType, performance, diet, motion, reminder, lifeWay} = this.state;
     let s = null;
     if(status == 0){
       s = history
@@ -318,15 +317,6 @@ export default class TestResults extends Component {
                 <SubMenu key="2018" title="2018" className="fugai" onTitleClick={this.titleClick}>
                   {
                     this.state.yearEight.map((value,index)=>{
-                      return(
-                        <Menu.Item key={value} className="cureMenuItem">{value}</Menu.Item>
-                      )
-                    })
-                  }
-                </SubMenu>
-                <SubMenu key="2017" title="2017" className="fugai" onTitleClick={this.titleClick}>
-                  {
-                    this.state.yearSeven.map((value,index)=>{
                       return(
                         <Menu.Item key={value} className="cureMenuItem">{value}</Menu.Item>
                       )

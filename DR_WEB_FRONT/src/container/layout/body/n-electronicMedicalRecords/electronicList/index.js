@@ -6,6 +6,7 @@ import ScrollArea from 'components/scrollArea';
 import ElectronicRight from '../electronicRight';
 import 'antd/lib/button/style';
 import './index.less';
+import bingLi from '../images/bingLi.png'
 import printImages from "../images/print.png";
 import xian from "../images/xian.png";
 import exportFile from "../images/exportFile.png";
@@ -126,6 +127,7 @@ export default class index extends Component {
         <Title>
           <Row>
             <Col span={6}>
+                <ImgBingLi src={bingLi}/>
                 <Ele>
                     <BingCenter>病例中心</BingCenter>>电子病历详情
                 </Ele>
@@ -148,24 +150,33 @@ export default class index extends Component {
           </Row>
         </Title>
         <CenterArea id="eleBingLi">
-            <ScrollArea height={100}>
-                <Row>
-                    <Col span={6}>
+            <Row>
+                <Col span={6}>
+                    <ScrollArea height={100}>
                         <ListBorder className="listRightLine">
                             {lodeData}
                             <ShowHidden onClick={this.handClickShow.bind(this)}>{data.length == 1? '显示':'隐藏'}<Patientname>{patientname}</Patientname>更多病例信息>></ShowHidden>
                         </ListBorder>
-                    </Col>
-                    <Col span={16} offset={1}>
+                    </ScrollArea>    
+                </Col>
+                <Col span={16} offset={1}>
+                    <ScrollArea height={100}>
                         <ElectronicRight data={data} i={i} patientname={patientname} sex={sex} birthday={birthday}  patienttypeDic={patienttypeDic} examDate={examDate} casetype={casetype} orgidDic={orgidDic} />
-                    </Col>
-                </Row>
-            </ScrollArea>    
+                    </ScrollArea>
+                </Col>
+            </Row>   
         </CenterArea>
       </Container>
     )
   }
 }
+
+const ImgBingLi = styled.img`
+    width: 2rem;
+    position: absolute;
+    margin-top: 0.8rem;
+    margin-left: 2.7rem;
+`;
 const Container = styled.div`
   
 `;
@@ -174,8 +185,10 @@ const Title = styled.div`
     border-color: rgba(204, 204, 204, 1);
     background-color: rgb(242, 242, 242);
     width: 100%;
+    margin-left: 0.3rem;
     height: 50px;
     position: relative;
+    margin-bottom: 0.1rem;
 `;
 const Ele = styled.span`
     color: rgb(51, 51, 51);
@@ -203,7 +216,6 @@ const RuturnBack = styled.div`
 `;
 const CenterArea = styled.div`
     width: 100%;
-    height: 900px;
 `;
 const Patientname = styled.span`
     color: #0a6ecb;
@@ -211,9 +223,8 @@ const Patientname = styled.span`
 const ListBorder = styled.div`
     width: 100%;
     height: 56rem;
+    margin-left: 0.1rem;
     background-color: rgb(242,242,242);
-    overflow-x: hidden;
-    overflow-y: scroll;
     border: 1px solid;
     border-top:none;
     border-left:none;
@@ -223,8 +234,9 @@ const ListBorder = styled.div`
 	border-image: linear-gradient( #0a6ecb, #CCDDFF) 30 30;
 `;
 const ListData = styled.div`
-    width: 100%;
     height: 5rem;
+    width: 99%;
+    margin-left: 0.3rem;
     border:1px solid #ccc;
     border-top:none;
     border-left:none;

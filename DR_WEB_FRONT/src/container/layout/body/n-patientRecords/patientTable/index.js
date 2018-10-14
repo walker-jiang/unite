@@ -216,7 +216,8 @@ const RegisterButton = styled(Button)`
 `;
 const Header = styled.div`
   height: 50px;
-  width: 100%;
+  margin-left: 0.3%;
+  width: 99.7%;
   display: flex;
   justify-content: space-between;
   background-color: rgba(242, 242, 242, 1);

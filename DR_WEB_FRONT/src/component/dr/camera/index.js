@@ -5,6 +5,7 @@ import Modal from 'react-modal';
 import { Button } from 'antd';
 import StyReactModal from 'components/reactModal';
 import Icon from 'components/dr/icon';
+// 兼容调取摄像头api 并兼容
 
 export default class Index extends Component {
   constructor(props){
@@ -16,51 +17,72 @@ export default class Index extends Component {
     };
     this.takePicture = this.takePicture.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    window.promisifiedOldGUM = function promisifiedOldGUM(constraints){
+      var getUserMedia = (navigator.getUserMedia ||
+        navigator.webkitGetUserMedia ||
+        navigator.mozGetUserMedia);
+      if(!getUserMedia) {
+        return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+      }
+      return new Promise(function(resolve, reject) {
+        getUserMedia.call(navigator, constraints, resolve, reject);
+      });
+    };
   };
   /** [getCameraDevice 开启摄像头] */
-  getCameraDevice(){
-    var videoObj = {video: { width: 570, height: 535 } };
-    var video = null;
-    let self = this;
-    if(navigator.getUserMedia) { // 标准的API
-      console.log('标准');
-       navigator.getUserMedia(videoObj, function(stream) {
-         video = self.video;
-   		   video.srcObject = stream;
-   		   video.onloadedmetadata = function(e) {
-   			     video.play();
-   		   };
-         self.setState({ video });
-       }, ()=>{});
-     } else if(navigator.webkitGetUserMedia) { // WebKit 核心的API
-       console.log('WebKit');
-       navigator.webkitGetUserMedia(videoObj, function(stream){
-         video = self.video;
-   		   video.srcObject = window.webkitURL.createObjectURL(stream);
-   		   video.onloadedmetadata = function(e) {
-   			     video.play();
-   		   };
-         self.setState({ video });
-       }, ()=>{});
-     }
-		// navigator.mediaDevices.getUserMedia(constraints)
-		// .then(function(mediaStream) {
-		//   video = self.video;
-		//   video.srcObject = mediaStream;
-		//   video.onloadedmetadata = function(e) {
-		// 	     video.play();
-		//   };
-    //   self.setState({ video });
-		// })
-		// .catch(function(err) { console.log(err.name + ": " + err.message); }); // 总是在最后检查错误
-  };
+ getCameraDevice(){
+   var videoObj = {video: { width: 467, height: 342 } };
+   let self = this;
+   var uA =  navigator.userAgent.toLowerCase();
+   var version,text;
+   var chromeTest =  /(chrome)(?:.*version)?[ \/]([\w.]+)/;
+   var match = chromeTest.exec(uA) || [];
+   if(navigator.mediaDevices === undefined) {
+     navigator.mediaDevices = {};
+   }
+   console.log('navigator.mediaDevices.getUserMedia', navigator.mediaDevices.getUserMedia);
+   if(navigator.mediaDevices.getUserMedia == undefined) {
+     navigator.mediaDevices.getUserMedia = window.promisifiedOldGUM;
+   }
+   window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+   if(match[1] == 'chrome' && match[2]){
+     version = match[2];
+   }
+   if(navigator.vendor != 'Google Inc.' || (version && parseInt(version) <42)){
+   }else if(navigator.mediaDevices.getUserMedia){
+     navigator.mediaDevices.getUserMedia({
+         video:true
+       }).then(function(stream){
+         self.successCallback(stream);
+       }).catch(function(err){
+     });
+   }else{
+   }
+ };
+
+ /** [successCallback 获取摄像头后的回调函数] */
+ successCallback(stream){
+   window._assessmentStreamRef = stream;
+   window.openGamera  = true;
+   var video = this.video;
+   video.height=342;
+   video.width = 467;
+   if(typeof video.srcObject !== 'undefined'){
+     video.srcObject = stream;
+   }else if(video.mozSrcObject!==undefined){
+     video.mozSrcObject = stream;
+   }else{
+     video.src = (window.URL&&window.URL.createObjectURL(stream))||stream;
+   }
+   video.play();
+   this.setState({ video });
+ };
   /** [takePicture 拍照并显示在canvas中] */
   takePicture(){
     let video = this.state.video;
-    console.log('video', video);
     var canvas=this.canvas;
     var context = canvas.getContext("2d");
-    context.drawImage(video, 0, 0, 570, 535);
+    context.drawImage(video, 0, 0, 467, 342);
 
     let src = canvas.toDataURL('image/png');
     this.props.returPicture(src);
@@ -85,16 +107,16 @@ export default class Index extends Component {
            ariaHideApp={false}>
            <Container>
              <Header>
+               <Title>拍照</Title>
                <Icon onClick={this.handleClose} type='close' width='20px' height='20px' fill='#FFFFFF'/>
              </Header>
              <Body>
                  {
-                   <Canvas innerRef={ref => {this.canvas = ref}} display={status} width='570' height='535'></Canvas>
+                   <Canvas innerRef={ref => {this.canvas = ref}} display={0} width='570' height='535'></Canvas>
                  }
-               <Video innerRef={ref => {this.video = ref}}>您的浏览器不支持 video 标签。</Video>
+               <Video id='video' innerRef={ref => {this.video = ref}}>您的浏览器不支持 video 标签。</Video>
                <ActionButton onClick={this.takePicture}>
                  <Icon type='camera' width='30px' height='30px' fill="#ffffff"/>
-                 拍照
                </ActionButton>
              </Body>
            </Container>
@@ -102,11 +124,15 @@ export default class Index extends Component {
     );
   }
 }
+const StyledModal = styled(Modal)`
+  ${StyReactModal.windowModal}
+`;
 const Container = styled.div`
   background-color: rgba(242, 242, 242, 1);
   border-radius: 10px;
   border-bottom-right-radius: 0px;
   border-bottom-left-radius: 0px;
+  width: 500px;
 `;
 const Header = styled.div`
   border-radius: 10px;
@@ -116,18 +142,21 @@ const Header = styled.div`
   background-color: rgba(10, 110, 203, 1);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 0px 10px
+`;
+const Title = styled.span`
+  color: #FFFFFF;
 `;
 const Body = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
-`;
-const StyledModal = styled(Modal)`
-  ${StyReactModal.windowModal}
+  justify-content: space-between;
+  height: 452px;
+  padding: 15px;
 `;
 const Video = styled.video`
-  padding: 20px;
   z-index: 2000;
 `;
 const Canvas = styled.canvas`
@@ -135,20 +164,15 @@ const Canvas = styled.canvas`
   display: ${props => props.display == 0 ? 'none' : 'block'}
 `;
 const Footer = styled.div`
-  position: absolute;
-  bottom: 20px;
-  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 2002;
 `;
-
 const ActionButton = styled.div`
-  width: 88px;
-  height: 88px;
+  width: 71px;
+  height: 71px;
   cursor: pointer;
-  margin: 13px;
   background: #0A6ECB;
   font-size: 20px;
   color: #FFFFFF;

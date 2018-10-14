@@ -12,6 +12,11 @@ import Grid from './grid';
 import { today } from 'commonFunc/defaultData';
 import zh_CN  from 'antd/lib/locale-provider/zh_CN';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
+import SelectPatient from './selectPatient';
+import IllCaseSure from './illCaseSure';
+import SmartCure from './smartCure';
+import SmartCure1 from './smartCure1';
+import Finish from './finish';
 
 const Step = Steps.Step;
 
@@ -27,8 +32,10 @@ export default class SyndromeTreatment extends Component {
       curPage: 1, // 当前页
       pageSize: pageSize * 4, // 每页记录数
       numbers: {}, // 各个状态的患者数量
+      current: 1, //当
     };
     this.getPatientData = this.getPatientData.bind(this);
+    this.stepFunc = this.stepFunc.bind(this);
   };
   componentDidMount(){
     this.getPatientData();
@@ -215,15 +222,33 @@ export default class SyndromeTreatment extends Component {
       this.getPatientData();
     });
   }
+  stepFunc(step){
+      this.setState({ current: step })
+  };
   render() {
-    let { showWay, patienList, numbers, rcStatus,totalRecords, curPage, pageSize } = this.state;
+    let { showWay, patienList, numbers, rcStatus,totalRecords, curPage, pageSize, current } = this.state;
     const columns = this.getTableColumns(rcStatus);
+    console.log('current', current);
+    let compo = null;
+    if(current == 0){
+      compo = <SelectPatient onStep={this.stepFunc}/>;
+    }else if(current == 1){
+      compo = <IllCaseSure onStep={this.stepFunc}/>;
+    }else if(current == 2){
+      compo = <SmartCure onStep={this.stepFunc}/>;
+    }else if(current == 3){
+      compo = <SmartCure1 onStep={this.stepFunc}/>;
+    }
+    else if(current == 4){
+      compo = <Finish onStep={this.stepFunc}/>;
+    }
+
     return (
       <Container>
         <Top>
           <StyledIcon type='syndrome_treatment'/>
           <Title>辨证论治</Title>
-          <SpecSteps current={0}>
+          <SpecSteps current={current}>
             <Step title="患者确认"/>
             <Step title="病情病历确认"/>
             <Step title="智能辩证"/>
@@ -231,55 +256,7 @@ export default class SyndromeTreatment extends Component {
             <Step title="完成"/>
           </SpecSteps>
         </Top>
-        <Body>
-          <Header>
-            <Left>
-              <Toggle>
-                <SpecTableIcon showWay={showWay} onClick={() => {this.setState({ showWay: 'grid'})}}/>
-                <SpecListIcon showWay={showWay} onClick={() => {this.setState({ showWay: 'table'})}}/>
-              </Toggle>
-              <Bread></Bread>
-              <SpecTabs>
-                <TabPane activeTab={rcStatus} _key={0} onClick={(e) => this.toggleTabs(0)}>待接诊（{numbers.noVisit}）</TabPane>
-                <TabPane activeTab={rcStatus} _key={1} onClick={(e) => this.toggleTabs(1)}>接诊中（{numbers.visiting}）</TabPane>
-              </SpecTabs>
-            </Left>
-            <Right>
-              <QuickReception></QuickReception>
-              <ArrowPicker ref={ref => {this.arrowPicker = ref}}></ArrowPicker>
-              <SpecInput placeholder='请输入患者姓名/患者编号/身份证号/拼音' onChange={(e) => {this.setState({ keyword: e.target.value })}}></SpecInput>
-              <SearchIcon type='search-thin' fill='#FFFFFF' onClick={this.getPatientData}></SearchIcon>
-            </Right>
-          </Header>
-          <Content>
-            {
-              showWay == 'grid' ?
-              (
-                <Grid patienList={patienList}>
-                  {
-                  }
-                </Grid>
-              ) :
-              (
-                <SpecTable dataSource={patienList} columns={columns} pagination={false}/>
-              )
-            }
-          </Content>
-        </Body>
-        <LocaleProvider locale={zh_CN}>
-          <PageContainer>
-            <span>• 共有{totalRecords}位已就诊患者记录</span>
-            <SpecPagination
-              size="small"
-              total={totalRecords}
-              current={curPage}
-              defaultPageSize={pageSize}
-              showSizeChanger
-              onShowSizeChange={this.onShowSizeChange}
-              onChange={this.onPageChange}
-              showQuickJumper />
-          </PageContainer>
-        </LocaleProvider>
+        {compo}
       </Container>
     );
   }

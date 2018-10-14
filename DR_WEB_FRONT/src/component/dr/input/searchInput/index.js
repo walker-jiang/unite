@@ -49,7 +49,7 @@ const Container = styled.div`
 const Search = styled.span`
   position: absolute;
   display: ${props => (props.icon == 'true') ? 'block' : 'none'};
-  top: 0px;
+  top: 13px;
   left: -10px;
 `;
 const Input = styled.input`

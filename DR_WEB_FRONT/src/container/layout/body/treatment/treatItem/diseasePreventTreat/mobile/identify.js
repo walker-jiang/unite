@@ -24,7 +24,7 @@ export default class Identify extends Component {
       xhrFields:{withCredentials:true},
       crossDoman:true,
       data:{
-        certificatesType: '1',
+        certificatesType: '01',
         certificatesNumber: '653024198209249589'
       }
     };

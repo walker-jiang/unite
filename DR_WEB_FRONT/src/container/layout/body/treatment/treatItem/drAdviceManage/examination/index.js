@@ -223,22 +223,23 @@ export default class Index extends Component {
     let { actionType } = this.props;
     let title = actionType == 'add' ? '新增' : (actionType == 'modify' ? '修改' : '查看');
     return (
-      <BasicModal visible={visiblePop} title={title + '检验单'} onClose={() => this.handlePopClose()}>
-        <Wrap>
-          <ExamineForm {...this.props} wrappedComponentRef={ref => {this.form = ref}}></ExamineForm>
-          {
-            actionType == 'view' ? null :
-            <Footer>
-              <SureButton type="primary" onClick={this.saveForm} disabled={!window.modifyPermission}>保存</SureButton>
-              <CancelButton type="primary" onClick={this.handlePopClose.bind(this)}>取消</CancelButton>
-            </Footer>
-          }
-        </Wrap>
-        <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
-      </BasicModal>
+        <BasicModal visible={visiblePop} title={title + '检验单'} onClose={() => this.handlePopClose()}>
+          <Wrap>
+            <ExamineForm {...this.props} wrappedComponentRef={ref => {this.form = ref}}></ExamineForm>
+            {
+              actionType == 'view' ? null :
+              <Footer>
+                <SureButton type="primary" onClick={this.saveForm} disabled={!window.modifyPermission}>保存</SureButton>
+                <CancelButton type="primary" onClick={this.handlePopClose.bind(this)}>取消</CancelButton>
+              </Footer>
+            }
+          </Wrap>
+          <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
+        </BasicModal>
     )
   }
 }
+
 const Wrap = styled.div`
   width: 857px;
   height: 548px;

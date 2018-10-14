@@ -11,11 +11,16 @@ class Index extends Component {
     super(props);
     window.AddHerbalMedicineFunc = (params) => this.AddHerbalMedicineFunc(params)
   };
+  /**
+   * [AddHerbalMedicineFunc 从知识库添加中药处方定义的全局回调函数]
+   * @param {[type]} params [草药数据]
+   */
   AddHerbalMedicineFunc(params){
-    window.herbalData = params; // 将知识库传过来的草药数据存为全局变量
+    // window.herbalData = params; // 将知识库传过来的草药数据存为全局变量
     if(window.sessionStorage.getItem('userid')){ // 当前为已经登陆状态
-      if(window.patientID){ // 已接诊跳转到诊疗页
-        this.props.history.push('/Layout/treatment/' + window.patientID)
+      if(window.registerID){ // 已接诊跳转到诊疗页
+        this.props.history.push('/Layout/treatment')
+        window.noticeFunc(params);
       }else{ // 未接诊跳转到接诊页
         this.props.history.push('/Layout/todayPatient')
       }
@@ -56,6 +61,7 @@ const SpecLayout = styled(Layout)`
   flex-direction: column;
   &&& {
     background-color: white;
+    z-index: 2;
   }
 `;
 /*

@@ -20,6 +20,7 @@ import TableGrid from './tableGrid';
 import TableList from './tableList';
 import AddHeader from './addHeader';
 import dashed from './imgs/dashed.png';
+import TipModal from 'components/dr/modal/tip';
 import buttonSty from 'components/antd/style/button';
 import MedicalHistoryTwo from "../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
 import DoctorAdviceTemplate from "../../../../../rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
@@ -46,7 +47,22 @@ export default class Index extends Component {
     this.submit = this.submit.bind(this);
     this.modelData = this.modelData.bind(this);
     this.diagnoseUpdate = this.diagnoseUpdate.bind(this);
+    window.noticeAddMedicalFunc = (params) => this.noticeAddMedicalFuncLocal(params);
   }
+  /**
+   * [noticeAddMedicalFuncLocal 有知识库的处方数据请强求添加医嘱的通知函数]
+   * @param  {[type]} params [草药数据]
+   * @return {[type]}        [undefined]
+   */
+  noticeAddMedicalFuncLocal(params){
+    this.setState({
+      actionType: 'add', // modify、view、add
+      orderid: '', // 当前医嘱ID
+      buOrderDtlList: {herbalData: JSON.parse(params)}, // 草药数据
+    }, () => {
+      this.chHerbalMedicine.handlePopOpen();
+    });
+  };
   componentWillMount(){
     this.getData();
   }
@@ -54,15 +70,6 @@ export default class Index extends Component {
     this.getData();
   };
   componentDidMount(){
-    let herbalData = window.herbalData;
-    if(herbalData){
-      herbalData = JSON.parse(herbalData);
-      herbalData.forEach((item) => {
-        item.usageid = item.baUsage ? item.baUsage.usageid : 9; // 从用法对象转换成字符串用法ID
-        item.usagename = item.baUsage ? item.baUsage.usagename : '无'; // 从用法对象转换成字符串用法名称
-      });
-      this.modelData({herbalData: herbalData}, 3);
-    }
   };
   /**
    * [getData 获取医嘱列表信息]
@@ -169,9 +176,8 @@ export default class Index extends Component {
   }
   // 初始化模板数据打开添加弹框
   modelData(buOrderDtlList, ordertype){
-    console.log("buOrderDtlList111111111111111111",buOrderDtlList);
     // ordertype = 1,
-    buOrderDtlList = this.examinSampleData();
+    buOrderDtlList = this.herbalSampleData();
     this.actionManager('add', {orderid:'', ordertype: ordertype}, buOrderDtlList)
   };
   previewClick (printData) {
@@ -184,6 +190,7 @@ export default class Index extends Component {
    * @return {[type]}            [void]
    */
   actionManager(actionType, record, buOrderDtlList = []){
+    console.log("2222222222222222",JSON.stringify(buOrderDtlList));
     let that = this;
     if(actionType == 'delete'){ // 删除操作
       that.onDelete(record.orderid)
@@ -1191,6 +1198,7 @@ export default class Index extends Component {
         that.getData(nextPage);
       },
     };
+    // alert('xin123', buOrderDtlList);
     let openProps = {
       actionType: actionType,
       orderid: orderid,
@@ -1251,7 +1259,7 @@ export default class Index extends Component {
         <Modal>
           <SpecTabs key='1' defaultActiveKey='1' animated={false}>
             <TabPane tab="智能论治" key="1">
-              <IntelligentTreat/>
+              <IntelligentTreat modelData={this.modelData}/>
             </TabPane>
             <TabPane tab="历史模板" key="2">
               <MedicalHistoryTwo actionManager= {this.actionManager} getData={this.getData}/>
@@ -1261,8 +1269,8 @@ export default class Index extends Component {
             </TabPane>
           </SpecTabs>
         </Modal>
+        <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </div>
-
     )
   }
 }

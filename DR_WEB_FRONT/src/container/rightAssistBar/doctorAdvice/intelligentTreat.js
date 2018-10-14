@@ -734,6 +734,32 @@ export default class IntelligentTreat extends Component {
   callback(key) {
     console.log(key);
   }
+  /**
+   * 左右联动（和书写诊疗单）
+   * @method changeInitData
+   * @param  {[type]}       item [表单内容]
+   * 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
+   */
+  changeInitData = (item) =>{
+    console.log("左右联动=============",item);
+    //数据组装
+    var buDiagnosisInfo = item.buDiagnosisInfo;
+    buDiagnosisInfo['buDiagnosisDismainfList'] = buDiagnosisInfo.buDiagnosisList;
+    if(item.buRecipe != null){
+      var recipename = item.buRecipe.recipename;
+    }
+    var params = {
+      herbalData:item.baHerbalMedicines,
+      recipename:recipename,
+      remark:"",
+      treatway:"",
+      countnum:"",
+      freq:"",
+      buDiagnosisList:buDiagnosisInfo,
+    }
+    console.log("数据组装后=============",params);
+    this.props.modelData(item,3);
+  }
   render() {
     var { dataSource, bu } = this.state;
     console.log("dataSource========",typeof(dataSource) == "undefined");
@@ -746,10 +772,10 @@ export default class IntelligentTreat extends Component {
         :
         <div className="intelligentTreat_Tabs">
           <Tabs onChange={this.callback} tabBarGutter={12} type="card" >
-            <TabPane tab="方剂" key="1"><Prescription dataSource={dataSource.clist} bu={bu}/></TabPane>
-            <TabPane tab="中成药" key="2"><ChineseMedicine dataSource={dataSource.plist} bu={bu}/></TabPane>
-            <TabPane tab="中医适宜技术" key="3"><AppropriateTechnology dataSource={dataSource.slist} bu={bu}/></TabPane>
-            <TabPane tab="名医医案" key="4"><Consilia dataSource={dataSource.mlist} bu={bu}/></TabPane>
+            <TabPane tab="方剂" key="1"><Prescription dataSource={dataSource.clist} bu={bu} changeInitData={this.changeInitData}/></TabPane>
+            <TabPane tab="中成药" key="2"><ChineseMedicine dataSource={dataSource.plist} bu={bu} changeInitData={this.changeInitData}/></TabPane>
+            <TabPane tab="中医适宜技术" key="3"><AppropriateTechnology dataSource={dataSource.slist} bu={bu} changeInitData={this.changeInitData}/></TabPane>
+            <TabPane tab="名医医案" key="4"><Consilia dataSource={dataSource.mlist} bu={bu} changeInitData={this.changeInitData}/></TabPane>
           </Tabs>
         </div>
       }

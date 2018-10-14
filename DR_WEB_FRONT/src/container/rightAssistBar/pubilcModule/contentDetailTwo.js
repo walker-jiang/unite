@@ -20,13 +20,13 @@ class ContentDetailTwoItem extends Component {
   getcmdrugs = () =>{
     var self = this;
     let params = {
-      imtreatprelist:JSON.stringify(this.props.item),
-      bu:this.props.bu
+      imtreatprelist:JSON.stringify(self.props.item),
+      bu:self.props.bu
     };
     function callBack(res){
       if(res.flag == 1){
-        alert("草药转换成功==============");
-        self.setState({ dataSource:res.data });
+        //alert("草药转换成功==============");
+        self.props.changeInitData(res.data);
       }else{
         console.log('草药转换失败', res);
       }
@@ -137,7 +137,12 @@ export default class ContentDetail extends Component {
           {
             item.priors == "1"
             ?
-            <ContentDetailTwoItem item={item} bu={this.props.bu} content={item.buImlistEntities}/>
+            <ContentDetailTwoItem
+              item={item}
+              bu={this.props.bu}
+              content={item.buImlistEntities}
+              changeInitData={this.props.changeInitData}
+            />
             :
             <p style={{fontSize:12}}>无</p>
           }

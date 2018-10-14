@@ -28,7 +28,7 @@ class ContentDetailFiveItem extends Component {
     function callBack(res){
       if(res.flag == 1){
         alert("名医医案转换成功==============");
-        self.setState({ dataSource:res.data });
+        self.props.changeInitData(item);
       }else{
         console.log('名医医案转换失败', res);
       }
@@ -207,7 +207,12 @@ export default class ContentDetail extends Component {
           <p>{ name?item.tm_DetailAndDoctor.doctorList[0].name:this.cutOut(item.tm_DetailAndDoctor.doctorList[0].name) }   |   医生是否作者：{isauthor}</p>
           <p onClick={()=>this.unfold("company",company)}><Icon type={company?"down":"right"}/>所在单位：</p>
           <p>{ company?item.tm_DetailAndDoctor.doctorList[0].company:this.cutOut(item.tm_DetailAndDoctor.doctorList[0].company) }</p>
-          <ContentDetailFiveItem bu={this.props.bu} content={item.tm_DetailAndDoctor.detailList} item={this.props.item}/>
+          <ContentDetailFiveItem
+            bu={this.props.bu}
+            content={item.tm_DetailAndDoctor.detailList}
+            item={this.props.item}
+            changeInitData={this.changeInitData}
+          />
         </div>
       </div>
     );

@@ -12,17 +12,17 @@ import getResource from 'commonFunc/ajaxGetResource';
 
 const Search = Input.Search;
 const nowdate = new Date();
-nowdate.setMonth(nowdate.getMonth()-1); 
-const y = nowdate.getFullYear(); 
-const m = nowdate.getMonth()+1; 
-const d = nowdate.getDate(); 
-const formatwdate = y+'-'+m+'-'+d; 
+nowdate.setMonth(nowdate.getMonth()-1);
+const y = nowdate.getFullYear();
+const m = nowdate.getMonth()+1;
+const d = nowdate.getDate();
+const formatwdate = y+'-'+m+'-'+d;
 export default class index extends Component {
   constructor(props) {
     super(props);
     this.state = {
       endOpen: false,
-      startValue: formatwdate, 
+      startValue: formatwdate,
       endValue: today,
       patienList: [], // 患者数据
       rcStatus: 0, // 当前标签页
@@ -44,11 +44,14 @@ componentWillMount () {
 
 //点击搜索框搜索
 getPatientData(){
+  console.log('diyicijin');
+  
   this.changeTime ()
 }
 
 //第一次初始时间和改变时间
 changeTime () {
+  console.log('diercijin');
   let { keyword, totalRecords, curPage, pageSize } = this.state;
   let beginTime = this.state.startValue;
   let endTime = this.state.endValue;
@@ -57,7 +60,7 @@ changeTime () {
     data: {
       beginTime: beginTime,
       endTime: endTime,
-      Keyword: keyword,
+      keyword: keyword,
       page: curPage, // 当前页
       pageSize: pageSize, // 每页记录数
     }
@@ -199,7 +202,7 @@ disabledStartDate = (startValue) => {
       key: 'action',
       render: (text, record, index) => (
         <div key={index}>
-          <OperationCell onClick={() => { this.operationCell(text, index, record) }}>电子病历详情</OperationCell> 
+          <OperationCell onClick={() => { this.operationCell(text, index, record) }}>电子病历详情</OperationCell>
         </div>
       )
     }
@@ -312,6 +315,7 @@ const Title = styled.div`
   background-color: rgb(242, 242, 242);
   width: 100%;
   height: 50px;
+  margin-left: 0.3rem;
   position: relative;
 `;
 const ImgBingLi = styled.img`

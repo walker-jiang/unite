@@ -23,7 +23,7 @@ export default class template extends Component {
       ],
       tagList:["头晕","恶心","流清鼻","浑身无力","发烧"],
       isCut:true,
-      seachValue:"发热",//搜索条件
+      seachValue:"",//搜索条件
       listenFormData:this.props.listenFormData,
     };
   };
@@ -143,11 +143,7 @@ export default class template extends Component {
       <div class="rightAssistBar_template">
         <div class="tab">
           <Row>
-            <Col span={4}>
-              <Icon type="bars" onClick={()=>{ this.cut(true) }}/>
-              <Icon type="bars" onClick={()=>{ this.cut(false) }}/>
-            </Col>
-            <Col span={20}>
+            <Col span={23} offset={1}>
               <Search
                 placeholder="请输入模板名称或症状快速查询"
                 onSearch={value => { this.setState({ seachValue:value },()=>{ this.GetAuxiliaryList(listenFormData) }) }}

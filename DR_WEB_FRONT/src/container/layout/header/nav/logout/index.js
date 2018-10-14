@@ -19,7 +19,7 @@ const Container = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
-  color: #1770C8;
+  color: #0A6ECB;
 `;
 const Item = styled.div`
   border-left: 1px solid #1770C8;

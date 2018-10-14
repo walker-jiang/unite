@@ -62,7 +62,7 @@ class Index extends Component {
   render () {
     let { buDiagnosisList } = this.state;
     const { getFieldDecorator, getFieldsValue } = this.props.form;
-    let { diagnose = '' } = getFieldsValue();
+    // let { diagnose = '' } = getFieldsValue();
 
     const formItemLayout = {
       labelCol: {

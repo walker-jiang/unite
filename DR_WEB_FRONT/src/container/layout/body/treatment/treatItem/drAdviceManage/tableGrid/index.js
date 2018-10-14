@@ -67,17 +67,37 @@ export default class Index extends Component {
       });
     }
   };
+  getGridList(patienList){
+    const cols = 4; // 每行多少列
+    const totalLength = patienList.length;
+    let girds = [];
+    let rowLines = [];
+    patienList.map((item, index) => {
+      let girdItem = <Item dataItem={item} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} operate={(type, record) => {this.props.operate(type, record)}}></Item>
+      girds.push(girdItem);
+    })
+    let rowLength = parseInt(totalLength / cols);
+    rowLength = totalLength % cols ? ( rowLength + 1 ) : rowLength; // 条件含义是如果敲好是cols的整数倍直接返回商， 否则的将商 加1 补最后一行（最后一行肯定不满）
+    for(let i = 0; i < rowLength; i++){
+      let RowLinesItem = (
+        <RowLine key={i} width={(girds.slice(i * cols, ( i + 1 ) * cols)).length}>
+          {
+            girds.slice(i * cols, ( i + 1 ) * cols).map( item => item)
+          }
+        </RowLine>
+      );
+      rowLines.push(RowLinesItem);
+    }
+    return rowLines;
+  };
   render() {
     let { dataSource , operate } = this.props;
     let { source, target } = this.state;
+    let gridComponent = this.getGridList(dataSource);
     return (
       <Container>
       {
-        dataSource.map((item, index) =>
-          <Grid className='handle'  key={index} source={source == item.orderid} targetOrder={target}>
-            <Item dataItem={item} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} operate={(type, record) => {this.props.operate(type, record)}}></Item>
-          </Grid>
-        )
+        gridComponent
       }
       </Container>
     );
@@ -99,6 +119,11 @@ const Grid = styled.div`
   &:hover {
     ${'' /* border: 2px solid red; */}
   }
+`;
+const RowLine = styled.div`
+  display: flex;
+  justify-content: space-around;
+  width: ${ props => props.width * 25 + '%'};
 `;
 /*
 @作者：姜中希

@@ -61,7 +61,8 @@ export default class Index extends Component {
     // console.log('草药数据', herbalData);
   };
   addHerbalData(values, herbalData){
-    let baHerbalMedicines = this.props.buOrderDtlList;
+    let baHerbalMedicines = [];
+    // console.log('baHerbalMedicines', baHerbalMedicines);
     if(baHerbalMedicines != undefined){
       let mergeArray = baHerbalMedicines.concat(herbalData);//合并数组
       let nameArr = [];

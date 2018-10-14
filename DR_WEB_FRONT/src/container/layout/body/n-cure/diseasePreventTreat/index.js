@@ -19,8 +19,8 @@ export default class DiseasePreventTreat extends Component {
   };
 
   componentWillMount(){//患者是否存在 0或者1
-    //let cardtype = window.cardtype;
-    //let cardno = window.cardno;
+    let cardtype = window.certificatesType;
+    let cardno = window.certificatesNumber;
     let params = {
       type: 'GET',
       url: 'healthcabin/user/qrcode',
@@ -29,8 +29,8 @@ export default class DiseasePreventTreat extends Component {
       xhrFields:{withCredentials:true},
       crossDoman:true,
       data:{
-        certificatesType: '1',
-        certificatesNumber: '653024198209249589'
+        certificatesType: cardtype,
+        certificatesNumber: cardno
       }
     };
     let that = this;

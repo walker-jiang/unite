@@ -38,7 +38,7 @@ class Index extends Component {
         	"modid": 7,
         	"seqno": 1,
         	"syModule": {
-        		"callurl": "/Layout/chKnowledge",
+        		"callurl": "http://www.xiaotangren.com:9999/index1.html",
         		"ctstamp": "2018-09-10 16:32:46",
         		"lastflag": 0,
         		"level": 1,
@@ -117,8 +117,10 @@ class Index extends Component {
         }
       ];
       defaultSysModuleList.forEach(item => {
-        // if(item.syModule.modid )
-        item.syModule.callurl = 'http://10.192.5.155:8987' + item.syModule.callurl;
+        if(item.syModule.modid  != 7){
+          // http://www.xiaotangren.com:9999
+          item.syModule.callurl = config_local_url + item.syModule.callurl;
+        }
       });
       window.setDefaultMenu(JSON.stringify(defaultSysModuleList));
     }
@@ -209,7 +211,9 @@ class Index extends Component {
               // console.log('JSON.stringify(res.data.rightMenuList)', JSON.stringify(res.data.rightMenuList));
               let rightSysModuleList = res.data.baOrguser.quickMenu.rightMenuList;
               rightSysModuleList.forEach(item => {
-                item.syModule.callurl = 'http://10.192.5.155:8987' + item.syModule.callurl;
+                if(item.syModule.modid  != 7){
+                  item.syModule.callurl = config_local_url + item.syModule.callurl;
+                }
               });
               window.setMenu(JSON.stringify(rightSysModuleList));
             }

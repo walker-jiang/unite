@@ -14,26 +14,7 @@ export default class IntelligentTreat extends Component {
   constructor(props){
     super(props);
     this.state = {
-      content:[
-        {
-          one:"荆芥 、薄荷、防风、柴胡、紫苏叶、葛根、桔梗、苦杏仁、白芷、苦地丁、芦根；",
-          two:"蔡连香   |   医生是否作者：是",
-          four:"中国中医研究院西苑医院",
-          five:[
-            {name:"病情：恶心、呕吐",value:"甘草（+）、党参（+）、柴胡（-）"},
-            {name:"病情：恶心、呕吐",value:"甘草（+）、党参（+）、柴胡（-）"},
-          ]
-        },
-        {
-          one:"荆芥 、薄荷、防风、柴胡、紫苏叶、葛根、桔梗、苦杏仁、白芷、苦地丁、芦根；",
-          two:"蔡连香   |   医生是否作者：是",
-          four:"中国中医研究院西苑医院",
-          five:[
-            {name:"病情：恶心、呕吐",value:"甘草（+）、党参（+）、柴胡（-）"},
-            {name:"病情：恶心、呕吐",value:"甘草（+）、党参（+）、柴胡（-）"},
-          ]
-        }
-      ],
+      content:[],
     };
   };
   componentWillMount(){
@@ -61,7 +42,15 @@ export default class IntelligentTreat extends Component {
       console.log("方剂暂无数据");
     }
   }
-
+  /**
+   * 左右联动（和书写诊疗单）
+   * @method changeInitData
+   * @param  {[type]}       item [表单内容]
+   */
+  changeInitData = (item) =>{
+    var self = this;
+    console.log("@@@@@@@@@@@@@@",item);
+  }
   callback(key) {
     console.log(key);
   }
@@ -84,7 +73,7 @@ export default class IntelligentTreat extends Component {
                       </Row>
                     </div>
                   </div>
-                  <ContentDetailFive item={item.initData} bu={this.props.bu}/>
+                  <ContentDetailFive item={item.initData} bu={this.props.bu} changeInitData={this.changeInitData}/>
                 </div>
               )
             })

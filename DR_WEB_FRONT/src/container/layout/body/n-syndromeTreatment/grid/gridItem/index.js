@@ -24,19 +24,14 @@ export default class Index extends Component {
           {
             gridType == 0 ?
             <Footer themeType={themeType}>
-              <ActionButton>
-                <Link
-                  to={'/Layout/treatment/' + dataSource.patientid}>
-                  选择
-                </Link>
+              <ActionButton onClick={() => {this.props.onStep(1)}}>
+                选择
               </ActionButton>
             </Footer>
             : gridType == 1 ?
             <Footer themeType={themeType}>
-              <ActionButton>
-                <Link to={'/Layout/treatment/' + dataSource.patientid}>
-                  选择
-                </Link>
+              <ActionButton onClick={() => {this.props.onStep(1)}}>
+                选择
               </ActionButton>
             </Footer> : null
           }

@@ -48,6 +48,26 @@ class Index extends Component {
       if (!err) {
         console.log('Received values of form: ', values);
         values.birthday =values['birthday'].format('YYYY-MM-DD HH:mm:ss');
+        if(values.certificatesType == "身份证"){
+          values.certificatesType = 1;
+        } else if(values.certificatesType == "护照") {
+          values.certificatesType = 2;
+        } else if(values.certificatesType == "军官证") {
+          values.certificatesType = 3;
+        }else if(values.certificatesType == "港澳台居民通行证") {
+          values.certificatesType = 4;
+        }
+
+        if(values.sex == '男') {
+          values.sex = 1;
+        } else if (values.sex == '女') {
+          values.sex = 2;
+        }
+        window.certificatesNumber = values.certificatesNumber
+        window.certificatesType = values.certificatesType;
+        window.qSex = values.sex;
+        console.log('certificatesType',window.certificatesType);
+        console.log('window.qSex',window.qSex);
         let params = {
           type: 'POST',
           url: 'healthcabin/user/add/simple',
@@ -183,10 +203,10 @@ class Index extends Component {
                       initialValue: '身份证'
                     })(
                       <SpecSelect>
-                        <Option key='身份证' value='身份证'>身份证</Option>
-                        <Option key='护照' value='护照'>护照</Option>
-                        <Option key='军官证' value='军官证'>军官证</Option>
-                        <Option key='港澳台居民通行证' value='港澳台居民通行证'>港澳台居民通行证</Option>
+                        <Option key='1' value='1'>身份证</Option>
+                        <Option key='2' value='2'>护照</Option>
+                        <Option key='3' value='3'>军官证</Option>
+                        <Option key='4' value='4'>港澳台居民通行证</Option>
                       </SpecSelect>
                     )}
                   </FormItem>

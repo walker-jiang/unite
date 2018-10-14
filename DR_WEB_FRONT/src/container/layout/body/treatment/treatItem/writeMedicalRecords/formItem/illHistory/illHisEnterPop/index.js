@@ -123,7 +123,7 @@ export default class IllHistory extends Component{
         <Container>
           <Header innerRef={ref => this.header = ref}>
             <Key>关键词：</Key>
-            <InputKeyWord className='not-draggable' innerRef={ref => {this.input = ref}} autoFocus='autofocus' onKeyDown={this.handleEnterPress} value={key} onChange={(e)=>{this.filter(e, formItemProps.title)}}/>
+            <InputKeyWord className='not-draggable' innerRef={ref => {this.input = ref}} autoFocus='autofocus' onKeyDown={this.handleEnterPress} onChange={(e)=>{this.filter(e, formItemProps.title)}}/>
           </Header>
           <Linelist innerRef={ref => this.result = ref} lines={8} totalLines={totalLines} onKeyDown={this.handleEnterPress}>
           {

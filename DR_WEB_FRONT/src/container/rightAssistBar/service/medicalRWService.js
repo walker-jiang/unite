@@ -13,10 +13,11 @@ class MedicalRWService {
      * 病历书写单----病历模板（和搜索）-----易超文
      */
     QueryTable(params,callBack){
+      //config_AssistBar_url
         if(testData){
           return Simulation.GetList();
         }else{
-          Xhr.postAddUrl(config_AssistBar_url+'/template/query/index/all', params, false, callBack);
+          Xhr.postAddUrl(config_AssistBar_url+'template/query/index/all', params, false, callBack);
         }
     }
     /**
@@ -26,9 +27,20 @@ class MedicalRWService {
         if(testData){
           return Simulation.GetList();
         }else{
-          Xhr.post('GET','application/json', config_service_url+'BuPatientCaseController/getPatient', params, true, callBack);
+          Xhr.post('GET','application/json', config_service_url+'BuTempletManageController/getList', params, true, callBack);
         }
     }
+    /**
+     * 病历书写单-----病例模板（获取树状图详情）-----金野
+     */
+    QueryTreeDetail(params,callBack){
+        if(testData){
+          return Simulation.GetList();
+        }else{
+          Xhr.post('GET','application/json', config_service_url+'BuPatientCaseTempletController/getData', params, true, callBack);
+        }
+    }
+
     /**
      * 病历书写单/医嘱模板-----历史病例-----金野
      */

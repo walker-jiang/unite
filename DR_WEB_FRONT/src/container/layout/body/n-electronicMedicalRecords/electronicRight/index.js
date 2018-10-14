@@ -130,118 +130,116 @@ export default class Electronic extends Component {
       <div style={styles.rightStyle} id="printElectronic">
         <div>
           <div >
-            <ScrollArea height={100}>
-              <div>
-                <h2 style={styles.titleStyle}>{orgidDic}-门诊病历</h2>
+            <div>
+              <h2 style={styles.titleStyle}>{orgidDic}-门诊病历</h2>
+            </div>
+            <div>
+              <div style={styles.borderDashed}>
+                <p style={styles.pStyle}><img src={xinxi} style={styles.xinxi}/>患者信息</p>
+              </div>
+              <div style={styles.borderDashed}>
+                <p style={styles.hzMessage}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;患者姓名：{name}&nbsp;&nbsp;&nbsp;&nbsp; 年龄：{age}&nbsp;&nbsp;&nbsp;&nbsp; 性别：{sex}&nbsp;&nbsp;&nbsp;&nbsp; 患者类型：{type}&nbsp;&nbsp;&nbsp;&nbsp; 就诊日期：{examDate}</p>
+              </div>
+            </div>
+            <div>
+              <div style={styles.borderDashed}>
+                <p style={styles.pStyle}><img src={xinxi} style={styles.xinxi}/>诊疗信息</p>
+              </div>  
+              <div style={styles.rowStyle}>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>初复诊：</Col>
+                  <Col style={styles.colRightStyle} span={21}>
+                    {ss}
+                  </Col>
+                </Row> 
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>患者主诉：</Col>
+                  <Col style={styles.colRightStyle} span={21}>{pridepictS}</Col>
+                </Row>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>现病史：</Col>
+                  <Col style={styles.colRightStyle} span={21}>{hpiS}</Col>
+                </Row>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>过敏史：</Col>
+                  <Col style={styles.colRightStyle} span={21}>{allergichistoryS}</Col>
+                </Row>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>既往史：</Col>
+                  <Col style={styles.colRightStyle} span={21}>{pasthistoryS}</Col>
+                </Row>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>月经婚育史：</Col>
+                  <Col style={styles.colRightStyle} span={21}>{moHistoryS}</Col>
+                </Row>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>家族史：</Col>
+                  <Col style={styles.colRightStyle} span={21}>{familyhistoryS}</Col>
+                </Row>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>望诊：</Col>
+                  <Col style={styles.colRightStyle} span={21}>{inspectionS}</Col>
+                </Row>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>切诊：</Col>
+                  <Col style={styles.colRightStyle} span={21}>{palpationS}</Col>
+                </Row>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>闻诊：</Col>
+                  <Col style={styles.colRightStyle} span={21}>{smellingS}</Col>
+                </Row>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>辨证要点：</Col>
+                  <Col style={styles.colRightStyle} span={21}>{syndromeS}</Col>
+                </Row>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>辅助检查：</Col>
+                  <Col style={styles.colRightStyle} span={21}>体温（T）<span style={styles.contentLine}>{temperature}</span>℃&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;呼吸（R）<span style={styles.contentLine}>{breath}</span>次/分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;脉搏（P）<span style={styles.contentLine}>{pulse}</span>次/分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;收缩压/舒张压<span style={styles.contentLine}>{systolicPressure}</span>&nbsp;&nbsp;/&nbsp;&nbsp;<span style={styles.contentLine}>{diastolicPressure}</span>&nbsp;&nbsp;mnHg&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;身高&nbsp;&nbsp;<span style={styles.contentLine}>{heightnum}</span>&nbsp;&nbsp;体重&nbsp;&nbsp;<span style={styles.contentLine}>{weightnum}</span></Col>
+                </Row>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>中医诊断：</Col>
+                  <Col style={styles.colRightStyle} span={21}>风寒感冒；高血压；轻度脑震荡</Col>
+                </Row>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>西医诊断：</Col>
+                  <Col style={styles.colRightStyle} span={21}>{diadescS}</Col>
+                </Row>
+                <Row>
+                  <Col style={styles.colLeftStyle} span={3}>医生建议：</Col>
+                  <Col style={styles.colRightStyle} span={21}>{suggessionS}</Col>
+                </Row>
               </div>
               <div>
-                <div style={styles.borderDashed}>
-                  <p style={styles.pStyle}><img src={xinxi} style={styles.xinxi}/>患者信息</p>
-                </div>
-                <div style={styles.borderDashed}>
-                  <p style={styles.hzMessage}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;患者姓名：{name}&nbsp;&nbsp;&nbsp;&nbsp; 年龄：{age}&nbsp;&nbsp;&nbsp;&nbsp; 性别：{sex}&nbsp;&nbsp;&nbsp;&nbsp; 患者类型：{type}&nbsp;&nbsp;&nbsp;&nbsp; 就诊日期：{examDate}</p>
-                </div>
-              </div>
-              <div>
-                <div style={styles.borderDashed}>
-                  <p style={styles.pStyle}><img src={xinxi} style={styles.xinxi}/>诊疗信息</p>
-                </div>  
-                <div style={styles.rowStyle}>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>初复诊：</Col>
-                    <Col style={styles.colRightStyle} span={21}>
-                      {ss}
-                    </Col>
-                  </Row> 
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>患者主诉：</Col>
-                    <Col style={styles.colRightStyle} span={21}>{pridepictS}</Col>
-                  </Row>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>现病史：</Col>
-                    <Col style={styles.colRightStyle} span={21}>{hpiS}</Col>
-                  </Row>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>过敏史：</Col>
-                    <Col style={styles.colRightStyle} span={21}>{allergichistoryS}</Col>
-                  </Row>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>既往史：</Col>
-                    <Col style={styles.colRightStyle} span={21}>{pasthistoryS}</Col>
-                  </Row>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>月经婚育史：</Col>
-                    <Col style={styles.colRightStyle} span={21}>{moHistoryS}</Col>
-                  </Row>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>家族史：</Col>
-                    <Col style={styles.colRightStyle} span={21}>{familyhistoryS}</Col>
-                  </Row>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>望诊：</Col>
-                    <Col style={styles.colRightStyle} span={21}>{inspectionS}</Col>
-                  </Row>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>切诊：</Col>
-                    <Col style={styles.colRightStyle} span={21}>{palpationS}</Col>
-                  </Row>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>闻诊：</Col>
-                    <Col style={styles.colRightStyle} span={21}>{smellingS}</Col>
-                  </Row>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>辨证要点：</Col>
-                    <Col style={styles.colRightStyle} span={21}>{syndromeS}</Col>
-                  </Row>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>辅助检查：</Col>
-                    <Col style={styles.colRightStyle} span={21}>体温（T）<span style={styles.contentLine}>{temperature}</span>℃&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;呼吸（R）<span style={styles.contentLine}>{breath}</span>次/分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;脉搏（P）<span style={styles.contentLine}>{pulse}</span>次/分&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;收缩压/舒张压<span style={styles.contentLine}>{systolicPressure}</span>&nbsp;&nbsp;/&nbsp;&nbsp;<span style={styles.contentLine}>{diastolicPressure}</span>&nbsp;&nbsp;mnHg&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;身高&nbsp;&nbsp;<span style={styles.contentLine}>{heightnum}</span>&nbsp;&nbsp;体重&nbsp;&nbsp;<span style={styles.contentLine}>{weightnum}</span></Col>
-                  </Row>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>中医诊断：</Col>
-                    <Col style={styles.colRightStyle} span={21}>风寒感冒；高血压；轻度脑震荡</Col>
-                  </Row>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>西医诊断：</Col>
-                    <Col style={styles.colRightStyle} span={21}>{diadescS}</Col>
-                  </Row>
-                  <Row>
-                    <Col style={styles.colLeftStyle} span={3}>医生建议：</Col>
-                    <Col style={styles.colRightStyle} span={21}>{suggessionS}</Col>
-                  </Row>
-                </div>
+                <p style={styles.another}><img src={xinxi} style={styles.xinxi}/>检查信息</p>
                 <div>
-                  <p style={styles.another}><img src={xinxi} style={styles.xinxi}/>检查信息</p>
-                  <div>
-                    <Row>
-                      <Col style={styles.colLeftStyle} span={3}>血常规：</Col>
-                      <Col style={styles.colRightStyle} span={21}>检查目标：查看血象是否异常      |      异常信息：白细胞异常偏高     |     查看检查结果</Col>
-                    </Row>
-                    <Row>
-                      <Col style={styles.colLeftStyle} span={3}>尿检：</Col>
-                      <Col style={styles.colRightStyle} span={21}>检查目标：查看尿液酸碱度         |      异常信息：未见异常              |     查看检查结果</Col>
-                    </Row>
-                    <Row>
-                      <Col style={styles.colLeftStyle} span={3}>脑部CT：</Col>
-                      <Col style={styles.colRightStyle} span={21}>检查目标：检查颅内是否异常      |      异常信息：未见异常              |     查看检查结果</Col>
-                    </Row>
-                  </div>
-                </div>
-                <div>
-                  <p style={styles.another}><img src={xinxi} style={styles.xinxi}/>处方信息</p>
-                  <div>
-                    <Row>
-                      <Col style={styles.colLeftStyle} span={3}>中医处方：</Col>
-                      <Col style={styles.colRightStyleOther} span={21}></Col>
-                    </Row>
-                    <Row>
-                      <Col style={styles.colLeftStyle} span={3}>西医处方：</Col>
-                      <Col style={styles.colRightStyleOther} span={21}></Col>
-                    </Row>
-                  </div>
+                  <Row>
+                    <Col style={styles.colLeftStyle} span={3}>血常规：</Col>
+                    <Col style={styles.colRightStyle} span={21}>检查目标：查看血象是否异常      |      异常信息：白细胞异常偏高     |     查看检查结果</Col>
+                  </Row>
+                  <Row>
+                    <Col style={styles.colLeftStyle} span={3}>尿检：</Col>
+                    <Col style={styles.colRightStyle} span={21}>检查目标：查看尿液酸碱度         |      异常信息：未见异常              |     查看检查结果</Col>
+                  </Row>
+                  <Row>
+                    <Col style={styles.colLeftStyle} span={3}>脑部CT：</Col>
+                    <Col style={styles.colRightStyle} span={21}>检查目标：检查颅内是否异常      |      异常信息：未见异常              |     查看检查结果</Col>
+                  </Row>
                 </div>
               </div>
-            </ScrollArea>
+              <div>
+                <p style={styles.another}><img src={xinxi} style={styles.xinxi}/>处方信息</p>
+                <div>
+                  <Row>
+                    <Col style={styles.colLeftStyle} span={3}>中医处方：</Col>
+                    <Col style={styles.colRightStyleOther} span={21}></Col>
+                  </Row>
+                  <Row>
+                    <Col style={styles.colLeftStyle} span={3}>西医处方：</Col>
+                    <Col style={styles.colRightStyleOther} span={21}></Col>
+                  </Row>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

@@ -35,7 +35,11 @@ export default class template extends Component {
     var ctstamp = data[0].ctstamp.substr(0,11);
     var org_username = data[0].org_username;
     var casetype = data[0].casetype;
-    var diagnosisDesc = data[0].buDiagnosisInfo.diagnosisDesc;
+    if(data[0].buDiagnosisInfo == null){
+      var diagnosisDesc = "暂无数据";
+    }else{
+      var diagnosisDesc = data[0].buDiagnosisInfo.diagnosisDesc;
+    }
     console.log("============@@@",data);
     var checkout=[];
     var examine=[];
@@ -90,7 +94,9 @@ export default class template extends Component {
         console.log("获取历史病历成功==============",res);
         var arr = [];
         res.data.forEach((item,index)=>{
-          arr.push(self.analysisData(item));
+          if(item.length != 0 ){
+            arr.push(self.analysisData(item));
+          }
         })
         self.setState({
           content:arr
@@ -114,11 +120,12 @@ export default class template extends Component {
     };
     function callBack(res){
       if(res.result){
-        console.log("获取历史病历详情成功==============",res.data);
+        console.log("medicalHistoryTwo获取历史病历详情成功==============",res.data);
         var record = {
           ordertype:item.ordertype,
           orderid:item.orderid,
         }
+        console.log("record===",record);
         self.props.actionManager("modify",record);
       }else{
         console.log('获取历史病历详情异常响应信息', res);
@@ -154,8 +161,8 @@ export default class template extends Component {
   }
   render() {
     var { content, unfold } = this.state;
-    // console.log("content",content);
-    // console.log("content.data.length",content.data);
+    console.log("content=======",content);
+    console.log("content.data.length",content.data);
     return (
       <div class="rightAssistBar_medicalHistory">
         <div class="medicalHistory_data">

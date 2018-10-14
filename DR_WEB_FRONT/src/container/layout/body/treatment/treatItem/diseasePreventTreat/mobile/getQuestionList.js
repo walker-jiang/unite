@@ -94,12 +94,17 @@ export default class GetQuestionList extends Component {
         this.lastEndClick();
       }
     }
-    this.setState({
-      startQuestion: this.state.startQuestion+1,
-      end: this.state.end-1,
-      index: this.state.index + 1,
-      percent: Math.round(((this.state.index+1)/this.state.length) * 100)
-    });
+    this.setState({ value:e.target.value },()=>{
+        setTimeout(() => {
+          this.setState({
+            value: null,
+            startQuestion: this.state.startQuestion+1,
+            end: this.state.end-1,
+            index: this.state.index + 1,
+            percent: Math.round(((this.state.index+1)/this.state.length) * 100)
+          });
+        }, 200);
+    })
   }
 
   lastEndClick () {//点最后一道题提交跳转

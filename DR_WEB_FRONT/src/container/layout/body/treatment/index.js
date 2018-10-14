@@ -10,18 +10,30 @@ import DrAdviceManage from './treatItem/drAdviceManage';
 import DiseasePreventTreat from './treatItem/diseasePreventTreat';
 import PatientList from './patientList';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
-
 class Index extends Component {
   constructor(props){
     super(props);
     this.state = {
-      treatTab: window.herbalData ? 2 : 1,
+      treatTab: 1, // window.herbalData ? 2 :
       patienttypeDic: '',
       sexDic: '',
       age: 0,
       visible: false, // 患者列表是否可见
     };
     this.finishTreat = this.finishTreat.bind(this);
+    window.noticeFunc = (params) => this.noticeFuncLocal(params);
+  };
+  /**
+   * [noticeFunc 加入处方操作的通知函数]
+   * @param  {[type]} params [草药数据]
+   * @return {[type]}        [undefined]
+   */
+  noticeFuncLocal(params){
+    this.setState({
+      treatTab: 2
+    }, () => {
+      window.noticeAddMedicalFunc(params);
+    });
   };
   componentWillMount(){
     this.getUserInfo();
@@ -31,7 +43,6 @@ class Index extends Component {
   };
   /** [getUserInfo 获取患者信息] */
   getUserInfo(){
-    console.log('window.patientID', window.patientID);
     let self = this;
     let params = {
       url: 'BaPatientController/getData',
@@ -100,19 +111,14 @@ class Index extends Component {
   render() {
     let { treatTab, patienttypeDic, sexDic, age, visible } = this.state;
     let curTabComponet = null;
-    if(window.herbalData){
+    if(treatTab == 0){
+      curTabComponet = <PatientDetailInfo />
+    }else if(treatTab == 1){
+      curTabComponet = <WriteMedicalRecords />
+    }else if(treatTab == 2){
       curTabComponet = <DrAdviceManage />
-    }
-    else{
-      if(treatTab == 0){
-        curTabComponet = <PatientDetailInfo />
-      }else if(treatTab == 1){
-        curTabComponet = <WriteMedicalRecords />
-      }else if(treatTab == 2){
-        curTabComponet = <DrAdviceManage />
-      }else if(treatTab == 3){
-        curTabComponet = <DiseasePreventTreat />
-      }
+    }else if(treatTab == 3){
+      curTabComponet = <DiseasePreventTreat />
     }
     return (
       <Container>

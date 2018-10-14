@@ -71,7 +71,7 @@ class Index extends Component {
                 required: true, message: '请输入中科软社区HIS系统密码',
               }],
             })(
-              <LargeInput placeholder="请输入中科软社区HIS系统密码" />
+              <LargeInput type="password" placeholder="请输入中科软社区HIS系统密码" />
             )}
           </FormItem>
           <FormItem>
@@ -101,7 +101,7 @@ const StepsForm = styled(Form)`
   justify-content: space-around;
   align-items: center;
   flex-direction: column;
-  height: 310px;
+  height: 280px;
   width: 100%;
 `;
 const LargeInput = styled(Input)`

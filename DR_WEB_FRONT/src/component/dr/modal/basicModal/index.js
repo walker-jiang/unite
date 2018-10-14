@@ -30,28 +30,35 @@ export default class Popout extends Component {
          ariaHideApp={false}
          onClick={()=>{alert()}}
           >
-        <Draggable
-          cancel=".not-draggable"
-          position={null}
-          defaultPosition={{x: 0, y: 0}}
-          grid={[25, 25]}
-          onStart={this.handleStart}
-          onDrag={this.handleDrag}
-          onStop={this.handleStop}>
-          <Pannel className={className}>
-            <Header className='header'>
-              <span>好健康中医馆—{title}</span>
-              <Close type='close' onClick={this.handleClose}/>
-            </Header>
-            <div>
-              {children}
-            </div>
-          </Pannel>
-        </Draggable>
+            <Book>
+              <Draggable
+                cancel=".not-draggable"
+                position={null}
+                defaultPosition={{x: 0, y: 0}}
+                grid={[25, 25]}
+                onStart={this.handleStart}
+                onDrag={this.handleDrag}
+                onStop={this.handleStop}>
+                <Pannel className={className}>
+                  <Header className='header'>
+                    <span>好健康中医馆—{title}</span>
+                    <Close type='close' onClick={this.handleClose}/>
+                  </Header>
+                  <div>
+                    {children}
+                  </div>
+                </Pannel>
+              </Draggable>
+            </Book>
       </Modal>
     );
   }
 }
+const Book = styled.div`
+  padding-left: -5px;
+  padding-top: -5px;
+  border: 1px solid red;
+`;
 const modalStyle = {
    overlay: {
      position: 'fixed',

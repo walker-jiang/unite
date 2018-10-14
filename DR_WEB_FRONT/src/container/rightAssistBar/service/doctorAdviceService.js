@@ -34,10 +34,11 @@ class DoctorAdviceService {
      * 医嘱模板-----获取医嘱模板列表----易超文
      */
     Medicalordertemplate(params,callBack){
+      //
         if(testData){
           return Simulation.GetList();
         }else{
-          Xhr.postAddUrl(config_service_url+'/medicalordertemplate/query/index/all', params, false, callBack);
+          Xhr.postAddUrl(config_service_url+'medicalordertemplate/query/index/all', params, false, callBack);
         }
     }
 
@@ -52,7 +53,7 @@ class DoctorAdviceService {
         }
     }
     /**
-     * 医嘱模板-----获取证侯对应治法列表-----孙磊
+     * 辩证论证列表获取-----获取证侯对应治法列表-----孙磊
      */
     ImtreatprelistGetList(params,callBack){
         //callBack(Simulation.ImtreatprelistGetList())
@@ -73,7 +74,7 @@ class DoctorAdviceService {
      * 草药引入
      */
     getcmdrugs(params,callBack){
-        //callBack(Simulation.ImtreatprelistGetList())  http://10.192.1.115:8080/
+        //config_InteLigenTreat_url
         if(testData){
           return Simulation.getcmdrugs(callBack);
         }else{
@@ -131,10 +132,11 @@ class DoctorAdviceService {
         if(testData){
           return Simulation.getSt(callBack);
         }else{
+          //config_AssistBar_url
           Xhr.post(
             'get',
             'application/x-www-form-urlencoded;charset=utf-8',
-            config_InteLigenTreat_url+'BuOrderController/importTem',
+            config_AssistBar_url+'/BuOrderController/importTem',
             params,
             false,
             callBack
@@ -157,6 +159,16 @@ class DoctorAdviceService {
             false,
             callBack
           );
+        }
+    }
+    /**
+     * 医嘱模板----病例模板（获取树状图详情）-----金野
+     */
+    QueryTreeDetail(params,callBack){
+        if(testData){
+          return Simulation.GetList();
+        }else{
+          Xhr.post('GET','application/json', config_service_url+'BuOrderTempletController/getData', params, true, callBack);
         }
     }
 }

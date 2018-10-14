@@ -58,7 +58,6 @@ export default class Index extends Component {
   };
   /* 获取选中行数据 */
   getEnterValue (patientDataItem) {
-    console.log('patientDataItem.patientname', patientDataItem.patientname);
     this.setState({
       showResult: false,
     }, function () {
@@ -175,6 +174,7 @@ export default class Index extends Component {
     let { showResult, patientData } = this.state;
     let formItemProps = this.props;
     let columns = this.getColumns();
+    console.log('patientData', patientData);
     return (
       <SearchInput ref={ref => {this.searchInput = ref}} formItemProps={formItemProps} onFocus={this.showResult} displayed={this.showResult} onKeyDown={this.handleEnterPress}>
         <Search type='search' />

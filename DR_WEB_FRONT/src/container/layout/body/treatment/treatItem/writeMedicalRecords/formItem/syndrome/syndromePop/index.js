@@ -120,7 +120,7 @@ export default class SyndromePop extends Component {
         <Container>
           <Header innerRef={ref => this.header = ref}>
             <Key>主症：</Key>
-            <SemiCircleInput autoFocus='autofocus' onKeyDown={this.handleEnterPress}  className='not-draggable' innerRef={ref => {this.input = ref}} onChange={(e)=>{this.filter(e.target.value)}} value={key}/>
+            <SemiCircleInput autoFocus='autofocus' onKeyDown={this.handleEnterPress}  className='not-draggable' innerRef={ref => {this.input = ref}} onChange={(e)=>{this.filter(e.target.value)}}/>
           </Header>
           <Result innerRef={ref => this.result = ref} lines={8} totalLines={totalLines}>
           {
