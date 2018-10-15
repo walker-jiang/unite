@@ -411,9 +411,9 @@ export default class TodayPatient extends Component {
   }
 }
 const Container = styled.div`
+  position: absolute;
   height: 100%;
   width: 100%;
-  overflow: hidden;
 `;
 const Header = styled.div`
   height: 50px;
@@ -480,6 +480,11 @@ const SearchIcon = styled(Icon)`
 `;
 const Content = styled.div`
   width: 100%;
+  overflow: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  height: calc(100% - 100px);
   position: relative;
 `;
 const Grid = styled.div`

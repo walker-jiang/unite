@@ -52,8 +52,6 @@ class Index extends Component {
     ajaxGetResource(params, callBack);
   };
   submit = (e) =>{
-    console.log('提交操作');
-    let tempDept = {};
     let { registerInfo = {}, baPatient = {}, buPatientCase = {} } = this.state;
     let operateType = this.props.match.params.type;
     let patientInfo = deepClone(this.basicInfoForm.state.patientInfo);
@@ -72,64 +70,43 @@ class Index extends Component {
       baPatient.cityid = values.city.key;
       baPatient.districtid = values.district.key
       baPatient.ctsorgid = window.sessionStorage.getItem('orgid');
-    }
-    if(this.preTreatForm){
-      this.preTreatForm.validateFieldsAndScroll((err, values) => {
-        if (!err) {
-          Object.assign(buPatientCase, values);
-          buPatientCase.hpi = this.getString(values.hpi);
-          buPatientCase.allergichistory = this.getString(values.allergichistory);
-          buPatientCase.deptid = values.dept.key;
-          buPatientCase.doctorid = values.doctor.key;
-          buPatientCase.doctorname = values.doctor.label;
-          buPatientCase.orgid = window.sessionStorage.getItem('orgid');
-          tempDept = {
-            "deptid": values.dept.key,
-            "deptname": values.dept.label,
-          };
-          // delete buPatientCase['dept'];
-          // delete buPatientCase['doctor'];
-
+      let paramData = {
+        "baPatient": baPatient,
+        "buPatientCase": buPatientCase,
+        "orgid": window.sessionStorage.getItem('orgid'),
+        "patienttype": baPatient.patienttype,
+        "recDoctorid": values.doctor.key,
+        "recDoctorname": values.doctor.label,
+        "regDoctorid": values.doctor.key,
+        "regDoctorname": values.doctor.label,
+        "regUserid": window.sessionStorage.getItem('userid'),
+        "regUsername": window.sessionStorage.getItem('username'),
+        "regTypeid": 3, // 义诊
+        "deptid": values.dept.key,
+        "deptname": values.dept.label,
+      };
+      // if(patientInfo.patientname != ''){
+      //   paramData.patientid = patientInfo.patientid;
+      // }
+      // Object.assign(registerInfo, paramData);
+      this.saveTip.showModal(1);
+      let self = this;
+      let params = {
+        url: 'BuRegisterController/' + (operateType.indexOf('m') == 0 ? 'putRegister' : 'patRegister'),
+        data: JSON.stringify(paramData),
+        type: (operateType.indexOf('m') == 0 ? 'put' : 'post'),
+      };
+      function callBack(res){
+        if(res.result){
+          self.saveTip.showModal(2);
+          self.props.history.push('/Layout/patientRegister');
+        }else{
+          self.saveTip.showModal(3);
+          console.log('异常响应信息', res);
         }
-      });
-    }else {
-      this.tip.showModal({stressContent: '诊前信息就诊类型、医生、科室为必填项'});
-      return;
+      };
+      ajaxGetResource(params, callBack);
     }
-     let paramData = {
-      "baPatient": baPatient,
-      "buPatientCase": buPatientCase,
-      "orgid": window.sessionStorage.getItem('orgid'),
-    	"patienttype": baPatient.patienttype,
-      "recDoctorid": window.sessionStorage.getItem('userid'),
-    	"recDoctorname": window.sessionStorage.getItem('username'),
-      "regUserid": window.sessionStorage.getItem('userid'),
-	    "regUsername": window.sessionStorage.getItem('username'),
-      regTypeid: 3, // 义诊
-      "deptid": tempDept.deptid,
-      "deptname": tempDept.deptname,
-    };
-    if(patientInfo.patientname != ''){
-      paramData.patientid = patientInfo.patientid;
-    }
-    Object.assign(registerInfo, paramData);
-    this.saveTip.showModal(1);
-    let self = this;
-    let params = {
-      url: 'BuRegisterController/' + (operateType.indexOf('m') == 0 ? 'putRegister' : 'patRegister'),
-      data: JSON.stringify(registerInfo),
-      type: (operateType.indexOf('m') == 0 ? 'put' : 'post'),
-    };
-    function callBack(res){
-      if(res.result){
-        self.saveTip.showModal(2);
-        self.props.history.push('/Layout/patientRegister');
-      }else{
-        self.saveTip.showModal(3);
-        console.log('异常响应信息', res);
-      }
-    };
-    ajaxGetResource(params, callBack);
   }
   /**
    * [getString 获取form表单项中对象中的文本]
@@ -154,17 +131,7 @@ class Index extends Component {
           </Left>
         </Header>
         <Content>
-          <SpecTabs defaultActiveKey="1" animated={false}>
-            <TabPane tab="基本信息" key="1">
-              <BasicInfoForm wrappedComponentRef={ ref => { this.basicInfoForm = ref }} disabled={operateType.indexOf('v') == 0} baPatient={baPatient}></BasicInfoForm>
-            </TabPane>
-            {
-              JSON.stringify(registerInfo) == '{}' || registerInfo.rcStatus == 0   ?
-              <TabPane tab="诊前信息" key="2">
-                <PreTreatForm ref={ ref => { this.preTreatForm = ref }} disabled={operateType.indexOf('v') == 0} buPatientCase={buPatientCase}></PreTreatForm>
-              </TabPane> : null
-            }
-          </SpecTabs>
+          <BasicInfoForm wrappedComponentRef={ ref => { this.basicInfoForm = ref }} disabled={operateType.indexOf('v') == 0} baPatient={baPatient}></BasicInfoForm>
           <ActionButton>
             <SureButton type="primary" onClick={this.submit} disabled={operateType.indexOf('v') == 0}>保存</SureButton>
             <CancelButton type="primary">取消</CancelButton>
@@ -211,35 +178,8 @@ const Content = styled.div`
   height: calc(100% - 50px);
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
-`;
-const SpecTabs = styled(Tabs)
-`
-  width: 1097px;
-  &&& .ant-tabs-ink-bar {
-    display: none !important;
-  }
-  &&&.ant-tabs {
-    height: 436px !important;
-  }
-  .ant-tabs-bar {
-    margin: 0px;
-  }
-  .ant-tabs-nav .ant-tabs-tab {
-    border: 1px solid rgba(10, 110, 203, 1);
-    padding: 4px 41px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    color: rgba(10, 110, 203, 1);
-  }
-  .ant-tabs-nav .ant-tabs-tab-active {
-    background-color: rgba(10, 110, 203, 1);
-    color: #FFFFFF;
-  }
-  .ant-tabs-content {
-    border: 1px solid rgba(10, 110, 203, 1);
-  }
 `;
 const ActionButton = styled.div`
   width: 1097px;

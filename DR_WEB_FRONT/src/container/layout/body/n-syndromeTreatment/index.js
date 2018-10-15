@@ -32,15 +32,8 @@ export default class SyndromeTreatment extends Component {
     let compo = null;
     if(current == 0){
       compo = <SelectPatient onStep={this.stepFunc}/>;
-    }else if(current == 1){
+    }else{
       compo = <Cure onStep={this.stepFunc} current={current} patientid={patientid}/>;
-    }else if(current == 2){
-      // compo = <SmartCure onStep={this.stepFunc}/>;
-    }else if(current == 3){
-      // compo = <SmartCure1 onStep={this.stepFunc}/>;
-    }
-    else if(current == 4){
-      // compo = <Finish onStep={this.stepFunc}/>;
     }
 
     return (

@@ -226,30 +226,37 @@ class Index extends Component {
     patientInfo['birthday'] = moment.format('YYYY-MM-DD');
     this.setState({ patientInfo });
   };
+  /**
+   * [validateCardno 身份证校验]
+   * @param  {[type]}   rule     [校验规则]
+   * @param  {[type]}   value    [当前值]
+   * @param  {Function} callback [回调]
+   * @return {[type]}            [undefined]
+   */
   validateCardno = (rule, value, callback) => {
-        const { getFieldValue, setFieldsInitialValue } = this.props.form
-        var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
-        let validateResult = true;
-        if(value.trim() == ''){ // 非空校验
-          validateResult = false;
-          callback('请输入身份证！');
-        }
-        if(reg.test(value) === false) // 格式校验
-        {
-          validateResult = false;
-          callback('身份证输入不合法！');
-        }
-        if(validateResult){
-          let birthday = extractDataFromIdentityCard.getBirthdayFromIdCard(value);
-          let sex = extractDataFromIdentityCard.getSexFromIdCard(value);
-          let patientInfo = this.state.patientInfo;
-          patientInfo.birthday = birthday;
-          patientInfo.sex = sex;
-          this.setState({ patientInfo });
-        }
-        // Note: 必须总是返回一个 callback，否则 validateFieldsAndScroll 无法响应
-        callback()
- }
+    const { getFieldValue, setFieldsInitialValue } = this.props.form
+    var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+    let validateResult = true;
+    if(value.trim() == ''){ // 非空校验
+      validateResult = false;
+      callback('请输入身份证！');
+    }
+    if(reg.test(value) === false) // 格式校验
+    {
+      validateResult = false;
+      callback('身份证输入不合法！');
+    }
+    if(validateResult){
+      let birthday = extractDataFromIdentityCard.getBirthdayFromIdCard(value);
+      let sex = extractDataFromIdentityCard.getSexFromIdCard(value);
+      let patientInfo = this.state.patientInfo;
+      patientInfo.birthday = birthday;
+      patientInfo.sex = sex;
+      this.setState({ patientInfo });
+    }
+    // Note: 必须总是返回一个 callback，否则 validateFieldsAndScroll 无法响应
+    callback()
+  }
   render() {
     let { visible, patientInfo, pationtype, cardtype, casetype, sex, deptData, docData, defaultDept, defaultDoc } = this.state;
     const { getFieldDecorator } = this.props.form;
@@ -363,9 +370,12 @@ class Index extends Component {
                   label="证件号码："
                   >
                   {getFieldDecorator('cardno', {
-                    rules: [{
-                        validator: this.validateCardno
-                      }], initialValue: patientInfo.cardno })(<Input placeholder='请输入患者证件号码' />)}
+                    rules: [{ validator: this.validateCardno }],
+                    initialValue: patientInfo.cardno })
+                    (
+                      <Input placeholder='请输入患者证件号码' />
+                    )
+                  }
                 </FormItem>
               </Col>
             </Row>

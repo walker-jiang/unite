@@ -74,20 +74,20 @@ class Index extends Component {
      };
      return (
         <Container >
-            <FormSpec>
-              <CaseType getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.casetype}></CaseType>
-              <PrimarySymptom setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: {}, extractionData: initData.treatprinciple}}/>
-              <OtherSymptom title='其它症状' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.otherSymptom}}/>
-              <IllHistory_allergy title='过敏史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.allergyHis}}/>
-              <ObserveCure setFieldsValue={setFieldsValue} getFieldsValue={getFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: [], text: initData.inspection}}></ObserveCure>
-              <FeelCure setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
-              <HabitusInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{temperature: initData.temperature, breath: initData.breath, pulse: initData.pulse, systolicPressure: initData.systolicPressure, diastolicPressure: initData.diastolicPressure, heightnum: initData.heightnum, weightnum: initData.weightnum}}></HabitusInspect>
-              <CarefulItem getFieldDecorator={getFieldDecorator} initialValue={{originData: [], extractionData: initData.allergyHis}}/>
-              <OtherInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.psycheck}></OtherInspect>
-            </FormSpec>
-            <Checkbox>同步到患者病历</Checkbox>
-            <SureButton type="primary" onClick={this.handleSubmit}>智能辩证</SureButton>
-            <BorderButton type="primary" onClick={() => {this.props.onStep(0)}}>返回上一步</BorderButton>
+          <FormSpec>
+            <CaseType getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.casetype}></CaseType>
+            <PrimarySymptom setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: {}, extractionData: initData.treatprinciple}}/>
+            <OtherSymptom title='其它症状' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.otherSymptom}}/>
+            <IllHistory_allergy title='过敏史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.allergyHis}}/>
+            <ObserveCure setFieldsValue={setFieldsValue} getFieldsValue={getFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: [], text: initData.inspection}}></ObserveCure>
+            <FeelCure setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
+            <HabitusInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{temperature: initData.temperature, breath: initData.breath, pulse: initData.pulse, systolicPressure: initData.systolicPressure, diastolicPressure: initData.diastolicPressure, heightnum: initData.heightnum, weightnum: initData.weightnum}}></HabitusInspect>
+            <CarefulItem getFieldDecorator={getFieldDecorator} initialValue={{originData: [], extractionData: initData.allergyHis}}/>
+            <OtherInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.psycheck}></OtherInspect>
+          </FormSpec>
+          <Checkbox>同步到患者病历</Checkbox>
+          <SureButton type="primary" onClick={() => {this.props.onStep(2)}}>智能辩证</SureButton>
+          <BorderButton type="primary" onClick={() => {this.props.onStep(0)}}>返回上一步</BorderButton>
         </Container>
     )
   }

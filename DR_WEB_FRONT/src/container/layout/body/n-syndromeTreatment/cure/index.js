@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import extractDataFromIdentityCard from 'commonFunc/extractDataFromIdentityCard';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import CaseConfirm from './caseConfirm';
+import SmartDistinguish from './smartDistinguish';
 
 export default class Cure extends Component {
   constructor(props){
@@ -40,7 +41,13 @@ export default class Cure extends Component {
     let { patientname = '未知', sexDic = '男', birthday = '1992-08-21', mobile = '**********', cardno = '**********************', patienttypeDic = '未知'} = this.state.patientInfo;
     let age = extractDataFromIdentityCard.getAgeFromBirthday(birthday);
     let current = this.props.current;
-
+    let bodyComponent = null;
+    if(current == 1){
+      bodyComponent = <CaseConfirm onStep={(step) => {this.props.onStep(step)}}/>;
+    }
+    if(current == 2){
+      bodyComponent = <SmartDistinguish onStep={(step) => {this.props.onStep(step)}}/>;
+    }
     return (
         <Container >
           <Left>
@@ -73,7 +80,7 @@ export default class Cure extends Component {
             </Info>
           </Left>
           <Body>
-            <CaseConfirm />
+          {bodyComponent}
           </Body>
         </Container>
     )
