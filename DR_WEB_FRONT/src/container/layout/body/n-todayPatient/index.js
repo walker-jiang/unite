@@ -13,7 +13,7 @@ import { today } from 'commonFunc/defaultData';
 import zh_CN  from 'antd/lib/locale-provider/zh_CN';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
-export default class Index extends Component {
+export default class TodayPatient extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -217,16 +217,29 @@ export default class Index extends Component {
       key: 'patienttypeDic',
     }, {
       title: '就诊医师',
-      dataIndex: 'recDoctorname',
-      key: 'recDoctorname',
+      dataIndex: 'regDoctorname',
+      key: 'regDoctorname',
+    }, {
+      title: '就诊科室',
+      dataIndex: 'regDoctorname',
+      key: 'regDoctorname',
     }, {
       title: '就诊类型',
       dataIndex: 'casetypeDic',
       key: 'casetypeDic',
+      render: (text, record) => record.casetypeDic ? record.casetypeDic : '未知'
     }, {
-      title: rcStatus == 0 ? '登记时间' : '就诊时间',
+      title: '登记时间',
+      dataIndex: 'regDate',
+      key: 'regDate',
+    }, {
+      title: '就诊时间',
       dataIndex: 'examDate',
       key: 'examDate',
+    }, {
+      title: '诊断',
+      dataIndex: 'diagnosisDesc',
+      key: 'diagnosisDesc',
     }, {
       title: '操作',
       dataIndex: 'operate',
@@ -267,13 +280,16 @@ export default class Index extends Component {
             </span>
         )
     }];
+    if(rcStatus == 0){
+      columns.splice(11,2); // 删除就诊时间
+    }
+    if(rcStatus == 1){
+      columns.splice(8,1); // 删除科室项
+      columns.splice(9,1); // 删除登记时间
+      columns.splice(10,1); // 删除诊断
+    }
     if(rcStatus == 2){
-      const item = {
-        title: '诊断',
-        dataIndex: 'diagnosisDesc',
-        key: 'diagnosisDesc',
-      };
-      columns[8] = item;
+      columns.splice(8,3); // 删除科室项
     }
     return columns;
   };
@@ -319,7 +335,7 @@ export default class Index extends Component {
     const totalLength = patienList.length;
     let girds = [];
     let rowLines = [];
-    patienList.map((item, index) => {
+    patienList.forEach((item, index) => {
       let girdItem = <GridItem gridType={item.rcStatus} key={index} dataSource={item} doing={this.doing} redo={this.redo} done={this.done} view={this.view} keepDoing={this.keepDoing}></GridItem>
       girds.push(girdItem);
     })
@@ -341,7 +357,7 @@ export default class Index extends Component {
     let { showWay, patienList, numbers, rcStatus,totalRecords, curPage, pageSize } = this.state;
     const columns = this.getTableColumns(rcStatus);
     let girds = this.getGridList(patienList);
-    console.log('numbers', numbers);
+    console.log('patienList', patienList);
     return (
       <Container>
         <Header>
@@ -501,6 +517,7 @@ const SpecPagination = styled(Pagination)`
   }
 `;
 const StyledLink = styled(Link)`
+  margin: 5px;
 `;
 /*
 @作者：姜中希

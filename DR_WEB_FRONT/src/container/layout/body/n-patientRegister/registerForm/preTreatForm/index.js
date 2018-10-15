@@ -42,7 +42,6 @@ class Index extends Component {
   };
   componentWillMount(){
     let preInfo = this.props.buPatientCase;
-    console.log('preInfo', preInfo);
     if(JSON.stringify(preInfo) != '{}'){
       preInfo.dept = {
         key: preInfo.deptid,

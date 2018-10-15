@@ -84,7 +84,7 @@ export default class Index extends Component {
     var context = canvas.getContext("2d");
     context.drawImage(video, 0, 0, 467, 342);
 
-    let src = canvas.toDataURL('image/png');
+    let src = canvas.toDataURL('image/png'); // base64
     this.props.returPicture(src);
     this.handleClose();
   };

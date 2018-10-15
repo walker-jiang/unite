@@ -252,6 +252,13 @@ class SiderDemo extends React.Component {
   }
 }
 const SpecSider = styled(Sider)`
+  &&& {
+    max-height: 100vh;
+    overflow: scroll;
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  }
   .switch{
     color :#91BEE2
   }

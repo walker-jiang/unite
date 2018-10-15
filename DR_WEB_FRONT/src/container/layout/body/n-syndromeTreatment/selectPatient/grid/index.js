@@ -10,7 +10,7 @@ export default class Index extends Component {
     let girds = [];
     let rowLines = [];
     patienList.map((item, index) => {
-      let girdItem = <GridItem onStep={(step) => {this.props.onStep(step)}} gridType={item.rcStatus} key={index} dataSource={item} doing={this.doing} redo={this.redo} done={this.done} view={this.view} keepDoing={this.keepDoing}></GridItem>
+      let girdItem = <GridItem onStep={(step, patientid) => {this.props.onStep(step, patientid)}} gridType={item.rcStatus} key={index} dataSource={item} doing={this.doing} redo={this.redo} done={this.done} view={this.view} keepDoing={this.keepDoing}></GridItem>
       girds.push(girdItem);
     })
     let rowLength = parseInt(totalLength / cols);

@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import Triangle from './triangle';
 import Popout from 'components/popout/basePop';
 import Icon from 'components/dr/icon';
 export default class TextareaEnterPop extends Component {

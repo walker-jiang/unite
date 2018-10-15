@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import styled from 'styled-components';
 import { Form, Icon, Button, Row, Col, Tabs } from 'antd';
 import Loading from 'components/dr/loading';
-import CaseType from './formItem/casetype';
+import CaseType from './formItem/caseType';
 import MainSpeech from './formItem/mainSpeech';
 import IllHistory_present from './formItem/illHistory';
 import IllHistory_allergy from './formItem/illHistory';

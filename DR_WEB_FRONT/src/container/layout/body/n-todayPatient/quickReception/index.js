@@ -185,7 +185,9 @@ class Index extends Component {
           deptname: dept.label,
           patienttype: values.patienttype,
           recDoctorid: doctor.key,
-          recDoctorname:  doctor.label
+          recDoctorname:  doctor.label,
+          regDoctorid: doctor.key,
+          regDoctorname:  doctor.label
         };
         let params = {
           url: 'BuRegisterController/quickRecive',

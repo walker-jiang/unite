@@ -5,7 +5,7 @@ import man from './man.png';
 import women from './women.png';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
-export default class Index extends Component {
+export default class GridItem extends Component {
   render() {
     const { gridType, dataSource } = this.props;
     dataSource.examDate = '';
@@ -24,13 +24,13 @@ export default class Index extends Component {
           {
             gridType == 0 ?
             <Footer themeType={themeType}>
-              <ActionButton onClick={() => {this.props.onStep(1)}}>
+              <ActionButton onClick={() => {this.props.onStep(1, dataSource.patientid)}}>
                 选择
               </ActionButton>
             </Footer>
             : gridType == 1 ?
             <Footer themeType={themeType}>
-              <ActionButton onClick={() => {this.props.onStep(1)}}>
+              <ActionButton onClick={() => {this.props.onStep(1, dataSource.patientid)}}>
                 选择
               </ActionButton>
             </Footer> : null

@@ -4,13 +4,13 @@ import Loadable from 'react-loadable'; // 加载时进行模块分离
 import { Switch, Route, Redirect, BrowserRouter } from 'react-router-dom';
 import obj_prototype from 'commonFunc/prototype'; // 引入自定义的原型方法
 // import Mobile from './container/layout/body/center/content/treatManage/tabButton/mobile/index';
-// import Layout from './container/layout';
+import Layout from './container/layout';
 import './global.css'; // 全局样式文件
 const loadingComponent = () => (<div>Loading...</div>);
-const Layout = Loadable({
-  loader: () => import('./container/layout'),
-  loading: loadingComponent,
-});
+// const Layout = Loadable({
+//   loader: () => import('./container/layout'),
+//   loading: loadingComponent,
+// });
 // import Login from './container/login';
 const Login = Loadable({
   loader: () => import('./container/login'),

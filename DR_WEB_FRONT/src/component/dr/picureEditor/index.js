@@ -16,7 +16,7 @@ export default class PictureEditor extends Component {
     super(props);
     this.state = {
       visible: false, // 可见性
-      scale: 0, //图片放缩
+      scale: 0.6, //图片放缩
       src: '', // 图片路径
       position: { x: 0.5, y: 0.5 },
     };
@@ -26,7 +26,7 @@ export default class PictureEditor extends Component {
   };
   /** [handleOpen 打开编辑组件] */
   handleOpen(src){
-    this.setState({ visible: true, src, scale: 1.2 });
+    this.setState({ visible: true, src, scale: 0.8 });
   };
   /** [handleClose 卸载编辑组件] */
   handleClose(){

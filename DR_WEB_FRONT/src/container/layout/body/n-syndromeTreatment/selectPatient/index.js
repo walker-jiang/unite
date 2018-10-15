@@ -8,14 +8,14 @@ import QuickReception from '../quickReception';
 import ArrowPicker from 'components/dr/datePicker/arrowPicker';
 import inputSty from 'components/antd/style/input';
 import Icon from 'components/dr/icon';
-import Grid from '../grid';
+import Grid from './grid';
 import { today } from 'commonFunc/defaultData';
 import zh_CN  from 'antd/lib/locale-provider/zh_CN';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
 const Step = Steps.Step;
 
-export default class SyndromeTreatment extends Component {
+export default class SelectPatient extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -95,70 +95,86 @@ export default class SyndromeTreatment extends Component {
     };
     ajaxGetResource(params, callBack);
   };
-  /**
-   * [getTableColumns 获取表格列]
-   * @param  {[type]} rcStatus [接诊状态]
-   * @return {[type]}           [undefined]
-   */
-  getTableColumns(rcStatus){
-    let date = new Date();
-    const year = date.getFullYear();
-    const columns = [{
-      title: '患者编号',
-      dataIndex: 'patientno',
-      key: 'patientno',
-    }, {
-      title: '患者姓名',
-      dataIndex: 'patientname',
-      key: 'patientname',
-    }, {
-      title: '性别',
-      dataIndex: 'sexDic',
-      key: 'sexDic',
-    }, {
-      title: '年龄',
-      dataIndex: 'birthday',
-      key: 'birthday',
-      render: (text, record) => year - parseInt(record.birthday.substr(0,4))
-    }, {
-      title: '手机号',
-      dataIndex: 'mobile',
-      key: 'mobile',
-    }, {
-      title: '身份证号',
-      dataIndex: 'cardno',
-      key: 'cardno',
-    }, {
-      title: '患者类型',
-      dataIndex: 'patienttypeDic',
-      key: 'patienttypeDic',
-    }, {
-      title: '就诊医师',
-      dataIndex: 'recDoctorname',
-      key: 'recDoctorname',
-    }, {
-      title: '就诊类型',
-      dataIndex: 'casetypeDic',
-      key: 'casetypeDic',
-    }, {
-      title: rcStatus == 0 ? '登记时间' : '就诊时间',
-      dataIndex: 'examDate',
-      key: 'examDate',
-    }, {
-      title: '操作',
-      dataIndex: 'operate',
-      key: 'operate',
-      render: (text, record) => <span>选择</span>
-    }];
-    if(rcStatus == 2){
-      const item = {
+    /**
+     * [getTableColumns 获取表格列]
+     * @param  {[type]} rcStatus [接诊状态]
+     * @return {[type]}           [表格列]
+     */
+    getTableColumns(rcStatus){
+      let date = new Date();
+      const year = date.getFullYear();
+      const columns = [{
+        title: '患者编号',
+        dataIndex: 'patientno',
+        key: 'patientno',
+      }, {
+        title: '患者姓名',
+        dataIndex: 'patientname',
+        key: 'patientname',
+      }, {
+        title: '性别',
+        dataIndex: 'sexDic',
+        key: 'sexDic',
+      }, {
+        title: '年龄',
+        dataIndex: 'birthday',
+        key: 'birthday',
+        render: (text, record) => year - parseInt(record.birthday.substr(0,4))
+      }, {
+        title: '手机号',
+        dataIndex: 'mobile',
+        key: 'mobile',
+      }, {
+        title: '身份证号',
+        dataIndex: 'cardno',
+        key: 'cardno',
+      }, {
+        title: '患者类型',
+        dataIndex: 'patienttypeDic',
+        key: 'patienttypeDic',
+      }, {
+        title: '就诊医师',
+        dataIndex: 'regDoctorname',
+        key: 'regDoctorname',
+      }, {
+        title: '就诊科室',
+        dataIndex: 'regDoctorname',
+        key: 'regDoctorname',
+      }, {
+        title: '就诊类型',
+        dataIndex: 'casetypeDic',
+        key: 'casetypeDic',
+        render: (text, record) => record.casetypeDic ? record.casetypeDic : '未知'
+      }, {
+        title: '登记时间',
+        dataIndex: 'regDate',
+        key: 'regDate',
+      }, {
+        title: '就诊时间',
+        dataIndex: 'examDate',
+        key: 'examDate',
+      }, {
         title: '诊断',
         dataIndex: 'diagnosisDesc',
         key: 'diagnosisDesc',
-      };
-      columns[8] = item;
-    }
-    return columns;
+      }, {
+        title: '操作',
+        dataIndex: 'operate',
+        key: 'operate',
+        render: (text, record) => <StyButton onStep={(step, patientid) => {this.props.onStep(step, patientid)}}>选择</StyButton>
+      }];
+      if(rcStatus == 0){
+        columns.splice(11,2); // 删除就诊时间
+      }
+      if(rcStatus == 1){
+        columns.splice(8,1); // 删除科室项
+        columns.splice(9,1); // 删除登记时间
+        columns.splice(10,1); // 删除诊断
+      }
+      if(rcStatus == 2){
+        columns.splice(8,3); // 删除科室项
+      }
+      return columns;
   };
   /**
    * [toggleTabs 三个tab页切换函数]
@@ -199,7 +215,6 @@ export default class SyndromeTreatment extends Component {
     const columns = this.getTableColumns(rcStatus);
     return (
       <Container>
-        <Body>
           <Header>
             <Left>
               <Toggle>
@@ -219,35 +234,34 @@ export default class SyndromeTreatment extends Component {
               <SearchIcon type='search-thin' fill='#FFFFFF' onClick={this.getPatientData}></SearchIcon>
             </Right>
           </Header>
-          <Content>
+          <Body>
+            <Content>
             {
               showWay == 'grid' ?
               (
-                <Grid patienList={patienList} onStep={(step) => {this.props.onStep(step)}}>
-                  {
-                  }
+                <Grid patienList={patienList} onStep={(step, patientid) => {this.props.onStep(step, patientid)}}>
                 </Grid>
               ) :
               (
                 <SpecTable dataSource={patienList} columns={columns} pagination={false}/>
               )
             }
-          </Content>
+            </Content>
+            <LocaleProvider locale={zh_CN}>
+              <PageContainer>
+                <span>• 共有{totalRecords}位已就诊患者记录</span>
+                <SpecPagination
+                  size="small"
+                  total={totalRecords}
+                  current={curPage}
+                  defaultPageSize={pageSize}
+                  showSizeChanger
+                  onShowSizeChange={this.onShowSizeChange}
+                  onChange={this.onPageChange}
+                  showQuickJumper />
+                </PageContainer>
+            </LocaleProvider>
         </Body>
-        <LocaleProvider locale={zh_CN}>
-          <PageContainer>
-            <span>• 共有{totalRecords}位已就诊患者记录</span>
-            <SpecPagination
-              size="small"
-              total={totalRecords}
-              current={curPage}
-              defaultPageSize={pageSize}
-              showSizeChanger
-              onShowSizeChange={this.onShowSizeChange}
-              onChange={this.onPageChange}
-              showQuickJumper />
-          </PageContainer>
-        </LocaleProvider>
       </Container>
     );
   }
@@ -256,63 +270,6 @@ const Container = styled.div`
   height: 100%;
   width: 100%;
   overflow: hidden;
-`;
-const Top = styled.div`
-  height: 50px;
-  background-color: rgba(242, 242, 242, 1);
-  width: 100%;
-  display: flex;
-  align-items: center;
-  padding: 0px 20px;
-`;
-const StyledIcon = styled(Icon)`
-  width: 25px;
-  height: 25px;
-  margin-top: 5px;
-`;
-const Title = styled.div`
-  font-size: 20px;
-  margin-left: 5px;
-  width: 100px;
-  color: black;
-`;
-const SpecSteps = styled(Steps)`
-  .ant-steps-item-icon {
-    width: 24px;
-    height: 24px;
-    line-height: 24px;
-    text-align: center;
-    border-radius: 50%;
-    margin-top: 3px;
-  }
-  .ant-steps-item-title {
-    font-size: 14px;
-  }
-  .ant-steps-item-process .ant-steps-item-icon {
-    background-color: #0066CC;
-  }
-  .ant-steps-item-process > .ant-steps-item-content > .ant-steps-item-title {
-    color: #0066CC;
-    font-weight: 500;
-  }
-  .ant-steps-item-process > .ant-steps-item-content > .ant-steps-item-title:after {
-    background-color: #0066CC;
-  }
-  .ant-steps-item-wait .ant-steps-item-icon {
-    border-color: #898989;
-  }
-  .ant-steps-item-wait .ant-steps-item-icon .ant-steps-icon{
-    color: #898989;
-  }
-  .ant-steps-item-wait > .ant-steps-item-content > .ant-steps-item-title {
-    color: rgb(153, 153, 153);
-    font-weight: 500;
-  }
-  .ant-steps-item-wait > .ant-steps-item-content > .ant-steps-item-title:after {
-    background-color: #898989;
-  }
-`;
-const Body = styled.div`
   padding: 0px 22px;
 `;
 const Header = styled.div`
@@ -381,10 +338,17 @@ const SearchIcon = styled(Icon)`
   margin-top: 3px;
   margin-left: -2px;
 `;
+const Body = styled.div`
+  height: calc(100% - 50px);
+  border: 1px solid #CCCCCC;
+`;
 const Content = styled.div`
   width: 100%;
-  position: relative;
-  border: 1px solid #CCCCCC;
+  height: calc(100% - 40px);
+  overflow: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 const SpecTable = styled(Table)`
   margin: 16px;
@@ -412,10 +376,12 @@ const SpecPagination = styled(Pagination)`
     color: #FFFFFF;
   }
 `;
-const StyledLink = styled(Link)`
+const StyButton = styled.span`
+  color: #38B6E4;
+  cursor: pointer;
 `;
 /*
 @作者：姜中希
 @日期：2018-10-07
-@描述：辨证论治
+@描述：辨证论治选择患者
 */

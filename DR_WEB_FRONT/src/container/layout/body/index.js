@@ -13,7 +13,6 @@ const Home = Loadable({
   loader: () => import('./n-home'),
   loading: loadingComponent,
 });
-// import TreatManage from './treatment';
 const TreatManage = Loadable({
   loader: () => import('./treatment'),
   loading: loadingComponent,
@@ -30,10 +29,11 @@ const Electronic = Loadable({
   loader: () => import('./n-electronicMedicalRecords'),
   loading: loadingComponent,
 });
-const SyndromeTreatment = Loadable({
-  loader: () => import('./n-syndromeTreatment'),
-  loading: loadingComponent,
-});
+import SyndromeTreatment from './n-syndromeTreatment';
+// const SyndromeTreatment = Loadable({
+//   loader: () => import('./n-syndromeTreatment'),
+//   loading: loadingComponent,
+// });
 const Cure = Loadable({
   loader: () => import('./n-cure'),
   loading: loadingComponent,
@@ -84,7 +84,7 @@ export default class Body extends Component {
           <Route path='/Layout/patientRecords' component={PantientRecords}></Route>
           <Route path='/Layout/more' component={More}></Route>
           <Route path="/Layout/sub" component={layoutSub}></Route>
-            <Route path="/Layout/personalSetting" component={PersonalSetting}></Route>
+          <Route path="/Layout/personalSetting" component={PersonalSetting}></Route>
           <Route path='/Layout/modelManage' component={ModelManage}></Route>
       </Container>
     );
