@@ -63,6 +63,7 @@ function getDiagnoseDataSource(originData = [], type = 'now'){
         itemChild.diagnosisType = '-';
         itemChild.doubtDiaTypeDic = '-';
         itemChild.mainDiaTypeDic = '-';
+        itemChild.utstamp = item.utstamp;
         itemChild.type = '症候';
         itemChild.doctorname = type == 'now' ? window.sessionStorage.getItem('username') : item.doctorname;
 

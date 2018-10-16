@@ -15,7 +15,7 @@ export default class SyndromeTreatment extends Component {
   constructor(props){
     super(props);
     this.state = {
-      current: 0, //当前步
+      current: 4, //当前步
       patientid: '', //选择的当前患者
     };
     this.stepFunc = this.stepFunc.bind(this);
@@ -64,6 +64,7 @@ const Container = styled.div`
 `;
 const Top = styled.div`
   height: 50px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.349019607843137);
   background-color: rgba(242, 242, 242, 1);
   width: 100%;
   display: flex;

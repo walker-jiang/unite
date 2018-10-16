@@ -57,7 +57,6 @@ class Index extends Component {
   getDept() {
     let params = {
       url: 'BaDepartmentController/getList',
-      server_url: config_login_url,
       data: {
         keyword: '',
         orgid: window.sessionStorage.getItem('orgid')

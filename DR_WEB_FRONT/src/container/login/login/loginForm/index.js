@@ -9,6 +9,8 @@ import verification from './verification.png';
 import refresh from './refresh.png';
 import buttonSty from 'components/antd/style/button';
 
+import SuitTechnology from '../../../layout/body/treatment/treatItem/drAdviceManage/suitTechnology/index.js';
+
 const FormItem = Form.Item;
 class Index extends Component {
   constructor(props) {
@@ -24,106 +26,107 @@ class Index extends Component {
     this.ignoreLogin = this.ignoreLogin.bind(this);
   }
   componentWillMount() {
-    this.verifyAutoLogin();
-    this.getVerificationCode();
+    // this.verifyAutoLogin();
+    // this.getVerificationCode();
   }
   componentDidMount(){
-    if(window.setDefaultMenu){ // 加载完登陆组件后通知客户端默认菜单
-      let defaultSysModuleList = [
-        {
-        	"ctstamp": "2018-10-09 10:46:33",
-        	"menuid": "7",
-        	"menustate": "01",
-        	"menutype": "01",
-        	"modid": 7,
-        	"seqno": 1,
-        	"syModule": {
-        		"callurl": "http://www.xiaotangren.com:9999/index1.html",
-        		"ctstamp": "2018-09-10 16:32:46",
-        		"lastflag": 0,
-        		"level": 1,
-        		"moddesc": "ch_knowledge",
-        		"modid": 7,
-        		"modname": "中医知识库",
-        		"modno": "cs007",
-        		"modtype": "1",
-        		"seqno": 7,
-        		"superid": 0,
-        		"syModuleList": [],
-        		"syWorkList": [],
-        		"uctstamp": "2018-10-07 10:45:36",
-        		"useflag": "1",
-        		"user": null
-        	},
-        	"uctstamp": "2018-10-09 10:56:20",
-        	"useflag": "1",
-        	"userid": "1"
-        }, {
-        	"ctstamp": "2018-10-09 10:46:31",
-        	"menuid": "5",
-        	"menustate": "01",
-        	"menutype": "01",
-        	"modid": 5,
-        	"seqno": 1,
-        	"syModule": {
-        		"callurl": "/Layout/syndromeTreatment",
-        		"ctstamp": "2018-09-10 16:28:43",
-        		"lastflag": 0,
-        		"level": 1,
-        		"moddesc": "syndrome_treatment",
-        		"modid": 5,
-        		"modname": "辩证论治",
-        		"modno": "cs005",
-        		"modtype": "1",
-        		"seqno": 5,
-        		"superid": 0,
-        		"syModuleList": [],
-        		"syWorkList": [],
-        		"uctstamp": "2018-10-07 10:45:36",
-        		"useflag": "1",
-        		"user": null
-        	},
-        	"uctstamp": "2018-10-09 10:56:19",
-        	"useflag": "1",
-        	"userid": "1"
-        }, {
-        	"ctstamp": "2018-10-09 10:46:32",
-        	"menuid": "6",
-        	"menustate": "01",
-        	"menutype": "01",
-        	"modid": 6,
-        	"seqno": 1,
-        	"syModule": {
-        		"callurl": "/Layout/cureNotIll",
-        		"ctstamp": "2018-09-10 16:30:41",
-        		"lastflag": 0,
-        		"level": 1,
-        		"moddesc": "cure_not_ill",
-        		"modid": 6,
-        		"modname": "治未病",
-        		"modno": "cs006",
-        		"modtype": "1",
-        		"seqno": 6,
-        		"superid": 0,
-        		"syModuleList": [],
-        		"syWorkList": [],
-        		"uctstamp": "2018-10-07 10:45:36",
-        		"useflag": "1",
-        		"user": null
-        	},
-        	"uctstamp": "2018-10-09 10:56:20",
-        	"useflag": "1",
-        	"userid": "1"
-        }
-      ];
-      defaultSysModuleList.forEach(item => {
-        if(item.syModule.modid  != 7){
-          // http://www.xiaotangren.com:9999
-          item.syModule.callurl = config_local_url + item.syModule.callurl;
-        }
-      });
-      window.setDefaultMenu(JSON.stringify(defaultSysModuleList));
-    }
+    this.suitTechnology.handlePopOpen();
+    // if(window.setDefaultMenu){ // 加载完登陆组件后通知客户端默认菜单
+    //   let defaultSysModuleList = [
+    //     {
+    //     	"ctstamp": "2018-10-09 10:46:33",
+    //     	"menuid": "7",
+    //     	"menustate": "01",
+    //     	"menutype": "01",
+    //     	"modid": 7,
+    //     	"seqno": 1,
+    //     	"syModule": {
+    //     		"callurl": "http://www.xiaotangren.com:9999/index1.html",
+    //     		"ctstamp": "2018-09-10 16:32:46",
+    //     		"lastflag": 0,
+    //     		"level": 1,
+    //     		"moddesc": "ch_knowledge",
+    //     		"modid": 7,
+    //     		"modname": "中医知识库",
+    //     		"modno": "cs007",
+    //     		"modtype": "1",
+    //     		"seqno": 7,
+    //     		"superid": 0,
+    //     		"syModuleList": [],
+    //     		"syWorkList": [],
+    //     		"uctstamp": "2018-10-07 10:45:36",
+    //     		"useflag": "1",
+    //     		"user": null
+    //     	},
+    //     	"uctstamp": "2018-10-09 10:56:20",
+    //     	"useflag": "1",
+    //     	"userid": "1"
+    //     }, {
+    //     	"ctstamp": "2018-10-09 10:46:31",
+    //     	"menuid": "5",
+    //     	"menustate": "01",
+    //     	"menutype": "01",
+    //     	"modid": 5,
+    //     	"seqno": 1,
+    //     	"syModule": {
+    //     		"callurl": "/Layout/syndromeTreatment",
+    //     		"ctstamp": "2018-09-10 16:28:43",
+    //     		"lastflag": 0,
+    //     		"level": 1,
+    //     		"moddesc": "syndrome_treatment",
+    //     		"modid": 5,
+    //     		"modname": "辩证论治",
+    //     		"modno": "cs005",
+    //     		"modtype": "1",
+    //     		"seqno": 5,
+    //     		"superid": 0,
+    //     		"syModuleList": [],
+    //     		"syWorkList": [],
+    //     		"uctstamp": "2018-10-07 10:45:36",
+    //     		"useflag": "1",
+    //     		"user": null
+    //     	},
+    //     	"uctstamp": "2018-10-09 10:56:19",
+    //     	"useflag": "1",
+    //     	"userid": "1"
+    //     }, {
+    //     	"ctstamp": "2018-10-09 10:46:32",
+    //     	"menuid": "6",
+    //     	"menustate": "01",
+    //     	"menutype": "01",
+    //     	"modid": 6,
+    //     	"seqno": 1,
+    //     	"syModule": {
+    //     		"callurl": "/Layout/cureNotIll",
+    //     		"ctstamp": "2018-09-10 16:30:41",
+    //     		"lastflag": 0,
+    //     		"level": 1,
+    //     		"moddesc": "cure_not_ill",
+    //     		"modid": 6,
+    //     		"modname": "治未病",
+    //     		"modno": "cs006",
+    //     		"modtype": "1",
+    //     		"seqno": 6,
+    //     		"superid": 0,
+    //     		"syModuleList": [],
+    //     		"syWorkList": [],
+    //     		"uctstamp": "2018-10-07 10:45:36",
+    //     		"useflag": "1",
+    //     		"user": null
+    //     	},
+    //     	"uctstamp": "2018-10-09 10:56:20",
+    //     	"useflag": "1",
+    //     	"userid": "1"
+    //     }
+    //   ];
+    //   defaultSysModuleList.forEach(item => {
+    //     if(item.syModule.modid  != 7){
+    //       // http://www.xiaotangren.com:9999
+    //       item.syModule.callurl = config_local_url + item.syModule.callurl;
+    //     }
+    //   });
+    //   window.setDefaultMenu(JSON.stringify(defaultSysModuleList));
+    // }
   };
   // 校验是否进行自动登陆 和 初始化用户名、密码
   verifyAutoLogin(){
@@ -275,6 +278,12 @@ class Index extends Component {
   render() {
     const { username, password, verificationCode, rememberPass, autoLogin} = this.state;
     const { getFieldDecorator } = this.props.form;
+    let openProps = {
+      actionType: 'add',
+      orderid: '',
+      reloadList: () => {},
+      buOrderDtlList: [],
+    };
     return (
       <FormLogin onSubmit={this.handleSubmit} ref={ref=>{this.testForm=ref}}>
         <FormItem
@@ -323,6 +332,8 @@ class Index extends Component {
           <LoginAction type="primary" htmlType="submit">立即登录</LoginAction>
           <CancelAction type="primary" onClick={this.ignoreLogin}>忽略，稍后登录</CancelAction>
         </FormItem>
+        <SuitTechnology {...openProps} ref={ref => {this.suitTechnology = ref}} />
+        <SuitTechnology />
         <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </FormLogin>
     );

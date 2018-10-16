@@ -96,7 +96,7 @@ class Index extends Component {
 const Container = styled.div`
   width:100%;
   height: 100%;
-  padding: 10px;
+  padding: 30px;
 `;
 const FormSpec = styled(Form)`
   border: 1px solid #CCCCCC;

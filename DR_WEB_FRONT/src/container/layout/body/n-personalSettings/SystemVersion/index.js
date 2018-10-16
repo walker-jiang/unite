@@ -3,6 +3,7 @@ import { Form,Collapse,Input,Button,Select  } from 'antd';
 import "./style.less"
 const FormItem = Form.Item;
 const Panel = Collapse.Panel;
+import Ajax from 'commonFunc/ajaxGetResource';
 class SystemVersion extends React.Component{
   constructor(props) {
     super(props);
@@ -19,20 +20,20 @@ class SystemVersion extends React.Component{
     this.props.form.validateFields((ee,val)=>{
       console.log('valvalval',val,e);
       //系统版本请求传参
-      var date = {
-        newPassword:values.password,
-        orgUerid:window.sessionStorage.getItem('userid'),
-        password:values.password
-      }
+      // var date = {
+      //   newPassword:values.password,
+      //   orgUerid:window.sessionStorage.getItem('userid'),
+      //   password:values.password
+      // }
       let params = {
         url: 'BaOrguserController/systemVersion',
         type: 'post',
-        data: JSON.stringify(date),
+        // data: JSON.stringify(date),
         server_url:'http://219.234.5.58:8086/'
       }
       let that = this;
       function success(res) {
-        console.log('resres11111',res);
+        console.log('更新版本resres11111',res);
         if(res.desc == '成功' && res.code == 200){
           window.modal = Modal.success({
             title: '版本更新成功！',

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Button } from 'antd';
 import BasicModal from 'components/dr/modal/basicModal';
-import HerbalForm from './herbalForm';
+import SuitTechForm from './suitTechForm';
 import buttonSty from 'components/antd/style/button';
 import TipModal from 'components/dr/modal/tip';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
@@ -297,25 +297,33 @@ export default class Index extends Component {
     let title = actionType == 'add' ? '新增' : (actionType == 'modify' ? '修改' : '查看');
     return (
       <SpecBasicModal visible={visiblePop} title={title + '适宜技术治疗单'} onClose={() => this.handlePopClose()}>
-        <HerbalForm
-          wrappedComponentRef={ref => {this.form = ref}}
-          initData={initData}
-          {...this.props}>
-        </HerbalForm>
-        {
-          this.props.actionType == 'view' ? null :
-          <Footer>
-            <SureButton type="primary" onClick={this.submit} disabled={!window.modifyPermission}>保存</SureButton>
-            <Gray type="primary" onClick={()=>{this.handlePopClose()}}>取消</Gray>
-          </Footer>
-        }
-        <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
+        <Wrap>
+          <SuitTechForm
+            wrappedComponentRef={ref => {this.form = ref}}
+            initData={initData}
+            {...this.props}>
+          </SuitTechForm>
+          {
+            this.props.actionType == 'view' ? null :
+            <Footer>
+              <SureButton type="primary" onClick={this.submit} disabled={!window.modifyPermission}>保存</SureButton>
+              <Gray type="primary" onClick={()=>{this.handlePopClose()}}>取消</Gray>
+            </Footer>
+          }
+          <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
+        </Wrap>
       </SpecBasicModal>
     )
   }
 }
+const Wrap = styled.div`
+  width: 857px;
+  height: 548px;
+  overflow: hidden;
+  padding: 10px
+`;
 const SpecBasicModal = styled(BasicModal)`
-  color: rgb(178, 20, 20);
+  color: #000000;
   background: rgba(253, 252, 247, 1);
   font-family: 'YaHei Consolas Hybrid';
   & > div{

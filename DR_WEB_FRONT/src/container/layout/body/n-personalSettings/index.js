@@ -15,12 +15,17 @@ class PersonalSettings extends React.Component{
         UserModify:false,
         status:[],
         baPatient:{},
-        imgFile:''
+        dictListObj:[],
+        deptData:[],
+        imgFile:'',
+        show:false
       };
   }
   componentWillMount(){
-    console.log('patientid',window.sessionStorage.getItem('userid'));
+    console.log('patientid',window.sessionStorage,window.sessionStorage.getItem('userid'));
       this.getPatientData(window.sessionStorage.getItem('userid'));
+      this.getDictList(['post']);
+      this.getDept();
 
   }
   // BaOrguserController/getData?orgUerid=1
@@ -44,6 +49,59 @@ class PersonalSettings extends React.Component{
     };
     Ajax(params, callBack);
   };
+  /**
+   * [getDictList 获取字典列表]
+   * @param  {[type]} DictTypeList [字典项数组]
+   * @return {[type]}              [undefined]
+   */
+  getDictList(DictTypeList){
+    let self = this;
+    let params = {
+      url: 'BaDatadictController/getListData',
+      data: {
+        dictNoList: DictTypeList
+      },
+    };
+    function callBack(res){
+      console.log('获取字典列表11111',res);
+      if(res.result){
+        // let dictListObj = {};
+        let dictListObj = [];
+        res.data.forEach(item => {
+          // dictListObj[item.dictno.toLowerCase()] = item.baDatadictDetailList;
+          dictListObj=item.baDatadictDetailList;
+        });
+        self.setState({dictListObj:dictListObj});
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    Ajax(params, callBack);
+  };
+  //http://219.234.5.58:8087/swagger-ui.html#/
+
+  /** [getDept 科室数据] */
+  getDept=()=> {
+    let params = {
+      url: 'BaDepartmentController/getList',
+      server_url: 'http://219.234.5.58:8086/',
+      data: {
+        orgid: window.sessionStorage.getItem('orgid')
+      }
+    };
+    let that = this;
+    function success(res) {
+      console.log('科室数据:',res);
+      if(res.result){
+        let deptData = res.data;
+        // deptData.forEach((val,i)=>{
+          // that.getDocData(parseInt(val.deptid),val.deptname);
+        // })
+        that.setState({ deptData:deptData })
+      }
+    };
+    Ajax(params, success);
+  }
 
   Modify=(value,event)=>{
     // console.log("sad",value,event);
@@ -178,8 +236,8 @@ class PersonalSettings extends React.Component{
     }
   }
   handleClick=(img)=>{
-    console.log('abababab',img);
-    this.setState({imgFile:img});
+    console.log("ssdasda");
+    this.setState({Img:img})
   }
   render() {
     const text = `
@@ -191,7 +249,7 @@ class PersonalSettings extends React.Component{
     return (
       <div className="PersonalSettings">
           <div className="title" style={{borderBottom:"1px solid #E4E4E4"}}>
-              <h2>个人设置</h2>
+              <h2 style={this.state.show?{fontSize:"13px"}:{fontSize:"13px"}}>个人设置</h2>
           </div>
           <div style={{marginTop:"20px",marginLeft: "3%"}}>
             <div style={{width:"70%",marginLeft:"10px",float:"left"}}>
@@ -207,7 +265,7 @@ class PersonalSettings extends React.Component{
                         <Icon id='icon1' onClick={(e)=>{this.Modify1('个人设置',e)}} type="double-left" theme="outlined" style={{marginRight:"6%",transform:'rotate(-90deg)',color:'#0B6ECB',fontSize:'16px',height:'22px',fontWeight:'bolder' }}></Icon>
                       </p>
                     </div>} key="1">
-                  <PersonalInformationSettings prop={this.state.baPatient} handleClick={this.handleClick.bind(this)}  wrappedComponentRef={(inst)=>this.PersonalInformationSettings=inst}/>
+                  <PersonalInformationSettings prop={[this.state.baPatient,this.state.dictListObj,this.state.deptData,{'status':this.state.status}]} handleClick={this.handleClick.bind(this)}  wrappedComponentRef={(inst)=>this.PersonalInformationSettings=inst}/>
                 </Panel>
                 <Panel showArrow={false} header={
                     <div style={{overflow:"hidden",height:"40px",position:"absolute",top:0,width:"100%",lineHeight:"40px"}}>
@@ -255,17 +313,17 @@ class PersonalSettings extends React.Component{
             </div>
             <div style={{width:"28%",float:"right",borderLeft:"1px solid #E7E7E7",paddingLeft:"2%"}}>
               <div style={{padding:"0 0 20px 0",borderBottom:"1px solid #E7E7E7",marginRight:"20%"}}>
-                <img style={{width:"100px",height:"100px"}} src={this.state.imgFile?this.state.imgFile:require("./images/7.png")}></img>
+                <img style={{width:"100px",height:"100px"}} src={this.state.Img?this.state.Img:this.state.baPatient.photo}></img>
               </div>
               <div className="details" style={{padding:"20px 0 20px 0",borderBottom:"1px solid #E7E7E7",marginRight:"20%"}}>
-                <p>当前用户： <span>王琰龙</span><span style={{marginLeft:"20px"}}><img onClick={(e)=>{this.Modify("User",e)}} src={require("./images/10.png")}></img></span></p>
-                <p>所在科室： <span>中医科</span></p>
-                <p>职务职级： <span>副主任医师</span></p>
+                <p>当前用户： <span>{this.state.baPatient.realname}</span><span style={{marginLeft:"20px"}}><img onClick={(e)=>{this.Modify("User",e)}} src={require("./images/10.png")}></img></span></p>
+                <p>所在科室： <span>{this.state.baPatient.deptidDic}</span></p>
+                <p>职务职级： <span>{this.state.baPatient.postDic}</span></p>
               </div>
               <div className="details" style={{padding:"20px 0 20px 0"}}>
-                <p>机构编号： <span>BJSZGUAN </span><span style={{marginLeft:"20px"}}><img onClick={this.Modify} src={require("./images/10.png")}></img></span></p>
-                <p>机构名称： <span>北京永顺中医馆</span></p>
-                <p>机构类型： <span>中医馆</span></p>
+                <p>机构编号： <span>{this.state.baPatient.orgcode} </span><span style={{marginLeft:"20px"}}><img onClick={this.Modify} src={require("./images/10.png")}></img></span></p>
+                <p>机构名称： <span>{this.state.baPatient.orgName}</span></p>
+                <p>机构类型： <span>{this.state.baPatient.orgidDic}</span></p>
               </div>
             </div>
           </div>

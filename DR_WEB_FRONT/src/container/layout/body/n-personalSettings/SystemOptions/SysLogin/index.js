@@ -33,7 +33,7 @@ class SystemUserLogin extends React.Component{
   }
   last=()=>{
     console.log("上一个");
-var page=this.state.page
+    var page=this.state.page
     if (page>1) {
       this.setState({page:page-1,long:0},()=>{
         console.log("shjad",this.state.long);
@@ -200,7 +200,7 @@ handleFocus() {
                       <Button>取消</Button>
                     </div>
                     <div className="yema">
-                      <span>{this.state.page}/{this.state.num}</span><span onClick={this.last}>上一页</span><span onClick={this.next}>下一页</span>
+                      <span>{this.state.page}/{this.state.num}</span><span onClick={this.last} style={{cursor:'pointer'}}>上一页</span><span onClick={this.next} style={{cursor:'pointer'}}>下一页</span>
                     </div>
                   </div>
          </Form>

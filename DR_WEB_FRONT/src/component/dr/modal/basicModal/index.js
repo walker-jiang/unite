@@ -28,17 +28,11 @@ export default class Popout extends Component {
          isOpen={visible}
          style={modalStyle}
          ariaHideApp={false}
-         onClick={()=>{alert()}}
-          >
+         onClick={()=>{alert()}}>
+         <Book>
+          <Book>
             <Book>
-              <Draggable
-                cancel=".not-draggable"
-                position={null}
-                defaultPosition={{x: 0, y: 0}}
-                grid={[25, 25]}
-                onStart={this.handleStart}
-                onDrag={this.handleDrag}
-                onStop={this.handleStop}>
+              <Book>
                 <Pannel className={className}>
                   <Header className='header'>
                     <span>好健康中医馆—{title}</span>
@@ -48,16 +42,17 @@ export default class Popout extends Component {
                     {children}
                   </div>
                 </Pannel>
-              </Draggable>
+              </Book>
             </Book>
+          </Book>
+        </Book>
       </Modal>
     );
   }
 }
 const Book = styled.div`
-  padding-left: -5px;
-  padding-top: -5px;
-  border: 1px solid red;
+  border: 1px solid #888888;
+  transform: translate(-1px, -1px);
 `;
 const modalStyle = {
    overlay: {

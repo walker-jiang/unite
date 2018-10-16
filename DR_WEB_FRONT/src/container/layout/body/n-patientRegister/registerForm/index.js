@@ -18,13 +18,13 @@ class Index extends Component {
     super(props);
     this.state = {
       baPatient: {}, // 基本信息数据
-      buPatientCase: {}, // 病例数据
+      buPatientCase: null, // 病例数据
       registerInfo: {}, // 其余挂号信息
     };
   };
   componentWillMount(){
     let operateType = this.props.match.params.type;
-    if(operateType.indexOf('v') > 0 || operateType.indexOf('m') > 0){
+    if(operateType.indexOf('v') == 0 || operateType.indexOf('m') == 0){
       this.getPatientData(operateType.substr(1, operateType.length - 1));
     }
   };
@@ -39,12 +39,19 @@ class Index extends Component {
     function callBack(res){
       if(res.result){
         let { baPatient, buPatientCase, ...registerInfo } = res.data;
-        if(buPatientCase){
-          buPatientCase.deptname = registerInfo.deptname;
-          self.setState({ baPatient, buPatientCase, registerInfo });
-        }else{ // 如果不存在诊前信息则
-          self.setState({ baPatient, registerInfo, buPatientCase });
+        if(registerInfo.regDoctorid){
+          baPatient.doctor = {
+            key: registerInfo.regDoctorid,
+            label: registerInfo.regDoctorname,
+          };
         }
+        if(registerInfo.deptid){
+          baPatient.dept = {
+            key: registerInfo.deptid,
+            label: registerInfo.deptname,
+          };
+        }
+        self.setState({ baPatient, buPatientCase, registerInfo });
       }else{
         console.log('异常响应信息', res);
       }
@@ -54,15 +61,9 @@ class Index extends Component {
   submit = (e) =>{
     let { registerInfo = {}, baPatient = {}, buPatientCase = {} } = this.state;
     let operateType = this.props.match.params.type;
-    let patientInfo = deepClone(this.basicInfoForm.state.patientInfo);
     if(this.basicInfoForm){
       let values = this.basicInfoForm.handleSubmit(e);
-      if(patientInfo.patientname != ''){
-        Object.assign(patientInfo, values);
-        Object.assign(baPatient, patientInfo);
-      }else{
-        Object.assign(baPatient, values);
-      }
+      Object.assign(baPatient, values);
       baPatient.addrHome = values.province.label + values.city.label + values.district.label;
       baPatient.birthday = values.birthday.format('YYYY-MM-DD');
       baPatient.creator = window.sessionStorage.getItem('userid');
@@ -72,11 +73,11 @@ class Index extends Component {
       baPatient.ctsorgid = window.sessionStorage.getItem('orgid');
       let paramData = {
         "baPatient": baPatient,
-        "buPatientCase": buPatientCase,
+        "buPatientCase": null,
         "orgid": window.sessionStorage.getItem('orgid'),
-        "patienttype": baPatient.patienttype,
-        "recDoctorid": values.doctor.key,
-        "recDoctorname": values.doctor.label,
+        "patienttype": values.patienttype,
+        "recDoctorid": window.sessionStorage.getItem('userid'),
+        "recDoctorname": window.sessionStorage.getItem('username'),
         "regDoctorid": values.doctor.key,
         "regDoctorname": values.doctor.label,
         "regUserid": window.sessionStorage.getItem('userid'),
@@ -85,10 +86,12 @@ class Index extends Component {
         "deptid": values.dept.key,
         "deptname": values.dept.label,
       };
-      // if(patientInfo.patientname != ''){
-      //   paramData.patientid = patientInfo.patientid;
-      // }
-      // Object.assign(registerInfo, paramData);
+      if(JSON.stringify(baPatient) == '{}'){ // 添加**挂号信息**接口
+        if(values.patientid){ // 通过查询基本信息取得
+          paramData.patientid = baPatient.patientid;
+        }
+
+      }
       this.saveTip.showModal(1);
       let self = this;
       let params = {
@@ -119,6 +122,7 @@ class Index extends Component {
   render() {
     let operateType = this.props.match.params.type;
     let { baPatient, buPatientCase, registerInfo } = this.state;
+    console.log('baPatient', baPatient);
     return (
       <Container>
         <Header>

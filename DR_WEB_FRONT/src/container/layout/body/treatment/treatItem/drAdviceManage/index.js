@@ -190,7 +190,6 @@ export default class Index extends Component {
    * @return {[type]}            [void]
    */
   actionManager(actionType, record, buOrderDtlList = []){
-    console.log("2222222222222222",JSON.stringify(buOrderDtlList));
     let that = this;
     if(actionType == 'delete'){ // 删除操作
       that.onDelete(record.orderid)

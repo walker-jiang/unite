@@ -21,7 +21,7 @@ class ChangePassword extends React.Component{
     console.log("e11111",this.props.form);
     this.props.form.validateFields((err, values) => {
       console.log('values',values,err);
-      
+
       // var reg = /^[A-z0-9]{6,20}$/
       // var valo = reg.test(values.password)
       // var valn = reg.test(values.newPassword)

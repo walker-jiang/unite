@@ -6,6 +6,8 @@ import extractDataFromIdentityCard from 'commonFunc/extractDataFromIdentityCard'
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import CaseConfirm from './caseConfirm';
 import SmartDistinguish from './smartDistinguish';
+import SmartTreatment from './smartTreatment';
+import Finish from './finish';
 
 export default class Cure extends Component {
   constructor(props){
@@ -15,7 +17,7 @@ export default class Cure extends Component {
     };
   };
   componentWillMount(){
-    this.getUserInfo(this.props.patientid);
+    // this.getUserInfo(this.props.patientid);
   };
   /** [getUserInfo 获取患者信息] */
   getUserInfo(patientid){
@@ -47,6 +49,12 @@ export default class Cure extends Component {
     }
     if(current == 2){
       bodyComponent = <SmartDistinguish onStep={(step) => {this.props.onStep(step)}}/>;
+    }
+    if(current == 3){
+      bodyComponent = <SmartTreatment onStep={(step) => {this.props.onStep(step)}}/>;
+    }
+    if(current == 4){
+      bodyComponent = <Finish onStep={(step) => {this.props.onStep(step)}}/>;
     }
     return (
         <Container >
@@ -138,7 +146,6 @@ const Value = styled.div`
 const Body = styled.div`
   width: calc(100% - 200px);
   float: left;
-  padding: 20px;
 `;
 /*
 @作者：姜中希

@@ -16,6 +16,7 @@ export default class Identify extends Component {
   };
 
   componentDidMount(){//获取患者信息，进行确认
+    var certificatesType = '01'
     let params = {
       type: 'GET',
       url: 'healthcabin/user/qrcode',
@@ -24,7 +25,7 @@ export default class Identify extends Component {
       xhrFields:{withCredentials:true},
       crossDoman:true,
       data:{
-        certificatesType: '01',
+        certificatesType: certificatesType,
         certificatesNumber: '653024198209249589'
       }
     };

@@ -17,62 +17,12 @@ class SiderDemo extends React.Component {
         collapsed: false,
         style:{},
         leftModules: [], // 左侧菜单项
-        MenuItem:[
-          //{key:"首页",show:true},
-          //{key:"病人登记",show:true},
-          //{key:"今日就诊",show:true},
-          //{key:"电子病历",show:true},
-        //  {key:"辨证论治",show:true},
-          //{key:"治未病",show:true},
-          //{key:"知识库",show:true},
-          //{key:"健康档案",show:true},
-          //{key:"远程教育",show:true},
-          //{key:"远程会诊",show:true},
-          //{key:"转诊",show:true},
-          //
-          {key:"首页",show:true},
-          {key:"患者登记",show:true},
-          {key:"今日诊疗",show:true},
-          {key:"病历中心",show:true},
-          {key:"辨证论治",show:true},
-          {key:"治未病",show:true},
-          {key:"远程教育",show:true},
-          {key:"远程会诊",show:true},
-          {key:"中医知识库",show:true},
-          {key:"患者档案",show:true},
-          {key:"模板管理",show:true},
-          {key:"服务点评",show:true},
-          {key:"信息上报",show:true},
-          {key:"资源管理",show:true},
-          {key:"质控管理",show:true},
-          {key:"综合分析",show:true},
-          {key:"个人设置",show:true},
-          {key:"系统管理",show:true},
-          {key:"用户管理",show:true},
-          {key:"日志管理",show:true},
-          {key:"患者转诊",show:true},
-          {key:"治疗记录",show:true},
-        ],
         height:"",//外层高度
         length:0,//移动的距离,
         up:false,
         down:true
       };
   }
-  changeMenuItem=(value)=>{
-    this.setState({MenuItem:value})
-  }
-  componentDidMount(){
-  // console.log("wwwwwww",window);
-  //   onresize.addEventListener("resize",this.handleHeight)   //添加窗口变化监听
-  //   var clientHeight=document.documentElement.clientHeight
-  //   var height=""
-  //   var dom=document.getElementById("kk")
-  //   if (clientHeight<dom.offsetHeight) {
-  //     height=`${clientHeight-56*2}px`
-  //     this.setState({height})
-  //   }
-}
   componentWillMount(){
     onresize.removeEventListener("resize",this.handleHeight) //清楚窗口变化监听
     this.getLeftMoules();
@@ -89,7 +39,7 @@ class SiderDemo extends React.Component {
     };
     function callBack(res){
       if(res.result){
-        self.setState({ leftModules: res.data });
+        self.setState({ leftModules: res.data.leftMenuList });
       }else{
         console.log('异常响应信息', res);
       }
@@ -152,70 +102,11 @@ class SiderDemo extends React.Component {
     }
   }
   render() {
-    let { collapsed } = this.state;
+    let { collapsed ,leftModules} = this.state;
     const MenuOption=[]
-    window.menus.forEach(item=>{
+    leftModules.forEach(item=>{
       var div
-      if (item.show&&item.key=="首页") {
-        div=<Menu.Item key="首页"><Link to='/Layout'><StyleICon type='home' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="患者登记") {
-        div=<Menu.Item key="患者登记"><Link to='/Layout/patientRegister'><StyleICon type='patient_register' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="今日诊疗") {
-        div=<Menu.Item key="今日诊疗"><Link to='/Layout/todayPatient'><StyleICon type='today_patient' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="病历中心") {
-        div=<Menu.Item key="病历中心"><Link to='/Layout/electronicMedicalRecords'><StyleICon type='case_center' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="辨证论治") {
-        div=<Menu.Item key="辨证论治"><Link to='/Layout/syndromeTreatment'><StyleICon type='syndrome_treatment' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="治未病") {
-        div=<Menu.Item key="治未病"><Link to='/Layout/cure'><StyleICon type='cure_not_ill' value={collapsed}/><span>{item.key}</span></Link>d</Menu.Item>
-      }
-      if (item.show&&item.key=="中医知识库") {
-        div=<Menu.Item key="中医知识库"><a href='http://www.xiaotangren.com:9999/index1.html' target="view_window"><StyleICon type='ch_knowledge' value={collapsed}/>中医知识库</a></Menu.Item>
-      }
-      if (item.show&&item.key=="患者档案") {
-        div=<Menu.Item key="患者档案"><Link to='/Layout/patientRecords'><StyleICon type='patient_archives' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="模板管理") {
-        div=<Menu.Item key="模板管理"><Link to='/Layout/modelManage'><StyleICon type='model_manage' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="综合分析") {
-        div=<Menu.Item key="综合分析"><Link to='/Layout/comprehensiveAnalysis'><StyleICon type='comprehensive_analysis' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="个人设置") {
-        div=<Menu.Item key="个人设置"><Link to='/Layout/personalSetting'><StyleICon type='personal_setting' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="系统管理") {
-        div=<Menu.Item key="系统管理"><Link to='/Layout/systemManage'><StyleICon type='system_manage' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="远程教育") {
-        div=<Menu.Item key="远程教育"><Link to='/Layout/remoteEducation'><StyleICon type='remote_education' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="辨证论治管理") {
-        div=<Menu.Item key="辨证论治管理"><Link to='/Layout/sub'><StyleICon type='patient_referral' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="治疗记录") {
-        div=<Menu.Item key="治疗记录"><Link to='/Layout'><StyleICon type='acography' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="远程会诊") {
-        div=<Menu.Item key="远程会诊"><Link to='/Layout'><StyleICon type='patient_reg' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="服务点评") {
-        div=<Menu.Item key="服务点评"><Link to='/Layout'><StyleICon type='service_review' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="信息上报") {
-        div=<Menu.Item key="信息上报"><Link to='/Layout'><StyleICon type='information_reported' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="资源管理") {
-        div=<Menu.Item key="资源管理"><Link to='/Layout'><StyleICon type='resource_administration' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
-      if (item.show&&item.key=="质控管理") {
-        div=<Menu.Item key="质控管理"><Link to='/Layout'><StyleICon type='quality_management' value={collapsed}/><span>{item.key}</span></Link></Menu.Item>
-      }
+      div=<Menu.Item key={item.syModule.moddesc}><Link to={item.syModule.callurl}><StyleICon type={item.syModule.moddesc} value={collapsed}/><span>{item.syModule.modname}</span></Link></Menu.Item>
       MenuOption.push(div)
     })
     return (
@@ -293,3 +184,9 @@ const SpecMenu = styled(Menu)`
   }
 `;
 export default SiderDemo
+
+/*
+@作者：马奔
+@日期：2018-10-15
+@描述：左侧菜单栏
+*/

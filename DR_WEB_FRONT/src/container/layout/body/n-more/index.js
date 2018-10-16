@@ -1,17 +1,15 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import { Link, withRouter } from 'react-router-dom';
-import { Layout, Menu, Breadcrumb, Icon, Carousel, Row, Col, Button, Modal, Table, Form, Checkbox ,Tabs} from 'antd';
+import { Layout, Menu, Icon, Carousel, Row, Col, Button, Modal, Table, Form, Checkbox ,Tabs} from 'antd';
 const FormItem = Form.Item;
 const { Header, Content, Footer, Sider } = Layout;
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
-import jQuery from 'jquery';
-// import "../../sider/fontStyle.less";
-// import './SystemManagement.less';
 import Icon1 from 'components/dr/icon';
 const TabPane = Tabs.TabPane;
 import StyButton from 'components/antd/style/button';
-// import AppSetting from './appSetting';
+import LeftMenuList from './leftMenuList';
+import RightMenuList from './rightMenuList';
 
 const MenuItem = Menu.Item;
 class SystemManagement extends React.Component {
@@ -21,13 +19,10 @@ class SystemManagement extends React.Component {
       visible: false,
       MenuData: [],
       totalModules: [], // 所有菜单
-      frameData:[],
-      data:[],
-      leftMenuList:[],
-      RightMenuList:[],
+      frameData:[],  //列表菜单
+      leftList:[],
+      rightList:[]
     };
-    this.sortUp = this.sortUp.bind(this)
-    this.sortDown = this.sortDown.bind(this)
   }
   componentWillMount(){
     this.getTotalMoules();
@@ -40,7 +35,7 @@ class SystemManagement extends React.Component {
       url: 'ModuleController/getUserModule',
       server_url: config_login_url,
       data: {
-        userid: window.sessionStorage.getItem('userid')
+        userid: Number(window.sessionStorage.getItem('userid'))
       },
     };
     function callBack(res){
@@ -52,183 +47,134 @@ class SystemManagement extends React.Component {
     };
     ajaxGetResource(params, callBack);
   };
- /* 获取用户浮框的数据 */
+  /** [getframeData 获取用户浮框的数据] */
   getframeData(){
-      let self = this;
-      let paramss = {
-        url: 'ModuleController/getUserModule',
-        server_url: config_login_url,
-        data: {
-          userid: window.sessionStorage.getItem('userid')
-        },
-      };
-      function callBack1(res){
-        if(res.result){
-          console.log('新的',res.data)
-          self.setState({ data: res.data },self.data);
-        }else{
-          console.log('异常响应信息', res);
-        }
-      };
-      ajaxGetResource(paramss, callBack1);
-  };
- /* 发送用户设置 */
-  postframeData= () =>{
-    let self = this;
-    let paramss = {
-      type:'put',
-      url: 'SyQuickmenuController/putData',
-      server_url: config_login_url,
-      data: JSON.stringify( this.state.leftMenuList)
-    };
-    function callBack1(res){
-      if(res.result){
-
-      }else{
-        console.log('异常响应信息', res);
-      }
-    };
-    ajaxGetResource(paramss, callBack1);
+       let self = this;
+       let paramss = {
+         url: 'SyQuickmenuController/getQuickMenu',
+         server_url: config_login_url,
+         data: {
+           userid: Number(window.sessionStorage.getItem('userid'))
+         },
+       };
+       function callBack1(res){
+         if(res.result){
+           self.setState({ frameData: res.data });
+         }else{
+           console.log('异常响应信息', res);
+         }
+       };
+       ajaxGetResource(paramss, callBack1);
+   };
+  /**
+   * [restoreData 回复默认设置]
+   * @param  {[type]} type [1代表左侧,2是右侧]
+   * @return {[type]}      [返回对应页面的默认数据]
+   */
+  restoreData=(type)=>{
+    let{totalModules,frameData}=this.state
+    this.getTotalMoules();
+    this.getframeData();
+    return this.processingData(totalModules,type==1?frameData.leftMenuList:frameData.rightMenuList)
   }
- /* 处理数据 */
-   data (){
-     let{ data}= this.state;
-     let leftList=[];
-     data.forEach((item,index) =>{
-         leftList.push({
-            menustate:'01',
-            menutype:item.menutype,
-            modid:item.modid,
-            seqno:item.seqno,
-            userid:item.userid,
-            menuName: item.modname,
-            key: item.moddesc,
-            applicationState: "登录后可用",
-            isShow: 'true',
-          })
-     })
-     this.setState({ leftMenuList: leftList },()=>{
-       leftList=[]
-     });
-   }
-
+  /** [showModal 展示弹框] */
   showModal = () => {
     this.setState({visible: true});
   }
-  handleOk = (e) => {
-    // console.log(e);
-    this.setState({visible: false});
+  /** [getleftData 拿到左侧组件的数据] */
+   getleftData = (data) => {
+      this.setState({leftList:data})
+   }
+  /** [getrightData 拿到右侧组件的数据] */
+   getrightData = (data) => {
+     this.setState({rightList:data})
+   }
+   restore=(activeKey)=> {
+     this.LeftMenuList.restoreSettings(1)
+   }
+ /**
+  * [processingData 组件渲染数据处理函数]
+  * @param  {[type]} bigArr  [平铺数据]
+  * @param  {[type]} smalArr [列表数据]
+  * @return {[type]}         [对应的渲染的数据]
+  */
+  processingData(bigArr,smalArr){
+    bigArr.forEach((item1,index1)=>{
+      item1.isShow=false;
+      smalArr.forEach((item2,index2)=>{
+         if(item2.syModule.modno==item1.modno){
+           item1.isShow=true;
+           return
+         }
+      })
+    })
+    return bigArr;
   }
-  handleCancel = (e) => {
-    // console.log(e);
-    this.setState({visible: false});
-  }
+  /** [putframeData 处理数据发送修改请求] */
+  putframeData= () =>{
+     let {leftList ,rightList}=this.state
+     let listL=[];
+     leftList.forEach((item, index) => {
+       if (item.isShow) {
+         listL.push(item);
+       }
+     })
+     listL.forEach((item, index) => {
+       item.seqno = index + 1;
+       item.menustate = "02"; /* 展开还是收缩*/
+       item.menutype = "01";  /* 左侧*/
+       item.userid =Number(window.sessionStorage.getItem('userid')) ;
+     })
+     let listR=[];
+     rightList.forEach((item, index) => {
+       if (item.isShow) {
+         listR.push(item);
+       }
+     })
+     listR.forEach((item, index) => {
+       item.seqno = index + 1;
+       item.menustate = "02";
+       item.menutype = "02"; /* 右侧*/
+       item.userid = window.sessionStorage.getItem('userid')
+     })
+     let list=listL.concat(listR)
+     let self = this;
+     let paramss = {
+       type:'put',
+       url: 'SyQuickmenuController/putData',
+       server_url: config_login_url,
+       data: JSON.stringify(list)
+     };
+     function callBack1(res){
+       if(res.result){
+         list=[];
+       }else{
+         console.log('异常响应信息', res);
+       }
+     };
+     ajaxGetResource(paramss, callBack1);
+   }
+  /** [handleSubmit 表单提交事件] */
   handleSubmit = (e) => {
-    e.preventDefault();
-    this.postframeData();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        // console.log('Received values of form: ', values);
-        this.props.history.push('/layout/');
-        window.menus = [
-          {
-            key: "首页",
-            show: values.home,
-            id: 'home'
-          }, {
-            key: "患者登记",
-            show: values.registration,
-            id: 'registration'
-          }, {
-            key: "今日诊疗",
-            show:values.tideyDiagnosis,
-            id: 'tideyDiagnosis'
-          }, {
-            key: "病历中心",
-            show: values.medicalCenter,
-            id: 'medicalCenter'
-          }, {
-            key: "辨证论治",
-            show: values.differentiation,
-            id: 'differentiation'
-          }, {
-            key: "治未病",
-            show: values.cureNotIll,
-            id: 'cureNotIll'
-          }, {
-            key: "中医知识库",
-            show: values.medicine,
-            id: 'medicine'
-          }, {
-            key: "健康档案",
-            show: values.healthRecords,
-            id: 'healthRecords'
-          }, {
-            key: "模板管理",
-            show: values.templateManagement,
-            id: 'templateManagement'
-          }, {
-            key: "服务点评",
-            show: values.serviceReview,
-            id: 'serviceReview'
-          }, {
-            key: "信息上报",
-            show: values.informationReported,
-            id: 'informationReported'
-          }, {
-            key: "资源管理",
-            show: values.resourceManagement,
-            id: 'resourceManagement'
-          }, {
-            key: "质控管理",
-            show: values.personalSettings,
-            id: 'personalSettings'
-          }, {
-            key: "综合分析",
-            show: values.comprehensiveAnalysis,
-            id: 'comprehensiveAnalysis'
-          }, {
-            key: "个人设置",
-            show: values.personalSettings,
-            id: 'personalSettings'
-          }, {
-            key: "系统管理",
-            show: values.systemManagement,
-            id: 'systemManagement'
-          },
-          //{key:"用户管理",show:values.userManagement},
-          //{key:"日志管理",show:values.logManagement},
-          {
-            key: "患者转诊",
-            show: values.patientReferral,
-            id: 'patientReferral'
-          }, {
-            key: "治疗记录",
-            show: values.medicalRecords,
-            id: 'medicalRecords'
-          }, {
-            key: "患者档案",
-            show: values.patientRecords,
-            id: 'patientRecords'
-          }, {
-            key: "远程教育",
-            show: values.remoteEducation,
-            id: 'remoteEducation'
-          }, {
-            key: "远程会诊",
-            show: values.remoteConsultation,
-            id: 'remoteConsultation'
-          }
-        ]
-        // let a=this.state.leftMenuList
-        this.setState({visible: false});
-      }
-    });
+     e.preventDefault();
+     this.putframeData();
+     this.handleCancel();
+      location.reload()
+   }
+   /** [handleCancel 关闭弹框组件] */
+  handleCancel = (e) => {
+    this.setState({visible: false});
   }
+  handleOk = (e) => {
+    this.setState({visible: false});
+  }
+  onRef = (ref) => {
+        this.LeftMenuList = ref
+    }
   /**
-   * [getCarouselCom 获取分好组的所有菜单模块]
-   * @param  {[type]} totalModules [所有菜单数据]
-   * @return {[type]}              [component数据]
+   * [getCarouselCom description]
+   * @param  {[type]} totalModules [平铺列表数据]
+   * @return {[type]}              [更多页面数据渲染格式]
    */
   getCarouselCom(totalModules){
     const rows = 3; // 每页多少行
@@ -272,196 +218,10 @@ class SystemManagement extends React.Component {
     }
     return Pages;
   };
-   // 数据上移
-  sortUp = (index) =>{
-        // e.stopPropagation();
-      let arr = this.state.leftMenuList
-        if (index != 0) {
-            let temp = arr[index - 1];
-            arr[index - 1] = arr[index];
-            arr[index] = temp;
-            this.setState({leftMenuList:arr});
-        }
-    }
- // 数据下移
-  sortDown= (index) => {
-      let arr = this.state.leftMenuList
-        if (index != arr.length) {
-            let temp = arr[index + 1];
-            arr[index + 1] = arr[index];
-            arr[index] = temp;
-            this.setState({leftMenuList:arr});
-        }
-    }
-// 回复默认设置
-  restoreSettings= () => {
-    const restoreData=[
-      {
-        applicationState: "登录后可用",
-        isShow: "true",
-        key: "home",
-        menuName: "首页",
-        menustate: "01",
-        menutype: "01",
-        modid: 1,
-        seqno: 1,
-        userid: "5"
-      },
-      {
-        applicationState: "登录后可用",
-        isShow: "true",
-        key: "patient_register",
-        menuName: "患者登记",
-        menustate: "01",
-        menutype: "01",
-        modid: 2,
-        seqno: 1,
-        userid: "5"
-      },
-      {
-        applicationState: "登录后可用",
-        isShow: "true",
-        key: "case_center",
-        menuName: "病历中心",
-        menustate: "01",
-        menutype: "01",
-        modid: 4,
-        seqno: 1,
-        userid: "5"
-      },
-      {
-        applicationState: "登录后可用",
-        isShow: "true",
-        key: "syndrome_treatment",
-        menuName: "辩证论治",
-        menustate: "01",
-        menutype: "01",
-        modid: 5,
-        seqno: 1,
-        userid: "5"
-      },
-      {
-        applicationState: "登录后可用",
-        isShow: "true",
-        key: "cure_not_ill",
-        menuName: "治未病",
-        menustate: "01",
-        menutype: "01",
-        modid: 6,
-        seqno: 1,
-        userid: "5"
-      },
-      {
-        applicationState: "登录后可用",
-        isShow: "true",
-        key: "ch_knowledge",
-        menuName: "中医知识库",
-        menustate: "01",
-        menutype: "01",
-        modid: 7,
-        seqno: 1,
-        userid: "5"
-      },
-      {
-        applicationState: "登录后可用",
-        isShow: "true",
-        key: "treat_manage",
-        menuName: "治疗管理",
-        menustate: "01",
-        menutype: "01",
-        modid: 8,
-        seqno: 1,
-        userid: "5"
-      },
-      {
-        applicationState: "登录后可用",
-        isShow: "true",
-        key: "model_manage",
-        menuName: "模板管理",
-        menustate: "01",
-        menutype: "01",
-        modid: 9,
-        seqno: 1,
-        userid: "5"
-      },
-      {
-        applicationState: "登录后可用",
-        isShow: "true",
-        key: "remote_education",
-        menuName: "远程教育",
-        menustate: "01",
-        menutype: "01",
-        modid: 10,
-        seqno: 1,
-        userid: "5"
-      },
-      {
-        applicationState: "登录后可用",
-        isShow: "true",
-        key: "patient_archives",
-        menuName: "患者档案",
-        menustate: "01",
-        menutype: "01",
-        modid: 11,
-        seqno: 1,
-        userid: "5"
-      },
-
-    ]
-    this.setState({leftMenuList:restoreData});
-  }
   render() {
-    const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form;
-    let { totalModules ,leftMenuList} = this.state;
+    let handleCancel =this.handleCancel
+    let { totalModules ,leftMenuList,frameData} = this.state;
     let CarouselCom = this.getCarouselCom(totalModules);
-    let sortUp=this.sortUp;
-    let sortDown=this.sortDown;
-    const columns =[
-      {
-        title: '序号',
-        dataIndex: 'index',
-        key: 'index',
-        width: "10%",
-        align: 'center',
-        render: (text, record, index) => <span>{index + 1}</span>
-      }, {
-        title: '菜单名称',
-        dataIndex: 'menuName',
-        key: 'menuName',
-        width: "30%"
-      }, {
-        title: '应用状态',
-        dataIndex: 'applicationState',
-        key: 'applicationState',
-        width: "20%"
-      }, {
-        title: '在菜单显示',
-        dataIndex: 'isShow',
-        key: 'isShow',
-        width: "20%",
-        render: (text, record, index) => {
-          const exist = window.menus.some(item => item.id == record.key);
-          // const exist = window.menus.(item => item.id == record.key);
-          return (<FormItem>
-            {getFieldDecorator(record.key, {initialValue: exist})(<Checkbox defaultChecked={exist}></Checkbox>)}
-          </FormItem>)
-        }
-      }, {
-        title: '操作',
-        dataIndex: 'operation',
-        key: 'operation',
-        width: "20%",
-        render: (text, record, index) => {
-          return (<div style={{
-              color: "#3366ff"
-            }}>
-            <span onClick={() =>sortUp(index)}>上移
-            </span>
-            <span onClick={() =>sortDown(index)}>下移</span>
-          </div>)
-        }
-      }
-    ];
     return (
       <Container className="SystemManagement">
         <Head>
@@ -479,44 +239,41 @@ class SystemManagement extends React.Component {
           </Row>
         </Head>
         <Body>
-
           <SpecCarousel>
           { CarouselCom.map(item => item) }
           </SpecCarousel>
         </Body>
-        <SpecModal width={"50%"} maskStyle={{ background: "rgba(0,0,0,.3)" }} title="应用设置" maskClosable={false} visible={this.state.visible} onOk={this.handleOk} onCancel={this.handleCancel} footer={false}>
-          <Tabs defaultActiveKey="1">
-           <TabPane tab={<span><Icon type="apple" />左侧菜单栏</span>} key="1">
-             <Form layout="inline" onSubmit={this.handleSubmit}>
-               <SpecRow>
-                 <span onClick={this.restoreSettings}>恢复默认设置</span>
-                 <TipText>在菜单中隐藏【登录后可用】的应用</TipText>
-               </SpecRow>
-               <SpecTable dataSource={leftMenuList} pagination={false} columns={columns}/>
-               <Row style={{
-                   marginTop: "10px"
-                 }}>
-                 <center>
-                   <SureButton htmlType="submit">保存</SureButton>
-                   <CancelButton onClick={this.handleCancel}>取消</CancelButton>
-                 </center>
-               </Row>
-             </Form>
-           </TabPane>
-           <TabPane tab={<span><Icon type="android" />右侧悬浮框</span>} key="2">
-           </TabPane>
-         </Tabs>
-        </SpecModal>
-    </Container>)
-  }
-
+        {
+          this.state.visible ? <SpecModal width={"700px"} height={"36px"} maskStyle={{ background: "rgba(0,0,0,.3)" }} title="应用设置" maskClosable={false} visible={true} onOk={this.handleOk} onCancel={this.handleCancel} footer={false}>
+            <Form layout="inline" onSubmit={this.handleSubmit}>
+              <Tabs defaultActiveKey="leftList" onChange={this.restore}>
+                 <TabPane tab={<span><Icon type="apple" />左侧菜单栏</span>} key="leftList">
+                   <LeftMenuList onRef={this.onRef} getleftData={this.getleftData} totalModules={totalModules} frameData={frameData} processingData={this.processingData} restoreData={this.restoreData}/>
+                 </TabPane>
+                 <TabPane tab={<span><Icon type="android" />右侧悬浮框</span>} key="rightList">
+                    <RightMenuList getrightData={this.getrightData} totalModules={totalModules} frameData={frameData}  processingData={this.processingData} restoreData={this.restoreData}/>
+                 </TabPane>
+              </Tabs>
+              <Row style={{
+                  marginTop: "10px"
+                }}>
+                <center>
+                  <SureButton htmlType="submit">保存</SureButton>
+                <CancelButton onClick={this.handleCancel}>取消</CancelButton>
+                </center>
+              </Row>
+            </Form>
+          </SpecModal> : null
+        }
+    </Container>
+  ) };
 }
 const Container = styled.div`
   width:100%;
-  height:100vh;
   overflow: hidden;
   background-color: #f2f2f2;
   padding-top: 15px;
+  height: calc(100vh - 50px);
 `;
 const Body = styled.div`
   width:1000px;
@@ -538,6 +295,12 @@ const Title = styled.span`
   height: 35px;
   line-height: 34px;
   border-bottom: 1px solid #3190B0;
+`;
+const SureButton = styled(Button)`
+  ${StyButton.semicircle}
+`;
+const CancelButton = styled(Button)`
+  ${StyButton.gray}
 `;
 const AppSet = styled.span`
   float: right;
@@ -578,12 +341,7 @@ const SecondRowLine = RowLine.extend`
   justify-content: start;
   margin-left: 70px;
 `;
-const SpecTable = styled(Table)`
-  .ant-table-body {
-    height: calc(60vh - 56px) !important;
-    overflow-y: scroll;
-  }
-`;
+
 const StyledLink = styled(Link)`
   display: flex;
   height:100px;
@@ -684,19 +442,9 @@ const SpecModal = styled(Modal)`
     }
   }
 `;
-const TipText = styled.span`
-  margin-left: 10px;
-  padding-left: 10px;
-  border-left: 1px solid #ccc;
-`;
-const SpecRow = styled(Row)`
-  color: #0A6ECB;
-  margin-bottom: 10px
-`;
-const SureButton = styled(Button)`
-  ${StyButton.semicircle}
-`;
-const CancelButton = styled(Button)`
-  ${StyButton.gray}
-`;
 export default Form.create()(SystemManagement)
+/*
+@作者：马奔
+@日期：2018-10-15
+@描述：更多模块
+*/

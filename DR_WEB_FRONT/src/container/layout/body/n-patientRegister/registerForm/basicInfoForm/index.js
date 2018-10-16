@@ -52,9 +52,6 @@ class PatientBasicInfo extends Component {
         occupation: '', // 职业
         ABO: '', // 血型
         phoneHome: '', // 座机
-        province: {key: '', label:''}, // 所属省份
-        city: {key: '', label:''}, // 所属城市
-        district: {key: '', label:''}, // 区县,
         streetdesc: '', //详细
         ctName: '', // 联系人
         ctRole: '', //与患者关系
@@ -76,43 +73,29 @@ class PatientBasicInfo extends Component {
         data = values;
       }
     });
-    return data;
+    if(patientInfo.patientid){ // 通过查询基本信息取得
+      Object.assign(patientInfo, data);
+      return patientInfo;
+    }else{ // 全部手动输入
+      return data;
+    }
   }
   componentWillMount(){
     this.getDictList(['country', 'nation', 'sex', 'marry', 'occupation', 'cardtype', 'pationtype', 'pationrel', 'blood']);
+    this.getDept();
+  };
+  componentDidMount(){
     let province = [];
     let city = [];
     let district = [];
-    let provinceObj = {key: '', label: ''};
-    let cityObj = {key: '', label: ''};
-    let districtObj = {key: '', label: ''};
     province = this.getProvinceData(); // 获取省份数据
     if(province.length){ // 保证有数据
       city = this.getCityData(province[0].provid);
-      provinceObj = {
-        key: province[0].provid,
-        label: province[0].provname
-      };
     }
     if(city.length){ // 保证有数据
-      cityObj = {
-        key: city[0].cityid,
-        label: city[0].cityname
-      };
       district = this.getDistrictData(city[0].cityid);
     }
-    if(district.length){ // 保证有数据
-      districtObj = {
-        key: district[0].distid,
-        label: district[0].distname
-      };
-    }
-    this.setState({ province, city, district }, () => {
-        this.props.form.setFieldsValue({province: provinceObj}); // 给省级表单选择框赋值
-        this.props.form.setFieldsValue({city: cityObj}); // 给市级表单选择框赋值
-        this.props.form.setFieldsValue({district: districtObj}); // 给县级表单选择框赋值
-    });
-    this.getDept();
+    this.setState({ province, city, district });
   };
   /** [getDept 科室数据] */
   getDept() {
@@ -187,9 +170,7 @@ class PatientBasicInfo extends Component {
   };
   componentWillReceiveProps(nextProps){
     let patientInfo = nextProps.baPatient;
-    if(patientInfo != this.props.baPatient ){ // 修改时默认地址
-      this.refreshAreaData(patientInfo);
-    }
+    this.refreshAreaData(patientInfo);
   };
   /**
    * [refreshAreaData 通过患者信息数据刷新省市县数据]
@@ -219,11 +200,10 @@ class PatientBasicInfo extends Component {
     if(city.length){ // 保证有数据
       district = this.getDistrictData(patientInfo.cityid);
     }
-    this.setState({ province, city, district, patientInfo }, () => {
-      this.props.form.setFieldsValue({province: provinceObj}); // 给省级表单选择框赋值
-      this.props.form.setFieldsValue({city: cityObj}); // 给市级表单选择框赋值
-      this.props.form.setFieldsValue({district: districtObj}); // 给县级表单选择框赋值
-    });
+    patientInfo.province = provinceObj;
+    patientInfo.city = cityObj;
+    patientInfo.district = districtObj;
+    this.setState({ province, city, district, patientInfo });
   };
   /** [getProvinceData 获取省级区划数据] */
   getProvinceData(){
@@ -393,6 +373,7 @@ class PatientBasicInfo extends Component {
     let disabled = this.props.disabled;
     let { country, nation, sex, marry, occupation, pationtype, cardtype, pationrel, blood, province, city, district, patientInfo, deptData, docData } = this.state;
     let age = extractDataFromIdentityCard.getAgeFromBirthday(patientInfo.birthday);
+    console.log('patientInfo', patientInfo);
     const formItemLayout = {
       labelCol: {
         xs: { span: 8 },
@@ -683,7 +664,9 @@ class PatientBasicInfo extends Component {
                 colon={false}
                 label="住址："
                 >
-                  {getFieldDecorator('province')(
+                  {getFieldDecorator('province', {
+                    initialValue: province.length ? ( patientInfo.province ? patientInfo.province : { key: province[0].provid, label: province[0].provname }) : {key: '', label: ''}
+                  })(
                     <SpecSelect labelInValue onChange={this.changeProvinceSelector} disabled={disabled}>
                     {
                       province.map((item, index)=>
@@ -700,7 +683,9 @@ class PatientBasicInfo extends Component {
                 wrapperCol={{span: 22}}
                 colon={false}
                 >
-                  {getFieldDecorator('city')(
+                  {getFieldDecorator('city', {
+                    initialValue: city.length ? ( patientInfo.city ? patientInfo.city : { key: city[0].cityid, label: city[0].cityname }) : {key: '', label: ''}
+                  })(
                     <SpecSelect labelInValue onChange={this.changeCitySelector} disabled={disabled}>
                     {
                       city.map((item, index)=>
@@ -718,7 +703,9 @@ class PatientBasicInfo extends Component {
                 colon={false}
                 label=' '
                 >
-                  {getFieldDecorator('district')(
+                  {getFieldDecorator('district', {
+                    initialValue: district.length ? ( patientInfo.district ? patientInfo.district : { key: district[0].distid, label: district[0].distname }) : {key: '', label: ''}
+                  })(
                     <SpecSelect labelInValue disabled={disabled}>
                     {
                       district.map((item, index)=>
@@ -839,7 +826,6 @@ const SpecForm = styled(Form)`
 `;
 const Container = styled.div`
   width: 100%;
-  margin: 20px 0px;
 `;
 const SpecInput = styled(Input)`
   line-height: 25px;

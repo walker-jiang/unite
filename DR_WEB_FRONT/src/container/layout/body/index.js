@@ -5,6 +5,7 @@ import Loadable from 'react-loadable'; // 加载时进行模块分离
 import layout from './n-syndromeManage/component/layout/layout'; // 布局界面
 
 const loadingComponent = () => (<div>Loading...</div>);
+
 const TodayPatient = Loadable({
   loader: () => import('./n-todayPatient'),
   loading: loadingComponent,
@@ -60,7 +61,10 @@ const PersonalSetting= Loadable({
   loader: () => import('./n-personalSettings'),
   loading: loadingComponent,
 });
-
+const SystemManage= Loadable({
+  loader: () => import('./n-systemManage'),
+  loading: loadingComponent,
+});
 export default class Body extends Component {
   constructor(props){
     super(props);
@@ -86,6 +90,7 @@ export default class Body extends Component {
           <Route path="/Layout/sub" component={layoutSub}></Route>
           <Route path="/Layout/personalSetting" component={PersonalSetting}></Route>
           <Route path='/Layout/modelManage' component={ModelManage}></Route>
+          <Route path='/Layout/systemManage' component={SystemManage}></Route>
       </Container>
     );
   }

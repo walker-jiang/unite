@@ -17,11 +17,17 @@ class SystemOptions extends React.Component{
     this.refs.SystemUserLogin.isModify()
   }
   render() {
+    console.log('wwwwwwwww',window.sessionStorage.username);
+    var  div=<div></div>
+    if (window.sessionStorage.username) {
+      div=  <SystemUserLogin ref="SystemUserLogin" form={this.props.form}></SystemUserLogin>
+    }else {
+      div=<NoLogin form={this.props.form}></NoLogin>
+    }
     return (
       <div>
-        <SystemUserLogin ref="SystemUserLogin" form={this.props.form}></SystemUserLogin>
-        {/**<NoLogin form={this.props.form}></NoLogin>
-      <SysLogin form={this.props.form}></SysLogin>**/}
+        
+      {div}
       </div>
 
     )
