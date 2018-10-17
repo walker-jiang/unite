@@ -13,6 +13,7 @@ import selectSty from 'components/antd/style/select';
 import buttonSty from 'components/antd/style/button';
 import radioSty from 'components/antd/style/radio';
 import datePickerSty from 'components/antd/style/datePicker';
+import deepClone from 'commonFunc/deepClone';
 
 const Option = Select.Option;
 const FormItem = Form.Item;
@@ -66,19 +67,15 @@ class PatientBasicInfo extends Component {
   /** [handleSubmit 返回患者信息数据] */
   handleSubmit = (e) => {
     e.preventDefault();
-    let data = {};
+    let data = deepClone(this.state.patientInfo);
+    // let patientInfo = this.state.patientInfo;
     this.props.form.validateFieldsAndScroll((err, values) => {
       console.log('values', values);
       if (!err) {
-        data = values;
+        Object.assign(data, values);
       }
     });
-    if(patientInfo.patientid){ // 通过查询基本信息取得
-      Object.assign(patientInfo, data);
-      return patientInfo;
-    }else{ // 全部手动输入
-      return data;
-    }
+    return data;
   }
   componentWillMount(){
     this.getDictList(['country', 'nation', 'sex', 'marry', 'occupation', 'cardtype', 'pationtype', 'pationrel', 'blood']);
@@ -170,7 +167,11 @@ class PatientBasicInfo extends Component {
   };
   componentWillReceiveProps(nextProps){
     let patientInfo = nextProps.baPatient;
-    this.refreshAreaData(patientInfo);
+    if(JSON.stringify(patientInfo) != '{}'){ // 修改**挂号信息**接口
+      if(patientInfo.patientid != this.props.baPatient.patientid){
+        this.refreshAreaData(patientInfo);
+      }
+    }
   };
   /**
    * [refreshAreaData 通过患者信息数据刷新省市县数据]
@@ -372,8 +373,8 @@ class PatientBasicInfo extends Component {
     const { getFieldDecorator } = this.props.form;
     let disabled = this.props.disabled;
     let { country, nation, sex, marry, occupation, pationtype, cardtype, pationrel, blood, province, city, district, patientInfo, deptData, docData } = this.state;
+    console.log('patientInfo-new', patientInfo);
     let age = extractDataFromIdentityCard.getAgeFromBirthday(patientInfo.birthday);
-    console.log('patientInfo', patientInfo);
     const formItemLayout = {
       labelCol: {
         xs: { span: 8 },
@@ -408,7 +409,7 @@ class PatientBasicInfo extends Component {
                     rules: [{ required: true, message: '请填写患者姓名!' }],
                     initialValue: patientInfo.patientname
                   })(
-                    <QuickAddName ref={ref => {this.quickAddName = ref}} disabled={disabled} placeholder='请选择患者信息' getQuickData = {this.addPatientData.bind(this)}/>
+                    <QuickAddName ref={ref => {this.quickAddName = ref}} disabled={disabled} placeholder='请选择患者信息' getQuickData = {this.addPatientData}/>
                   )}
               </SpecFormItem>
             </Col>
@@ -787,7 +788,7 @@ class PatientBasicInfo extends Component {
                 >
                 {getFieldDecorator('dept', {
                   rules: [{ required: true, message: '请选择就诊科室!' }],
-                  initialValue: deptData.length ? { key: deptData[0].deptid, label: deptData[0].deptname } : {key: '', label: ''}
+                  initialValue: deptData.length ? ( patientInfo.dept ? patientInfo.dept : { key: deptData[0].deptid, label: deptData[0].deptname }) : {key: '', label: ''}
                 })(
                   <SpecSelect disabled={disabled} onChange={e => this.getDocData(e.key)} labelInValue>
                   {
@@ -804,7 +805,7 @@ class PatientBasicInfo extends Component {
                 label="接诊医生："
                 >
                 {getFieldDecorator('doctor', {
-                  initialValue: docData.length ? { key: docData[0].orgUerid, label: docData[0].realname } : {key: '', label: ''}
+                  initialValue: docData.length ? (patientInfo.doctor ? patientInfo.doctor : { key: docData[0].orgUerid, label: docData[0].realname } ) : {key: '', label: ''}
                 })(
                   <SpecSelect disabled={disabled} labelInValue>
                   {

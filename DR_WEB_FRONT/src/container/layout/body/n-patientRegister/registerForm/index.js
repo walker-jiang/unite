@@ -61,18 +61,19 @@ class Index extends Component {
   submit = (e) =>{
     let { registerInfo = {}, baPatient = {}, buPatientCase = {} } = this.state;
     let operateType = this.props.match.params.type;
+    let finalBaisicInfo = deepClone(baPatient); // 添加修改这个初始化都没毛病
     if(this.basicInfoForm){
       let values = this.basicInfoForm.handleSubmit(e);
-      Object.assign(baPatient, values);
-      baPatient.addrHome = values.province.label + values.city.label + values.district.label;
-      baPatient.birthday = values.birthday.format('YYYY-MM-DD');
-      baPatient.creator = window.sessionStorage.getItem('userid');
-      baPatient.provinceid = values.province.key;
-      baPatient.cityid = values.city.key;
-      baPatient.districtid = values.district.key
-      baPatient.ctsorgid = window.sessionStorage.getItem('orgid');
+      Object.assign(finalBaisicInfo, values); // 赋新值
+      finalBaisicInfo.addrHome = values.province.label + values.city.label + values.district.label;
+      finalBaisicInfo.birthday = values.birthday.format('YYYY-MM-DD');
+      finalBaisicInfo.creator = window.sessionStorage.getItem('userid');
+      finalBaisicInfo.provinceid = values.province.key;
+      finalBaisicInfo.cityid = values.city.key;
+      finalBaisicInfo.districtid = values.district.key
+      finalBaisicInfo.ctsorgid = window.sessionStorage.getItem('orgid');
       let paramData = {
-        "baPatient": baPatient,
+        "baPatient": finalBaisicInfo,
         "buPatientCase": null,
         "orgid": window.sessionStorage.getItem('orgid'),
         "patienttype": values.patienttype,
@@ -86,11 +87,12 @@ class Index extends Component {
         "deptid": values.dept.key,
         "deptname": values.dept.label,
       };
-      if(JSON.stringify(baPatient) == '{}'){ // 添加**挂号信息**接口
-        if(values.patientid){ // 通过查询基本信息取得
-          paramData.patientid = baPatient.patientid;
+      if(operateType.indexOf('v') == 0 || operateType.indexOf('m') == 0){ // 修改
+        paramData = Object.assign(registerInfo, paramData); // 戴上原来查询出的基本信息
+      }else if(operateType.indexOf('a') == 0){
+        if(finalBaisicInfo.patientid){ // 通过查询基本信息取得需要加上该患者ID
+          paramData.patientid = finalBaisicInfo.patientid;
         }
-
       }
       this.saveTip.showModal(1);
       let self = this;

@@ -13,6 +13,8 @@ import { getDiagnoseText } from 'commonFunc/transform';
 import deepClone from 'commonFunc/deepClone';
 import tableSty from 'components/antd/style/table';
 import tagsSty from 'components/antd/style/tags';
+import Icon from 'components/dr/icon';
+import AcupointEdit from '../acupointEdit';
 
 const confirm = Modal.confirm;
 const RadioGroup = Radio.Group;
@@ -28,12 +30,14 @@ class Index extends Component {
       // buRecipe: {}, // 原始处方信息
       data: {}, //原始医嘱信息
       deptData: [], // 执行科室数据
+      frequencyData: [],  // 频次下拉数据
       feeAll: 0, // 合计费用
       // 初始化数据
       buDiagnosisList: [], // 诊断明细信息
       aim: '', // 检验目的
       miType: '1', // 0 医保外， 1医保内 默认选择医保内
       examineData: [], // 检验项目数据
+      visible: false, // 穴位编辑是否可用
     }
   }
   componentWillMount(){
@@ -43,17 +47,36 @@ class Index extends Component {
     });
     this.getDiagnoseData();
     this.getDept();
+    this.getFrequency();
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
       this.getExamineData(this.props.orderid);
     }
   };
+  // 组件初始化获取频次数据下拉列表
+  getFrequency () {
+    let params = {
+      url: 'BaFreqController/getList',
+      data: {
+        freqtype: 1
+      }
+    };
+    let that = this;
+    function success(res) {
+      if(res.result){
+        let frequencyData = res.data;
+        that.setState({ frequencyData })
+      }
+    };
+    ajaxGetResource(params, success);
+  }
   /** [getDept 执行科室数据] */
   getDept() {
     let params = {
       url: 'BaDepartmentController/getList',
       server_url: config_login_url,
       data: {
-        keyword: 1
+        keyword: 1,
+        orgid: 10000
       }
     };
     let that = this;
@@ -244,63 +267,131 @@ class Index extends Component {
   /** [getTableColumns 设置表格列] */
   getTableColumns(){
     let deptData = this.state.deptData;
+    let frequencyData = this.state.frequencyData;
     let columns = [{
       title: "序号",
       dataIndex: 'order',
       key: 'order',
-      render: (text, record, index) => <span>{index + 1}</span>
+      render: (text, record, index) => {
+        if(index%2 == 0){
+          return {
+            children: <span><Title>治疗项/治疗明细</Title>：<Item>针法/毫针法</Item>/毫针治疗</span>,
+            props: {
+              colSpan: 2,
+            },
+          };
+        }else{
+          return <span>{text}</span>;
+        }
+      }
     }, {
-      title: "检验项/检验明细项",
-      dataIndex: 'medicalname',
-      key: 'medicalname',
-      render: (text, record, index) => record.orderSuitid ? <span><Stress>{record.orderSuitname}</Stress>/{record.medicalname}</span> : <span>{record.medicalname}</span>
+      title: "取穴/部位",
+      dataIndex: 'buwei',
+      key: 'buwei',
+      render: (text, record, index) => {
+        if(index%2 == 0){
+          return {
+            children:'',
+            props: {
+              colSpan: 0,
+            },
+          };
+        }else{
+          return <EditDiv><Label>{text}</Label><Edit type='edit' /></EditDiv>;
+        }
+      }
+    }, {
+      title: "操作方法",
+      dataIndex: 'fangfa',
+      key: 'fangfa',
+      render: (text, record, index) => {
+        if(index%2 == 0){
+          return '';
+        }else{
+          return <EditDiv><Label>{text}</Label><Edit type='edit' /></EditDiv>;
+        }
+      }
     }, {
       title: "执行科室",
-      dataIndex: 'deptname',
-      key: 'deptname',
-      render: (text, record, index)=>(
-        <SpecSelect
-          defaultValue={{key: record.deptid ? record.deptid : 0, label: record.deptname ? record.deptname : ''}}
-          labelInValue={true}
-          onSelect={(e)=>{this.onModifySelectValue(record.medicalid, 'deptid', 'deptname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
-          {
-            deptData.map((item) => <Option key={item.deptid} value={item.deptid}>{item.deptname}</Option>)
-          }
-        </SpecSelect>
-      )
+      dataIndex: 'keshi',
+      key: 'keshi',
+      render: (text, record, index)=>{
+        if(index%2 == 0){
+          return '';
+        }else{
+          return (
+            <SpecSelect
+              defaultValue={{key: deptData.deptid, label: deptData.deptname}}
+              labelInValue={true}
+              onSelect={(e)=>{this.onModifySelectValue(record.medicalid, 'deptid', 'deptname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
+              {
+                deptData.map((item) => <Option key={item.deptid} value={item.deptid}>{item.deptname}</Option>)
+              }
+            </SpecSelect>
+          )
+        }
+      }
     }, {
-      title: "部位或送检物",
-      dataIndex: 'spbody',
-      key: 'spbody',
-      render: (text, record, index)=>   <InputRemark onBlur={(e)=>{ record.spbody != e.target.value ? this.onModifyInputValue(e.target.value, record.medicalid, 'spbody', record.orderSuitid ? record.orderSuitid : '') : ''}} defaultValue={record.spbody} />
+      title: "频次",
+      dataIndex: 'pinci',
+      key: 'pinci',
+      render: (text, record, index)=>{
+        if(index%2 == 0){
+          return '';
+        }else{
+          return (
+            <SpecSelect
+              defaultValue={{key: frequencyData.deptid, label: frequencyData.deptname}}
+              labelInValue={true}
+              onSelect={(e)=>{this.onModifySelectValue(record.medicalid, 'deptid', 'deptname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
+              {
+                frequencyData.map((item) => <Option key={item.freqcode} value={item.freqcode}>{item.freqname}</Option>)
+              }
+            </SpecSelect>
+          )
+        }
+      }
+    }, {
+      title: "天数",
+      dataIndex: 'tianshu',
+      key: 'tianshu',
     }, {
       title: "数量/单位",
-      dataIndex: 'count',
-      key: 'count',
-      render: (text, record, index)=>
-      <span>
-        <InputCount onBlur={(e)=>{ record.count != e.target.value ? this.onModifyInputValue(e.target.value, record.medicalid, 'count', record.orderSuitid ? record.orderSuitid : '') : ''}} defaultValue={record.count} />{record.baseUnitDic}
-      </span>
-    }, {
-      title: "金额",
-      dataIndex: 'payMent',
-      key: 'payMent',
-      render: (text, record, index)=><span>{parseFloat(record.count * record.unitprice).toFixed(2)}</span>
-    }, {
-      title: "备注",
-      dataIndex: 'medinsrem',
-      key: 'medinsrem',
-      render: (text, record, index) => <InputRemark onBlur={(e)=>{ record.medinsrem != e.target.value ? this.onModifyInputValue(e.target.value, record.medicalid, 'medinsrem', record.orderSuitid ? record.orderSuitid : '') : ''}} defaultValue={record.medinsrem} />
-    }, {
-      title: "状态≡",
-      dataIndex: 'statusValue',
-      key: 'statusValue',
-      render: (value, record, index)=><Status status={record.statusValue}>{record.statusValue ? '• 已缴费' : '• 待缴费'}</Status>
+      dataIndex: 'shuliang',
+      key: 'shuliang',
+      render: (text, record, index) => {
+        if(index%2 == 0){
+          return {
+            children: <span>状态：<Status>待付款</Status></span>,
+            props: {
+              colSpan: 2,
+            },
+          };
+        }else{
+          return
+            <div>
+              <InputCount
+                onBlur={(e)=>{ record.count != e.target.value ? this.onModifyInputValue(e.target.value, record.medicalid, 'count', record.orderSuitid ? record.orderSuitid : '') : ''}}
+                defaultValue={1} />盒
+           </div>
+        }
+      }
     }, {
       title: "操作",
       dataIndex: 'operate',
       key: 'operate',
-      render: (value, record, index)=> <a onClick={() => { this.delExamineData(record) }}>删除</a>
+      render: (text, record, index) => {
+        if(index%2 == 0){
+          return {
+            children: '',
+            props: {
+              colSpan: 0,
+            },
+          };
+        }else{
+          return <a onClick={() => { this.delExamineData(record) }}>删除</a>;
+        }
+      }
     }];
     return columns;
   };
@@ -310,36 +401,56 @@ class Index extends Component {
    * @return {[type]}            [void]
    */
   getTableDataSource(originData){
-    let dataSource = [];
+    // let dataSource = [];
     let feeAll = 0;
-    originData.forEach((item) => {
-      if(item.baMedicalDtlList){ // 医嘱套
-        item.baMedicalDtlList.forEach((itemChild) => {
-          itemChild.key = dataSource.length
-          itemChild.orderSuitid = item.orderSuitid;
-          itemChild.orderSuitname = item.orderSuitname;
-          feeAll += itemChild.count * itemChild.unitprice;
-          dataSource.push(itemChild);
-        });
-
-      }else{ // 非医嘱套
-        item.key = dataSource.length
-        feeAll += item.count * item.unitprice;
-        dataSource.push(item);
-      }
-    });
-    if(dataSource.length % 8 != 0){
-      for(let i = dataSource.length % 8; i < 8 ; i++){
-        let item = deepClone(dataSource[dataSource.length-1]);
-        item.key = dataSource.length;
-        item.medicalid = ''; // 空行标识
-        dataSource.push(item)
-      }
-    }
+    // originData.forEach((item) => {
+    //   if(item.baMedicalDtlList){ // 医嘱套
+    //     item.baMedicalDtlList.forEach((itemChild) => {
+    //       itemChild.key = dataSource.length
+    //       itemChild.orderSuitid = item.orderSuitid;
+    //       itemChild.orderSuitname = item.orderSuitname;
+    //       feeAll += itemChild.count * itemChild.unitprice;
+    //       dataSource.push(itemChild);
+    //     });
+    //
+    //   }else{ // 非医嘱套
+    //     item.key = dataSource.length
+    //     feeAll += item.count * item.unitprice;
+    //     dataSource.push(item);
+    //   }
+    // });
+    // if(dataSource.length % 8 != 0){
+    //   for(let i = dataSource.length % 8; i < 8 ; i++){
+    //     let item = deepClone(dataSource[dataSource.length-1]);
+    //     item.key = dataSource.length;
+    //     item.medicalid = ''; // 空行标识
+    //     dataSource.push(item)
+    //   }
+    // }
+    //
+    let dataSource = [{
+      key: 1,
+      order: '',
+      buwei: '',
+      fangfa: '',
+      keshi: '单价：40.00',
+      pinci: '',
+      tianshu: '',
+      shuliang: ''
+    }, {
+      key: 2,
+      order: 1,
+      buwei: '迎香、风池、风池、合谷',
+      fangfa: '毫针浅刺用泻法',
+      keshi: '针灸',
+      pinci: '一天一次',
+      tianshu: '3天',
+      shuliang: '3项'
+    }];
     return { dataSource, feeAll };
   };
   render () {
-    let { visiblePop, examineData, buDiagnosisList, miType, aim } = this.state;
+    let { visiblePop, examineData, buDiagnosisList, miType, aim, visible } = this.state;
     const { getFieldDecorator } = this.props.form;
 
     const {dataSource, feeAll} = this.getTableDataSource(deepClone(examineData));
@@ -383,94 +494,98 @@ class Index extends Component {
       colon: false
     };
     return (
-      <SpecForm className='not-draggable' onClick={()=>{this.quickAddExamineItem.hideResult()}}>
-        <Row>
-          <Col span={24}>
-            <FormItem
-              {...formItemLayout}
-              label="诊断：">
-            {getFieldDecorator('diagnose', {
-              initialValue: {originData: buDiagnosisList, extractionData: getDiagnoseText(buDiagnosisList)}
-            })(
-              <Diagnose />
-            )}
-            </FormItem>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={24}>
-            <FormItem
-              {...formItemLayout}
-              label="备注/说明："
-            >
-            {getFieldDecorator('aim', {
-              initialValue: aim
-            })(
-              <InputBaseLine />
-            )}
-            </FormItem>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={8}>
-            <SpecFormItem
-              {...specFormItemLayout}
-              label={<span><Add>➕</Add>快速添加：</span>}
-              >
-                {getFieldDecorator('miType',{
-                  initialValue: miType
+      <div>
+        <SpecForm className='not-draggable' onClick={()=>{this.quickAddExamineItem.hideResult()}}>
+          <Row>
+            <Col span={24}>
+              <FormItem
+                {...formItemLayout}
+                label="诊断：">
+                {getFieldDecorator('diagnose', {
+                  rules: [{ required: true, message: '诊断信息为必填项!' }],
+                  initialValue: {originData: buDiagnosisList, extractionData: getDiagnoseText(buDiagnosisList)}
                 })(
-                  <SpecRadioGroup>
-                    <Radio value='0'>医保外</Radio>
-                    <Radio value='1'>医保内</Radio>
-                  </SpecRadioGroup>
-                )}
-              </SpecFormItem>
-          </Col>
-          <Col span={16}>
-            <FormItem
-              {...formItemLayout}
-              >
-                {getFieldDecorator('addQuickly')(
-                  <QuickAddExamineItem placeholder='请输入治疗项目首字母快速添加' icon='#0A6ECB' ref={ref => this.quickAddExamineItem = ref} getQuickData = {this.addExamineData.bind(this)}/>
+                  <Diagnose />
                 )}
               </FormItem>
-          </Col>
-        </Row>
-        <SpecRow>
-          <Col span={24}>
-            <FormItem
-              {...formItemLayout}
-              label="已选项目：">
-              {getFieldDecorator('choosedItem', {
-                initialValue: ''
-              })(
-                <div>
-                {
-                  examineData.map((item, index) => <SpecTag onClose={(e) => {e.preventDefault();this.delExamineData(item)}} closable key={index} id={item.baMedicalDtlList ? item.orderSuitid : item.medicalid}>{item.baMedicalDtlList ? item.orderSuitname : item.medicalname}</SpecTag>)
-                }
-                </div>
-              )}
-            </FormItem>
-          </Col>
-        </SpecRow>
-        <Footer>
-          <SpecTable
-            dataSource={dataSource}
-            locale={{emptyText: '暂无检验项目数据' }}
-            columns={columns}
-            pagination={Pagination}
-            rowClassName={(record, index)=>record.medicalid ? 'dotted' : 'dotted clear'} >
-          </SpecTable>
-          <Tip>💡提示：医保外项目以红色显示</Tip>
-          <Total>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
-        </Footer>
-        <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
-      </SpecForm>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24}>
+              <FormItem
+                {...formItemLayout}
+                label="备注/说明："
+                >
+                  {getFieldDecorator('aim', {
+                    initialValue: aim
+                  })(
+                    <InputBaseLine />
+                  )}
+                </FormItem>
+              </Col>
+            </Row>
+            <Row>
+              <Col span={8}>
+                <SpecFormItem
+                  {...specFormItemLayout}
+                  label={<span><Add>➕</Add>快速添加：</span>}
+                  >
+                    {getFieldDecorator('miType',{
+                      initialValue: miType
+                    })(
+                      <SpecRadioGroup>
+                        <Radio value='0'>医保外</Radio>
+                        <Radio value='1'>医保内</Radio>
+                      </SpecRadioGroup>
+                    )}
+                  </SpecFormItem>
+                </Col>
+                <Col span={16}>
+                  <FormItem
+                    {...formItemLayout}
+                    >
+                      {getFieldDecorator('addQuickly')(
+                        <QuickAddExamineItem placeholder='请输入治疗项目首字母快速添加' icon='#0A6ECB' ref={ref => this.quickAddExamineItem = ref} getQuickData = {this.addExamineData.bind(this)}/>
+                      )}
+                    </FormItem>
+                  </Col>
+                </Row>
+                <SpecRow>
+                  <Col span={24}>
+                    <FormItem
+                      {...formItemLayout}
+                      label="已选项目：">
+                      {getFieldDecorator('choosedItem', {
+                        initialValue: ''
+                      })(
+                        <div>
+                          {
+                            examineData.map((item, index) => <SpecTag onClose={(e) => {e.preventDefault();this.delExamineData(item)}} closable key={index} id={item.baMedicalDtlList ? item.orderSuitid : item.medicalid}>{item.baMedicalDtlList ? item.orderSuitname : item.medicalname}</SpecTag>)
+                          }
+                        </div>
+                      )}
+                    </FormItem>
+                  </Col>
+                </SpecRow>
+                <Footer>
+                  <SpecTable
+                    dataSource={dataSource}
+                    locale={{emptyText: '暂无检验项目数据' }}
+                    columns={columns}
+                    pagination={Pagination}>
+                  </SpecTable>
+                  <Tip>💡提示：医保外项目以红色显示</Tip>
+                  <Total>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
+                </Footer>
+                <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
+        </SpecForm>
+        <AcupointEdit></AcupointEdit>
+      </div>
     )
   }
 }
 const SpecForm = styled(Form)`
+  display: none;
   &&& > div > div > .ant-form-item {
     margin-bottom: -8px !important;
   }
@@ -490,7 +605,7 @@ const SpecFormItem = styled(FormItem)`
   }
 `;
 const SpecSelect = styled(Select)`
-  ${selectSty.blackTriangle}
+  ${selectSty.blackTriangle};
 `;
 
 const InputCount = styled(Input)`
@@ -536,7 +651,6 @@ const Total = styled.div`
   line-height: 35px;
 `;
 const Add = styled.span`
-
   color: #0A6ECB;
 `;
 const SpecRadioGroup = styled(RadioGroup)`
@@ -556,14 +670,48 @@ const Status = styled.span`
   color: ${props => props.status ? '#009900' : '#0A6ECB'}
 `;
 const SpecTable = styled(Table)`
-  ${tableSty.dottedRowTable};
   .ant-table {
     border-bottom: 1px solid #0A6ECB;
     height: 290px;
   }
-  .ant-table-thead th {
-    color: rgb(102, 102, 102);
+  &&& .ant-table-thead > tr > th {
+    border-radius: 0px;
+    border-top: 1px solid red;
+    border-bottom: 1px solid red;
   }
+  &&& .ant-table-tbody > tr:nth-child(2n) > td {
+    border-bottom: 1px dashed #CCCCCC
+  }
+  &&& .ant-table-tbody > tr:nth-child(2n + 1) > td {
+    border-top: 8px solid white;
+    border-bottom: 1px solid #CCCCCC
+  }
+  &&& .ant-table-tbody > tr > td {
+    background-color: #F8F4E7;
+  }
+`;
+const Title = styled.span`
+  color: #0A6ECB;
+`;
+const Item = styled.span`
+  color: #F8D17A;
+`;
+const EditDiv = styled.div`
+  width: 200px;
+  position: relative;
+  padding: 16px 5px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #CCCCCC;
+`;
+const Label = styled.div`
+  float: left;
+  margin-bottom: 16px;
+`;
+const Edit = styled(Icon)`
+  position: absolute;
+  right: 0px;
+  width: 25px;
+  height: 18px;
 `;
 const ChPatentMedicineForm = Form.create()(Index);
 

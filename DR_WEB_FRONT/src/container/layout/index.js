@@ -35,7 +35,6 @@ class Index extends Component {
   };
   setUserInfoForClient(){
     let userInfoObj = JSON.parse(window.getLoginState());
-    console.log('userInfoObj.userid123', userInfoObj);
     window.sessionStorage.setItem('username', userInfoObj.username); // 用户名
     window.sessionStorage.setItem('deptid', userInfoObj.deptid); // 科室ID
     window.sessionStorage.setItem('orgid', userInfoObj.orgid); // 机构ID

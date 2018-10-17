@@ -9,6 +9,8 @@ import buttonSty from 'components/antd/style/button';
 import paginationSty from 'components/antd/style/pagination';
 import TipModal from 'components/dr/modal/tip';
 import { getDiagnoseText, getDiagnoseDataSource } from 'commonFunc/transform';
+import AddIllBySymptom from '../../../treatment/treatItem/drAdviceManage/chHerbalMedicine/herbalForm/diagnose/addIllBySymptom';
+import AddIllByManifestations from '../../../treatment/treatItem/drAdviceManage/chHerbalMedicine/herbalForm/diagnose/addIllByManifestations';
 // import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
 const TabPane = Tabs.TabPane;
 
@@ -22,8 +24,12 @@ export default class SmartDistinguish extends Component {
       diagnoseHisOriginData: [], //诊断历史原始数据
       initData: {}, // 初始化数据
       diagnoseHisData: [], // 诊断数据
+      symptomId: '', // 病症ID
     };
     this.changeInitDataTwo = this.changeInitDataTwo.bind(this);
+    this.addChinaMedicineData = this.addChinaMedicineData.bind(this);
+    this.getMessage = this.getMessage.bind(this);
+    this.hideFloatLayer = this.hideFloatLayer.bind(this);
   };
   componentWillMount(){
     let diagnoseHisOriginData =[
@@ -256,10 +262,65 @@ export default class SmartDistinguish extends Component {
       "utstamp": "2018-10-16 14:32:45",
       "diagnosisWayDic": "中医"
     }];
-    let diagnoseFinalInfo = diagnoseHisOriginData;
+    // let diagnoseFinalInfo = diagnoseHisOriginData;
     this.setState({
-      diagnoseHisOriginData, diagnoseFinalInfo
+      diagnoseHisOriginData
     });
+  };
+  /** [hideFloatLayer 点击诊断的某些部分触发子组件浮层隐藏事件] */
+  hideFloatLayer(){
+    if(this.addIllBySymptom){
+      this.addIllBySymptom.hideResult();
+      this.setState({symptomId: ''}); // 重置病症ID
+    }
+    if(this.addIllByManifestation){
+      this.addIllByManifestation.hideResult();
+    }
+  };
+  /** [getMessage 病症选择后需要通知病侯组件查所选病症下的病侯] */
+  getMessage(symptomId){
+    this.setState({symptomId});
+  };
+  /** [addChinaMedicineData 添加中医病症病侯信息到诊断表中] */
+  addChinaMedicineData(e){
+    let diagnoseFinalInfo = this.state.diagnoseFinalInfo;
+    let symptom = this.addIllBySymptom.getSelectedData(); // 获取疾病信息
+    let manifestation = this.addIllByManifestation.getSelectedData(); // 获取症候信息
+
+    if('diseaseid' in symptom){
+      let exist = diagnoseFinalInfo.some((item) => {
+        if(item.diagnosisCode == symptom.discode){ // 存在该疾病
+          // console.log('存在该疾病');
+          manifestation.forEach((itemManifest) => {
+            let exist = item.buDiagnosisDismainfList.some((itemChild) => itemChild.manifcode == itemManifest.manifcode);
+            // console.log('症候是否存在', exist);
+            if(exist){
+              this.tipModal.showModal({ stressContent: '该症候已存在' });
+              console.log('症候',itemManifest.manifname,'已存在');
+            }else{
+              item.buDiagnosisDismainfList.push(itemManifest);
+            }
+          });
+          return true;
+        }
+      });
+      if(!exist){ // 最终诊断对象中不存在该疾病
+        // console.log('不存在该疾病');
+        let item = deepClone(symptom);
+        symptom.buDiagnosisDismainfList = manifestation;
+        symptom.diagnosisName = symptom.disname;
+        symptom.diagnosisCode = symptom.discode;
+        symptom.diaid = '';
+        symptom.diagnosisWay = 1;
+        diagnoseFinalInfo.push(symptom);
+      }
+    }else{ // 疾病不能为空
+      this.tipModal.showModal({ stressContent: '疾病不能为空' });
+      return ;
+    }
+    // this.addIllBySymptom.hideResult(); // 隐藏病症弹框
+    this.addIllByManifestation.hideResult(); // 隐藏病侯弹框
+    this.setState({ diagnoseFinalInfo });
   };
   /**
    * [delDiagnose 通过诊断表格删除诊断信息]
@@ -329,16 +390,16 @@ export default class SmartDistinguish extends Component {
     }
     return columns;
   };
-    /** changeInitDataTwo
-     * [changeTabs 左右联动]
-     * @param  {[type]} initData
-     */
-    changeInitDataTwo = (buDiagnosisInfo) =>{
-      var initData = this.state.initData;
-      initData['buDiagnosisInfo'] = buDiagnosisInfo;
-    }
-    // 历史诊断双击选择
-    SelectedLine(record){
+  /** changeInitDataTwo
+   * [changeTabs 左右联动]
+   * @param  {[type]} initData
+   */
+  changeInitDataTwo = (buDiagnosisInfo) =>{
+    var initData = this.state.initData;
+    initData['buDiagnosisInfo'] = buDiagnosisInfo;
+  }
+  // 历史诊断双击选择
+  SelectedLine(record){
       let {diagnoseHisOriginData, diagnoseFinalInfo} = this.state;
       if(record.manifCode){ // 有症候
         diagnoseHisOriginData.forEach((item) => {
@@ -384,7 +445,7 @@ export default class SmartDistinguish extends Component {
   render() {
     let columns = this.getTableCol();
     let hisCols = this.getTableCol('his');
-    let { diaCurPage, hisCurPage, diagnoseHisOriginData, diagnoseFinalInfo  } = this.state;
+    let { diaCurPage, hisCurPage, diagnoseHisOriginData, diagnoseFinalInfo, symptomId  } = this.state;
     let diagnoseHisData =getDiagnoseDataSource(diagnoseHisOriginData, 'his'); // 历史诊断表格数据
     let diagnoseData = getDiagnoseDataSource(diagnoseFinalInfo, 'now'); // 当前诊断表格数据
     Pagination_dia.total = diagnoseData.length;
@@ -400,11 +461,14 @@ export default class SmartDistinguish extends Component {
       this.setState({ hisCurPage: page});
     }
     return (
-      <Container>
+      <Container onClick={this.hideFloatLayer}>
         <Left>
           <DiaTitle>患者诊断</DiaTitle>
           <Middle>
-            <SureButton type="primary">添加诊断</SureButton>
+            <AddContainer>
+              <AddIllBySymptom  icon='#0A6ECB' ref={ref => this.addIllBySymptom = ref} placeholder='请输入病症中文关键字活拼音简写搜索' notify={this.getMessage}/>
+              <AddIllByManifestations addChinaMedicineData={this.addChinaMedicineData} icon='#0A6ECB' ref={ref => this.addIllByManifestation = ref} placeholder='请输入病侯中文关键字货拼音简写搜索' symptomId={symptomId}/>
+            </AddContainer>
             <SpecTable
               dataSource={diagnoseData}
               columns={columns}
@@ -458,7 +522,6 @@ export default class SmartDistinguish extends Component {
 }
 const Container = styled.div`
   display: flex;
-
 `;
 const Left = styled.div`
   flex-grow: 1;
@@ -482,8 +545,11 @@ const Middle = styled.div`
   border-top: 1px solid #CCCCCC;
   height: 171px;
 `;
+const AddContainer = styled.div`
+  display: flex;
+  margin: 10px 0px;
+`;
 const SpecTable = styled(Table)`
-
   ${tableSty.selectedTable};
   ${paginationSty.easyPagination};
   .ant-table-placeholder {
@@ -502,7 +568,7 @@ const SpecTable = styled(Table)`
   }
 `;
 const History = styled.div`
-  margin-top: 40px;
+  margin-top: 60px;
   border-top: 1px solid #CCCCCC;
   height: 181px;
 `;
@@ -550,7 +616,7 @@ const SpecTabs = styled(Tabs)`
 `;
 const ActionButton = styled.div`
   border-top: 1px solid #CCCCCC;
-  margin-top: 40px;
+  margin-top: 30px;
 `;
 const BorderButton = styled(Button)`
   ${buttonSty.white}

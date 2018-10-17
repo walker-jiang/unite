@@ -112,10 +112,10 @@ class PersonalSettings extends React.Component{
      Icon4 = $("#icon4");
     if(value=="User"){
       console.log("ssss");
-      Icon1.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
-      Icon2.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-      Icon3.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-      Icon4.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
+      Icon1.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
+      Icon2.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+      Icon3.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+      Icon4.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
       this.setState({status:["1"]});
       this.PersonalInformationSettings.isModify()
     }
@@ -145,91 +145,91 @@ class PersonalSettings extends React.Component{
     Icon4 = $("#icon4");
     if(val == '个人设置'){
       if(JSON.stringify(this.state.status) == '[]'){
-        Icon1.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+        Icon1.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
         this.setState({status:["1"]})
       }else{
         if(JSON.stringify(this.state.status) == '["2"]'){
-          Icon2.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-          Icon1.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+          Icon2.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+          Icon1.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
           this.setState({status:["1"]})
         }else if ( JSON.stringify(this.state.status) == '["3"]') {
-          Icon3.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-          Icon1.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+          Icon3.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+          Icon1.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
           this.setState({status:["1"]})
         }else if ( JSON.stringify(this.state.status) == '["4"]') {
-          Icon4.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-          Icon1.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+          Icon4.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+          Icon1.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
           this.setState({status:["1"]})
         }else{
-          Icon1.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
+          Icon1.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
           this.setState({status:[]})
         }
       }
 
     }else if(val == '修改密码'){
       if(JSON.stringify(this.state.status) == '[]'){
-        Icon2.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+        Icon2.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
         this.setState({status:["2"]})
       }else{
         if(JSON.stringify(this.state.status) == '["1"]'){
-          Icon1.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-          Icon2.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+          Icon1.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+          Icon2.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
           this.setState({status:["2"]})
         }else if ( JSON.stringify(this.state.status) == '["3"]') {
-          Icon3.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-          Icon2.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+          Icon3.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+          Icon2.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
           this.setState({status:["2"]})
         }else if ( JSON.stringify(this.state.status) == '["4"]') {
-          Icon4.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-          Icon2.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+          Icon4.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+          Icon2.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
           this.setState({status:["2"]})
         }else{
-          Icon2.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
+          Icon2.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
           this.setState({status:[]})
         }
       }
     }else if (val == '系统选项') {
       if(JSON.stringify(this.state.status) == '[]'){
-        Icon3.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+        Icon3.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
         this.setState({status:["3"]})
       }else{
         if(JSON.stringify(this.state.status) == '["1"]'){
-          Icon1.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-          Icon3.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+          Icon1.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+          Icon3.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
           this.setState({status:["3"]})
         }else if ( JSON.stringify(this.state.status) == '["2"]') {
-          Icon2.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-          Icon3.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+          Icon2.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+          Icon3.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
           this.setState({status:["3"]})
         }else if ( JSON.stringify(this.state.status) == '["4"]') {
-          Icon4.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-          Icon3.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+          Icon4.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+          Icon3.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
           this.setState({status:["3"]})
         }else{
-          Icon3.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
+          Icon3.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
           this.setState({status:[]})
         }
 
       }
     }else if (val == '系统版本') {
       if(JSON.stringify(this.state.status) == '[]'){
-        Icon4.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+        Icon4.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
         this.setState({status:["4"]})
       }else{
         if(JSON.stringify(this.state.status) == '["1"]'){
-          Icon1.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-          Icon4.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+          Icon1.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+          Icon4.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
           this.setState({status:["4"]})
         }else if ( JSON.stringify(this.state.status) == '["2"]') {
-          Icon2.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-          Icon4.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+          Icon2.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+          Icon4.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
           this.setState({status:["4"]})
         }else if ( JSON.stringify(this.state.status) == '["3"]') {
-          Icon3.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
-          Icon4.css({'transform':"rotate(-270deg)",'transition':"transform .3s linear",'transform-origin':"33% 37% 0"})
+          Icon3.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
+          Icon4.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
           this.setState({status:["4"]})
         }else{
-          Icon4.css({'transform':"rotate(-90deg)",'transition':"transform .3s linear",'transform-origin':"48% 54% 0"})
+          Icon4.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
           this.setState({status:[]})
         }
       }

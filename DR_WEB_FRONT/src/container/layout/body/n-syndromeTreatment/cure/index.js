@@ -13,26 +13,29 @@ export default class Cure extends Component {
   constructor(props){
     super(props);
     this.state = {
-      patientInfo: {}
+      baPatient: {}
     };
   };
   componentWillMount(){
-    // this.getUserInfo(this.props.patientid);
+    this.getRegisterInfo(this.props.registerid);
   };
-  /** [getUserInfo 获取患者信息] */
-  getUserInfo(patientid){
+  /**
+   * [getRegisterInfo getRegisterInfo]
+   * @param  {[type]} registerid [挂号ID]
+   * @return {[type]}            [undefined]
+   */
+  getRegisterInfo(registerid){
     let self = this;
     let params = {
-      url: 'BaPatientController/getData',
+      url: 'BuRegisterController/getData',
       data: {
-        id: patientid,
+        registerid: registerid,
       },
     };
     function callBack(res){
       if(res.result){
-        self.setState({
-          patientInfo: res.data,
-        });
+        let { baPatient } = res.data;
+        self.setState({ baPatient });
       }else{
         console.log('异常响应信息', res);
       }
@@ -40,7 +43,7 @@ export default class Cure extends Component {
     ajaxGetResource(params, callBack);
   };
   render() {
-    let { patientname = '未知', sexDic = '男', birthday = '1992-08-21', mobile = '**********', cardno = '**********************', patienttypeDic = '未知'} = this.state.patientInfo;
+    let { patientname = '未知', sexDic = '男', birthday = '1992-08-21', mobile = '**********', cardno = '**********************', patienttypeDic = '未知'} = this.state.baPatient;
     let age = extractDataFromIdentityCard.getAgeFromBirthday(birthday);
     let current = this.props.current;
     let bodyComponent = null;

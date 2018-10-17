@@ -1,15 +1,35 @@
 import React, {Component} from 'react';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
+import Loadable from 'react-loadable'; // 加载时进行模块分离
 import { Button } from 'antd';
 import Icon from 'components/dr/icon';
 import buttonSty from 'components/antd/style/button';
-import PatientDetailInfo from './treatItem/patientDetailInfo';
-import WriteMedicalRecords from './treatItem/writeMedicalRecords';
-import DrAdviceManage from './treatItem/drAdviceManage';
-import DiseasePreventTreat from './treatItem/diseasePreventTreat';
+// import PatientDetailInfo from './treatItem/patientDetailInfo';
+// import WriteMedicalRecords from './treatItem/writeMedicalRecords';
+// import DrAdviceManage from './treatItem/drAdviceManage';
+// import DiseasePreventTreat from './treatItem/diseasePreventTreat';
 import PatientList from './patientList';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
+
+const loadingComponent = () => (<div>Loading...</div>);
+const PatientDetailInfo = Loadable({
+  loader: () => import('./treatItem/patientDetailInfo'),
+  loading: loadingComponent,
+});
+const WriteMedicalRecords = Loadable({
+  loader: () => import('./treatItem/writeMedicalRecords'),
+  loading: loadingComponent,
+});
+const DrAdviceManage = Loadable({
+  loader: () => import('./treatItem/drAdviceManage'),
+  loading: loadingComponent,
+});
+const DiseasePreventTreat = Loadable({
+  loader: () => import('./treatItem/diseasePreventTreat'),
+  loading: loadingComponent,
+});
+
 class Index extends Component {
   constructor(props){
     super(props);

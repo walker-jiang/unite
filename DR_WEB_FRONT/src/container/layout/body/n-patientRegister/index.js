@@ -60,6 +60,8 @@ export default class Index extends Component {
   };
   /** [getTableColumns 获取表格列] */
   getTableColumns(){
+    let date = new Date();
+    const year = date.getFullYear();
     const columns = [{
       title: '患者编号',
       dataIndex: 'patientno',
@@ -76,6 +78,7 @@ export default class Index extends Component {
       title: '年龄',
       dataIndex: 'birthday',
       key: 'birthday',
+      render: (text, record) => year - parseInt(record.birthday.substr(0,4))
     }, {
       title: '手机号',
       dataIndex: 'mobile',
@@ -169,7 +172,7 @@ export default class Index extends Component {
               </Link>
             </RegisterButton>
             <ArrowPicker ref={ref => {this.arrowPicker = ref}}></ArrowPicker>
-            <SpecInput placeholder='请输入患者姓名/患者编号/身份证号/拼音' onChange={(e) => {this.setState({ keyword: e.target.value })}}></SpecInput>
+            <SpecInput placeholder='请输入患者姓名/患者编号/身份证号/拼音' onChange={(e) => {this.setState({ keyword: e.target.value })}} onKeyDown={ e => { e.keyCode == 13 ? this.getPatientData() : null }}></SpecInput>
             <SearchIcon type='search-thin' fill='#FFFFFF' onClick={this.getPatientData}></SearchIcon>
           </Right>
         </Header>
@@ -249,6 +252,11 @@ const SearchIcon = styled(Icon)`
 `;
 const Content = styled.div`
   width: 100%;
+  overflow: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  height: calc(100% - 110px);
   position: relative;
 `;
 const SpecTable = styled(Table)`

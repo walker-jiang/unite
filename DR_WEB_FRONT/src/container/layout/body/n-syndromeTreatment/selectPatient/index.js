@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { Input, Table, Pagination, LocaleProvider, Steps } from 'antd';
 import TableIcon from 'components/dr/icon/icons/table';
 import ListIcon from 'components/dr/icon/icons/list';
-import QuickReception from '../quickReception';
 import ArrowPicker from 'components/dr/datePicker/arrowPicker';
 import inputSty from 'components/antd/style/input';
 import Icon from 'components/dr/icon';
@@ -100,7 +99,7 @@ export default class SelectPatient extends Component {
      * @param  {[type]} rcStatus [接诊状态]
      * @return {[type]}           [表格列]
      */
-    getTableColumns(rcStatus){
+  getTableColumns(rcStatus){
       let date = new Date();
       const year = date.getFullYear();
       const columns = [{
@@ -161,7 +160,7 @@ export default class SelectPatient extends Component {
         title: '操作',
         dataIndex: 'operate',
         key: 'operate',
-        render: (text, record) => <StyButton onStep={(step, patientid) => {this.props.onStep(step, patientid)}}>选择</StyButton>
+        render: (text, record) => <StyButton onStep={(step, registerid) => {this.props.onStep(step, registerid)}}>选择</StyButton>
       }];
       if(rcStatus == 0){
         columns.splice(11,2); // 删除就诊时间
@@ -228,7 +227,6 @@ export default class SelectPatient extends Component {
               </SpecTabs>
             </Left>
             <Right>
-              <QuickReception></QuickReception>
               <ArrowPicker ref={ref => {this.arrowPicker = ref}}></ArrowPicker>
               <SpecInput placeholder='请输入患者姓名/患者编号/身份证号/拼音' onChange={(e) => {this.setState({ keyword: e.target.value })}}></SpecInput>
               <SearchIcon type='search-thin' fill='#FFFFFF' onClick={this.getPatientData}></SearchIcon>

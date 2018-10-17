@@ -78,7 +78,7 @@ class Home extends React.Component {
       beginTime:st1,
       endTime:st,
       doctorid:window.sessionStorage.getItem('userid'),
-      casetype:0,
+      casetype:1,
     }
     const params0 = {
       type:'get',
@@ -106,7 +106,7 @@ class Home extends React.Component {
       beginTime:st1,
       endTime:st,
       doctorid:window.sessionStorage.getItem('userid'),
-      casetype:0,
+      casetype:2,
     }
     const params1 = {
       type:'get',
@@ -130,33 +130,6 @@ class Home extends React.Component {
       console.log('errorres',res);
     }
     //首页接诊信息列表请求
-
-    // var jzdata={
-    //   keyword:' ',
-    //   orgid:window.sessionStorage.getItem('orgid'),
-    //   deptid:window.sessionStorage.getItem('deptid'),
-    //   beginTime:st1,
-    //   endTime:st,
-    //   rcStatus:0
-    // }
-    // const jzparams = {
-    //   type:'get',
-    //   dataType:'JSON',
-    //   contentType:'application/json;charset=UTF-8',
-    //   async:true,
-    //   url:'http://localhost:8088/BuRegisterController/getListByMap',
-    //   data:jzdata,
-    //   success: function suc(text) { }, //请求成功执行方法
-    //   error: function eror() { }
-    // }
-    // Post.post('get','application/json','http://localhost:8088/BuRegisterController/getListByMap',jzdata,suc)
-    // function suc(text) {
-    //   console.log('text111111',text);
-    // }
-    // function eror(error) {
-    //   console.log('error',error);
-    // }
-
     var jzdata = {
       keyword:'',
       orgid:window.sessionStorage.getItem('orgid'),
@@ -545,7 +518,7 @@ class Home extends React.Component {
           }
         ];
       const data2 = this.state.data2;
-    
+
     //已完成
     const columns3 = [
           {
@@ -630,11 +603,12 @@ class Home extends React.Component {
             textAlign:"center",
             lineHeight:"28px",
             zIndex:100,
-            top:`${this.state.show?"-20px":"0"}`,
-            left:"90%",
+            top:`${this.state.show?"-10px":"13px"}`,
+            transition: "top, .5s",
+            left:"93%",
             lineHeight:'22px',
             transition:"all .5s"}}
-            onClick={this.deng}><span style={{position:"absolute",height:"35px",width:"2px",background:"#797979",top:"-38px",left:"9px"}}></span>析</div>
+            onClick={this.deng}><span style={{position:"absolute",height:`${this.state.show?'12px':"33px"}`,width:"2px",background:"#797979",top:`${this.state.show?'-12px':"-36px"}`,left:"10px",transition: "height,top, .5s"}}></span>析</div>
         <div style={{width:`${!this.state.set?"100%":"70%"}`,float:"left",background:""}}>
         <Row className="fontStyle">
           <Col xs={{ span: 5, offset: 1 }} lg={{ span: 7, offset: 0 }}>
@@ -659,7 +633,7 @@ class Home extends React.Component {
           <div className='dian'>今日门诊</div>
         </Row>
         <Row>
-          <HomeTabs columns={columns} data={data} columns2={columns2} data2={data2} columns3={columns3} data3={data3} date={this.state.allpatientnum}></HomeTabs>
+          <HomeTabs columns={columns} data={data} columns2={columns2} data2={data2} columns3={columns3} data3={data3} date={this.state.data3.length}></HomeTabs>
         </Row>
         </div>
 

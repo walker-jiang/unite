@@ -24,13 +24,13 @@ export default class GridItem extends Component {
           {
             gridType == 0 ?
             <Footer themeType={themeType}>
-              <ActionButton onClick={() => {this.props.onStep(1, dataSource.patientid)}}>
+              <ActionButton onClick={() => {this.props.onStep(1, dataSource.registerid)}}>
                 选择
               </ActionButton>
             </Footer>
             : gridType == 1 ?
             <Footer themeType={themeType}>
-              <ActionButton onClick={() => {this.props.onStep(1, dataSource.patientid)}}>
+              <ActionButton onClick={() => {this.props.onStep(1, dataSource.registerid)}}>
                 选择
               </ActionButton>
             </Footer> : null

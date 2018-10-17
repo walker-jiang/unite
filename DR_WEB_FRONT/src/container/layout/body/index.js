@@ -82,8 +82,8 @@ export default class Body extends Component {
           <Route path='/Layout/registerForm/:type' component={RegisterForm} exact></Route>
           <Route path='/Layout' component={Home} exact></Route>
           <Route path='/Layout/treatment' component={TreatManage}></Route>
-          <Route path='/Layout/electronicMedicalRecords' component={Electronic}></Route>
-          <Route path='/Layout/cure' component={Cure}></Route>
+          <Route path='/Layout/caseCenter' component={Electronic}></Route>
+          <Route path='/Layout/cureNotIll' component={Cure}></Route>
           <Route path='/Layout/syndromeTreatment' component={SyndromeTreatment}></Route>
           <Route path='/Layout/patientRecords' component={PantientRecords}></Route>
           <Route path='/Layout/more' component={More}></Route>
@@ -99,6 +99,7 @@ const Container = styled.div`
   width: 100%;
   position: relative;
   flex-grow: 1;
+  height: 100%;
 `;
 /*
 @作者：姜中希

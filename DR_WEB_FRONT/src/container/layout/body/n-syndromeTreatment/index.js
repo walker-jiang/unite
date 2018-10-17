@@ -4,10 +4,7 @@ import { Steps } from 'antd';
 import Icon from 'components/dr/icon';
 import SelectPatient from './selectPatient';
 import Cure from './cure';
-// import IllCaseSure from './illCaseSure';
-// import SmartCure from './smartCure';
-// import SmartCure1 from './smartCure1';
-// import Finish from './finish';
+import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
 const Step = Steps.Step;
 
@@ -15,25 +12,47 @@ export default class SyndromeTreatment extends Component {
   constructor(props){
     super(props);
     this.state = {
-      current: 4, //当前步
-      patientid: '', //选择的当前患者
+      current: 0, //当前步
+      registerid: '', //选择的当前患者
     };
     this.stepFunc = this.stepFunc.bind(this);
   };
-  stepFunc(step, patientid){
-    if(patientid){
-      this.setState({ current: step, patientid })
+  getCaseData(){};
+  getSyndromeData(registerid){
+    let self = this;
+    let params = {
+      url: 'BuPatientCaseController/getData',
+      data: {
+        registerid: registerid
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        if(res.data){
+          self.setState({ current: 3, registerid })
+        }else{
+          self.setState({ current: 1, registerid })
+        }
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
+  stepFunc(step, registerid){
+    if(registerid){
+      this.getSyndromeData(registerid);
     }else{
       this.setState({ current: step })
     }
   };
   render() {
-    let { current, patientid } = this.state;
+    let { current, registerid } = this.state;
     let compo = null;
     if(current == 0){
       compo = <SelectPatient onStep={this.stepFunc}/>;
     }else{
-      compo = <Cure onStep={this.stepFunc} current={current} patientid={patientid}/>;
+      compo = <Cure onStep={this.stepFunc} current={current} registerid={registerid}/>;
     }
 
     return (

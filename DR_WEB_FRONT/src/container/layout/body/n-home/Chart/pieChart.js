@@ -111,7 +111,7 @@ upData=()=>{
         all += parseInt(item.value)
       })
       console.log('this_.state.daTa.value',data,this_.state.daTa.value,);
-      var str= `<span>${data.type}</span><span>${Math.floor(parseInt(data.value)/all*100)/100}%</span><span>${data.value}人</span>`
+      var str= `<span>${data.type}</span><span>${Math.floor(parseInt(data.value)/all*100)}%</span><span>${data.value}人</span>`
       return str; // val 为每个图例项的文本值
     }
   });
