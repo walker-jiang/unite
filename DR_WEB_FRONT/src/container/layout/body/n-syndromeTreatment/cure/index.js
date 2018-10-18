@@ -13,7 +13,8 @@ export default class Cure extends Component {
   constructor(props){
     super(props);
     this.state = {
-      baPatient: {}
+      baPatient: {},
+      caseBasicInfo: null, // 基本病历信息不包括诊断
     };
   };
   componentWillMount(){
@@ -42,22 +43,34 @@ export default class Cure extends Component {
     };
     ajaxGetResource(params, callBack);
   };
+  componentWillReceiveProps(nextProps){
+    if(nextProps.current == 2 && this.caseConfirm){
+      console.log('this.caseConfirm', this.caseConfirm);
+      this.caseConfirm.validateFieldsAndScroll((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values);
+          this.setState({ caseBasicInfo: values });
+        }
+      });
+    }
+  };
   render() {
     let { patientname = '未知', sexDic = '男', birthday = '1992-08-21', mobile = '**********', cardno = '**********************', patienttypeDic = '未知'} = this.state.baPatient;
     let age = extractDataFromIdentityCard.getAgeFromBirthday(birthday);
+    let caseBasicInfo = this.state.caseBasicInfo;
     let current = this.props.current;
     let bodyComponent = null;
     if(current == 1){
-      bodyComponent = <CaseConfirm onStep={(step) => {this.props.onStep(step)}}/>;
+      bodyComponent = <CaseConfirm onStep={(step) => {this.props.onStep(step)}} ref={ ref => { this.caseConfirm = ref }}/>;
     }
     if(current == 2){
-      bodyComponent = <SmartDistinguish onStep={(step) => {this.props.onStep(step)}}/>;
+      bodyComponent = <SmartDistinguish onStep={(step) => {this.props.onStep(step)}} caseBasicInfo={caseBasicInfo} registerid={this.props.registerid}/>;
     }
     if(current == 3){
-      bodyComponent = <SmartTreatment onStep={(step) => {this.props.onStep(step)}}/>;
+      bodyComponent = <SmartTreatment onStep={(step) => {this.props.onStep(step)}} registerid={this.props.registerid}/>;
     }
     if(current == 4){
-      bodyComponent = <Finish onStep={(step) => {this.props.onStep(step)}}/>;
+      bodyComponent = <Finish onStep={(step) => {this.props.onStep(step)}} registerid={this.props.registerid}/>;
     }
     return (
         <Container >

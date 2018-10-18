@@ -58,7 +58,6 @@ export default class TodayPatient extends Component {
     function callBack(res){
       if(res.result){
         let patienList = res.data.records.map((item, index) => Object.assign(item, { key: index }));
-        console.log('patienList', patienList);
         let totalRecords = res.data.total;
         self.getPatientNumber();
         self.setState({patienList: patienList, totalRecords});
@@ -221,8 +220,8 @@ export default class TodayPatient extends Component {
       key: 'regDoctorname',
     }, {
       title: '就诊科室',
-      dataIndex: 'regDoctorname',
-      key: 'regDoctorname',
+      dataIndex: 'deptidDic',
+      key: 'deptidDic',
     }, {
       title: '就诊类型',
       dataIndex: 'casetypeDic',
@@ -357,7 +356,6 @@ export default class TodayPatient extends Component {
     let { showWay, patienList, numbers, rcStatus,totalRecords, curPage, pageSize } = this.state;
     const columns = this.getTableColumns(rcStatus);
     let girds = this.getGridList(patienList);
-    console.log('patienList', patienList);
     return (
       <Container>
         <Header>

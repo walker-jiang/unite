@@ -46,7 +46,8 @@ export default class TestResults extends Component {
       scoreChart: [],
       echartLabel: '',
       echartValue: '',
-      imgUrl: ''
+      imgUrl: '',
+      printData: []
     };
     this.handClick = this.handClick.bind(this);
   };
@@ -102,6 +103,7 @@ export default class TestResults extends Component {
         let that = this;
         function success(res){
           that.setState({
+            printData: res.data,
             scoreChart: res.data.scoreChart,//echert数据
             bodyType: res.data.conclusion.bodyType,//体质
             performance: res.data.conclusion.performance,//体质描述
@@ -195,7 +197,10 @@ export default class TestResults extends Component {
     // LODOP.ADD_PRINT_HTM(0,0,1000,1900,document.getElementById("testResult").innerHTML);
     // LODOP.PREVIEW();
     //LODOP.PRINT();
-    window.print()
+    let printData = this.state.printData;
+    console.log('printData',JSON.stringify(printData));
+    
+    // window.reportPrint(1,JSON.stringify(printData))
   }
 
   pdfClick(){

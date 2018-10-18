@@ -35,7 +35,6 @@ export default class DateSelector extends Component {
   };
   render() {
     let dateValue = this.state.dateValue;
-    console.log('dateValue', dateValue);
     return (
       <Container >
         <LeftArrow onClick={() => this.changeYear('prev')}>

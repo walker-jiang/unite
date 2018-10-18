@@ -61,7 +61,7 @@ export default class ContentDetail extends Component {
     var { isCut, isUnfoldAll, one, two, three, four, five, six, seven, item, unfold  } = this.state;
     return (
       <div>
-        <div class="content-icon">
+        <div className="content-icon">
           <Icon type={unfold?"up":"down"} onClick={()=>{ this.pullDown(unfold) }}/>
         </div>
         {
@@ -72,7 +72,7 @@ export default class ContentDetail extends Component {
           (
             isUnfoldAll
             ?
-            <div class="content-detail">
+            <div className="content-detail">
               <p onClick={()=>this.unfold("one",one)}><Icon type={one?"down":"right"}/>中药处方：</p>
               <p>&nbsp;</p>
               <p onClick={()=>this.unfold("two",two)}><Icon type={two?"down":"right"}/>处方1：（内服）：</p>
@@ -93,7 +93,7 @@ export default class ContentDetail extends Component {
               <span onClick={()=>this.unfoldAll(isUnfoldAll)}>查看详细<Icon type="double-left" theme="outlined" /></span>
             </div>
             :
-            <div class="content-detail">
+            <div className="content-detail">
               <p onClick={()=>this.unfold("one",one)}><Icon type={one?"down":"right"}/>中药处方：</p>
               <p>&nbsp;</p>
               <p onClick={()=>this.unfold("two",two)}><Icon type={two?"down":"right"}/>处方1：（内服）：</p>

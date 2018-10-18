@@ -24,15 +24,15 @@ export default class IllHistory extends Component{
    * @return {[type]}       [undefined]
    */
   initialData(title){
-    this.getillHistory('', title);
+    this.getIllHistory('', title);
   };
   /**
-   * [getillHistory 请求主症列表]
+   * [getIllHistory 请求主症列表]
    * @param  {[type]} key   [主症关键词]
    * @param  {[type]} title [主症所属病历]
    * @return {[type]}       [undefined]
    */
-  getillHistory(key, title){
+  getIllHistory(key, title){
     let self = this;
     let params = {
       url: 'BaEnteritemDictController/getList',
@@ -63,12 +63,15 @@ export default class IllHistory extends Component{
    * @return {[type]}       [undefined]
    */
   filter = (e, title) => {
-    this.getillHistory(e.target.value, title);
+    this.getIllHistory(e.target.value, title);
   }
   /** [selectText 选中结果显示的某行后将选中结果传给formitem] */
   selectText = (e) => { // 选中某行
     this.input.focus(); // 返回焦点
-    let pre_text = typeof(this.props.value) == 'string' ? this.props.value + '；' : this.props.value.extractionData;
+    let pre_text = typeof(this.props.value) == 'string' ? this.props.value : this.props.value.extractionData ;
+    if(pre_text.substr(pre_text.length-1, 1) != '；' && pre_text){ // 用户手动输入后追加；
+      pre_text += '；';
+    }
     pre_text += e + '；';
     this.props.onChange({originData: [], extractionData: pre_text});
   };

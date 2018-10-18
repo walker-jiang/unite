@@ -5,7 +5,8 @@ import buttonSty from 'components/antd/style/button';
 import TipModal from 'components/dr/modal/tip';
 import Diagnose from '../../../treatment/treatItem/drAdviceManage/diagnose';
 import TableGrid from './tableGrid';
-// import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
+import ajaxGetResource from 'commonFunc/ajaxGetResource';
+import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
 
 const TabPane = Tabs.TabPane;
 
@@ -19,7 +20,27 @@ export default class SmartDistinguish extends Component {
     this.diagnoseUpdate = this.diagnoseUpdate.bind(this);
     this.actionManager = this.actionManager.bind(this);
   };
+  getOrderData(registerid){
+    let self = this;
+    let params = {
+      url: 'BuOrderController/getBuOrderByRegisterId',
+      server_url: config_syndromeTreatment_url,
+      data: {
+        registerid: registerid,
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        let dataSource = res.data;
+        self.setState({ dataSource });
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
   componentWillMount(){
+    this.getOrderData(this.props.registerid);
     let dataSource = [{
 			"buDiagnosisInfo": null,
 			"buOrderDtlList": [],
@@ -146,7 +167,6 @@ export default class SmartDistinguish extends Component {
    * @return {[type]}            [void]
    */
   actionManager(actionType, record, buOrderDtlList = []){
-    console.log("2222222222222222",JSON.stringify(buOrderDtlList));
     let that = this;
     if(actionType == 'delete'){ // 删除操作
       that.onDelete(record.orderid)
@@ -192,8 +212,10 @@ export default class SmartDistinguish extends Component {
     return (
       <Container>
         <Left>
-          <Diagnose diagnoseUpdate={this.diagnoseUpdate}/>
-          <TableGrid dataSource={dataSource} operate={this.actionManager}/>
+          <Content>
+            <Diagnose diagnoseUpdate={this.diagnoseUpdate}/>
+            <TableGrid dataSource={dataSource} operate={this.actionManager}/>
+          </Content>
           <ActionButton>
             <Checkbox>同步到患者医嘱</Checkbox>
             <SureButton type="primary" onClick={() => {this.props.onStep(3)}}>完成</SureButton>
@@ -204,7 +226,7 @@ export default class SmartDistinguish extends Component {
           <SpecTabs key='1' defaultActiveKey='1' animated={false}>
             <TabPane tab="智能论治" key="1">
               {
-                // <AuxiliaryDiagnosis changeInitDataTwo={this.changeInitDataTwo} listenFormData={{}}/>
+                <AuxiliaryDiagnosis changeInitDataTwo={this.changeInitDataTwo} listenFormData={{}}/>
               }
             </TabPane>
           </SpecTabs>
@@ -215,11 +237,15 @@ export default class SmartDistinguish extends Component {
 }
 const Container = styled.div`
   display: flex;
+  height: 100%;
 `;
 const Left = styled.div`
   flex-grow: 1;
   padding: 20px;
   border-right: 1px solid #CCCCCC;
+`;
+const Content = styled.div`
+  height: calc(100% - 60px);
 `;
 const Right = styled.div`
   width: 422px;

@@ -34,7 +34,7 @@ export default class Index extends Component {
     });
   };
   render() {
-    let { visible, saved, info } = this.state;
+    let { visible, saved, info ='失败，请检查网络连接' } = this.state;
     return (
       <WindowModal
          className="Modal"
@@ -50,7 +50,7 @@ export default class Index extends Component {
            </SuccessTip> : (
              saved == 3 ?
              <SuccessTip>
-               <FailIcon type='fail' />{info}失败，请检查网络连接！
+               <FailIcon type='fail' />{info}！
              </SuccessTip> : null
            )
          }

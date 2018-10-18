@@ -34,9 +34,9 @@ export default class TextareaEnterPop extends Component {
     let { visible } = this.state;
     return (
       <Container>
-        <Textarea {...other} value={value.extractionData} onKeyDown={(e) => this.handleKeyPress(e.keyCode)} >
+        <Textarea {...other} value={value.extractionData} onKeyDown={(e) => { this.handleKeyPress(e.keyCode) }} >
         </Textarea>
-        <Sign type='search' fill='#C6C6C6'></Sign>
+        <Sign type='search' fill='#C6C6C6' onClick={() => {this.handleKeyPress(13)}}></Sign>
         <Popout visible={visible} title ={title} onClose={this.handleClose}>
           {this.props.children}
         </Popout>

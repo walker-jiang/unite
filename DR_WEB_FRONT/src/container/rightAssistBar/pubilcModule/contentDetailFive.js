@@ -41,14 +41,14 @@ class ContentDetailFiveItem extends Component {
     console.log("@@@@@@@@@@@@",content);
     return (
       <div>
-      <span class="content-detail-five-Button-p" onClick={()=>{ this.unfoldAll(isUnfoldAll) }}>
+      <span className="content-detail-five-Button-p" onClick={()=>{ this.unfoldAll(isUnfoldAll) }}>
         展开病案<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" />
       </span>
       {
         isUnfoldAll
         ?
         <div>
-          <hr class="hr1"/>
+          <hr className="hr1"/>
           <p>&nbsp;</p>
           {
             content.map((item,index)=>{
@@ -76,7 +76,7 @@ class ContentDetailFiveItem extends Component {
                           }
                         })
                         return(
-                          <div class="content-detail-Five-div">
+                          <div className="content-detail-Five-div">
                             <p><Icon style={{fontSize:14,marginRight:5}} type="right-circle" theme="outlined" />{j.tzVisitsnum.visitsnum == 1?"初诊":"复诊"}：</p>
                             <p>{desc}</p>
                             <div style={{marginLeft:55}}>
@@ -110,7 +110,7 @@ class ContentDetailFiveItem extends Component {
                                 })
                               }
                             </div>
-                            <hr class="hr2"/>
+                            <hr className="hr2"/>
                           </div>
                         )
                       })
@@ -200,7 +200,7 @@ export default class ContentDetail extends Component {
     console.log("##############",item);
     return (
       <div>
-        <div class="content-detail-two">
+        <div className="content-detail-two">
           <p onClick={()=>this.unfold("one",one)}><Icon type={one?"down":"right"}/>名医信息</p>
           <p>&nbsp;</p>
           <p onClick={()=>this.unfold("name",name)}><Icon type={name?"down":"right"}/>名医姓名：</p>

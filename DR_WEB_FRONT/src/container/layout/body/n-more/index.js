@@ -20,8 +20,6 @@ class SystemManagement extends React.Component {
       MenuData: [],
       totalModules: [], // 所有菜单
       frameData:[],  //列表菜单
-      leftList:[],
-      rightList:[]
     };
   }
   componentWillMount(){
@@ -66,84 +64,18 @@ class SystemManagement extends React.Component {
        };
        ajaxGetResource(paramss, callBack1);
    };
-  /**
-   * [restoreData 回复默认设置]
-   * @param  {[type]} type [1代表左侧,2是右侧]
-   * @return {[type]}      [返回对应页面的默认数据]
-   */
-  restoreData=(type)=>{
-    let{totalModules,frameData}=this.state
-    this.getTotalMoules();
-    this.getframeData();
-    return this.processingData(totalModules,type==1?frameData.leftMenuList:frameData.rightMenuList)
-  }
   /** [showModal 展示弹框] */
   showModal = () => {
     this.setState({visible: true});
   }
-  /** [getleftData 拿到左侧组件的数据] */
-   getleftData = (data) => {
-      this.setState({leftList:data})
-   }
-  /** [getrightData 拿到右侧组件的数据] */
-   getrightData = (data) => {
-     this.setState({rightList:data})
-   }
-   restore=(activeKey)=> {
-     this.LeftMenuList.restoreSettings(1)
-   }
- /**
-  * [processingData 组件渲染数据处理函数]
-  * @param  {[type]} bigArr  [平铺数据]
-  * @param  {[type]} smalArr [列表数据]
-  * @return {[type]}         [对应的渲染的数据]
-  */
-  processingData(bigArr,smalArr){
-    bigArr.forEach((item1,index1)=>{
-      item1.isShow=false;
-      smalArr.forEach((item2,index2)=>{
-         if(item2.syModule.modno==item1.modno){
-           item1.isShow=true;
-           return
-         }
-      })
-    })
-    return bigArr;
-  }
   /** [putframeData 处理数据发送修改请求] */
   putframeData= () =>{
-     let {leftList ,rightList}=this.state
-     let listL=[];
-     leftList.forEach((item, index) => {
-       if (item.isShow) {
-         listL.push(item);
-       }
-     })
-     listL.forEach((item, index) => {
-       item.seqno = index + 1;
-       item.menustate = "02"; /* 展开还是收缩*/
-       item.menutype = "01";  /* 左侧*/
-       item.userid =Number(window.sessionStorage.getItem('userid')) ;
-     })
-     let listR=[];
-     rightList.forEach((item, index) => {
-       if (item.isShow) {
-         listR.push(item);
-       }
-     })
-     listR.forEach((item, index) => {
-       item.seqno = index + 1;
-       item.menustate = "02";
-       item.menutype = "02"; /* 右侧*/
-       item.userid = window.sessionStorage.getItem('userid')
-     })
-     let list=listL.concat(listR)
      let self = this;
      let paramss = {
        type:'put',
        url: 'SyQuickmenuController/putData',
        server_url: config_login_url,
-       data: JSON.stringify(list)
+       data: JSON.stringify(self.ProcessingData())
      };
      function callBack1(res){
        if(res.result){
@@ -154,12 +86,41 @@ class SystemManagement extends React.Component {
      };
      ajaxGetResource(paramss, callBack1);
    }
+   // 处理数据
+  ProcessingData =()=>{
+     let leftList=[];
+     let a=1;
+     this.LeftMenuList.state.leftMenuList.forEach(item=>{
+       if(item.isShow){
+             item.seqno = a++;
+             item.menustate = "02"; /* 展开还是收缩*/
+             item.menutype = "01";  /* 左侧*/
+             item.userid =Number(window.sessionStorage.getItem('userid')) ;
+             leftList.push(item);
+             return
+         }
+     })
+     let rightList=[];
+     let b=1;
+     this.rightMenuList.state.rightMenuList.forEach(item=>{
+       if(item.isShow){
+             item.seqno = b++;
+             item.menustate = "02"; /* 展开还是收缩*/
+             item.menutype = "02";  /* you侧*/
+             item.userid =Number(window.sessionStorage.getItem('userid')) ;
+             rightList.push(item);
+             return
+           }
+     })
+     let list =leftList.concat(rightList);
+     return list
+   }
   /** [handleSubmit 表单提交事件] */
   handleSubmit = (e) => {
      e.preventDefault();
      this.putframeData();
      this.handleCancel();
-      location.reload()
+     location.reload();
    }
    /** [handleCancel 关闭弹框组件] */
   handleCancel = (e) => {
@@ -171,6 +132,9 @@ class SystemManagement extends React.Component {
   onRef = (ref) => {
         this.LeftMenuList = ref
     }
+  onRefa = (ref) => {
+          this.rightMenuList = ref
+      }
   /**
    * [getCarouselCom description]
    * @param  {[type]} totalModules [平铺列表数据]
@@ -246,12 +210,12 @@ class SystemManagement extends React.Component {
         {
           this.state.visible ? <SpecModal width={"700px"} height={"36px"} maskStyle={{ background: "rgba(0,0,0,.3)" }} title="应用设置" maskClosable={false} visible={true} onOk={this.handleOk} onCancel={this.handleCancel} footer={false}>
             <Form layout="inline" onSubmit={this.handleSubmit}>
-              <Tabs defaultActiveKey="leftList" onChange={this.restore}>
-                 <TabPane tab={<span><Icon type="apple" />左侧菜单栏</span>} key="leftList">
-                   <LeftMenuList onRef={this.onRef} getleftData={this.getleftData} totalModules={totalModules} frameData={frameData} processingData={this.processingData} restoreData={this.restoreData}/>
+              <Tabs defaultActiveKey="1">
+                 <TabPane tab={<span><Icon type="apple" />左侧菜单栏</span>} key="1" >
+                   <LeftMenuList onRef={this.onRef} totalModules={totalModules} leftMenuList={frameData.leftMenuList}/>
                  </TabPane>
-                 <TabPane tab={<span><Icon type="android" />右侧悬浮框</span>} key="rightList">
-                    <RightMenuList getrightData={this.getrightData} totalModules={totalModules} frameData={frameData}  processingData={this.processingData} restoreData={this.restoreData}/>
+                 <TabPane tab={<span><Icon type="android" />右侧悬浮框</span>} key="2" forceRender={true}>
+                    <RightMenuList onRefa={this.onRefa} totalModules={totalModules} rightMenuList={frameData.rightMenuList} />
                  </TabPane>
               </Tabs>
               <Row style={{

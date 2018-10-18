@@ -58,6 +58,7 @@ class Index extends Component {
     };
     ajaxGetResource(params, callBack);
   };
+  /** [submit 提交挂号信息] */
   submit = (e) =>{
     let { registerInfo = {}, baPatient = {}, buPatientCase = {} } = this.state;
     let operateType = this.props.match.params.type;
@@ -106,25 +107,16 @@ class Index extends Component {
           self.saveTip.showModal(2);
           self.props.history.push('/Layout/patientRegister');
         }else{
-          self.saveTip.showModal(3);
+          self.saveTip.showModal(3, res.desc);
           console.log('异常响应信息', res);
         }
       };
       ajaxGetResource(params, callBack);
     }
   }
-  /**
-   * [getString 获取form表单项中对象中的文本]
-   * @param  {String} [obj=''] [表单对象]
-   * @return {[type]}          [最终文本]
-   */
-  getString(obj = ''){
-    return obj.extractionData || obj.extractionData == '' ? obj.extractionData : obj;
-  };
   render() {
     let operateType = this.props.match.params.type;
     let { baPatient, buPatientCase, registerInfo } = this.state;
-    console.log('baPatient', baPatient);
     return (
       <Container>
         <Header>
@@ -140,11 +132,10 @@ class Index extends Component {
           <BasicInfoForm wrappedComponentRef={ ref => { this.basicInfoForm = ref }} disabled={operateType.indexOf('v') == 0} baPatient={baPatient}></BasicInfoForm>
           <ActionButton>
             <SureButton type="primary" onClick={this.submit} disabled={operateType.indexOf('v') == 0}>保存</SureButton>
-            <CancelButton type="primary">取消</CancelButton>
+            <CancelButton type="primary" onClick={() => {this.props.history.push('/Layout/patientRegister')}}>取消</CancelButton>
           </ActionButton>
         </Content>
         <SaveTip ref={ ref => {this.saveTip = ref}}></SaveTip>
-        <Tip ref={ ref => { this.tip = ref }}></Tip>
       </Container>
     );
   }

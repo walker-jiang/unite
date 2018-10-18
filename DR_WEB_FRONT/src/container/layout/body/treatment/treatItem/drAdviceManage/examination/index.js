@@ -124,7 +124,7 @@ export default class Index extends Component {
     // 医嘱最终对象
     let paramsData = {
       buDiagnosisInfo: buDiagnosisInfo, // 诊断对象
-      buOrderDtlList: buOrderDtlList,   // 非医嘱套数组
+      buOrderDtlList: buOrderDtlList, // 非医嘱套数组
       buOrdmedical: buOrdmedical, // 医嘱套对象
       // buRecipe: buRecipe, // 处方
       feeall: feeall,

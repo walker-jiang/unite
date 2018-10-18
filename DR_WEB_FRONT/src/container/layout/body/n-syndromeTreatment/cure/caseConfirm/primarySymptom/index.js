@@ -16,7 +16,7 @@ export default class Index extends Component {
             colon={false}
             label="主症："
           >
-          {getFieldDecorator('primarySymptomPop', {
+          {getFieldDecorator('pridepict', {
             initialValue: initialValue,
           })(
             <PrimarySymptomPop />

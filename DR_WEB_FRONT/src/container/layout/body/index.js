@@ -39,10 +39,11 @@ const Cure = Loadable({
   loader: () => import('./n-cure'),
   loading: loadingComponent,
 });
-const More = Loadable({
-  loader: () => import('./n-more'),
-  loading: loadingComponent,
-});
+import More from './n-more';
+// const More = Loadable({
+//   loader: () => import('./n-more'),
+//   loading: loadingComponent,
+// });
 const PantientRecords = Loadable({
   loader: () => import('./n-patientRecords'),
   loading: loadingComponent,

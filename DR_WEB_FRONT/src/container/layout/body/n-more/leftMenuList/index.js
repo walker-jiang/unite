@@ -7,14 +7,37 @@ export default class Index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      leftMenuList: []
+      totalModules: this.props.totalModules,
+      listData: this.props.leftMenuList,
+      leftMenuList:'',
     };
     this.sortUp = this.sortUp.bind(this)
     this.sortDown = this.sortDown.bind(this)
   };
   componentWillMount() {
-    this.data();
     this.props.onRef(this)
+  }
+  componentDidMount(){
+     this.data();
+  }
+  /** [data 组件处理数据函数] */
+  data= () => {
+    let{totalModules,listData}=this.state;
+    let newarrayL=[...totalModules];
+    let arr = newarrayL.map((item,index)=>{
+      let items={}
+         items.isShow= false;
+      listData.forEach((item2,index2)=>{
+         if(item2.modid==item.modid){
+        items.isShow= true;
+         }
+      })
+      items={ ...item, ...items  };
+      return items
+    })
+    this.setState({
+      leftMenuList: arr
+    })
   }
   /** [onChange 复选框改变事件] */
   onChange = (i) => {
@@ -23,19 +46,6 @@ export default class Index extends React.Component {
     leftList[i].isShow = !isShow
     this.setState({
       leftMenuList: leftList
-    }, () => {
-      this.props.getleftData(this.state.leftMenuList)
-    })
-  }
-  /** [data 组件处理数据函数] */
-  data= () => {
-    let dataAll = this.props.totalModules;
-    let leftMenuList = this.props.frameData.leftMenuList
-    let processingData = this.props.processingData
-    this.setState({
-      leftMenuList: processingData(dataAll, leftMenuList)
-    }, () => {
-      this.props.getleftData(this.state.leftMenuList)
     })
   }
  /** [loginAvailable 点击显示登录可用项] */
@@ -61,8 +71,6 @@ export default class Index extends React.Component {
       arr[index] = temp;
       this.setState({
         leftMenuList: arr
-      }, () => {
-        this.props.getleftData(this.state.leftMenuList)
       })
     }
   }
@@ -79,19 +87,12 @@ export default class Index extends React.Component {
       arr[index] = temp;
       this.setState({
         leftMenuList: arr
-      }, () => {
-        this.props.getleftData(this.state.leftMenuList)
       })
     }
   }
-  /** [restoreSettings 回复默认设置] */
-  restoreSettings = () => {
-    let _this=this
-    this.setState({
-      leftMenuList: _this.props.restoreData(1)
-    }, () => {
-      this.props.getleftData(this.state.leftMenuList)
-    })
+  /** [leftRestoreSettings 回复默认设置] */
+  leftRestoreSettings = () => {
+    this.data();
   }
   render() {
     let {leftMenuList} = this.state;
@@ -137,9 +138,10 @@ export default class Index extends React.Component {
         }
       }
     ];
-    return (<Container>
+    return (
+    <Container>
       <SpecRow>
-        <Key onClick={this.restoreSettings}>恢复默认设置</Key>
+        <Key onClick={this.leftRestoreSettings}>恢复默认设置</Key>
         <TipText onClick={this.loginAvailable}>在菜单中隐藏【登录后可用】的应用</TipText>
       </SpecRow>
       <SpecTable dataSource={leftMenuList} pagination={false} columns={columns} rowKey={record => record.modid}/>

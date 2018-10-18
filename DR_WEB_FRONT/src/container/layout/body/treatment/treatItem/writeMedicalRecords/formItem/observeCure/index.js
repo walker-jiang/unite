@@ -150,7 +150,7 @@ export default class ObserveCure extends Component {
           {getFieldDecorator('inspectionPicture', {
             initialValue: initialValue.urlArr
           })(
-            <TongueShow standard={standard} ref = { ref => {this.tongueShow = ref}} modifyPicture={(url) => {this.picureEditor.handleOpen(url)}}></TongueShow>
+            <TongueShow standard={standard} ref = { ref => {this.tongueShow = ref}} modify_picture={(url) => {this.picureEditor.handleOpen(url)}}></TongueShow>
           )}
         </HiddenFormItem>
       </Container>

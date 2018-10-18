@@ -4,6 +4,7 @@ import { Table, Tabs, Checkbox, Button } from 'antd';
 import Pagination_dia from 'components/antd/components/pagination';
 const Pagination_his = deepClone(Pagination_dia);
 import deepClone from 'commonFunc/deepClone';
+import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import tableSty from 'components/antd/style/table';
 import buttonSty from 'components/antd/style/button';
 import paginationSty from 'components/antd/style/pagination';
@@ -30,6 +31,7 @@ export default class SmartDistinguish extends Component {
     this.addChinaMedicineData = this.addChinaMedicineData.bind(this);
     this.getMessage = this.getMessage.bind(this);
     this.hideFloatLayer = this.hideFloatLayer.bind(this);
+    this.submitCaseData = this.submitCaseData.bind(this);
   };
   componentWillMount(){
     let diagnoseHisOriginData =[
@@ -442,6 +444,70 @@ export default class SmartDistinguish extends Component {
       }
       this.setState({ diagnoseFinalInfo });
     };
+  /** [submitCaseData 提交病历] */
+  submitCaseData(e){
+    let diagnoseFinalInfo = this.state.diagnoseFinalInfo;
+    let values = this.props.caseBasicInfo;
+    let buDiagnosisInfo = {};
+    buDiagnosisInfo.buDiagnosisList = diagnoseFinalInfo;
+    buDiagnosisInfo.cardno = window.cardno;
+    buDiagnosisInfo.deptid = window.sessionStorage.getItem('deptid');
+    buDiagnosisInfo.diagnosisDesc = "诊断描述";
+    buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
+    buDiagnosisInfo.orgid = window.sessionStorage.getItem('orgid');
+    buDiagnosisInfo.patientid = window.patientID;
+    buDiagnosisInfo.patientname = window.patientName;
+    buDiagnosisInfo.patientno = "test";
+    buDiagnosisInfo.registerid = window.registerID;
+    buDiagnosisInfo.registerno = "12312";
+    let finalObj = {
+      casetype: values.casetype,
+      pridepict: this.getString(values.pridepict),
+      hpi: this.getString(values.hpi),
+      allergichistory: this.getString(values.allergichistory),
+      inspection: this.getString(values.inspection),
+      palpation: this.getString(values.palpation),
+      temperature: values.temperature,
+      breath: values.breath,
+      diastolicPressure: values.diastolicPressure,
+      systolicPressure: values.systolicPressure,
+      pulse: values.pulse,
+      heightnum: values.heightnum,
+      weightnum: values.weightnum,
+      isperiod: values.isperiod,
+      ispregnancy: values.ispregnancy,
+      gestationalWeeks: values.gestationalWeeks,
+      psycheck: values.psycheck,
+      buDiagnosisInfo: buDiagnosisInfo,
+      deptid: window.sessionStorage.getItem('deptid'),
+      doctorid: window.sessionStorage.getItem('userid'),
+      doctorname: window.sessionStorage.getItem('username'),
+      orgid: window.sessionStorage.getItem('orgid'),
+      registerid: this.props.registerid,
+    };
+    let params = {
+      url: 'BuPatientCaseController/postData',
+      server_url: config_syndromeTreatment_url,
+      data: JSON.stringify(finalObj),
+      type: 'post',
+    };
+    function callBack(res){
+      if(res.result){
+
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
+  /**
+   * [getString 获取form表单项中对象中的文本]
+   * @param  {String} [obj=''] [表单对象]
+   * @return {[type]}          [最终文本]
+   */
+  getString(obj = ''){
+    return obj.extractionData || obj.extractionData == '' ? obj.extractionData : obj;
+  };
   render() {
     let columns = this.getTableCol();
     let hisCols = this.getTableCol('his');
@@ -503,7 +569,7 @@ export default class SmartDistinguish extends Component {
           <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
           <ActionButton>
             <Checkbox>同步到患者诊断</Checkbox>
-            <SureButton type="primary" onClick={() => {this.props.onStep(3)}}>智能论治</SureButton>
+            <SureButton type="primary" onClick={this.submitCaseData}>智能论治</SureButton>
             <BorderButton type="primary" onClick={() => {this.props.onStep(1)}}>返回上一步</BorderButton>
           </ActionButton>
         </Left>

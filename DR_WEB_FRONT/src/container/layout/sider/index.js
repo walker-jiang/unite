@@ -126,7 +126,6 @@ class SiderDemo extends React.Component {
                 theme="dark"
                 defaultSelectedKeys={['1']}
                 mode="inline"
-                collaps={collapsed}
                 onSelect={this.onSelect}
                >
                 {MenuOption}

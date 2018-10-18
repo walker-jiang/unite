@@ -208,8 +208,8 @@ export default class MedicalRecordTemplate extends Component {
     var { content, isCut, unfold, searchValue, page, size, listenFormData, dataSource, pingpu, shuzhuang } = this.state;
     console.log("=========================",content);
     return (
-      <div class="rightAssistBar_template">
-        <div class="tab">
+      <div className="rightAssistBar_template">
+        <div className="tab">
           <Row>
             <Col span={4}>
               <Row>
@@ -232,18 +232,18 @@ export default class MedicalRecordTemplate extends Component {
             </Col>
           </Row>
         </div>
-        <div class="data">
+        <div className="data">
           {
             isCut
             ?
             content.map((item,index)=>{
               console.log("--------------------------------------",item);
               return(
-                <div class="content">
-                  <div class="content-title">
+                <div className="content">
+                  <div className="content-title">
                     <Row>
-                      <Col span={12}><p class="content-p"><div dangerouslySetInnerHTML = {{ __html:item.temname }}></div></p></Col>
-                      <Col span={4}><p class="content-p-two">• {item.temlevelDic}</p></Col>
+                      <Col span={12}><p className="content-p"><div dangerouslySetInnerHTML = {{ __html:item.temname }}></div></p></Col>
+                      <Col span={4}><p className="content-p-two">• {item.temlevelDic}</p></Col>
                       <Col span={8}>
                         <Button onClick={()=>{ this.changeInitData(item.initData) }}>引入模板</Button>
                         <Divider type="vertical" />

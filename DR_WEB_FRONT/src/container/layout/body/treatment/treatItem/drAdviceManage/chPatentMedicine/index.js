@@ -44,8 +44,6 @@ export default class Index extends Component {
     }
   };
   addPatentMedicine(values, medicineData){
-    console.log('添加中成药',medicineData)
-    console.log('添加中成药-辨证论治',this.props.buOrderDtlList)
     let baMedicines = this.props.buOrderDtlList;
     if(baMedicines != undefined){
       let mergeArray = baMedicines.concat(medicineData);//合并数组

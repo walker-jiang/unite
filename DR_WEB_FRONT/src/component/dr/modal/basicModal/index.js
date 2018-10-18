@@ -22,7 +22,7 @@ export default class Popout extends Component {
     this.props.onOk();
   };
   render() {
-    let {visible, children, onOk, title = '精美弹框', className = ''} = this.props;
+    let {visible, children, onOk, title = '', className = ''} = this.props;
     return (
       <Modal
          isOpen={visible}
@@ -34,8 +34,8 @@ export default class Popout extends Component {
             <Book>
               <Book>
                 <Pannel className={className}>
-                  <Header className='header'>
-                    <span>好健康中医馆—{title}</span>
+                  <Header className='header' title={title}>
+                    { title ? <span>好健康中医馆—{title}</span> : null}
                     <Close type='close' onClick={this.handleClose}/>
                   </Header>
                   <div>
@@ -103,7 +103,7 @@ const Pannel = styled.div`
 const Header = styled.div`
   z-index: 4;
   position: relative;
-  height: 80px;
+  height: ${props => props.title ? '55px' : '30px'} !important;
   font-size: 30px;
   font-weight: 400;
   display: flex;

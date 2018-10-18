@@ -7,35 +7,46 @@ export default class Index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      rightMenuList: []
+      totalModules: this.props.totalModules,
+      RightData: this.props.rightMenuList,
+      rightMenuList: '',
     };
     this.sortUp = this.sortUp.bind(this)
     this.sortDown = this.sortDown.bind(this)
   };
   componentWillMount() {
-    this.data();
-    this.restoreSettings();
+    this.props.onRefa(this)
+  }
+  componentDidMount(){
+     this.data();
+  }
+    /** [data 组件处理数据函数] */
+  data= () => {
+    let{totalModules,RightData}=this.state;
+    let newarrayR=[...totalModules];
+    let arr = newarrayR.map((item,index)=>{
+      let items={}
+         items.isShow= false;
+      RightData.forEach((item2,index2)=>{
+         if(item2.modid==item.modid){
+             items.isShow= true;
+         }
+      })
+      items={ ...item, ...items  };
+      return items
+    })
+    this.setState({
+      rightMenuList: arr
+    })
   }
   /** [onChange 复选框改变事件] */
   onChange = (i) => {
+    debugger
     let isShow = this.state.rightMenuList[i].isShow;
     let rightList = this.state.rightMenuList;
     rightList[i].isShow = !isShow
     this.setState({
       rightMenuList: rightList
-    }, () => {
-      this.props.getrightData(this.state.rightMenuList)
-    })
-  }
-  /** [data 组件处理数据函数] */
-  data=()=> {
-    let totalModules = this.props.totalModules;
-    let rightMenuList = this.props.frameData.rightMenuList
-    let processingData = this.props.processingData
-    this.setState({
-      rightMenuList: processingData(totalModules, rightMenuList)
-    }, () => {
-      this.props.getrightData(this.state.rightMenuList)
     })
   }
  /** [loginAvailable 点击显示登录可用项] */
@@ -61,8 +72,6 @@ export default class Index extends React.Component {
        arr[index] = temp;
        this.setState({
          rightMenuList: arr
-       }, () => {
-         this.props.getrightData(this.state.rightMenuList)
        })
      }
    }
@@ -79,19 +88,12 @@ export default class Index extends React.Component {
       arr[index] = temp;
       this.setState({
         rightMenuList: arr
-      }, () => {
-        this.props.getrightData(this.state.rightMenuList)
       })
     }
   }
-  /** [restoreSettings 回复默认设置] */
-  restoreSettings = () => {
-    let _this=this
-    this.setState({
-      rightMenuList: _this.props.restoreData(2)
-    }, () => {
-      this.props.getrightData(this.state.rightMenuList)
-    })
+  /** [rightRestoreSetting 回复默认设置] */
+  rightRestoreSetting = () => {
+    this.data();
   }
   render() {
     let {rightMenuList} = this.state;
@@ -140,7 +142,7 @@ export default class Index extends React.Component {
     return (
       <Container>
       <SpecRow>
-        <Key onClick={this.restoreSettings}>恢复默认设置</Key>
+        <Key onClick={this.rightRestoreSetting}>恢复默认设置</Key>
         <TipText onClick={this.loginAvailable}>在菜单中隐藏【登录后可用】的应用</TipText>
       </SpecRow>
       <SpecTable dataSource={rightMenuList} pagination={false} columns={columns} rowKey={record => record.modid}/>

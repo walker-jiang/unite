@@ -126,7 +126,6 @@ class Index extends Component {
     };
     ajaxGetResource(params, callBack);
   };
-
   /** [handleSubmit 获取表单数据] */
   handleSubmit = (e) => {
     e.preventDefault();
@@ -225,7 +224,7 @@ class Index extends Component {
    */
   addExamineData (examineItem) {
     let examineData = this.state.examineData;
-    for(let i=0; i < examineData.length; i++){
+    for(let i=0; i < examineData.length; i++){ // 重复性校验
       if(examineData[i].baMedicalDtlList){ // 医嘱套
         if(examineData[i].orderSuitid == examineItem.orderSuitid){
           this.tipModal.showModal({stressContent: '该检验项已存在'});
@@ -238,6 +237,35 @@ class Index extends Component {
         }
       }
     }
+    // // 将检验项目转化为表单需要的数据格式
+    // if(examineItem.baMedicalDtlList){ // 医嘱套
+    //   let feesum = 0;
+    //   examineItem.baMedicalDtlList.forEach((itemChild, index) => { // 医嘱明细
+    //     feesum += itemChild.unitprice * itemChild.count;
+    //     itemChild.itemcode = itemChild.medicalcode;
+    //     itemChild.itemid = itemChild.medicalid;
+    //     itemChild.itemname = itemChild.medicalname;
+    //     itemChild.remarks = itemChild.medinsrem;
+    //     itemChild.itemno = index;
+    //     delete itemChild.medicalcode;
+    //     delete itemChild.medicalid;
+    //     delete itemChild.medicalname;
+    //     delete itemChild.medinsrem;
+    //   });
+    //   examineItem.feesum = feesum;
+    //   examineItem.buOrderDtlList = examineItem.baMedicalDtlList;
+    // }else{ // 非医嘱套
+    //   examineItem.itemcode = examineItem.medicalcode;
+    //   examineItem.itemid = examineItem.medicalid;
+    //   examineItem.itemname = examineItem.medicalname;
+    //   examineItem.remarks = examineItem.medinsrem;
+    //   examineItem.itemno = examineData.length;
+    //   examineItem.feeall = examineItem.unitprice * examineItem.count;
+    //   delete itemChild.medicalcode;
+    //   delete itemChild.medicalid;
+    //   delete itemChild.medicalname;
+    //   delete itemChild.medinsrem;
+    // }
     examineData.push(examineItem);
     this.setState({ examineData });
   }

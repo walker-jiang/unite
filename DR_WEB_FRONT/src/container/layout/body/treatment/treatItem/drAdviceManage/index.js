@@ -77,7 +77,6 @@ export default class Index extends Component {
    * @return {[type]}              [description]
    */
   getData (nextPage = 1){
-    console.log("获取医嘱列表信息====");
     let registerid = window.registerID;
     let params = {
       url: 'BuOrderController/getList',
@@ -1411,6 +1410,7 @@ const SimplePagination = styled(Pagination)`
   }
 `;
 const Footer = styled.div`
+  padding-left: 10px;
   width: 100%;
   border-top: 1px solid #85B7E5;
   display: flex;

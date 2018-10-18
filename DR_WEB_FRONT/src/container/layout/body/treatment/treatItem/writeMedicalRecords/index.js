@@ -160,7 +160,7 @@ class Index extends Component {
         buDiagnosisInfo.registerid = window.registerID;
         buDiagnosisInfo.registerno = "12312";
         let finalObj = {
-          casetype: values.casetype,
+          casetype: values.casetype1,
           allergichistory: this.getString(values.allergichistory),
           breath: values.breath,
           buDiagnosisInfo: buDiagnosisInfo,

@@ -19,8 +19,8 @@ export default class Index extends Component {
             colon={false}
             label="初复诊："
           >
-          {getFieldDecorator('casetype', {
-            initialValue: window.casetype ? window.casetype : initialValue // initialValue == '1' && '1' || initialValue == '2'  && '2' || '0'
+          {getFieldDecorator('casetype1', {
+            initialValue: window.casetype ? window.casetype : ( initialValue ? initialValue : '1') // initialValue == '1' && '1' || initialValue == '2'  && '2' || '0'
           })(
             <RadioGroup>
               <Radio value='1' onClick={(e)=>{this.props.changeTabs(1)}} ref={(ref)=>{this.radio = ref}}>初诊</Radio>

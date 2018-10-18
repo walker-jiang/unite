@@ -9,7 +9,12 @@ export default class DiseasePreventTreat extends Component {
     super(props);
     this.state = {
       visible: '',
-      userId: ''
+      userId: '',
+      imgUrl: '',
+      sex: '',
+      sexDic: '',
+      name: '',
+      age: ''
     };
   };
   handleClick(pram){
@@ -19,8 +24,11 @@ export default class DiseasePreventTreat extends Component {
   };
 
   componentWillMount(){//患者是否存在 0或者1
-    let cardtype = window.certificatesType;
-    let cardno = window.certificatesNumber;
+    let cardtype = window.certificatesType?window.certificatesType:this.props.casetype;
+    let cardno = window.certificatesNumber?window.certificatesNumber:this.props.cardno;
+    if(cardtype == '' || cardtype == null){
+      cardtype = '01'
+    }
     let params = {
       type: 'GET',
       url: 'healthcabin/user/qrcode',
@@ -38,7 +46,12 @@ export default class DiseasePreventTreat extends Component {
       console.log('父组件',res)
       that.setState({
         visible: res.data.first,
-        userId: res.data.user.userid
+        userId: res.data.user.userid,
+        imgUrl: res.data.qrcode,
+        sex: res.data.user.sex,
+        sexDic: res.data.user.sexDic,
+        name: res.data.user.name,
+        age: res.data.user.birthday
       })
     };
 
@@ -50,16 +63,14 @@ export default class DiseasePreventTreat extends Component {
   }
 
   render() {
-    console.log('usid',this.state.userId)
-    let {visible,userId}  = this.state
-    console.log('visible', visible);
+    let {visible,userId,imgUrl,sex,sexDic,name,age}  = this.state
     let t  = null;
     if(visible == 0){
-      t = <Cure onToggle={this.handleClick.bind(this)}/>
+      t = <Cure onToggle={this.handleClick.bind(this)} imgUrl={imgUrl} />
     } else if(visible == 2) {
-      t = <StartWork onToggle={this.handleClick.bind(this)} />
+      t = <StartWork onToggle={this.handleClick.bind(this)} sex = {sex} userId = {userId} />
     } else if(visible == 1) {
-      t = <TestResults onToggle={this.handleClick.bind(this)} userId = {userId}/>
+      t = <TestResults onToggle={this.handleClick.bind(this)} userId = {userId} sexDic = {sexDic} name={name} age={age} />
     }
     return (
       <div>

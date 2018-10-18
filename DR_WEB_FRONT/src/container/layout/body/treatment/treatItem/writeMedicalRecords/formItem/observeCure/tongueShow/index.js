@@ -18,7 +18,7 @@ export default class ObserveCure extends Component {
     this.handleOpen = this.handleOpen.bind(this);
     this.next = this.next.bind(this);
     this.prev = this.prev.bind(this);
-    this.modifyPicture = this.modifyPicture.bind(this);
+    this.modify_picture = this.modify_picture.bind(this);
   };
   componentWillMount(){
 
@@ -57,10 +57,10 @@ export default class ObserveCure extends Component {
     }
     this.setState({ curIndex: curIndex });
   };
-  modifyPicture(e){
+  modify_picture(e){
     let curIndex = this.state.curIndex;
     let curUrl = this.props.value[curIndex];
-    this.props.modifyPicture(config_service_url + curUrl);
+    this.props.modify_picture(config_service_url + curUrl);
     // let img = e.target;
     // img.setAttribute("crossOrigin",'Anonymous');
     // var base64 = this.getBase64Image(img)
@@ -101,7 +101,7 @@ export default class ObserveCure extends Component {
                   <ClsoeIcon type='close'  onClick={this.handleClose}/>
                 </Header>
                 <Body>
-                  <Picture src={config_service_url + urlArr[curIndex]} onClick={this.modifyPicture}></Picture>
+                  <Picture src={config_service_url + urlArr[curIndex]} onClick={this.modify_picture}></Picture>
                   <Page>
                     <PrevIcon type='up' onClick={this.prev}/>
                     <NextIcon type='up' onClick={this.next}/>

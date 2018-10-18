@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import { Button,Row, Col} from 'antd';
+import { Button,Row, Col,Tree} from 'antd';
 
+const TreeNode = Tree.TreeNode;
 export default class Index extends Component {
   constructor(props){
     super(props);
     this.state={
       rcStatus:0,
+      List:[],//Trees
     };
   };
   toggleTabs(curTab){
@@ -16,8 +18,72 @@ export default class Index extends Component {
       console.log(curTab)
     });
   };
+  componentDidMount(){
+    this.setState({
+      List:[
+        {
+          title:"病例模板",
+          key:'1',
+          sonList:[
+            {
+             title:"平台共享模板111",
+             key:'2',
+             sonList:[
+                {
+                  title:"风热感冒",
+                    key:'321',
+                },
+                {
+                  title:"高血压",
+                    key:'43213',
+                }
+              ]
+            },
+            {
+              title:"庆阳中医馆共享模板",
+              key:'4',
+              sonList:[
+                  {
+                    title:"风热感冒",
+                      key:'32313',
+                  },{
+                    title:"高血压",
+                      key:'42131',
+                  }
+                ]
+              },
+            {
+              title:"我的模板",
+              key:'5',
+              sonList:[
+                    {
+                      title:"感冒",
+                      key:'321312',
+                    }
+                  ]
+                }
+          ]
+        }
+      ]
+    })
+  }
+  //
+  onSelect = (selectedKeys, info) => {
+    console.log('selected', selectedKeys, info);
+  }
+  recursion = (List) => {
+    return(
+      List.map((item,index)=>{
+        return(
+          <TreeNode title={item.title} key={item.key} >
+              {  item.sonList ?this.recursion(item.sonList):null}
+          </TreeNode>
+        )
+      })
+    )
+  }
   render() {
-      let { rcStatus } = this.state;
+    let { rcStatus, List } = this.state;
     return (
       <Container>
         <Header>
@@ -38,8 +104,14 @@ export default class Index extends Component {
             <Column span={3}>操作</Column>
           </Top>
           <Subject>
-               <Colu span={8} className="left">q</Colu>
-               <Colu span={16}>w</Colu>
+               <Colu span={8} className="left">
+                 <Tree onSelect={this.onSelect} >
+                    {this.recursion(List)}
+                 </Tree>
+               </Colu>
+               <Colu span={16}>
+                 
+               </Colu>
           </Subject>
         </Body>
      </Container>

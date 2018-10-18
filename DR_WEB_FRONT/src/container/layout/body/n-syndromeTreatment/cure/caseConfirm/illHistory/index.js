@@ -14,7 +14,7 @@ export default class Index extends Component {
   getFormItemProps(title){
     switch(title){
       case '其它症状':
-        return 'otherSymptom';
+        return 'hpi';
       break;
       case '过敏史':
         return 'allergichistory';

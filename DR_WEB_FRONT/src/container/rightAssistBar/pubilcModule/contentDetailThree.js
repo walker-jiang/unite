@@ -83,7 +83,7 @@ export default class ContentDetail extends Component {
     var { isCut, isUnfoldAll, drugName, treatname, therapy, four, five, six, seven, item, unfold  } = this.state;
     return (
       <div>
-        <div class="content-detail-two">
+        <div className="content-detail-two">
           <p onClick={()=>this.unfold("drugName",drugName)}><Icon type={drugName?"down":"right"}/>成分：</p>
           <p>{ drugName?item.drugName:this.cutOut(item.drugName) }</p>
           <p onClick={()=>this.unfold("treatname",treatname)}><Icon type={treatname?"down":"right"}/>主治：</p>
@@ -91,7 +91,7 @@ export default class ContentDetail extends Component {
           <p onClick={()=>this.unfold("therapy",therapy)}><Icon type={therapy?"down":"right"}/>治则治法：</p>
           <p>{ therapy?item.therapy:this.cutOut(item.therapy) }</p>
         </div>
-        <div class="content-detail-two-Button">
+        <div className="content-detail-two-Button">
           <Button style={{marginTop:20}} onClick={()=>{ this.getCpm(this.props.item) }}>引入</Button>
         </div>
       </div>

@@ -27,7 +27,7 @@ class TagGroup extends React.Component {
   render() {
     const { tags, inputVisible, inputValue, checked } = this.state;
     return (
-      <div class="tagList">
+      <div className="tagList">
         <div>症状：</div>
         <Row>
         {

@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button, Form, Row, Col, Radio, Select, DatePicker  } from 'antd';
 import { today } from 'commonFunc/defaultData';
+import SelectPatient from './selectPatient';
 import Input from 'components/dr/input/basicInput';
 import selectSty from 'components/antd/style/select';
 import calendar from '-!file-loader!components/dr/icon/icons/calendar.svg';
@@ -20,26 +21,29 @@ class Index extends Component {
   constructor(props){
     super(props);
     this.state = {
-      visible: 0,
+      visible: '',
+      cardno: '',
+      casetype: '',
       login: '',
       patientInfo: {
         birthday: '1992-08-21'
       }, //患者数据
     };
+    this.stepFunc = this.stepFunc.bind(this);
   };
 
-  // componentWillMount () {
-  //   let login = this.state.login;
-  //   if(login == true) {
-  //     this.setState({
-  //       visible: 1
-  //     })
-  //   }else if(login == false){
-  //     this.setState({
-  //       visible: 0
-  //     })
-  //   }
-  // }
+  componentWillMount () {
+    let login = window.sessionStorage.getItem('userid');
+    if(login != undefined) {
+      this.setState({
+        visible: 1
+      })
+    } else {
+      this.setState({
+        visible: 0
+      })
+    }
+  }
  
   handleSubmit = (e) => {
     e.preventDefault();
@@ -99,16 +103,24 @@ class Index extends Component {
   }
 
   changeDate(moment, dateString){
-    console.log('moment',moment)
-    console.log('dateString',dateString)
     let patientInfo = this.state.patientInfo;
     patientInfo['birthday'] = moment.format('YYYY-MM-DD');
     this.setState({ patientInfo });
   };
+
+  stepFunc(step,cardno,casetype){
+    console.log('step&&&&&&&&&',step);
+    console.log('cardno&&&&&&&&&',cardno);
+    this.setState({ 
+      visible: step,
+      cardno: cardno,
+      casetype: casetype
+    })
+  };
   
   render() {
     const { getFieldDecorator } = this.props.form;
-    let { visible, patientInfo } = this.state;
+    let { visible, patientInfo, cardno, casetype } = this.state;
     let date = new Date();
     const age = date.getFullYear() - parseInt(patientInfo.birthday.substr(0,4));
     const formItemLayout = {
@@ -230,7 +242,9 @@ class Index extends Component {
             </FormBorder>        
           </SpecForm>
      } else if (visible == 1) {
-          c = <CureButton />
+          c = <SelectPatient onStep={this.stepFunc} />
+     } else if (visible == 2) {
+      c = <CureButton onStep={this.stepFunc} cardno = {cardno} casetype = {casetype} />
      }
     return (
       <Container>

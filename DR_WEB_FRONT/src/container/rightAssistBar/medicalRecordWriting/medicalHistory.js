@@ -116,17 +116,17 @@ export default class template extends Component {
   render() {
     var { content, unfold } = this.state;
     return (
-      <div class="rightAssistBar_medicalHistory">
-        <div class="medicalHistory_data">
-          <p class="data_p">共<span>{content.length}</span>次病历记录</p>
+      <div className="rightAssistBar_medicalHistory">
+        <div className="medicalHistory_data">
+          <p className="data_p">共<span>{content.length}</span>次病历记录</p>
           {
             content.map((item,index)=>{
               return(
-                <div class="medicalHistory_content" key={index}>
-                  <div class="medicalHistory_content-title">
+                <div className="medicalHistory_content" key={index}>
+                  <div className="medicalHistory_content-title">
                     <Row>
                       <Col span={16}>
-                        <p class="content-p">
+                        <p className="content-p">
                           {item.ctstamp.substr(0,11)} | {item.orgid} | 医师：{item.doctorname} | <span>{item.casetype == 0?"初诊":"复诊"}</span>
                         </p>
                       </Col>

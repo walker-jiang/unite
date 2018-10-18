@@ -39,10 +39,10 @@ class ContentDetailTwoItem extends Component {
     console.log("临证加减为========",content);
     return (
       <div>
-      <div class="content-detail-two-Button">
+      <div className="content-detail-two-Button">
         <Button onClick={()=>{ this.getSt(this.props.item) }}>引入</Button>
       </div>
-      <span class="content-detail-two-Button-p" onClick={()=>{ this.unfoldAll(isUnfoldAll) }}>
+      <span className="content-detail-two-Button-p" onClick={()=>{ this.unfoldAll(isUnfoldAll) }}>
         收起<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" />
       </span>
       <hr/>
@@ -51,12 +51,12 @@ class ContentDetailTwoItem extends Component {
         ?
         content.map((item,index)=>{
           return(
-            <div class="content-detail-two-div" key={index}>
+            <div className="content-detail-two-div" key={index}>
               <p>{index+1}.病情：</p>
               <p>{item.symptom}</p>
               <p>加减药：</p>
               <p>{item.info}</p>
-              <hr class="hr2"/>
+              <hr className="hr2"/>
             </div>
           )
         })
@@ -137,7 +137,7 @@ export default class ContentDetail extends Component {
     var { isCut, isUnfoldAll, one, treatname, attention, four, five, six, seven, item, unfold  } = this.state;
     return (
       <div>
-        <div class="content-detail-two">
+        <div className="content-detail-two">
           <p onClick={()=>this.unfold("one",one)}><Icon type={one?"down":"right"}/>取穴/部位：</p>
           <p>{ one?item.one:this.cutOut(item.one) }</p>
           <p onClick={()=>this.unfold("treatname",treatname)}><Icon type={treatname?"down":"right"}/>主治：</p>

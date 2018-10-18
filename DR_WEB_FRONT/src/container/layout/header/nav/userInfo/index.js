@@ -13,7 +13,6 @@ export default class UserInfo extends Component {
     }
   }
   handleSet=()=>{
-    console.log('12121212');
     this.setState({show:!this.state.show});
   }
   personalset=(e)=>{

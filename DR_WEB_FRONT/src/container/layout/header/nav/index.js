@@ -12,6 +12,7 @@ export default class Nav extends Component {
       <Container>
         <Menus {...this.props}/>
         <ToDoItem />
+        <Feedback>意见反馈</Feedback>
         <UserInfo />
       </Container>
     )
@@ -24,6 +25,15 @@ const Container = styled.div`
   font-family: 'MicrosoftYaHei', 'Microsoft YaHei';
   color: white;
   height: 100%
+`;
+const Feedback = styled.span`
+  padding: 0px 12px;
+  height: 17px;
+  border-left: 1px solid #1770C8;
+  display: flex;
+  align-items: center;
+  color: #0A6ECB;
+  cursor: pointer
 `;
 /*
 @作者：姜中希

@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Form, Select, Button, Row, Col, Pagination, } from 'antd';
+import { Form, Select, Button, Row, Col, Pagination, Radio } from 'antd';
 import Table from 'components/dr/icon/icons/table';
 import List from 'components/dr/icon/icons/list';
-import TableShow from '../../chHerbalMedicine/herbalForm/showWay/tableShow';
-import ListShow from '../../chHerbalMedicine/herbalForm/showWay/listShow';
-import TempAddSubtract from '../../chHerbalMedicine/herbalForm/tempAddSubtract';
-import SelectHerb from '../../chHerbalMedicine/herbalForm/selectHerb';
-import QuickAddHerb from '../../chHerbalMedicine/herbalForm/quickAddHerb';
-import Diagnose from '../../chHerbalMedicine/herbalForm/diagnose';
-import AddHerbalForm from '../../chHerbalMedicine/herbalForm/addHerbalForm';
-import Entrust from '../../chHerbalMedicine/herbalForm/entrust';
+import TableShow from './showWay/tableShow';
+import ListShow from './showWay/listShow';
+import TempAddSubtract from './tempAddSubtract';
+import SelectHerb from './selectHerb';
+import QuickAddHerb from './quickAddHerb';
+import Diagnose from './diagnose';
+import AddHerbalForm from './addHerbalForm';
+import Entrust from './entrust';
 import Input from 'components/dr/input/basicInput';
 import TipModal from 'components/dr/modal/tip';
-import down from '../../chHerbalMedicine/herbalForm/down.png';
-import up from '../../chHerbalMedicine/herbalForm/up.png';
+import down from './down.png';
+import up from './up.png';
 import selectSty from 'components/antd/style/select';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import { getDiagnoseText } from 'commonFunc/transform';
@@ -22,6 +22,7 @@ import paginationSty from 'components/antd/style/pagination';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
+const RadioGroup = Radio.Group;
 
 class Index extends Component {
   constructor(props) {
@@ -258,6 +259,17 @@ class Index extends Component {
       },
       colon: false
     };
+    const specFormItemLayout = {
+      labelCol: {
+        xs: { span: 9 },
+        sm: { span: 9 },
+      },
+      wrapperCol: {
+        xs: { span: 15 },
+        sm: { span: 15 },
+      },
+      colon: false
+    };
     const pagination = {
       simple: true,
       showWay: showWay,
@@ -283,61 +295,19 @@ class Index extends Component {
       <SpecForm className='not-draggable' onClick={()=>{this.quickAddHerb.hideResult()}}>
         <Row>
           <Col span={24}>
-            <FormItem
-              {...formItemLayout}
-              label="诊断：">
-              {getFieldDecorator('diagnose', {
-                initialValue: {originData: buDiagnosisList, extractionData: getDiagnoseText(buDiagnosisList)}
-              })(
-                <Diagnose icon='#C14342'/>
-              )}
-            </FormItem>
+            <Title>治疗项/治疗明细：
+              <TitleItem>针法/毫针法/</TitleItem>
+              <TitleDetail>毫针治疗</TitleDetail>
+            </Title>
           </Col>
         </Row>
         <Row>
           <Col span={8}>
             <FormItem
               {...separateFormItemLayout}
-              label="处方名称：">
-              {getFieldDecorator('recipename', {
-                initialValue: recipename
-              })(
-                <Input />
-              )}
-              </FormItem>
-          </Col>
-          <Col span={16}>
-            <FormItem
-              labelCol={{span: 3}}
-              wrapperCol={{span: 21}}
-              colon={false}
-              label="嘱托：">
-              {getFieldDecorator('remark', {
-                initialValue: {originData: {}, extractionData: remark}
-              })(
-                <Entrust />
-              )}
-              </FormItem>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={8}>
-            <FormItem
-              {...separateFormItemLayout}
-              label="治疗方法：">
+              label="执行科室：">
               {getFieldDecorator('treatMethods', {
                 initialValue: treatway
-              })(
-                <Input />
-              )}
-              </FormItem>
-          </Col>
-          <Col span={8}>
-            <FormItem
-              {...separateFormItemLayout}
-              label="付数（付）：">
-              {getFieldDecorator('doseNum', {
-                initialValue: countnum,
               })(
                 <Input />
               )}
@@ -351,20 +321,44 @@ class Index extends Component {
                 initialValue: (frequencyData.length > 0 ? (freq ? freq : {key: frequencyData[0].freqcode, label: frequencyData[0].freqname}) : {key: '', label: ''})
               })(
                 <SpecSelect labelInValue>
-                {
-                  frequencyData.map((item, index)=>{
-                    return (
-                      <Option key={index} value={item.freqcode}>{item.freqname}</Option>
-                    )
-                  })
-                }
+                  {
+                    frequencyData.map((item, index)=>{
+                      return (
+                        <Option key={index} value={item.freqcode}>{item.freqname}</Option>
+                      )
+                    })
+                  }
                 </SpecSelect>
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem
+              {...separateFormItemLayout}
+              label="天数：">
+              {getFieldDecorator('doseNum', {
+                initialValue: countnum,
+              })(
+                <Input />
               )}
             </FormItem>
           </Col>
         </Row>
         <Row>
-          <Col span={8}>
+          <Col span={24}>
+            <FormItem
+              {...formItemLayout}
+              label="操作方法：">
+              {getFieldDecorator('diagnose', {
+                initialValue: {originData: buDiagnosisList, extractionData: getDiagnoseText(buDiagnosisList)}
+              })(
+                <Input icon='#C14342'/>
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={12}>
             <FormItem
               {...separateFormItemLayout}
               label="临症加减：">
@@ -375,34 +369,34 @@ class Index extends Component {
             )}
             </FormItem>
           </Col>
-          <Col span={8}>
+          <Col span={12}>
             <FormItem
               {...separateFormItemLayout}
               label=" ">
               {getFieldDecorator('illSymbal')(
-                <SpecSelect placeholder='选择病侯'>
+                <SpecSelect placeholder='选择穴位'>
                   <Option value="风热感冒">风热感冒</Option>
                   <Option value="风寒感冒">风寒感冒</Option>
                 </SpecSelect>
               )}
             </FormItem>
           </Col>
-          <Col span={8}>
-          <FormItem
-            {...separateFormItemLayout}
-            label=" ">
-            {getFieldDecorator('herbal')(
-              <SelectHerb ref={(input) => { this.selectHerb = input; }} />
-            )}
-          </FormItem>
-          </Col>
         </Row>
         <Row>
           <SpecCol span={8}>
-            <TableIcon showWay={showWay} onClick={this.toggleShowWay.bind(this, 'table')}/>
-            <ListIcon showWay={showWay} onClick={this.toggleShowWay.bind(this, 'list')}/>
-            <AddHerbal onClick = {()=>{this.addHerbalForm.handleAddClick()}}>🌿添加中药</AddHerbal>
-            <QuickAdd>快速添加：</QuickAdd>
+            <SpecFormItem
+              {...specFormItemLayout}
+              label={<span><Add>➕</Add>添加穴位/部位</span>}
+              >
+                {getFieldDecorator('miType',{
+                  initialValue: miType
+                })(
+                  <SpecRadioGroup>
+                    <Radio value='0'>医保外</Radio>
+                    <Radio value='1'>医保内</Radio>
+                  </SpecRadioGroup>
+                )}
+              </SpecFormItem>
           </SpecCol>
           <Col span={16}>
             <QuickAddHerb placeholder='请输入中药首字母快速添加' icon='true' ref={ref => this.quickAddHerb = ref} getQuickData = {this.addHerbalData.bind(this)}/>
@@ -443,6 +437,18 @@ class Index extends Component {
     )
   }
 }
+const Title = styled.span`
+  font-size: 12px;
+  color: #666666;
+`;
+const TitleItem = styled.span`
+  font-size: 12px;
+  color: #008000;
+`;
+const TitleDetail = styled.span`
+  font-size: 12px;
+  color: #333333;
+`;
 const SpecForm = styled(Form)`
   &&& {
     width: 100%;
@@ -469,6 +475,13 @@ const SpecSelect = styled(Select)`
 const SpecCol = styled(Col)`
   margin: 15px 0px 35px 0px;
 `;
+const SpecFormItem = styled(FormItem)`
+  .ant-form-item-children {
+    display: flex;
+    border-bottom: 1px solid rgba(215,215,215,1);
+    height: 35px;
+  }
+`;
 const TableIcon = styled(Table)`
   background: ${props => props.showWay == 'table' ? 'rgb(178, 20, 20)' : '#999999'};
 `;
@@ -487,6 +500,19 @@ const AddHerbal = styled.div`
   border-left: 1px solid #999999;
   border-right: 1px solid #999999;
   cursor: pointer;
+`;
+const SpecRadioGroup = styled(RadioGroup)`
+  &&& {
+    float: left;
+    font-size: 12px;
+    width: 220px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    margin-right: 21px;
+    margin-top: 8px;
+    border-right: 1px solid #e9e9e9;
+  }
 `;
 const QuickAdd = styled.span`
   margin-left: 13px;
@@ -527,11 +553,11 @@ const SimplePagination = styled(Pagination)`
     color: rgb(178, 20, 20) !important;
   }
 `;
-const AcupointEdit = Form.create()(Index);
-export default AcupointEdit;
+const HerbalForm = Form.create()(Index);
+export default HerbalForm;
 
 /*
-@作者：姜中希
-@日期：2018-10-14
-@描述：穴位
+@作者：马晓敏
+@日期：2018-06-29
+@描述：新增中草药处方部分
 */

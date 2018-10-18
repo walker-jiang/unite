@@ -14,7 +14,7 @@ import deepClone from 'commonFunc/deepClone';
 import tableSty from 'components/antd/style/table';
 import tagsSty from 'components/antd/style/tags';
 import Icon from 'components/dr/icon';
-import AcupointEdit from '../acupointEdit';
+import AcupointEdit from './acupointEdit';
 
 const confirm = Modal.confirm;
 const RadioGroup = Radio.Group;
@@ -37,8 +37,9 @@ class Index extends Component {
       aim: '', // 检验目的
       miType: '1', // 0 医保外， 1医保内 默认选择医保内
       examineData: [], // 检验项目数据
-      visible: false, // 穴位编辑是否可用
+      visible: false, // 穴位编辑弹框是否可见
     }
+    this.handleAcupoint = this.handleAcupoint.bind(this);
   }
   componentWillMount(){
     let buOrderDtlList = this.props.buOrderDtlList;
@@ -297,7 +298,7 @@ class Index extends Component {
             },
           };
         }else{
-          return <EditDiv><Label>{text}</Label><Edit type='edit' /></EditDiv>;
+          return <EditDiv><Label>{text}</Label><Edit type='edit' onClick={this.handleAcupoint}/></EditDiv>;
         }
       }
     }, {
@@ -449,6 +450,9 @@ class Index extends Component {
     }];
     return { dataSource, feeAll };
   };
+  handleAcupoint(e){
+    this.acupointEdit.handlePopOpen();
+  };
   render () {
     let { visiblePop, examineData, buDiagnosisList, miType, aim, visible } = this.state;
     const { getFieldDecorator } = this.props.form;
@@ -492,6 +496,12 @@ class Index extends Component {
         sm: { span: 15 },
       },
       colon: false
+    };
+    let openProps = {
+      actionType: 'add',
+      orderid: '',
+      reloadList: ()=>{},
+      buOrderDtlList: [],
     };
     return (
       <div>
@@ -579,13 +589,12 @@ class Index extends Component {
                 </Footer>
                 <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
         </SpecForm>
-        <AcupointEdit></AcupointEdit>
+        <AcupointEdit ref={ ref => { this.acupointEdit = ref }} {...openProps}></AcupointEdit>
       </div>
     )
   }
 }
 const SpecForm = styled(Form)`
-  display: none;
   &&& > div > div > .ant-form-item {
     margin-bottom: -8px !important;
   }

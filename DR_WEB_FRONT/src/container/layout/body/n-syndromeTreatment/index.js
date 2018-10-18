@@ -22,6 +22,7 @@ export default class SyndromeTreatment extends Component {
     let self = this;
     let params = {
       url: 'BuPatientCaseController/getData',
+      server_url: config_syndromeTreatment_url,
       data: {
         registerid: registerid
       },

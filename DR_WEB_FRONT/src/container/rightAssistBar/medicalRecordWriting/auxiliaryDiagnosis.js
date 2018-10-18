@@ -140,8 +140,8 @@ export default class template extends Component {
   render() {
     var { content, isCut, listenFormData } = this.state;
     return (
-      <div class="rightAssistBar_template">
-        <div class="tab">
+      <div className="rightAssistBar_template">
+        <div className="tab">
           <Row>
             <Col span={23} offset={1}>
               <Search
@@ -151,26 +151,26 @@ export default class template extends Component {
             </Col>
           </Row>
         </div>
-        <div class="data">
+        <div className="data">
           {
             content.map((item,index)=>{
               console.log("item.signName",item.signName);
               return(
-                <div class="content" key={index}>
-                  <div class="content-title">
+                <div className="content" key={index}>
+                  <div className="content-title">
                     <Row>
                       <Col span={12}>
-                        <p class="content-p">
+                        <p className="content-p">
                           •
                           <span dangerouslySetInnerHTML = {{ __html:item.dName }}></span>
                           /
                           <span dangerouslySetInnerHTML = {{ __html:item.syndromeName }}></span>
                         </p>
                       </Col>
-                      <Col span={12}><p class="content-p-three" onClick={()=>{ this.changeInitData(item.dName,item.syndromeName) }}>加入诊断</p></Col>
+                      <Col span={12}><p className="content-p-three" onClick={()=>{ this.changeInitData(item.dName,item.syndromeName) }}>加入诊断</p></Col>
                     </Row>
                   </div>
-                  <div class="content-detail">
+                  <div className="content-detail">
                     <TagGroup tagList={item.signName}/>
                   </div>
                 </div>

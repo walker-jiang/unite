@@ -27,37 +27,7 @@ export default class StartWork extends Component {
     };
   };
 
-  getLogin(){//患者是否存在 0或者1
-    let cardtype = window.certificatesType;
-    let cardno = window.certificatesNumber;
-    let params = {
-      type: 'GET',
-      url: 'healthcabin/user/qrcode',
-      contentType: '',
-      server_url: config_CureService_url,
-      xhrFields:{withCredentials:true},
-      crossDoman:true,
-      data:{
-        certificatesType: cardtype,
-        certificatesNumber: cardno
-      }
-    };
-    let that = this;
-    function success(res){
-      that.setState({
-        userId: res.data.user.userid
-      })
-    };
-
-    function error(res){
-      console.log('失败',res)
-    };
-
-    getResource(params, success, error);
-  }
-
   componentDidMount(){//获取题目
-    this.getLogin();
     let params = {
             type: 'GET',
             url: 'healthcabin/checkbody/getAllTcmQuestion',
@@ -66,7 +36,7 @@ export default class StartWork extends Component {
             xhrFields:{withCredentials:true},
             crossDoman:true,
             data: {
-              qSex: window.qSex
+              qSex: this.props.sex
             }
         };
         let that = this;
@@ -85,8 +55,12 @@ export default class StartWork extends Component {
         getResource(params, success, error);
   }
 
+  componentWillReceiveProps(newProps) {
+    console.log('Component WILL RECEIVE PROPS!')
+  }
+
   onChange(e) {
-    let userId = this.state.userId;
+    let userId = this.props.userId;
     console.log('userId',userId)
     let arr = this.state.arr;
     let type_id = arr[this.state.index].type_id;

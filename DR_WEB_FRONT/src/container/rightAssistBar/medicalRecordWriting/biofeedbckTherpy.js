@@ -82,8 +82,8 @@ export default class template extends Component {
       lineHeight: '30px',
     };
     return (
-      <div class="rightAssistBar_biofeedbckTherpy">
-        <div class="rightAssistBar_div">
+      <div className="rightAssistBar_biofeedbckTherpy">
+        <div className="rightAssistBar_div">
           <p>请针对上次治疗效果选择符合的结果：</p>
           {
             start>4
@@ -108,7 +108,7 @@ export default class template extends Component {
             })
           }
         </div>
-        <p class="biofeedbckTherpy_p"><p>病情趋势分析</p></p>
+        <p className="biofeedbckTherpy_p"><p>病情趋势分析</p></p>
         <LineChart dataSource={dataSource}/>
       </div>
     );

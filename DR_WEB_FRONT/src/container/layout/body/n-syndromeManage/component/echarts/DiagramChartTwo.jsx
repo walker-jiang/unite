@@ -125,7 +125,7 @@ class DiagramChart extends Component {
             //   borderColor:"#ccc",                        //边框颜色
             //   borderWidth:1,
             //   position: function (point, params, dom, rect, size) {
-            //     $(dom).html(`<div class="tip"><center><button class="courseBtn">切换中心</button><button class="courseBtnTwo">查看详情</button></center></div>`)
+            //     $(dom).html(`<div className="tip"><center><button className="courseBtn">切换中心</button><button className="courseBtnTwo">查看详情</button></center></div>`)
             //   }
             // },
             series: [{

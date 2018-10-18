@@ -63,6 +63,7 @@ class PatientBasicInfo extends Component {
     this.changeDate = this.changeDate.bind(this);
     this.changeProvinceSelector = this.changeProvinceSelector.bind(this);
     this.changeCitySelector = this.changeCitySelector.bind(this);
+    this.changeDtepSelector = this.changeDtepSelector.bind(this);
   };
   /** [handleSubmit 返回患者信息数据] */
   handleSubmit = (e) => {
@@ -79,7 +80,6 @@ class PatientBasicInfo extends Component {
   }
   componentWillMount(){
     this.getDictList(['country', 'nation', 'sex', 'marry', 'occupation', 'cardtype', 'pationtype', 'pationrel', 'blood']);
-    this.getDept();
   };
   componentDidMount(){
     let province = [];
@@ -92,27 +92,32 @@ class PatientBasicInfo extends Component {
     if(city.length){ // 保证有数据
       district = this.getDistrictData(city[0].cityid);
     }
-    this.setState({ province, city, district });
+    let deptData = this.getDept();
+    let docData = [];
+    if(deptData.length){
+      docData = this.getDocData(deptData[0].deptid);
+    }
+    this.setState({ province, city, district, deptData, docData });
   };
   /** [getDept 科室数据] */
   getDept() {
     let params = {
       url: 'BaDepartmentController/getList',
+      async: false,
       server_url: config_login_url,
       data: {
         orgid: window.sessionStorage.getItem('orgid')
       }
     };
     let that = this;
+    let deptData = [];
     function success(res) {
       if(res.result){
-        let deptData = res.data;
-        that.setState({ deptData }, () => {
-          that.getDocData(deptData[0].deptid);
-        })
+        deptData = res.data;
       }
     };
     ajaxGetResource(params, success);
+    return deptData;
   }
   /**
    * [getDocData 获取医生数据]
@@ -122,22 +127,23 @@ class PatientBasicInfo extends Component {
     let self = this;
     let params = {
       url: 'BaOrguserController/getList',
+      async: false,
       data: {
         orgid: window.sessionStorage.getItem('orgid'),
         deptid: deptid ,
         keyword: ''
       },
     };
+    let docData = [];
     function callBack(res){
       if(res.result){
-        self.setState({
-          docData: res.data,
-        });
+        docData = res.data;
       }else{
         console.log('异常响应信息', res);
       }
     };
     ajaxGetResource(params, callBack);
+    return docData;
   };
   /**
    * [getDictList 获取字典列表]
@@ -170,6 +176,9 @@ class PatientBasicInfo extends Component {
     if(JSON.stringify(patientInfo) != '{}'){ // 修改**挂号信息**接口
       if(patientInfo.patientid != this.props.baPatient.patientid){
         this.refreshAreaData(patientInfo);
+        if(patientInfo.dept){
+          this.getDocData(patientInfo.dept.key);
+        }
       }
     }
   };
@@ -339,6 +348,17 @@ class PatientBasicInfo extends Component {
     });
   };
   /**
+   * [changeDtepSelector 改变科室下拉框的回调]
+   * @param  {[type]} e [事件源]
+   * @return {[type]}   [undefined]
+   */
+  changeDtepSelector(e){
+    let docData = docData = this.getDocData(e.key);
+    this.setState({ docData }, () => {
+      this.props.form.setFieldsValue({ doctor: { key: '', label: ''} }); // 给县级表单选择框赋值
+    });
+  };
+  /**
    * [validateCardno 身份证校验]
    * @param  {[type]}   rule     [校验规则]
    * @param  {[type]}   value    [当前值]
@@ -351,12 +371,12 @@ class PatientBasicInfo extends Component {
     let validateResult = true;
     if(value.trim() == ''){ // 非空校验
       validateResult = false;
-      callback('请输入身份证！');
+      callback('请输入证件号码！');
     }
     if(reg.test(value) === false) // 格式校验
     {
       validateResult = false;
-      callback('身份证输入不合法！');
+      callback('请输入有效证件号！');
     }
     if(validateResult){
       let birthday = extractDataFromIdentityCard.getBirthdayFromIdCard(value);
@@ -373,7 +393,6 @@ class PatientBasicInfo extends Component {
     const { getFieldDecorator } = this.props.form;
     let disabled = this.props.disabled;
     let { country, nation, sex, marry, occupation, pationtype, cardtype, pationrel, blood, province, city, district, patientInfo, deptData, docData } = this.state;
-    console.log('patientInfo-new', patientInfo);
     let age = extractDataFromIdentityCard.getAgeFromBirthday(patientInfo.birthday);
     const formItemLayout = {
       labelCol: {
@@ -611,8 +630,8 @@ class PatientBasicInfo extends Component {
                 colon={false}
                 label="职业："
                 >
-                  {getFieldDecorator('occupation', {
-                    initialValue: patientInfo.occupation ? patientInfo.occupation : ( occupation.length ? occupation[0].value : '')
+                  {getFieldDecorator('position', {
+                    initialValue: patientInfo.position ? patientInfo.position : ( occupation.length ? occupation[0].value : '')
                   })(
                     <SpecSelect disabled={disabled}>
                     {
@@ -630,8 +649,8 @@ class PatientBasicInfo extends Component {
                 colon={false}
                 label="ABO血型："
                 >
-                  {getFieldDecorator('ABO', {
-                    initialValue: patientInfo.ABO ? patientInfo.occupation : ( blood.length ? blood[0].value : '')
+                  {getFieldDecorator('bloodGroup', {
+                    initialValue: patientInfo.bloodGroup ? patientInfo.bloodGroup : ( blood.length ? blood[0].value : '')
                   })(
                     <SpecSelect disabled={disabled}>
                     {
@@ -790,7 +809,7 @@ class PatientBasicInfo extends Component {
                   rules: [{ required: true, message: '请选择就诊科室!' }],
                   initialValue: deptData.length ? ( patientInfo.dept ? patientInfo.dept : { key: deptData[0].deptid, label: deptData[0].deptname }) : {key: '', label: ''}
                 })(
-                  <SpecSelect disabled={disabled} onChange={e => this.getDocData(e.key)} labelInValue>
+                  <SpecSelect disabled={disabled} onChange={this.changeDtepSelector} labelInValue>
                   {
                     deptData.map(item => <Option key={item.deptid} value={item.deptid}>{item.deptname}</Option>)
                   }
