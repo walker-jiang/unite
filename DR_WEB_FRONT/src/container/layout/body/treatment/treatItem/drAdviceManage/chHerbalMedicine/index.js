@@ -61,177 +61,90 @@ export default class Index extends Component {
     // console.log('草药数据', herbalData);
   };
   addHerbalData(values, herbalData){
-    let baHerbalMedicines = [];
-    // console.log('baHerbalMedicines', baHerbalMedicines);
-    if(baHerbalMedicines != undefined){
-      let mergeArray = baHerbalMedicines.concat(herbalData);//合并数组
-      let nameArr = [];
-      let price = 0;
-      let self = this;
-      let medicineArr = mergeArray.filter((item, index) => {
-        if(item.exist == 1){
-          nameArr.push(item.medicinename);
-          price += item.unitprice/item.defQty*item.defQty;
-        }
-        item.baseUnit = item.baseUnit;
-        item.count = item.defQty;
-        item.dosage = item.defQty;
-        item.freqid = values.frequency.key;
-        item.freqname = values.frequency.label;
-        item.doseid = item.doseid;
-        item.miType = '';
-        item.dosename = item.dosename;
-        item.itemcode = item.medicinecode;
-        item.itemid = item.medicineid;
-        item.itemname = item.medicinename;
-        item.itemno = index;
-        item.itemtype = 0; // 中药0
-        item.unitprice = item.unitprice;
-        item.specification = item.specification;
-        item.useflag = item.useflag;
-        return item.exist == 1;
-      })
-      let prescriptionContent = nameArr.join('、')
-      let patientId = window.patientID;
-      let patientName = window.patientName;
-
-      let freqname = values.frequency;
-      let usagename = values.treatMethods;
-
-      let buDiagnosisInfo = {
-        buDiagnosisList: values.diagnose.originData,
-        "cardno": window.cardno,
-        "deptid": window.sessionStorage.getItem('deptid'),
-        "diagnosisDesc": values.diagnosename,
-        "doctorid": window.sessionStorage.getItem('userid'),
-        "orgid": window.sessionStorage.getItem('orgid'),
-        "patientid": window.patientID,
-        "patientname": window.patientName,
-        "patientno": "test", // 患者编号 暂空
-        "registerid":window.registerID,
-        "registerno": "12312" // his挂号流水号 暂空
-      };
-
-      let paramsData = {
-        buDiagnosisInfo: buDiagnosisInfo,
-        parientid: patientId,  // 患者ID
-        registerid: window.registerID, // 挂号ID
-        parientname: patientName,  // 患者姓名
-        orgUserid: window.sessionStorage.getItem('userid'),
-        orgid: window.sessionStorage.getItem('orgid'),
-        feeall: price * values.doseNum,
-        orgUsername: window.sessionStorage.getItem('username'),
-        ordertype: '3',   // 医嘱类型
-        ordercontent: prescriptionContent, // 医嘱内容
-        orderstate: '1',  // 缴费状态 1 未缴费
-        buRecipe: { // 表单数据
-          recipetype: 1,
-          registerid: window.registerID, // 挂号ID
-          freqname: values.frequency.label,   // 频次
-          freqid: values.frequency.key, // 频次
-          recipename: values.recipename, // 处方名称
-          treatway: values.treatMethods,   // 治疗方法
-          countnum: values.doseNum, //付数
-          remark: typeof(values.remark) == 'string' ? values.remark : values.remark.extractionData, // 嘱托
-        },
-        buOrderDtlList: medicineArr,   // 药品信息
-      }
-      console.log('paramsData', paramsData);
-      let params = {
-        url: 'BuOrderController/postData',
-        type: 'post',
-        data: JSON.stringify(paramsData)
-      }
-      let that = this;
-      function success(res) {
-        console.log('保存成功')
-        that.handlePopClose();
-        that.props.reloadList();
-      };
-      ajaxGetResource(params, success);
-    }else{
-      let nameArr = [];
-      let price = 0;
-      let self = this;
-      let medicineArr = herbalData.map((item, index) => {
-        nameArr.push(item.medicinename)
+    let nameArr = [];
+    let price = 0;
+    let self = this;
+    let medicineArr = herbalData.filter((item, index) => {
+      if(item.exist == 1){
+        nameArr.push(item.medicinename);
         price += item.unitprice/item.defQty*item.defQty;
-        item.baseUnit = item.baseUnit;
-        item.count = item.defQty;
-        item.dosage = item.defQty;
-        item.freqid = values.frequency.key;
-        item.freqname = values.frequency.label;
-        item.doseid = item.doseid;
-        item.miType = '';
-        item.dosename = item.dosename;
-        item.itemcode = item.medicinecode;
-        item.itemid = item.medicineid;
-        item.itemname = item.medicinename;
-        item.itemno = index;
-        item.itemtype = 0; // 中药0
-        item.unitprice = item.unitprice;
-        item.specification = item.specification;
-        item.useflag = item.useflag;
-        return item;
-      })
-      let prescriptionContent = nameArr.join('、')
-      let patientId = window.patientID;
-      let patientName = window.patientName;
+      }
+      item.baseUnit = item.baseUnit;
+      item.count = item.defQty;
+      item.dosage = item.defQty;
+      item.freqid = values.frequency.key;
+      item.freqname = values.frequency.label;
+      item.doseid = item.doseid;
+      item.miType = '';
+      item.dosename = item.dosename;
+      item.itemcode = item.medicinecode;
+      item.itemid = item.medicineid;
+      item.itemname = item.medicinename;
+      item.itemno = index;
+      item.itemtype = 0; // 中药0
+      item.unitprice = item.unitprice;
+      item.specification = item.specification;
+      item.useflag = item.useflag;
+      return item.exist == 1;
+    })
+    let prescriptionContent = nameArr.join('、')
+    let patientId = window.patientID;
+    let patientName = window.patientName;
 
-      let freqname = values.frequency;
-      let usagename = values.treatMethods;
+    let freqname = values.frequency;
+    let usagename = values.treatMethods;
 
-      let buDiagnosisInfo = {
-        buDiagnosisList: values.diagnose.originData,
-        "cardno": window.cardno,
-        "deptid": window.sessionStorage.getItem('deptid'),
-        "diagnosisDesc": values.diagnosename,
-        "doctorid": window.sessionStorage.getItem('userid'),
-        "orgid": window.sessionStorage.getItem('orgid'),
-        "patientid": window.patientID,
-        "patientname": window.patientName,
-        "patientno": "test", // 患者编号 暂空
-        "registerid":window.registerID,
-        "registerno": "12312" // his挂号流水号 暂空
-      };
+    let buDiagnosisInfo = {
+      buDiagnosisList: values.diagnose.originData,
+      "cardno": window.cardno,
+      "deptid": window.sessionStorage.getItem('deptid'),
+      "diagnosisDesc": values.diagnosename,
+      "doctorid": window.sessionStorage.getItem('userid'),
+      "orgid": window.sessionStorage.getItem('orgid'),
+      "patientid": window.patientID,
+      "patientname": window.patientName,
+      "patientno": "test", // 患者编号 暂空
+      "registerid":window.registerID,
+      "registerno": "12312" // his挂号流水号 暂空
+    };
 
-      let paramsData = {
-        buDiagnosisInfo: buDiagnosisInfo,
-        parientid: patientId,  // 患者ID
+    let paramsData = {
+      buDiagnosisInfo: buDiagnosisInfo,
+      parientid: patientId,  // 患者ID
+      registerid: window.registerID, // 挂号ID
+      parientname: patientName,  // 患者姓名
+      orgUserid: window.sessionStorage.getItem('userid'),
+      orgid: window.sessionStorage.getItem('orgid'),
+      feeall: price * values.doseNum,
+      orgUsername: window.sessionStorage.getItem('username'),
+      ordertype: '3',   // 医嘱类型
+      ordercontent: prescriptionContent, // 医嘱内容
+      orderstate: '1',  // 缴费状态 1 未缴费
+      buRecipe: { // 表单数据
+        recipetype: 1,
         registerid: window.registerID, // 挂号ID
-        parientname: patientName,  // 患者姓名
-        orgUserid: window.sessionStorage.getItem('userid'),
-        orgid: window.sessionStorage.getItem('orgid'),
-        feeall: price * values.doseNum,
-        orgUsername: window.sessionStorage.getItem('username'),
-        ordertype: '3',   // 医嘱类型
-        ordercontent: prescriptionContent, // 医嘱内容
-        orderstate: '1',  // 缴费状态 1 未缴费
-        buRecipe: { // 表单数据
-          recipetype: 1,
-          diagnosename: values.diagnosename,  // 诊断名称
-          registerid: window.registerID, // 挂号ID
-          freqname: values.frequency.label,   // 频次
-          freqid: values.frequency.key, // 频次
-          recipename: values.recipename, // 处方名称
-          usagename: values.treatMethods,   // 治疗方法
-          remark: values.doseNum, //付数
-        },
-        buOrderDtlList: medicineArr,   // 药品信息
-      }
-      let params = {
-        url: 'BuOrderController/postData',
-        type: 'post',
-        data: JSON.stringify(paramsData)
-      }
-      let that = this;
-      function success(res) {
-        console.log('保存成功')
-        that.handlePopClose();
-        that.props.reloadList();
-      };
-      // ajaxGetResource(params, success);
+        freqname: values.frequency.label,   // 频次
+        freqid: values.frequency.key, // 频次
+        recipename: values.recipename, // 处方名称
+        treatway: values.treatMethods,   // 治疗方法
+        countnum: values.doseNum, //付数
+        remark: typeof(values.remark) == 'string' ? values.remark : values.remark.extractionData, // 嘱托
+      },
+      buOrderDtlList: medicineArr,   // 药品信息
     }
+    console.log('paramsData', paramsData);
+    let params = {
+      url: 'BuOrderController/postData',
+      type: 'post',
+      data: JSON.stringify(paramsData)
+    }
+    let that = this;
+    function success(res) {
+      console.log('保存成功')
+      that.handlePopClose();
+      that.props.reloadList();
+    };
+    ajaxGetResource(params, success);
   };
   mmodifyHerbalData(values, herbalData){
     let buRecipe = this.form.state.buRecipe;

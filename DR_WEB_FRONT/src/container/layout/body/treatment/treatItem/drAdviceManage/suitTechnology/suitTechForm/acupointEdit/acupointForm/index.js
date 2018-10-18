@@ -383,7 +383,7 @@ class Index extends Component {
           </Col>
         </Row>
         <Row>
-          <SpecCol span={8}>
+          <Col span={8}>
             <SpecFormItem
               {...specFormItemLayout}
               label={<span><Add>➕</Add>添加穴位/部位</span>}
@@ -397,7 +397,7 @@ class Index extends Component {
                   </SpecRadioGroup>
                 )}
               </SpecFormItem>
-          </SpecCol>
+          </Col>
           <Col span={16}>
             <QuickAddHerb placeholder='请输入中药首字母快速添加' icon='true' ref={ref => this.quickAddHerb = ref} getQuickData = {this.addHerbalData.bind(this)}/>
           </Col>
@@ -518,8 +518,12 @@ const QuickAdd = styled.span`
   margin-left: 13px;
   color: #666666;
 `;
+const Add = styled.span`
+  color: #0A6ECB;
+`;
 const Footer = styled.div`
   position: relative;
+  margin-top: 40px;
 `;
 const Bottom = styled.div`
   position: absolute;

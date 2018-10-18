@@ -9,10 +9,11 @@ import inputSty from 'components/antd/style/input';
 import selectSty from 'components/antd/style/select';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import TipModal from 'components/dr/modal/tip';
-import { getDiagnoseText } from 'commonFunc/transform';
+import { getDiagnoseText, converItemToNeeded } from 'commonFunc/transform';
 import deepClone from 'commonFunc/deepClone';
 import tableSty from 'components/antd/style/table';
 import tagsSty from 'components/antd/style/tags';
+import PagenationSty from 'components/antd/style/pagination';
 
 const confirm = Modal.confirm;
 const RadioGroup = Radio.Group;
@@ -44,7 +45,7 @@ class Index extends Component {
     this.getDiagnoseData();
     this.getDept();
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
-      this.getExamineData(this.props.orderid);
+      this.getInspectionData(this.props.orderid);
     }
   };
   /** [getDept 执行科室数据] */
@@ -87,7 +88,7 @@ class Index extends Component {
     };
     ajaxGetResource(params, callBack);
   };
-  getExamineData(orderid){
+  getInspectionData(orderid){
     let params = {
       url: 'BuOrderController/getData',
       data: {
@@ -98,26 +99,8 @@ class Index extends Component {
     function callBack(res) {
       if(res.result){
         let { buRecipe, buOrderDtlList, buOrdmedical, ...data } = res.data;
-        buOrderDtlList.forEach((item)=>{
-          item.medicalcode = item.itemcode;
-          item.medicalid = item.itemid;
-          item.medicalname = item.itemname;
-          item.medinsrem = item.remarks;
-        });
-        buOrdmedical.buOrdmedicalSuitList.forEach((item) => {
-          item.buOrderDtlList.forEach((itemChild) => {
-            itemChild.medicalcode = itemChild.itemcode;
-            itemChild.medicalname = itemChild.itemname;
-            itemChild.medicalid = itemChild.itemid;
-            itemChild.medinsrem = itemChild.remarks;
-          })
-          item.baMedicalDtlList = item.buOrderDtlList;
-        });
-
         that.setState({
-          // recipename: buRecipe.recipename, // 处方名称
           inspectionData: buOrderDtlList.concat(buOrdmedical.buOrdmedicalSuitList),
-          // buRecipe: buRecipe, // 原始处方信息
           data: data, // 原始医嘱信息
           buOrdmedical: buOrdmedical, // 原始医嘱套对象信息
           aim: buOrdmedical.aim, // 检查目的
@@ -144,29 +127,29 @@ class Index extends Component {
   /**
    * [onModifyInputValue 表格输入框值改变后改变数据源的函数]
    * @param  {[type]} newValue   [新值]
-   * @param  {[type]} medicalid [药品ID]
+   * @param  {[type]} itemid [药品ID]
    * @param  {[type]} item       [改变的药品项]
    * @param  {[type]} orderSuitid   [医嘱套ID， 此项不为空表示修改医嘱套明细项]
    * @return {[type]}            [void]
    */
-  onModifyInputValue(newValue, medicalid, item, orderSuitid){
+  onModifyInputValue(newValue, itemid, item, orderSuitid){
     let inspectionData = this.state.inspectionData;
     inspectionData.forEach((Dataitem, index)=>{
       if(orderSuitid){ // 修改医嘱套明细项
         if(Dataitem.orderSuitid == orderSuitid){
-          Dataitem.baMedicalDtlList.forEach((itemChild, index) => {
-            itemChild[item] = itemChild.medicalid == medicalid ? newValue : itemChild[item];
+          Dataitem.buOrderDtlList.forEach((itemChild, index) => {
+            itemChild[item] = itemChild.itemid == itemid ? newValue : itemChild[item];
           });
         }
       }else{ // 修改非医嘱套项
-        Dataitem[item] = Dataitem.medicalid == medicalid ? newValue : Dataitem[item];
+        Dataitem[item] = Dataitem.itemid == itemid ? newValue : Dataitem[item];
       }
     });
     this.setState({ inspectionData });
   };
   /**
    * [onModifySelectValue 表格中下拉框选项改变后触发的函数]
-   * @param  {[type]} medicalid [当前药品ID]
+   * @param  {[type]} itemid [当前药品ID]
    * @param  {[type]} idItem     [当前药品项ID]
    * @param  {[type]} nameItem   [当前药品项名称]
    * @param  {[type]} newID      [新药品项ID]
@@ -174,19 +157,19 @@ class Index extends Component {
    * @param  {[type]} orderSuitid    [医嘱套ID， 此项不为空表示修改医嘱套明细项]
    * @return {[type]}            [void]
    */
-  onModifySelectValue(medicalid, idItem, nameItem, newID, newName, orderSuitid){
+  onModifySelectValue(itemid, idItem, nameItem, newID, newName, orderSuitid){
     let inspectionData = this.state.inspectionData;
     inspectionData.forEach((Dataitem, index)=>{
       if(orderSuitid){ // 修改医嘱套明细项
         if(Dataitem.orderSuitid == orderSuitid){
-          Dataitem.baMedicalDtlList.forEach((itemChild, index) => {
-            itemChild[idItem] = itemChild.medicalid == medicalid ? newID : itemChild[idItem];
-            itemChild[nameItem] = itemChild.medicalid == medicalid ? newName : itemChild[nameItem];
+          Dataitem.buOrderDtlList.forEach((itemChild, index) => {
+            itemChild[idItem] = itemChild.itemid == itemid ? newID : itemChild[idItem];
+            itemChild[nameItem] = itemChild.itemid == itemid ? newName : itemChild[nameItem];
           });
         }
       }else{ // 修改非医嘱套项
-        Dataitem[idItem] = Dataitem.medicalid == medicalid ? newID : Dataitem[idItem];
-        Dataitem[nameItem] = Dataitem.medicalid == medicalid ? newName : Dataitem[nameItem];
+        Dataitem[idItem] = Dataitem.itemid == itemid ? newID : Dataitem[idItem];
+        Dataitem[nameItem] = Dataitem.itemid == itemid ? newName : Dataitem[nameItem];
       }
     });
 
@@ -196,12 +179,12 @@ class Index extends Component {
     this.setState({ inspectionData });
   };
   /**
-   * [ExamineData 删除当前检查项目]
+   * [InspectionData 删除当前检查项目]
    * @param  {[type]} record [当前检查项目对象]
-   * @param  {[type]} medicalid [医嘱套明细ID， 若为undefined则为非医嘱套项目，否则删除医嘱套明细的某一项]
+   * @param  {[type]} itemid [医嘱套明细ID， 若为undefined则为非医嘱套项目，否则删除医嘱套明细的某一项]
    * @return {[type]}        [void]
    */
-  delExamineData(record) {
+  delInspectionData(record) {
     let that = this;
     let inspectionData = this.state.inspectionData;
     if(record.orderSuitid){
@@ -215,31 +198,32 @@ class Index extends Component {
         }
       });
     }else{
-        inspectionData = inspectionData.remove({medicalid: record.medicalid});
+        inspectionData = inspectionData.remove({itemid: record.itemid});
         that.setState({inspectionData})
     }
   }
   /**
-   * [addExamineData 添加检查项目列表]
+   * [addInspectionData 添加检查项目列表]
    * @param  {[type]} medicineItem [新增项]
    * @return {[type]}              [void]
    */
-  addExamineData (examineItem) {
+  addInspectionData (inspectionItem) {
     let inspectionData = this.state.inspectionData;
     for(let i=0; i < inspectionData.length; i++){
-      if(inspectionData[i].baMedicalDtlList){ // 医嘱套
-        if(inspectionData[i].orderSuitid == examineItem.orderSuitid){
+      if(inspectionData[i].buOrderDtlList){ // 医嘱套
+        if(inspectionData[i].orderSuitid == inspectionItem.orderSuitid){
           this.tipModal.showModal({ stressContent: '该检查项已存在' });
           return false;
         }
       }else{ // 非医嘱套
-        if(inspectionData[i].medicalid == examineItem.medicalid){
+        if(inspectionData[i].itemid  == inspectionItem.itemid){
           this.tipModal.showModal({ stressContent: '该检查项已存在' });
           return false;
         }
       }
     }
-    inspectionData.push(examineItem);
+    let item = converItemToNeeded(inspectionItem, inspectionData);
+    inspectionData.push(item);
     this.setState({ inspectionData });
   }
   /** [getTableColumns 设置表格列] */
@@ -252,9 +236,9 @@ class Index extends Component {
       render: (text, record, index) => <span>{index + 1}</span>
     }, {
       title: "检查项/检查明细项",
-      dataIndex: 'medicalname',
-      key: 'medicalname',
-      render: (text, record, index) => record.orderSuitid ? <span><Stress>{record.orderSuitname}</Stress>/{record.medicalname}</span> : <span>{record.medicalname}</span>
+      dataIndex: 'itemname',
+      key: 'itemname',
+      render: (text, record, index) => record.orderSuitid ? <span><Stress>{record.orderSuitname}</Stress>/{record.itemname}</span> : <span>{record.itemname}</span>
     }, {
       title: "执行科室",
       dataIndex: 'deptname',
@@ -263,7 +247,7 @@ class Index extends Component {
         <SpecSelect
           defaultValue={{key: record.deptid, label: record.deptname}}
           labelInValue={true}
-          onSelect={(e)=>{this.onModifySelectValue(record.medicalid, 'depaid', 'deptname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
+          onSelect={(e)=>{this.onModifySelectValue(record.itemid, 'depaid', 'deptname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
           {
             deptData.map((item) => <Option key={item.deptid} value={item.deptid}>{item.deptname}</Option>)
           }
@@ -273,14 +257,14 @@ class Index extends Component {
       title: "部位或送检物",
       dataIndex: 'spbody',
       key: 'spbody',
-      render: (text, record, index)=>   <InputRemark onBlur={(e)=>{ record.spbody != e.target.value ? this.onModifyInputValue(e.target.value, record.medicalid, 'spbody', record.orderSuitid ? record.orderSuitid : '') : ''}} defaultValue={record.spbody} />
+      render: (text, record, index)=>   <InputRemark onBlur={(e)=>{ record.spbody != e.target.value ? this.onModifyInputValue(e.target.value, record.itemid, 'spbody', record.orderSuitid ? record.orderSuitid : '') : ''}} defaultValue={record.spbody} />
     }, {
       title: "数量/单位",
       dataIndex: 'count',
       key: 'count',
       render: (text, record, index)=>
       <span>
-        <InputCount onBlur={(e)=>{ record.count != e.target.value ? this.onModifyInputValue(e.target.value, record.medicalid, 'count', record.orderSuitid ? record.orderSuitid : '') : ''}} defaultValue={record.count} />{record.baseUnitDic}
+        <InputCount onBlur={(e)=>{ record.count != e.target.value ? this.onModifyInputValue(e.target.value, record.itemid, 'count', record.orderSuitid ? record.orderSuitid : '') : ''}} defaultValue={record.count} />{record.baseUnitDic}
       </span>
     }, {
       title: "金额",
@@ -289,9 +273,9 @@ class Index extends Component {
       render: (text, record, index)=><span>{parseFloat(record.count * record.unitprice).toFixed(2)}</span>
     }, {
       title: "备注",
-      dataIndex: 'medinsrem',
-      key: 'medinsrem',
-      render: (text, record, index) => <InputRemark onBlur={(e)=>{ record.medinsrem != e.target.value ? this.onModifyInputValue(e.target.value, record.medicalid, 'medinsrem', record.orderSuitid ? record.orderSuitid : '') : ''}} defaultValue={record.medinsrem} />
+      dataIndex: 'itemname',
+      key: 'itemname',
+      render: (text, record, index) => <InputRemark onBlur={(e)=>{ record.itemname != e.target.value ? this.onModifyInputValue(e.target.value, record.itemid, 'itemname', record.orderSuitid ? record.orderSuitid : '') : ''}} defaultValue={record.itemname} />
     }, {
       title: "状态≡",
       dataIndex: 'statusValue',
@@ -301,7 +285,7 @@ class Index extends Component {
       title: "操作",
       dataIndex: 'operate',
       key: 'operate',
-      render: (value, record, index)=> <a onClick={() => { this.delExamineData(record) }}>删除</a>
+      render: (value, record, index)=> <a onClick={() => { this.delInspectionData(record) }}>删除</a>
     }];
     return columns;
   };
@@ -314,8 +298,8 @@ class Index extends Component {
     let dataSource = [];
     let feeAll = 0;
     originData.forEach((item) => {
-      if(item.baMedicalDtlList){ // 医嘱套
-        item.baMedicalDtlList.forEach((itemChild) => {
+      if(item.buOrderDtlList){ // 医嘱套
+        item.buOrderDtlList.forEach((itemChild) => {
           itemChild.key = dataSource.length
           itemChild.orderSuitid = item.orderSuitid;
           itemChild.orderSuitname = item.orderSuitname;
@@ -333,7 +317,7 @@ class Index extends Component {
       for(let i = dataSource.length % 8; i < 8 ; i++){
         let item = deepClone(dataSource[dataSource.length-1]);
         item.key = dataSource.length;
-        item.medicalid = ''; // 空行标识
+        item.itemid = ''; // 空行标识
         dataSource.push(item)
       }
     }
@@ -432,7 +416,7 @@ class Index extends Component {
               {...formItemLayout}
               >
                 {getFieldDecorator('addQuickly')(
-                  <QuickAddInspectionItem placeholder='请输入检查项目首字母快速添加' icon='#0A6ECB' ref={ref => this.quickAddExamineItem = ref} getQuickData = {this.addExamineData.bind(this)}/>
+                  <QuickAddInspectionItem placeholder='请输入检查项目首字母快速添加' icon='#0A6ECB' ref={ref => this.quickAddExamineItem = ref} getQuickData = {this.addInspectionData.bind(this)}/>
                 )}
               </FormItem>
           </Col>
@@ -447,7 +431,7 @@ class Index extends Component {
               })(
                 <div>
                 {
-                  inspectionData.map((item, index) => <SpecTag  onClose={(e) => {e.preventDefault();this.delExamineData(item)}} closable key={index} id={item.baMedicalDtlList ? item.orderSuitid : item.medicalid}>{item.baMedicalDtlList ? item.orderSuitname : item.medicalname}</SpecTag>)
+                  inspectionData.map((item, index) => <SpecTag  onClose={(e) => {e.preventDefault();this.delInspectionData(item)}} closable key={index} id={item.buOrderDtlList ? item.orderSuitid : item.itemid}>{item.buOrderDtlList ? item.orderSuitname : item.itemname}</SpecTag>)
                 }
                 </div>
               )}
@@ -460,7 +444,7 @@ class Index extends Component {
             locale={{emptyText: '暂无检查项目数据' }}
             columns={columns}
             pagination={Pagination}
-            rowClassName={(record, index)=>record.medicalid ? 'dotted' : 'dotted clear'} >
+            rowClassName={(record, index)=>record.itemid ? 'dotted' : 'dotted clear'} >
           </SpecTable>
           <Tip>💡提示：医保外项目以红色显示</Tip>
           <Total>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
@@ -553,6 +537,7 @@ const Status = styled.span`
 `;
 const SpecTable = styled(Table)`
   ${tableSty.dottedRowTable};
+  ${PagenationSty.easyPagination};
   .ant-table {
     border-bottom: 1px solid #0A6ECB;
     height: 290px;

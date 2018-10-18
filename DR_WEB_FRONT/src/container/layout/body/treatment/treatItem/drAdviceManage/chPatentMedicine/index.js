@@ -53,7 +53,6 @@ export default class Index extends Component {
       let self = this;
       // 草药对象
       let formatedMedicineData = mergeArray.map((item, index) => {
-        console.log('item',item)
         medicineNameData.push(item.medicinename)
         price += item.unitprice * (item.count ? item.count : item.defQty);
         item.baseUnit = item.baseUnit;
