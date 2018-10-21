@@ -88,7 +88,7 @@ export default class template extends Component {
   searchList = (content) =>{
     var self = this;
     let params = {
-      "personid":window.patientID,
+      "personid":window.sessionStorage.getItem('userid'),
       "orgid":parseInt(sessionStorage.getItem("orgid")),
       "diseaseid":parseInt(sessionStorage.getItem("deptid")),
       "content":content,

@@ -111,6 +111,7 @@ export default class template extends Component {
       }
     }
     newItem['buDiagnosisInfo'] = {};//暂无信息
+    console.log("newItem=",newItem);
     this.props.changeInitData(newItem);
   }
   render() {

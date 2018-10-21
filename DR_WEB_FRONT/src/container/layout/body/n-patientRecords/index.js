@@ -17,13 +17,15 @@ export default class index extends Component {
       sexDic: '',
       birthday: '',
       patienttypeDic: '',
+      basicOperation: ''
     };
     this.handleClick = this.handleClick.bind(this)
   }
 
-  handleClick(pram,patientid,ctsorgidDic,upstamp,patientname,sexDic,birthday,patienttypeDic){
+  handleClick(basicOperation,pram,patientid,ctsorgidDic,upstamp,patientname,sexDic,birthday,patienttypeDic){
     console.log('pram',pram)
     this.setState({
+      basicOperation: basicOperation,
       visible: pram,
       patientid: patientid,
       ctsorgidDic: ctsorgidDic,
@@ -36,14 +38,15 @@ export default class index extends Component {
   };
 
   render() { 
-    let { visible, patientid, ctsorgidDic, upstamp, patientname, sexDic, birthday, patienttypeDic }  = this.state;
+    let { basicOperation, visible,  patientid, ctsorgidDic, upstamp, patientname, sexDic, birthday, patienttypeDic }  = this.state;
     let t  = null;
     if(visible == 1){
       t = <PatientTable onToggle={this.handleClick} />
     } else if (visible == 2) {
-      t = <Ssc onToggle={this.handleClick} />
+      t = <Ssc onToggle={this.handleClick} patientid = {patientid} basicOperation = {basicOperation} />
     } else if (visible == 3) {
       t = <PatientDetails onToggle={this.handleClick} 
+      basicOperation = {basicOperation}
       patientid = {patientid}
       ctsorgidDic = {ctsorgidDic}
       upstamp = {upstamp}

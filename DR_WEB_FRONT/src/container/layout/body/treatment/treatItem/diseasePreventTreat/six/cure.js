@@ -28,40 +28,9 @@ class Index extends Component {
     this.props.onToggle(pram);
   }
 
-  componentWillMount(){//患者是否存在 0或者1
-    let cardtype = window.cardtype;
-    let cardno = window.cardno;
-    let params = {
-      type: 'GET',
-      url: 'healthcabin/user/qrcode',
-      contentType: '',
-      server_url: config_CureService_url,
-      xhrFields:{withCredentials:true},
-      crossDoman:true,
-      data:{
-        certificatesType: cardtype,
-        certificatesNumber: cardno
-      }
-    };
-    let that = this;
-    function success(res){
-      console.log('子组件',res)
-      that.setState({
-        userId: res.data.user.userid,
-        imgUrl: res.data.qrcode
-      })
-    };
-
-    function error(res){
-      console.log('失败',res)
-    };
-
-    getResource(params, success, error);
-  }
-
   render() {
     let huoquValue = this.props.visible;
-    let imgUrl = this.state.imgUrl;
+    let imgUrl = this.props.imgUrl;
     let c = null;
     if(huoquValue == 1){
       c = <CureOne/>

@@ -11,7 +11,6 @@ import { today } from 'commonFunc/defaultData';
 import zh_CN  from 'antd/lib/locale-provider/zh_CN';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
-
 const nowdate = new Date();
 nowdate.setMonth(nowdate.getMonth()-1); 
 const y = nowdate.getFullYear(); 
@@ -29,13 +28,19 @@ export default class Index extends Component {
       totalRecords: 0, // 总记录数
       curPage: 1, // 当前页
       pageSize: pageSize * 4, // 每页记录数
+      basicOperation: ''
     };
     this.getPatientData = this.getPatientData.bind(this);
     this.quickReceive = this.quickReceive.bind(this);
   };
   quickReceive(){
-    let pram = 2;
-    this.props.onToggle(pram);
+    this.setState({
+      basicOperation: 'add'
+    },function(){
+      let basicOperation = this.state.basicOperation;
+      let pram = 2;
+      this.props.onToggle(basicOperation,pram);
+    })
   }
   componentDidMount(){
     this.getPatientData();
@@ -69,19 +74,38 @@ export default class Index extends Component {
     ajaxGetResource(params, callBack);
   };
   onSee(text, index, record){
-    console.log('jin',index,record)
-    let patientid = record.patientid;//患者ID
-    let ctsorgidDic = record.ctsorgidDic;//机构
-    let upstamp = record.upstamp;//就诊日期
-    let patientname = record.patientname;//患者姓名
-    let sexDic = record.sexDic;//患者性别
-    let birthday = y - record.birthday.substr(0,4);//患者年龄
-    let patienttypeDic = record.patienttypeDic;//患者类型
-    let pram = 3;
-    this.props.onToggle(pram,patientid,ctsorgidDic,upstamp,patientname,sexDic,birthday,patienttypeDic);
+    this.setState({
+      basicOperation: 'view'
+    }, function(){
+      console.log('onSee',record)
+      let basicOperation = this.state.basicOperation;
+      let patientid = record.patientid;//患者ID
+      let ctsorgidDic = record.ctsorgidDic;//机构
+      let upstamp = record.upstamp;//就诊日期
+      let patientname = record.patientname;//患者姓名
+      let sexDic = record.sexDic;//患者性别
+      let birthday = y - record.birthday.substr(0,4);//患者年龄
+      let patienttypeDic = record.patienttypeDic;//患者类型
+      let pram = 3;
+      this.props.onToggle(basicOperation,pram,patientid,ctsorgidDic,upstamp,patientname,sexDic,birthday,patienttypeDic);
+    })
   }
   onEdit(text, index, record){
-
+    this.setState({
+      basicOperation: 'modify'
+    }, function(){
+      console.log('onEdit',record)
+      let basicOperation = this.state.basicOperation;
+      let patientid = record.patientid;//患者ID
+      let ctsorgidDic = record.ctsorgidDic;//机构
+      let upstamp = record.upstamp;//就诊日期
+      let patientname = record.patientname;//患者姓名
+      let sexDic = record.sexDic;//患者性别
+      let birthday = y - record.birthday.substr(0,4);//患者年龄
+      let patienttypeDic = record.patienttypeDic;//患者类型
+      let pram = 3;
+      this.props.onToggle(basicOperation,pram,patientid,ctsorgidDic,upstamp,patientname,sexDic,birthday,patienttypeDic);
+    })
   }
   /**
    * [getTableColumns 获取表格列]
@@ -126,8 +150,8 @@ export default class Index extends Component {
       key: 'upstamp',
     }, {
       title: '医疗机构名称',
-      dataIndex: 'districtid',
-      key: 'districtid',
+      dataIndex: 'ctsorgidDic',
+      key: 'ctsorgidDic',
     }, {
       title: '创建人',
       dataIndex: 'creator',

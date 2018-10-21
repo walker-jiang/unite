@@ -10,9 +10,7 @@ export default class Index extends Component {
     const { gridType, dataSource } = this.props;
     console.log('dataSource',dataSource);
     const cardno = dataSource.cardno;
-    const casetype = dataSource.casetype;
-    console.log('casetypecasetypecasetypecasetype',casetype);
-    
+    const cardtype = dataSource.cardtype;
     dataSource.examDate = '';
     const themeType = gridType == 0 ? 'to' : 'ing_done';
     return (
@@ -29,13 +27,13 @@ export default class Index extends Component {
           {
             gridType == 0 ?
             <Footer themeType={themeType}>
-              <ActionButton onClick={() => {this.props.onStep(2,cardno,casetype)}}>
+              <ActionButton onClick={() => {this.props.onStep(2,cardno,cardtype)}}>
                 选择
               </ActionButton>
             </Footer>
             : gridType == 1 ?
             <Footer themeType={themeType}>
-              <ActionButton onClick={() => {this.props.onStep(2,cardno,casetype)}}>
+              <ActionButton onClick={() => {this.props.onStep(2,cardno,cardtype)}}>
                 选择
               </ActionButton>
             </Footer> : null

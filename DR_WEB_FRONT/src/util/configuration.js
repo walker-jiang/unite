@@ -20,17 +20,90 @@ const colorData = ['#33cc00', '#ff0000', '#6cc' ] // His系统背景颜色
 const pageSize = 5; // 分页时每页显示的记录数
 const bundleMode = 'BS'; // CS 客户端模式，BS 浏览器模式
 const questionTemplate = "1" //治疗反馈题目模板类型
-window.menus = [
-  {key:"首页",show:true, id: 'home'},
-  {key:"患者登记",show:true, id: 'registration'},
-  {key:"今日诊疗",show:true, id: 'tideyDiagnosis'},
-  {key:"病历中心",show:true, id: 'medicalCenter'},
-  {key:"辨证论治",show:true, id: 'differentiation'},
-  {key:"治未病",show:true, id: 'cureNotIll'},
-  {key:"中医知识库",show:true, id: 'medicine'},
-  {key:"个人设置",show:true, id: 'personalSettings'},
-  {key:"系统管理",show:true, id: 'systemManagement'},
-  {key:"辨证论治管理",show:true, id: 'patientReferral'},
-  {key:"治疗记录",show:true, id: 'medicalRecords'},
-  {key:"患者档案",show:true, id: 'patientRecords'},
+const defaultSysModuleList = [ // 系统在未登录状态下的默认菜单
+  {
+    "ctstamp": "2018-10-09 10:46:33",
+    "menuid": "7",
+    "menustate": "01",
+    "menutype": "01",
+    "modid": 7,
+    "seqno": 1,
+    "syModule": {
+      "callurl": "http://www.xiaotangren.com:9999/index1.html",
+      "ctstamp": "2018-09-10 16:32:46",
+      "lastflag": 0,
+      "level": 1,
+      "moddesc": "ch_knowledge",
+      "modid": 7,
+      "modname": "中医知识库",
+      "modno": "cs007",
+      "modtype": "1",
+      "seqno": 7,
+      "superid": 0,
+      "syModuleList": [],
+      "syWorkList": [],
+      "uctstamp": "2018-10-07 10:45:36",
+      "useflag": "1",
+      "user": null
+    },
+    "uctstamp": "2018-10-09 10:56:20",
+    "useflag": "1",
+    "userid": "1"
+  }, {
+    "ctstamp": "2018-10-09 10:46:31",
+    "menuid": "5",
+    "menustate": "01",
+    "menutype": "01",
+    "modid": 5,
+    "seqno": 1,
+    "syModule": {
+      "callurl": "/Layout/syndromeTreatment",
+      "ctstamp": "2018-09-10 16:28:43",
+      "lastflag": 0,
+      "level": 1,
+      "moddesc": "syndrome_treatment",
+      "modid": 5,
+      "modname": "辩证论治",
+      "modno": "cs005",
+      "modtype": "1",
+      "seqno": 5,
+      "superid": 0,
+      "syModuleList": [],
+      "syWorkList": [],
+      "uctstamp": "2018-10-07 10:45:36",
+      "useflag": "1",
+      "user": null
+    },
+    "uctstamp": "2018-10-09 10:56:19",
+    "useflag": "1",
+    "userid": "1"
+  }, {
+    "ctstamp": "2018-10-09 10:46:32",
+    "menuid": "6",
+    "menustate": "01",
+    "menutype": "01",
+    "modid": 6,
+    "seqno": 1,
+    "syModule": {
+      "callurl": "/Layout/cureNotIll",
+      "ctstamp": "2018-09-10 16:30:41",
+      "lastflag": 0,
+      "level": 1,
+      "moddesc": "cure_not_ill",
+      "modid": 6,
+      "modname": "治未病",
+      "modno": "cs006",
+      "modtype": "1",
+      "seqno": 6,
+      "superid": 0,
+      "syModuleList": [],
+      "syWorkList": [],
+      "uctstamp": "2018-10-07 10:45:36",
+      "useflag": "1",
+      "user": null
+    },
+    "uctstamp": "2018-10-09 10:56:20",
+    "useflag": "1",
+    "userid": "1"
+  }
 ];

@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import styled from 'styled-components';
 import ElectronicList from '../electronicList/index.js';
 import Cure from '../../n-cure/diseasePreventTreat';
-// import Ssc from '../profiled';
-import Ssc from '../patientDetailInfo';
+import Ssc from '../registerForm';
+// import Ssc from '../patientDetailInfo';
 import people from '../images/people.png'
 import Addtip from '../images/addtip.png';
 import { Link } from 'react-router-dom';
@@ -95,11 +95,11 @@ export default class Index extends Component {
     let sexDic = this.props.sexDic;
     let birthday = this.props.birthday;
     let patienttypeDic = this.props.patienttypeDic;
+    let basicOperation = this.props.basicOperation;
     let curTabComponet = null;
     console.log('data',data);
-    
     if(rcStatus == 0) {
-        curTabComponet = <Ssc patientid = {patientid} />
+        curTabComponet = <Ssc patientid = {patientid} basicOperation = {basicOperation}/>
     } else if(rcStatus == 1) {
       if(data == [] || data == "" || data == null){
         curTabComponet =<NullData> 

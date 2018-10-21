@@ -45,7 +45,6 @@ export default class Cure extends Component {
   };
   componentWillReceiveProps(nextProps){
     if(nextProps.current == 2 && this.caseConfirm){
-      console.log('this.caseConfirm', this.caseConfirm);
       this.caseConfirm.validateFieldsAndScroll((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values);
@@ -64,7 +63,7 @@ export default class Cure extends Component {
       bodyComponent = <CaseConfirm onStep={(step) => {this.props.onStep(step)}} ref={ ref => { this.caseConfirm = ref }}/>;
     }
     if(current == 2){
-      bodyComponent = <SmartDistinguish onStep={(step) => {this.props.onStep(step)}} caseBasicInfo={caseBasicInfo} registerid={this.props.registerid}/>;
+      bodyComponent = <SmartDistinguish onStep={(step) => {this.props.onStep(step)}} caseBasicInfo={caseBasicInfo} registerid={this.props.registerid} baPatient={ this.state.baPatient}/>;
     }
     if(current == 3){
       bodyComponent = <SmartTreatment onStep={(step) => {this.props.onStep(step)}} registerid={this.props.registerid}/>;

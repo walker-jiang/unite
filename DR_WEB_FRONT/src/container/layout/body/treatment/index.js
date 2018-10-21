@@ -34,7 +34,7 @@ class Index extends Component {
   constructor(props){
     super(props);
     this.state = {
-      treatTab: 1, // window.herbalData ? 2 :
+      treatTab: 2, // window.herbalData ? 2 :
       patienttypeDic: '',
       sexDic: '',
       age: 0,

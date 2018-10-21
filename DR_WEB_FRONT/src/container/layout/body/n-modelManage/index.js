@@ -1,22 +1,15 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import { Button,Row, Col,Tree} from 'antd';
-
+import { Button,Row, Col,Tree,Table,Divider, Modal,Input} from 'antd';
+import Icon1 from 'components/dr/icon';
 const TreeNode = Tree.TreeNode;
 export default class Index extends Component {
   constructor(props){
     super(props);
     this.state={
-      rcStatus:0,
+      rcStatus:0,  //切换样式
       List:[],//Trees
     };
-  };
-  toggleTabs(curTab){
-    this.setState({
-      rcStatus: curTab
-    },() => {
-      console.log(curTab)
-    });
   };
   componentDidMount(){
     this.setState({
@@ -67,10 +60,41 @@ export default class Index extends Component {
       ]
     })
   }
-  //
+  /** [toggleTabs 点击样式切换] */
+  toggleTabs(curTab){
+    this.setState({
+      rcStatus: curTab
+    });
+  };
+  /** [showModal 展示对话框] */
+  showModal = () => {
+   this.setState({
+     visible: true,
+   });
+ }
+/** [handleOk 关闭对话框] */
+ handleOk = (e) => {
+   console.log(e);
+   this.setState({
+     visible: false,
+   });
+ }
+/** [handleCancel 关闭对话框] */
+ handleCancel = (e) => {
+   console.log(e);
+   this.setState({
+     visible: false,
+   });
+ }
+  //????
   onSelect = (selectedKeys, info) => {
     console.log('selected', selectedKeys, info);
   }
+  /**
+   * [recursion 渲染树状图]
+   * @param  {[type]} List [树状图的数据]
+   * @return {[type]}      [description]
+   */
   recursion = (List) => {
     return(
       List.map((item,index)=>{
@@ -84,6 +108,53 @@ export default class Index extends Component {
   }
   render() {
     let { rcStatus, List } = this.state;
+    const columns = [{
+        title: 'Name',
+        dataIndex: 'name',
+        key: 'name',
+        render: text => <span>{text}</span>,
+        width:'45%',
+      }, {
+        title: 'Time',
+        dataIndex: 'time',
+        key: 'time',
+        width:'18%',
+        align:'center',
+      }, {
+        title: 'Age',
+        dataIndex: 'age',
+        key: 'age',
+        width:'20%',
+        align:'center',
+      },{
+        title: 'Action',
+        key: 'action',
+      render: (text, record) => (
+        <span>
+          <a href="javascript:;">查看</a>
+          <Divider type="vertical" />
+          <a href="javascript:;">修改</a>
+          <Divider type="vertical" />
+          <a href="javascript:;">删除</a>
+        </span>
+      ),
+    }];
+    const data = [{
+        key: '1',
+        name: '平台共享模板',
+        age: 32,
+        time: '2018-10-15',
+      }, {
+        key: '2',
+        name: '庆阳中医馆共享模板',
+        age: 42,
+        time: '2018-10-15',
+      }, {
+        key: '3',
+        name: '我的模板',
+        age: 32,
+        time: '2018-10-15',
+      }];
     return (
       <Container>
         <Header>
@@ -92,7 +163,7 @@ export default class Index extends Component {
         </Header>
         <Body>
           <ButBox>
-             <ButtClass>+新建分类</ButtClass>
+             <ButtClass onClick={this.showModal}>+新建分类</ButtClass>
              <ButtModel>+新建模板</ButtModel>
           </ButBox>
           <Top>
@@ -110,9 +181,15 @@ export default class Index extends Component {
                  </Tree>
                </Colu>
                <Colu span={16}>
-                 
+                  <Table columns={columns} dataSource={data}  showHeader={false}/>
                </Colu>
           </Subject>
+          <SpeModal title="Basic Modal" visible={this.state.visible} onOk={this.handleOk} onCancel={this.handleCancel} footer={false}>
+             <div>
+               <span></span>
+             <Input />
+             </div>
+          </SpeModal>
         </Body>
      </Container>
     );
@@ -168,6 +245,7 @@ const ButtClass =styled.div`
   line-height:28px;
   color:#fff;
   margin-right: 20px;
+  cursor:pointer;
 `
 const ButtModel =styled.div`
   height:28px;
@@ -179,6 +257,7 @@ const ButtModel =styled.div`
   color:#fff;
   text-align: center;
   line-height:28px;
+  cursor:pointer;
 `
 const Top =styled(Row)`
   background-color: rgba(235, 235, 235, 1);
@@ -205,6 +284,62 @@ const Colu =styled(Col)`
   &&&.left{
     border-right: 1px solid #ccc;
   }
+`
+const Key=styled.span `
+  cursor:pointer;
+  margin-right: 5px;
+`
+const SpecTable = styled(Table)`
+  .ant-table-body {
+    height: 308px !important;
+    overflow-y: scroll;
+    font-size: 14px !important;
+  }
+  .ant-table-row>tr>td{
+    height: 35px !important;
+  }
+  .ant-table-thead>tr>th{
+    height: 35px !important;
+  }
+`
+const StyleICon = styled(Icon1)`
+ height:20px;
+ width: 20px;
+`
+const SpeModal =styled(Modal)`
+  width: 500px !important;
+  height: 240px !important;
+   .ant-modal-content{
+     border-top-left-radius: 14px  ;
+     border-top-right-radius:14px ;
+     .ant-modal-header{
+       background-color: #0a6ecb !important;
+       font-size: 14px;
+       height: 36px;
+       border-top-left-radius: 14px;
+       border-top-right-radius:14px;
+       border-bottom:none !important;
+       .ant-modal-title{
+         line-height:3px;
+         color: #fff !important;
+       }
+     }
+     .ant-modal-close{
+       .ant-modal-close-x{
+          width: 24px !important;
+          height: 24px !important;
+          line-height: 24px !important;
+          font-size: 16px;
+          border-radius: 50%;
+          background-color: #6ab5e4;
+          margin-top: 6px;
+          margin-right: 10px;
+          color: #fff;
+          text-align: center;
+       }
+       }
+   }
+   .
 `
 /*
 @作者：马奔

@@ -39,9 +39,9 @@ export default class Index extends Component {
       len = (len > 0) ? 4 : (4 + len);
       for(let j = i * 4; j < i * 4 + len; j++){
         row.push(<TableItem value={mergeArray[j]} onDelete={()=>{this.props.delHerbal(mergeArray[j])}} onUsageChange = {this.usageChange} dosageChange={this.dosageChange} autofocus={(mergeArray.length == j + 1) ? 'autofocus' : 'none'} key={j}></TableItem>);
-        if(j == (mergeArray.length - 1) && mergeArray.length % 4 != 0){
-          row.push(<Add onClick = { () => { this.props.addHerbal() }} key={'j'}>+</Add>);
-        }
+        // if(j == (mergeArray.length - 1) && mergeArray.length % 4 != 0){
+        //   row.push(<Add onClick = { () => { this.props.addHerbal() }} key={'j'}>+</Add>);
+        // }
       }
       let rowLine = <Row key={i} width={row.length/4}>{row}</Row>
       rows.push(rowLine);
@@ -60,8 +60,8 @@ export default class Index extends Component {
       {
         mergeArray.length == 0 ? <TipWrap>
         <TipImg src={Addtip} />
-        <TipTitle>处方中还没有添加草药</TipTitle>
-        <TipText>请点击左侧➕号添加或者<br />通过<TipTextBlue>草药搜索框</TipTextBlue>快速添加</TipText>
+        <TipTitle>处方中还没有添加穴位</TipTitle>
+        <TipText>通过<TipTextBlue>穴位搜索框</TipTextBlue>快速添加</TipText>
       </TipWrap> : null
       }
       </TableWrap>

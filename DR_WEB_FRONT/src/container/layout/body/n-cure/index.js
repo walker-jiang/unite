@@ -23,7 +23,7 @@ class Index extends Component {
     this.state = {
       visible: '',
       cardno: '',
-      casetype: '',
+      cardtype: '',
       login: '',
       patientInfo: {
         birthday: '1992-08-21'
@@ -108,19 +108,19 @@ class Index extends Component {
     this.setState({ patientInfo });
   };
 
-  stepFunc(step,cardno,casetype){
+  stepFunc(step,cardno,cardtype){
     console.log('step&&&&&&&&&',step);
-    console.log('cardno&&&&&&&&&',cardno);
+    console.log('cardtype&&&&&&&&&',cardtype);
     this.setState({ 
       visible: step,
       cardno: cardno,
-      casetype: casetype
+      cardtype: cardtype
     })
   };
   
   render() {
     const { getFieldDecorator } = this.props.form;
-    let { visible, patientInfo, cardno, casetype } = this.state;
+    let { visible, patientInfo, cardno, cardtype } = this.state;
     let date = new Date();
     const age = date.getFullYear() - parseInt(patientInfo.birthday.substr(0,4));
     const formItemLayout = {
@@ -244,7 +244,7 @@ class Index extends Component {
      } else if (visible == 1) {
           c = <SelectPatient onStep={this.stepFunc} />
      } else if (visible == 2) {
-      c = <CureButton onStep={this.stepFunc} cardno = {cardno} casetype = {casetype} />
+      c = <CureButton onStep={this.stepFunc} cardno = {cardno} cardtype = {cardtype} />
      }
     return (
       <Container>

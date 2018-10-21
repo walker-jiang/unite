@@ -39,11 +39,11 @@ const Cure = Loadable({
   loader: () => import('./n-cure'),
   loading: loadingComponent,
 });
-import More from './n-more';
-// const More = Loadable({
-//   loader: () => import('./n-more'),
-//   loading: loadingComponent,
-// });
+// import More from './n-more';
+const More = Loadable({
+  loader: () => import('./n-more'),
+  loading: loadingComponent,
+});
 const PantientRecords = Loadable({
   loader: () => import('./n-patientRecords'),
   loading: loadingComponent,
@@ -53,11 +53,11 @@ const layoutSub = Loadable({
   loader: () => import('./n-syndromeManage/component/layout/layout.jsx'),
   loading: loadingComponent,
 });
-
-const ModelManage= Loadable({
-  loader: () => import('./n-modelManage'),
-  loading: loadingComponent,
-});
+import ModelManage from './n-modelManage';
+// const ModelManage= Loadable({
+//   loader: () => import('./n-modelManage'),
+//   loading: loadingComponent,
+// });
 const PersonalSetting= Loadable({
   loader: () => import('./n-personalSettings'),
   loading: loadingComponent,
@@ -86,7 +86,7 @@ export default class Body extends Component {
           <Route path='/Layout/caseCenter' component={Electronic}></Route>
           <Route path='/Layout/cureNotIll' component={Cure}></Route>
           <Route path='/Layout/syndromeTreatment' component={SyndromeTreatment}></Route>
-          <Route path='/Layout/patientRecords' component={PantientRecords}></Route>
+          <Route path='/Layout/patientArchives' component={PantientRecords}></Route>
           <Route path='/Layout/more' component={More}></Route>
           <Route path="/Layout/sub" component={layoutSub}></Route>
           <Route path="/Layout/personalSetting" component={PersonalSetting}></Route>

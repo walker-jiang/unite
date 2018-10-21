@@ -12,7 +12,7 @@ export default class DiseasePreventTreat extends Component {
       userId: '',
       imgUrl: '',
       sex: '',
-      sexDic: '',
+      sexDesc: '',
       name: '',
       age: ''
     };
@@ -24,11 +24,8 @@ export default class DiseasePreventTreat extends Component {
   };
 
   componentWillMount(){//患者是否存在 0或者1
-    let cardtype = window.certificatesType?window.certificatesType:this.props.casetype;
+    let cardtype = window.certificatesType?window.certificatesType:this.props.cardtype;
     let cardno = window.certificatesNumber?window.certificatesNumber:this.props.cardno;
-    if(cardtype == '' || cardtype == null){
-      cardtype = '01'
-    }
     let params = {
       type: 'GET',
       url: 'healthcabin/user/qrcode',
@@ -49,7 +46,7 @@ export default class DiseasePreventTreat extends Component {
         userId: res.data.user.userid,
         imgUrl: res.data.qrcode,
         sex: res.data.user.sex,
-        sexDic: res.data.user.sexDic,
+        sexDesc: res.data.user.sexDesc,
         name: res.data.user.name,
         age: res.data.user.birthday
       })
@@ -63,14 +60,14 @@ export default class DiseasePreventTreat extends Component {
   }
 
   render() {
-    let {visible,userId,imgUrl,sex,sexDic,name,age}  = this.state
+    let {visible,userId,imgUrl,sex,sexDesc,name,age}  = this.state
     let t  = null;
     if(visible == 0){
       t = <Cure onToggle={this.handleClick.bind(this)} imgUrl={imgUrl} />
     } else if(visible == 2) {
       t = <StartWork onToggle={this.handleClick.bind(this)} sex = {sex} userId = {userId} />
     } else if(visible == 1) {
-      t = <TestResults onToggle={this.handleClick.bind(this)} userId = {userId} sexDic = {sexDic} name={name} age={age} />
+      t = <TestResults onToggle={this.handleClick.bind(this)} userId = {userId} sexDesc = {sexDesc} name={name} age={age} />
     }
     return (
       <div>

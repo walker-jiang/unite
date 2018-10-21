@@ -8,10 +8,10 @@ import PreviewPrint from './advicePrint/previewPrint/index.js';
 import ChHerbalMedicine from './chHerbalMedicine';
 import ChPatentMedicine from './chPatentMedicine';
 import SuitTechnology from './suitTechnology';
-import Examination from './Examination';
-import Inspection from './Inspection';
-import WesternMedicine from './WesternMedicine';
-import Material from './Material';
+import Examination from './examination';
+import Inspection from './inspection';
+import WesternMedicine from './westernMedicine';
+import Material from './material';
 import InteligentTreat from './InteligentTreat';
 import TableIcon from 'components/dr/icon/icons/table';
 import ListIcon from 'components/dr/icon/icons/list';
@@ -24,7 +24,7 @@ import TipModal from 'components/dr/modal/tip';
 import buttonSty from 'components/antd/style/button';
 import MedicalHistoryTwo from "../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
 import DoctorAdviceTemplate from "../../../../../rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
-import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
+// import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
 const TabPane = Tabs.TabPane;
 
 export default class Index extends Component {
@@ -188,7 +188,7 @@ export default class Index extends Component {
    * @param  {[type]} orderid    [携带数据(包含操作目标)]
    * @return {[type]}            [void]
    */
-  actionManager(actionType, record, buOrderDtlList = []){
+  actionManager(actionType, record, buOrderDtlList = {}){
     let that = this;
     if(actionType == 'delete'){ // 删除操作
       that.onDelete(record.orderid)
@@ -1257,7 +1257,9 @@ export default class Index extends Component {
         <Modal>
           <SpecTabs key='1' defaultActiveKey='1' animated={false}>
             <TabPane tab="智能论治" key="1">
-              <IntelligentTreat modelData={this.modelData}/>
+              {
+                // <IntelligentTreat modelData={this.modelData}/>
+              }
             </TabPane>
             <TabPane tab="历史模板" key="2">
               <MedicalHistoryTwo actionManager= {this.actionManager} getData={this.getData}/>

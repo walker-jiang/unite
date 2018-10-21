@@ -27,11 +27,13 @@ export default class Index extends React.Component {
     let arr = newarrayL.map((item,index)=>{
       let items={}
          items.isShow= false;
-      listData.forEach((item2,index2)=>{
-         if(item2.modid==item.modid){
-        items.isShow= true;
-         }
-      })
+          if(listData.length!=0){
+            listData.forEach((item2,index2)=>{
+               if(item2.modid==item.modid){
+              items.isShow= true;
+               }
+            })
+          }
       items={ ...item, ...items  };
       return items
     })
@@ -169,8 +171,15 @@ const Key=styled.span `
 `
 const SpecTable = styled(Table)`
   .ant-table-body {
-    height: calc(60vh - 56px) !important;
+    height: 308px !important;
     overflow-y: scroll;
+    font-size: 14px !important;
+  }
+  .ant-table-row>tr>td{
+    height: 35px !important;
+  }
+  .ant-table-thead>tr>th{
+    height: 35px !important;
   }
 `;
 /*

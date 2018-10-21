@@ -89,7 +89,7 @@ function getDiagnoseDataSource(originData = [], type = 'now'){
  * @param  {[type]} itemData [项目数据（检验项、检查项、西医项、材料项）]
  * @return {[type]}          [格式化后的JOSN]
  */
-function convertAddFormData(values, itemData){
+function convertAddFormData(values, itemData, type){
   let ordercontent = '';
   let feeall = 0;
   let self = this;
@@ -140,7 +140,7 @@ function convertAddFormData(values, itemData){
     feeall: feeall,
     ordercontent: ordercontent.substr(0, ordercontent.length-1), // 医嘱内容
     orderstate: '1',  // 缴费状态 1 未缴费
-    ordertype: '1',   // 医嘱类型
+    ordertype: type,   // 医嘱类型
     orgUserid: window.sessionStorage.getItem('userid'),
     orgid: window.sessionStorage.getItem('orgid'),
     parientid: window.patientID,  // 患者ID

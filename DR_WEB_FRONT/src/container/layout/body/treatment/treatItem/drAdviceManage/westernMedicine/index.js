@@ -47,7 +47,7 @@ export default class Index extends Component {
     }
   };
   addWestMedicineItem(values, WestMedicineData){
-    let paramsData = convertAddFormData(values, WestMedicineData);
+    let paramsData = convertAddFormData(values, WestMedicineData, 6);
     let params = {
       url: 'BuOrderController/postData',
       type: 'post',

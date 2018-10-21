@@ -46,7 +46,7 @@ export default class Index extends Component {
     }
   };
   addExamineItem(values, inspectionData){
-    let paramsData = convertAddFormData(values, inspectionData);
+    let paramsData = convertAddFormData(values, inspectionData, 2);
     let params = {
       url: 'BuOrderController/postData',
       type: 'post',

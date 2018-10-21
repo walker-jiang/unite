@@ -7,6 +7,14 @@ import Diagnose from '../../../treatment/treatItem/drAdviceManage/diagnose';
 import TableGrid from './tableGrid';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
+import ChHerbalMedicine from '../../../treatment/treatItem/drAdviceManage/chHerbalMedicine';
+import ChPatentMedicine from '../../../treatment/treatItem/drAdviceManage/chPatentMedicine';
+import SuitTechnology from '../../../treatment/treatItem/drAdviceManage/suitTechnology';
+import Examination from '../../../treatment/treatItem/drAdviceManage/examination';
+import Inspection from '../../../treatment/treatItem/drAdviceManage/inspection';
+import WesternMedicine from '../../../treatment/treatItem/drAdviceManage/westernMedicine';
+import Material from '../../../treatment/treatItem/drAdviceManage/material';
+import AddHeader from '../../../treatment/treatItem/drAdviceManage/addHeader';
 
 const TabPane = Tabs.TabPane;
 
@@ -16,11 +24,16 @@ export default class SmartDistinguish extends Component {
     this.state = {
       diagnoseText: '',
       dataSource: [],
+      actionType: '', // 打开弹框的目的（添加，查看，修改，删除）
+      orderid: '', // 修改、查看、删除时的医嘱ID
+      buOrderDtlList: {}, // 打开添加弹框时初始化的数据
     };
     this.diagnoseUpdate = this.diagnoseUpdate.bind(this);
     this.actionManager = this.actionManager.bind(this);
+    this.getOrderData = this.getOrderData.bind(this);
   };
-  getOrderData(registerid){
+  getOrderData(){
+    let registerid = this.props.registerid;
     let self = this;
     let params = {
       url: 'BuOrderController/getBuOrderByRegisterId',
@@ -40,7 +53,7 @@ export default class SmartDistinguish extends Component {
     ajaxGetResource(params, callBack);
   };
   componentWillMount(){
-    this.getOrderData(this.props.registerid);
+    this.getOrderData();
     let dataSource = [{
 			"buDiagnosisInfo": null,
 			"buOrderDtlList": [],
@@ -161,12 +174,29 @@ export default class SmartDistinguish extends Component {
     this.setState({ diagnoseText });
   };
   /**
+   * [onDelete 删除医嘱信息]
+   * @param  {[type]} orderid [医嘱ID]
+   * @return {[type]}        [void]
+   */
+  onDelete (orderid) {
+    let params = {
+      url: 'BuOrderController/delData',
+      type: 'delete',
+      data: orderid,
+    };
+    let that = this;
+    function success(res) {
+      that.getData();
+    };
+    getResource(params, success);
+  }
+  /**
    * [actionManager 动作管理函数，添加、删除、修改、查看]
    * @param  {[type]} actionType [动作类型，添加、删除、修改、查看]
    * @param  {[type]} orderid    [携带数据(包含操作目标)]
    * @return {[type]}            [void]
    */
-  actionManager(actionType, record, buOrderDtlList = []){
+  actionManager(actionType, record, buOrderDtlList = {}){
     let that = this;
     if(actionType == 'delete'){ // 删除操作
       that.onDelete(record.orderid)
@@ -208,12 +238,188 @@ export default class SmartDistinguish extends Component {
     }
   };
   render() {
-    let dataSource = this.state.dataSource;
+    let { dataSource, actionType, orderid, buOrderDtlList } = this.state;
+    buOrderDtlList = {
+	"buOrderDtlList": [{
+		"baseUnit": "02",
+		"conversion": "02",
+		"count": 1.0,
+		"ctstamp": "2018-07-12 17:50:27",
+		"deptid": "0",
+		"deptname": "02",
+		"dosage": "02",
+		"doseid": 0,
+		"dosename": "02",
+		"feeout": 0.0,
+		"feesum": 0.0,
+		"feesumType": "02",
+		"feesumin": 0.0,
+		"freqid": 0,
+		"freqname": "02",
+		"hiscode": "02",
+		"hisname": "02",
+		"itemcode": "02",
+		"itemid": 1,
+		"itemname": "02",
+		"itemno": 0,
+		"itemtype": 0,
+		"miType": "1",
+		"orderid": "201831389027636137",
+		"packageUnit": 0,
+		"packaging": "02",
+		"paytype": "02",
+		"preferentialfee": 0.0,
+		"preferentialscale": 0.0,
+		"recipeno": "02",
+		"remarks": "02",
+		"spbody": "02",
+		"specification": "02",
+		"suitid": null,
+		"takedays": 0,
+		"uniqueid": "201831389027636138",
+		"unitprice": 2.0,
+		"usageid": 0,
+		"usagename": "02",
+		"useflag": "1",
+		"utstamp": "2018-07-12 17:50:27"
+	}],
+	"buOrdmedical": {
+		"aim": "02",
+    "miType": '1',
+		"buOrdmedicalSuitList": [{
+			"baseUnit": "02",
+			"buOrderDtlList": [{
+				"baseUnit": "02",
+				"conversion": "02",
+				"count": 1.0,
+				"ctstamp": "2018-07-12 17:50:27",
+				"deptid": "0",
+				"deptname": "02",
+				"dosage": "02",
+				"doseid": 0,
+				"dosename": "02",
+				"feeout": 0.0,
+				"feesum": 0.0,
+				"feesumType": "02",
+				"feesumin": 0.0,
+				"freqid": 0,
+				"freqname": "02",
+				"hiscode": "02",
+				"hisname": "02",
+				"itemcode": "02",
+				"itemid": 3,
+				"itemname": "02",
+				"itemno": 0,
+				"itemtype": 0,
+				"miType": "1",
+				"orderid": "201831389027636137",
+				"packageUnit": 0,
+				"packaging": "02",
+				"paytype": "02",
+				"preferentialfee": 0.0,
+				"preferentialscale": 0.0,
+				"recipeno": "02",
+				"remarks": "02",
+				"spbody": "02",
+				"specification": "02",
+				"suitid": "201831389027636141",
+				"takedays": 0,
+				"uniqueid": "201831389027636142",
+				"unitprice": 2.0,
+				"usageid": 0,
+				"usagename": "02",
+				"useflag": "1",
+				"utstamp": "2018-07-12 17:50:27"
+			}],
+			"count": 1,
+			"ctstamp": "2018-07-12 17:50:27",
+			"feesum": 0.0,
+			"orderSuitcode": "02",
+			"orderSuitid": 0,
+			"orderSuitname": "02",
+			"ordmedicalid": "201831389027636140",
+			"seqno": 0,
+			"specification": "02",
+			"suitid": "201831389027636141",
+			"useflag": "1",
+			"utstamp": "2018-07-12 17:50:27"
+		}],
+		"ctstamp": "2018-07-12 17:50:27",
+		"deptcode": "02",
+		"deptname": "02",
+		"diagnosecode": "02",
+		"diagnosename": "02",
+		"diagnoseno": "02",
+		"doctorid": "02",
+		"doctorname": "02",
+		"drlevel": "02",
+		"hissectionname": "02",
+		"medicalrecord": "02",
+		"orderid": "201831389027636137",
+		"ordmedicalid": "201831389027636140",
+		"orgid": "0",
+		"remarks": "02",
+		"seqno": 0,
+		"useflag": "1",
+		"utstamp": "2018-07-12 17:50:27"
+	},
+	"buRecipe": {
+		"ctstamp": "2018-07-12 17:50:27",
+		"deptcode": "02",
+		"deptname": "02",
+		"diagnosecode": "02",
+		"diagnosename": "02",
+		"diagnoseno": "02",
+		"doctorid": "02",
+		"doctorname": "02",
+		"doseid": 0,
+		"dosename": "02",
+		"drlevel": "02",
+		"freqid": 0,
+		"freqname": "02",
+		"hissectionname": "02",
+		"medicalrecord": "02",
+		"orderid": "201831389027636137",
+		"personid": "02",
+		"recipedate": "2018-07-12 17:34:36",
+		"recipeid": "201831389027636139",
+		"recipeno": "02",
+		"recipetype": "02",
+		"registerid": "2",
+		"remark": "02",
+		"usageid": 0,
+		"usagename": "02",
+		"useflag": "1",
+		"utstamp": "2018-07-12 17:50:27"
+	},
+	"ctstamp": "2018-07-12 17:50:27",
+	"execDepaid": "0",
+	"feeall": 0.0,
+	"ordercontent": "02",
+	"orderid": "201831389027636137",
+	"orderno": "02",
+	"orderstate": "1",
+	"ordertype": 1,
+	"orgUserid": "0",
+	"orgid": "0",
+	"parientid": "0",
+	"parientname": "02",
+	"registerid": "2",
+	"useflag": "1",
+	"utstamp": "2018-07-12 17:50:27"
+};
+    let openProps = {
+      actionType: actionType,
+      orderid: orderid,
+      reloadList: this.getOrderData,
+      buOrderDtlList: buOrderDtlList,
+    };
     return (
       <Container>
         <Left>
           <Content>
             <Diagnose diagnoseUpdate={this.diagnoseUpdate}/>
+            <AddHeader operate={this.actionManager}></AddHeader>
             <TableGrid dataSource={dataSource} operate={this.actionManager}/>
           </Content>
           <ActionButton>
@@ -222,6 +428,13 @@ export default class SmartDistinguish extends Component {
             <BorderButton type="primary" onClick={() => {this.props.onStep(1)}}>返回上一步</BorderButton>
           </ActionButton>
         </Left>
+        <Examination {...openProps} ref={ref => this.examination = ref} syndrome={true}/>
+        <ChHerbalMedicine {...openProps} ref={ref => {this.chHerbalMedicine = ref}} syndrome={true}/>
+        <ChPatentMedicine {...openProps} ref={ref => {this.chPatentMedicine = ref}} syndrome={true}/>
+        <SuitTechnology {...openProps} ref={ref => {this.suitTechnology = ref}} syndrome={true}/>
+        <Inspection {...openProps} ref={ref => this.inspection = ref} syndrome={true}/>
+        <WesternMedicine {...openProps} ref={ref => this.westernMedicine = ref} syndrome={true}/>
+        <Material {...openProps} ref={ref => this.material = ref} />
         <Right>
           <SpecTabs key='1' defaultActiveKey='1' animated={false}>
             <TabPane tab="智能论治" key="1">

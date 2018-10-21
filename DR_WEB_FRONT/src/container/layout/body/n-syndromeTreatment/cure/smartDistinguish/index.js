@@ -12,7 +12,7 @@ import TipModal from 'components/dr/modal/tip';
 import { getDiagnoseText, getDiagnoseDataSource } from 'commonFunc/transform';
 import AddIllBySymptom from '../../../treatment/treatItem/drAdviceManage/chHerbalMedicine/herbalForm/diagnose/addIllBySymptom';
 import AddIllByManifestations from '../../../treatment/treatItem/drAdviceManage/chHerbalMedicine/herbalForm/diagnose/addIllByManifestations';
-// import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
+import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
 const TabPane = Tabs.TabPane;
 
 export default class SmartDistinguish extends Component {
@@ -34,240 +34,7 @@ export default class SmartDistinguish extends Component {
     this.submitCaseData = this.submitCaseData.bind(this);
   };
   componentWillMount(){
-    let diagnoseHisOriginData =[
-    {
-      "buDiagnosisDismainfList": [{
-        "ctstamp": "2018-10-16 14:32:45",
-        "diagnosisid": "201839671565542111",
-        "diseaseid": 18,
-        "id": "201839671565542112",
-        "manifcode": "ZBXM101",
-        "manifdesc": "身热，微恶风，汗少，肢体酸重或疼痛，头昏重胀痛，咳嗽痰黏，鼻流浊涕，心烦口渴，或口中黏腻，渴不多饮，",
-        "manifid": 29,
-        "manifname": "暑湿伤表证",
-        "registerid": "201839655147863211",
-        "useflag": "1",
-        "utstamp": "2018-10-16 14:32:45"
-      }],
-      "cmDiagnosisType": null,
-      "codetype": "",
-      "ctstamp": "2018-10-16 14:32:45",
-      "diacode": "",
-      "diadesc": "",
-      "diagnosisCode": "BNW010",
-      "diagnosisName": "感冒",
-      "diagnosisNo": null,
-      "diagnosisType": null,
-      "diagnosisWay": 1,
-      "diagnosisid": "201839671565542111",
-      "diaid": null,
-      "dianame": "",
-      "discode": "BNW010",
-      "disdesc": "感冒",
-      "diseaseid": 18,
-      "disname": "感冒",
-      "doubtDiaType": "",
-      "mainDiaType": "",
-      "registerid": "201839655147863211",
-      "seqno": 4,
-      "useflag": "1",
-      "utstamp": "2018-10-16 14:32:45",
-      "diagnosisWayDic": "中医"
-    }, {
-      "buDiagnosisDismainfList": [{
-        "ctstamp": "2018-10-16 14:32:45",
-        "diagnosisid": "201839671565542111",
-        "diseaseid": 18,
-        "id": "201839671565542112",
-        "manifcode": "ZBXM10",
-        "manifdesc": "身热，微恶风，汗少，肢体酸重或疼痛，头昏重胀痛，咳嗽痰黏，鼻流浊涕，心烦口渴，或口中黏腻，渴不多饮，",
-        "manifid": 29,
-        "manifname": "暑湿伤表证",
-        "registerid": "201839655147863211",
-        "useflag": "1",
-        "utstamp": "2018-10-16 14:32:45"
-      }],
-      "cmDiagnosisType": null,
-      "codetype": "",
-      "ctstamp": "2018-10-16 14:32:45",
-      "diacode": "",
-      "diadesc": "",
-      "diagnosisCode": "BNW0102",
-      "diagnosisName": "感冒",
-      "diagnosisNo": null,
-      "diagnosisType": null,
-      "diagnosisWay": 1,
-      "diagnosisid": "201839671565542111",
-      "diaid": null,
-      "dianame": "",
-      "discode": "BNW010",
-      "disdesc": "感冒",
-      "diseaseid": 18,
-      "disname": "感冒",
-      "doubtDiaType": "",
-      "mainDiaType": "",
-      "registerid": "201839655147863211",
-      "seqno": 4,
-      "useflag": "1",
-      "utstamp": "2018-10-16 14:32:45",
-      "diagnosisWayDic": "中医"
-    }, {
-      "buDiagnosisDismainfList": [{
-        "ctstamp": "2018-10-16 14:32:45",
-        "diagnosisid": "201839671565542111",
-        "diseaseid": 18,
-        "id": "201839671565542112",
-        "manifcode": "ZBXM10",
-        "manifdesc": "身热，微恶风，汗少，肢体酸重或疼痛，头昏重胀痛，咳嗽痰黏，鼻流浊涕，心烦口渴，或口中黏腻，渴不多饮，",
-        "manifid": 29,
-        "manifname": "暑湿伤表证",
-        "registerid": "201839655147863211",
-        "useflag": "1",
-        "utstamp": "2018-10-16 14:32:45"
-      }],
-      "cmDiagnosisType": null,
-      "codetype": "",
-      "ctstamp": "2018-10-16 14:32:45",
-      "diacode": "",
-      "diadesc": "",
-      "diagnosisCode": "BNW0103",
-      "diagnosisName": "感冒",
-      "diagnosisNo": null,
-      "diagnosisType": null,
-      "diagnosisWay": 1,
-      "diagnosisid": "201839671565542111",
-      "diaid": null,
-      "dianame": "",
-      "discode": "BNW010",
-      "disdesc": "感冒",
-      "diseaseid": 18,
-      "disname": "感冒",
-      "doubtDiaType": "",
-      "mainDiaType": "",
-      "registerid": "201839655147863211",
-      "seqno": 4,
-      "useflag": "1",
-      "utstamp": "2018-10-16 14:32:45",
-      "diagnosisWayDic": "中医"
-    }, {
-      "buDiagnosisDismainfList": [{
-        "ctstamp": "2018-10-16 14:32:45",
-        "diagnosisid": "201839671565542111",
-        "diseaseid": 18,
-        "id": "201839671565542112",
-        "manifcode": "ZBXM104",
-        "manifdesc": "身热，微恶风，汗少，肢体酸重或疼痛，头昏重胀痛，咳嗽痰黏，鼻流浊涕，心烦口渴，或口中黏腻，渴不多饮，",
-        "manifid": 29,
-        "manifname": "暑湿伤表证",
-        "registerid": "201839655147863211",
-        "useflag": "1",
-        "utstamp": "2018-10-16 14:32:45"
-      }],
-      "cmDiagnosisType": null,
-      "codetype": "",
-      "ctstamp": "2018-10-16 14:32:45",
-      "diacode": "",
-      "diadesc": "",
-      "diagnosisCode": "BNW010",
-      "diagnosisName": "感冒",
-      "diagnosisNo": null,
-      "diagnosisType": null,
-      "diagnosisWay": 1,
-      "diagnosisid": "201839671565542111",
-      "diaid": null,
-      "dianame": "",
-      "discode": "BNW010",
-      "disdesc": "感冒",
-      "diseaseid": 18,
-      "disname": "感冒",
-      "doubtDiaType": "",
-      "mainDiaType": "",
-      "registerid": "201839655147863211",
-      "seqno": 4,
-      "useflag": "1",
-      "utstamp": "2018-10-16 14:32:45",
-      "diagnosisWayDic": "中医"
-    }, {
-      "buDiagnosisDismainfList": [{
-        "ctstamp": "2018-10-16 14:32:45",
-        "diagnosisid": "201839671565542111",
-        "diseaseid": 18,
-        "id": "201839671565542112",
-        "manifcode": "ZBXM105",
-        "manifdesc": "身热，微恶风，汗少，肢体酸重或疼痛，头昏重胀痛，咳嗽痰黏，鼻流浊涕，心烦口渴，或口中黏腻，渴不多饮，",
-        "manifid": 29,
-        "manifname": "暑湿伤表证",
-        "registerid": "201839655147863211",
-        "useflag": "1",
-        "utstamp": "2018-10-16 14:32:45"
-      }],
-      "cmDiagnosisType": null,
-      "codetype": "",
-      "ctstamp": "2018-10-16 14:32:45",
-      "diacode": "",
-      "diadesc": "",
-      "diagnosisCode": "BNW010",
-      "diagnosisName": "感冒",
-      "diagnosisNo": null,
-      "diagnosisType": null,
-      "diagnosisWay": 1,
-      "diagnosisid": "201839671565542111",
-      "diaid": null,
-      "dianame": "",
-      "discode": "BNW010",
-      "disdesc": "感冒",
-      "diseaseid": 18,
-      "disname": "感冒",
-      "doubtDiaType": "",
-      "mainDiaType": "",
-      "registerid": "201839655147863211",
-      "seqno": 4,
-      "useflag": "1",
-      "utstamp": "2018-10-16 14:32:45",
-      "diagnosisWayDic": "中医"
-    }, {
-      "buDiagnosisDismainfList": [{
-        "ctstamp": "2018-10-16 14:32:45",
-        "diagnosisid": "201839671565542111",
-        "diseaseid": 18,
-        "id": "201839671565542112",
-        "manifcode": "ZBXM107",
-        "manifdesc": "身热，微恶风，汗少，肢体酸重或疼痛，头昏重胀痛，咳嗽痰黏，鼻流浊涕，心烦口渴，或口中黏腻，渴不多饮，",
-        "manifid": 29,
-        "manifname": "暑湿伤表证",
-        "registerid": "201839655147863211",
-        "useflag": "1",
-        "utstamp": "2018-10-16 14:32:45"
-      }],
-      "cmDiagnosisType": null,
-      "codetype": "",
-      "ctstamp": "2018-10-16 14:32:45",
-      "diacode": "",
-      "diadesc": "",
-      "diagnosisCode": "BNW010",
-      "diagnosisName": "感冒",
-      "diagnosisNo": null,
-      "diagnosisType": null,
-      "diagnosisWay": 1,
-      "diagnosisid": "201839671565542111",
-      "diaid": null,
-      "dianame": "",
-      "discode": "BNW010",
-      "disdesc": "感冒",
-      "diseaseid": 18,
-      "disname": "感冒",
-      "doubtDiaType": "",
-      "mainDiaType": "",
-      "registerid": "201839655147863211",
-      "seqno": 4,
-      "useflag": "1",
-      "utstamp": "2018-10-16 14:32:45",
-      "diagnosisWayDic": "中医"
-    }];
-    // let diagnoseFinalInfo = diagnoseHisOriginData;
-    this.setState({
-      diagnoseHisOriginData
-    });
+    this.initialData();
   };
   /** [hideFloatLayer 点击诊断的某些部分触发子组件浮层隐藏事件] */
   hideFloatLayer(){
@@ -398,7 +165,7 @@ export default class SmartDistinguish extends Component {
    */
   changeInitDataTwo = (buDiagnosisInfo) =>{
     var initData = this.state.initData;
-    initData['buDiagnosisInfo'] = buDiagnosisInfo;
+    // initData['buDiagnosisInfo'] = buDiagnosisInfo;
   }
   // 历史诊断双击选择
   SelectedLine(record){
@@ -450,15 +217,15 @@ export default class SmartDistinguish extends Component {
     let values = this.props.caseBasicInfo;
     let buDiagnosisInfo = {};
     buDiagnosisInfo.buDiagnosisList = diagnoseFinalInfo;
-    buDiagnosisInfo.cardno = window.cardno;
+    buDiagnosisInfo.cardno = this.props.baPatient.cardno;
     buDiagnosisInfo.deptid = window.sessionStorage.getItem('deptid');
     buDiagnosisInfo.diagnosisDesc = "诊断描述";
     buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
     buDiagnosisInfo.orgid = window.sessionStorage.getItem('orgid');
-    buDiagnosisInfo.patientid = window.patientID;
-    buDiagnosisInfo.patientname = window.patientName;
+    buDiagnosisInfo.patientid = this.props.baPatient.patientID;
+    buDiagnosisInfo.patientname = this.props.baPatient.patientName;
     buDiagnosisInfo.patientno = "test";
-    buDiagnosisInfo.registerid = window.registerID;
+    buDiagnosisInfo.registerid = this.props.registerid,
     buDiagnosisInfo.registerno = "12312";
     let finalObj = {
       casetype: values.casetype,
@@ -486,14 +253,39 @@ export default class SmartDistinguish extends Component {
       registerid: this.props.registerid,
     };
     let params = {
-      url: 'BuPatientCaseController/postData',
-      server_url: config_syndromeTreatment_url,
+      url: 'TCMAE/BuPatientCaseController/postData',
+      server_url: config_InteLigenTreat_url,
       data: JSON.stringify(finalObj),
       type: 'post',
     };
     function callBack(res){
       if(res.result){
 
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
+  /** [initialData 组件加载获取历史诊断数据] */
+  initialData(){
+    let self = this;
+    let params = {
+      url: 'TCMAE/BuDiagnosisInfoController/getList',
+      server_url: config_InteLigenTreat_url,
+      data: {
+        cardno: this.props.cardno
+      },
+    };
+    function callBack(res){
+      if(res.result && res.data.length > 0){
+        let diagnoseHisOriginData = res.data.records[0].buDiagnosisList;
+        // diagnoseHisOriginData.forEach((item) => {
+        //   item.doctorname = res.data.records[0].doctorname;
+        // });
+        self.setState({
+          diagnoseHisOriginData: diagnoseHisOriginData
+        });
       }else{
         console.log('异常响应信息', res);
       }
@@ -577,7 +369,7 @@ export default class SmartDistinguish extends Component {
           <SpecTabs key='1' defaultActiveKey='1' animated={false}>
             <TabPane tab="智能辩证" key="1">
               {
-                // <AuxiliaryDiagnosis changeInitDataTwo={this.changeInitDataTwo} listenFormData={{}}/>
+                <AuxiliaryDiagnosis changeInitDataTwo={this.changeInitDataTwo} listenFormData={{}}/>
               }
             </TabPane>
           </SpecTabs>

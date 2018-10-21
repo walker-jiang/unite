@@ -19,7 +19,7 @@ export default class Index extends Component {
     };
   }
   componentWillMount () {
-    this.getSpecialUsage()
+    this.getOperateWay()
   }
   /**
    * [handleEnterPress 按下Enter键,光标定位到选择特殊用法上]
@@ -66,11 +66,14 @@ export default class Index extends Component {
         this.props.onUsageChange(value.medicineid, e)
     }
   };
-  // 获取特殊用法下拉数据
-  getSpecialUsage() {
+  /** [getOperateWay 获取操作方法数据] */
+  getOperateWay(){
     let params = {
-      url: 'BaUsageController/getList',
-      data: {}
+      url: 'baDatadict/getList',
+      server_url: 'http://10.192.1.115:8765/TCMAE/',
+      data: {
+        keyword: ''
+      }
     };
     let that = this;
     function success(res) {
@@ -80,35 +83,17 @@ export default class Index extends Component {
       }
     };
     getResource(params, success);
-  }
-  componentDidMount(){
-    let autofocus = this.props.autofocus;
-    if(autofocus == 'autofocus'){
-      console.log('this.numberInput', this.numberInput);
-      ReactDOM.findDOMNode(this.numberInput).select();
-      // this.numberInput.select();
-    }
   };
   render() {
     let { selectData, openstatus } = this.state;
     let { value , autofocus } = this.props;
     let { usageid, usagename } = value;
-    console.log('openstatus', openstatus);
     return (
       <Container>
         <CloseIcon type="close" onClick={()=>{this.props.onDelete(value)}} />
         <DataWrapper exist={value.exist}>
           <CenterWrapper>
-            <NumberInput
-              type="text"
-              ref={ref=>{this.numberInput = ref}}
-              onBlur={(e)=>{this.dosageChange(value,e,value.defQty)}}
-              defaultValue={value.defQty}
-              autoFocus={autofocus}
-              onKeyDown={(e) => {this.handleEnterPress(e.keyCode, 'numberInput')}}
-               />
-            <HerBalName innerRef={ref=>{this.test=ref}}>{value.medicinename}</HerBalName>
-            <span>{value.baseUnitDic}</span>
+            <HerBalName innerRef={ref=>{this.test=ref}}>{value.acuname ? value.acuname : value.acupointName}</HerBalName>
           </CenterWrapper>
         </DataWrapper>
         <div
@@ -123,9 +108,9 @@ export default class Index extends Component {
             onBlur={()=>{this.setState({openstatus: false})}}
             innerRef={ref=>this.specialUsage = ref} >
             {
-              selectData.map((value, index) => {
+              selectData.map((item, index) => {
                 return(
-                  <Option key={value.usageid} value={value.usageid}>{value.usagename}</Option>
+                  <Option key={index} value={item.valueid}>{item.vname}</Option>
                 )
               })
             }

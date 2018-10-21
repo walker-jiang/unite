@@ -6,9 +6,6 @@ import { Table } from 'antd';
 import getResource from 'commonFunc/ajaxGetResource';
 import tableSty from 'components/antd/style/table';
 
-
-
-
 export default class QuickAddHerb extends Component {
   constructor(props){
     super(props);
@@ -24,7 +21,8 @@ export default class QuickAddHerb extends Component {
   /* getHerbData 获取草药数据 */
   getHerbData(value){
     let params = {
-      url: 'BaHerbalMedicineController/getList',
+      url: 'baAcupoint/getList',
+      server_url: 'http://10.192.1.115:8765/TCMAE/',
       data: {
         keyword: value
       }
@@ -144,42 +142,26 @@ export default class QuickAddHerb extends Component {
   /** [getColumns 获取表格数据 ] */
   getColumns(){
     const columns = [{
-      title: '序号',
-      dataIndex: 'order',
-      key: 'order',
+      title: '穴位编码',
+      dataIndex: 'acuname',
+      key: 'acuname',
       render: (text, record, index) => index+1
     }, {
-      title: '草药名',
-      dataIndex: 'medicinename',
-      key: 'medicinename',
+      title: '穴位名称',
+      dataIndex: 'acuname',
+      key: 'acuname',
     }, {
-      title: '别名',
-      dataIndex: 'otherPinyin',
-      key: 'otherPinyin',
+      title: '所属经络',
+      dataIndex: 'acuname',
+      key: 'acuname',
     }, {
-      title: '医保等级',
-      dataIndex: 'medinslevelDic',
-      key: 'medinslevelDic',
+      title: '定位',
+      dataIndex: 'acuname',
+      key: 'acuname',
     }, {
-      title: '规格',
-      dataIndex: 'specification',
-      key: 'specification',
-    }, {
-      title: '单位剂量',
-      dataIndex: 'mediUnit',
-      key: 'mediUnit',
-    }, {
-      title: '单位',
-      dataIndex: 'baseUnit',
-      key: 'baseUnit',
-    }, {
-      title: '单价',
-      dataIndex: 'unitprice',
-      key: 'unitprice',
-    }, {
-      title: '药房',
-      dataIndex: 'manufacturer',
-      key: 'manufacturer',
+      title: '备注',
+      dataIndex: 'acuname',
+      key: 'acuname',
     }];
     return columns;
   };
@@ -205,7 +187,7 @@ export default class QuickAddHerb extends Component {
                 rowClassName={(record, index)=>{
                   return record.status ? (record.status == 1 ? 'Selected' : 'checked') : 'unSelected';
                 }}
-                locale={{emptyText: '暂无草药数据' }}
+                locale={{emptyText: '暂无穴位数据' }}
                 columns={columns}
                 dataSource={herbData}
                 pagination={false}

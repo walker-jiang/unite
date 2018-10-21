@@ -1,24 +1,17 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Form, Select, Button, Row, Col, Pagination, Radio } from 'antd';
-import Table from 'components/dr/icon/icons/table';
-import List from 'components/dr/icon/icons/list';
-import TableShow from './showWay/tableShow';
-import ListShow from './showWay/listShow';
 import TempAddSubtract from './tempAddSubtract';
-import SelectHerb from './selectHerb';
 import QuickAddHerb from './quickAddHerb';
-import Diagnose from './diagnose';
-import AddHerbalForm from './addHerbalForm';
-import Entrust from './entrust';
 import Input from 'components/dr/input/basicInput';
 import TipModal from 'components/dr/modal/tip';
 import down from './down.png';
 import up from './up.png';
+import pen from './pen.png';
 import selectSty from 'components/antd/style/select';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
-import { getDiagnoseText } from 'commonFunc/transform';
 import paginationSty from 'components/antd/style/pagination';
+import TableShow from './showWay/tableShow';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -29,68 +22,49 @@ class Index extends Component {
     super(props);
     this.state = {
       frequencyData: [],  // 频次下拉数据
-      showWay: 'table',   // 默认显示方式为格格
+      deptData: [], // 执行科室数据
+      operateData: [], // 操作方法下拉数据
       showResult: false,  // 初始不显示草药列表
-      buDiagnosisInfo: {}, // 诊断信息主表原始数据，修改时需要使用
-      buRecipe: {}, // 原始处方信息
-      data: {}, //原始医嘱信息
       current: 1, // 当前页
-      // 初始化数据
-      buDiagnosisList: [], // 当前患者的诊断数据
-      recipename: '', // 处方名称
-      remark: 3, // 嘱托
-      treatway: '', // 治疗方法
-      countnum: 3, // 付数
-      freq: null, // 频次
+      freq: {}, // 频次
       herbalData: [], // 草药数据
+      substractData: [], // 临症加减项目
+      substractID: '', // 已选临症加减ID
+      acupointsData: [], // 选取穴位
+      acupointDetail: {}, // 明细对象
     };
     this.delHerbal = this.delHerbal.bind(this);
-    this.dosageChange = this.dosageChange.bind(this);
-    this.usageChange = this.usageChange.bind(this);
+    this.getAcupoints = this.getAcupoints.bind(this);
   }
-  /** [componentWillReceiveProps 当从知识库添加处方时会需要改函数] */
-  componentWillReceiveProps(nextProps){
-    let buOrderDtlList = nextProps.buOrderDtlList;
-    if(JSON.stringify(this.props.buOrderDtlList) != JSON.stringify(nextProps.buOrderDtlList)){
-      this.setState({
-        ...buOrderDtlList
-      });
-    }
-  };
   componentWillMount(){
-    let buOrderDtlList = this.props.buOrderDtlList;
-    console.log('buOrderDtlList', buOrderDtlList);
+    let { buImtreatprelistStAcupoints, ...acupointDetail } = this.props.buOrderDtlList;
     this.setState({
-      ...buOrderDtlList
+      acupointDetail, herbalData: buImtreatprelistStAcupoints
     });
-    this.getDiagnoseData();
     this.getFrequency();
-    if(this.props.initData){ // 修改、查看需要初始化数据
-      this.getCHMedicineAdvice(this.props.orderid);
-    }
+    this.getDept();
+    this.getOperateWay();
+    // this.getSubstract();
   };
-  /** [getDiagnoseData 组件初始化获取加载诊断数据] */
-  getDiagnoseData(){
-    let self = this;
+  /** [getDept 执行科室数据] */
+  getDept() {
     let params = {
-      url: 'BuDiagnosisInfoController/getData',
+      url: 'BaDepartmentController/getList',
+      server_url: config_login_url,
       data: {
-        registerid: window.registerID
-      },
-    };
-    function callBack(res){
-      if(res.result && res.data){ // 获取当前诊断明细数据
-        let { buDiagnosisList, ...buDiagnosisInfo } = res.data;
-        self.setState({
-          buDiagnosisList: buDiagnosisList,
-          buDiagnosisInfo: buDiagnosisInfo
-        });
-      }else{
-        console.log('异常响应信息', res);
+        keyword: 1,
+        orgid: 10000
       }
     };
-    ajaxGetResource(params, callBack);
-  };
+    let that = this;
+    function success(res) {
+      if(res.result){
+        let deptData = res.data;
+        that.setState({ deptData })
+      }
+    };
+    ajaxGetResource(params, success);
+  }
   // 组件初始化获取频次数据下拉列表
   getFrequency () {
     let params = {
@@ -108,73 +82,31 @@ class Index extends Component {
     };
     ajaxGetResource(params, success);
   }
-  getCHMedicineAdvice(orderid){
+  /** [getOperateWay 获取操作方法数据] */
+  getOperateWay(){
     let params = {
-      url: 'BuOrderController/getData',
+      url: 'baDatadict/getList',
+      server_url: 'http://10.192.1.115:8765/TCMAE/',
       data: {
-        orderid: orderid
+        keyword: ''
       }
     };
     let that = this;
-    function callBack(res) {
+    function success(res) {
       if(res.result){
-        let { buRecipe, buOrderDtlList, ...data } = res.data;
-        buOrderDtlList.forEach((item)=>{
-          item.medicinename = item.itemname;
-          item.defQty = item.dosage;
-        });
-        console.log('buRecipe', buRecipe);
-        that.setState({
-          recipename: buRecipe.recipename, // 处方名称
-          remark:  buRecipe.remark, // 嘱托
-          treatway:  buRecipe.treatway, // 治疗方法
-          countnum: buRecipe.countnum, // 付数
-          freq: {key: buRecipe.freqid, label: buRecipe.freqname}, // 频次
-          herbalData: buOrderDtlList, // 草药数据
-          buRecipe: buRecipe, // 原始处方信息
-          data: data, // 原始医嘱信息
-        });
+        let operateData = res.data;
+        that.setState({ operateData })
       }
     };
-    ajaxGetResource(params, callBack);
+    ajaxGetResource(params, success);
   };
-  clearData(){
-    this.setState({
-      recipename: '', // 处方名称
-      usagename: '', // 治疗方法
-      remark: '', // 付数
-      freq: null, // 频次
-      herbalData: [], // 草药数据
-    });
-  };
-  /** [toggleShowWay 切换草药展示形式] */
-  toggleShowWay (index) {
-    this.setState({
-      showWay: index,
-    })
-  }
   /**
    * [addHerbalData 添加草药列表]
    * @param  {[type]} quickAddData [新增项]
    * @return {[type]}              [void]
    */
   addHerbalData (herbalItem) {
-    herbalItem.usageid = herbalItem.baUsage ? herbalItem.baUsage.usageid : 9; // 从用法对象转换成字符串用法ID
-    herbalItem.usagename = herbalItem.baUsage ? herbalItem.baUsage.usagename : '无'; // 从用法对象转换成字符串用法名称
-    let { herbalData , showWay } = this.state;
-    herbalItem.exist = 1
-    for(let i=0; i < herbalData.length; i++){
-      if(herbalData[i].medicinename == herbalItem.medicinename){
-        this.tipModal.showModal({
-          stressContent: '草药已存在'
-        });
-        return false;
-      }
-    }
-    if(showWay == 'table'){
-      this.addTableData.scrollTop = this.addTableData.scrollHeight; // 自动滚动到滚动区域的最底部
-    }
-    console.log('herbalItem', JSON.stringify(herbalItem));
+    let herbalData = this.state.herbalData;
     herbalData.push(herbalItem);
     this.setState({ herbalData });
   }
@@ -188,54 +120,70 @@ class Index extends Component {
     herbalData.pop(herbalItem);
     this.setState({ herbalData });
   };
-  /**
-   * [dosageChange 修改草药剂量]
-   * @param  {[type]} medicinename [草药名称]
-   * @param  {[type]} newDosage    [新剂量]
-   * @return {[type]}              [void]
-   */
-  dosageChange(medicinename, newDosage) {
-    let herbalData = this.state.herbalData;
-    herbalData.forEach((item)=>{
-      if(item.medicinename == medicinename){
-        item.count = newDosage;
-      }
-    })
-    console.log('herbalData数据' ,herbalData);
-    this.setState({herbalData});
-  }
-  /**
-   * [usageChange 某药的用法进行修改]
-   * @param  {[type]} medicineid [该药ID]
-   * @param  {[type]} newUsage [该药用法对象（包含名称、ID）]
-   * @return {[type]}            [void]
-   */
-  usageChange(medicineid, newUsage) {
-    let herbalData = this.state.herbalData;
-    herbalData.forEach((item)=>{
-      if(item.medicineid == medicineid){
-        item.usageid = newUsage.key;
-        item.usagename = newUsage.label;
-      }
-    })
-    this.setState({herbalData});
-  }
   // 保存
   handleSubmit(e){
     e.preventDefault();
     let formData = new Object();
     let herbalData = this.state.herbalData;
+    let acupointDetail = this.state.acupointDetail;
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
-        formData = values;
+        formData = Object.assign(acupointDetail, values, { buImtreatprelistStAcupoints: herbalData });
       }
     });
-    return { formData, herbalData }
+    return { formData }
   }
+  handleChange = (value) => {
+    this.setState({ substractID: value }, () => {
+      this.getAcupoints(value);
+    });
+  }
+  handleSearch = (value) => {
+    this.getSubstract(value);
+  }
+  /** [getSubstract 获取临症加减数据] */
+  getSubstract(keyword){
+    let params = {
+      url: 'tcmTreatdiseaseSt/getIdNameList',
+      server_url: 'http://10.192.1.115:8765/TCMAE/',
+      data: {
+        TreatdiseaseStName: keyword
+      }
+    };
+    let that = this;
+    function success(res) {
+      if(res.result){
+        let substractData = res.data;
+
+        that.setState({ substractData })
+      }
+    };
+    ajaxGetResource(params, success);
+  };
+  /** [getAcupoints 获取穴位数据] */
+  getAcupoints(value){
+    console.log('this.state.substractID', this.state.substractID);
+    let params = {
+      url: 'tcmTreatacupoint/getIdNameList',
+      server_url: 'http://10.192.1.115:8765/TCMAE/',
+      data: {
+        treatId: this.state.substractID,
+      }
+    };
+    let that = this;
+    function success(res) {
+      if(res.result){
+        let acupointsData = res.data;
+        that.setState({ acupointsData })
+      }
+    };
+    ajaxGetResource(params, success);
+  };
   render () {
-    let { recipename, usagename, remark, treatway, countnum, freq, herbalData, buDiagnosisList, frequencyData, showWay, current} = this.state;
+    let { freq, herbalData, frequencyData, current, deptData, operateData, substractData, acupointsData, acupointDetail } = this.state;
     let buOrderDtlList = this.props.buOrderDtlList;
+    console.log('herbalDatasss', herbalData);
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
@@ -272,7 +220,6 @@ class Index extends Component {
     };
     const pagination = {
       simple: true,
-      showWay: showWay,
       pageSize: 8,
       defaultCurrent: current,
       current: current,
@@ -306,10 +253,18 @@ class Index extends Component {
             <FormItem
               {...separateFormItemLayout}
               label="执行科室：">
-              {getFieldDecorator('treatMethods', {
-                initialValue: treatway
+              {getFieldDecorator('execDept', {
+                initialValue: deptData.length ? ( { key: deptData[0].deptid, label: deptData[0].deptname } ) : { key: '', label: '' }
               })(
-                <Input />
+                <SpecSelect labelInValue>
+                  {
+                    deptData.map((item, index)=>{
+                      return (
+                        <Option key={index} value={item.deptid}>{item.deptname}</Option>
+                      )
+                    })
+                  }
+                </SpecSelect>
               )}
             </FormItem>
           </Col>
@@ -318,7 +273,7 @@ class Index extends Component {
               {...separateFormItemLayout}
               label="频次：">
               {getFieldDecorator('frequency', {
-                initialValue: (frequencyData.length > 0 ? (freq ? freq : {key: frequencyData[0].freqcode, label: frequencyData[0].freqname}) : {key: '', label: ''})
+                initialValue: (frequencyData.length ? {key: frequencyData[0].freqcode, label: frequencyData[0].freqname} : {key: '', label: ''})
               })(
                 <SpecSelect labelInValue>
                   {
@@ -336,23 +291,39 @@ class Index extends Component {
             <FormItem
               {...separateFormItemLayout}
               label="天数：">
-              {getFieldDecorator('doseNum', {
-                initialValue: countnum,
+              {getFieldDecorator('takedays', {
+                initialValue: 1,
               })(
-                <Input />
+                <SpecSelect>
+                  <Option value={1}>1天</Option>
+                  <Option value={2}>2天</Option>
+                  <Option value={3}>3天</Option>
+                  <Option value={4}>4天</Option>
+                </SpecSelect>
               )}
             </FormItem>
           </Col>
         </Row>
         <Row>
-          <Col span={24}>
+          <Col span={1}>
+            <WritePen src={pen} />
+          </Col>
+          <Col span={23}>
             <FormItem
               {...formItemLayout}
               label="操作方法：">
-              {getFieldDecorator('diagnose', {
-                initialValue: {originData: buDiagnosisList, extractionData: getDiagnoseText(buDiagnosisList)}
+              {getFieldDecorator('usage', {
+                initialValue: operateData.length ? {key: operateData[0].valueid, label: operateData[0].vname} : { key:'', label: ''}
               })(
-                <Input icon='#C14342'/>
+                <SpecSelect labelInValue>
+                  {
+                    operateData.map((item, index)=>{
+                      return (
+                        <Option key={index} value={item.valueid}>{item.vname}</Option>
+                      )
+                    })
+                  }
+                </SpecSelect>
               )}
             </FormItem>
           </Col>
@@ -362,21 +333,34 @@ class Index extends Component {
             <FormItem
               {...separateFormItemLayout}
               label="临症加减：">
-            {getFieldDecorator('substract', {
-              initialValue: ''
-            })(
-              <TempAddSubtract ref={(input) => { this.textInput = input; }}/>
-            )}
+              {getFieldDecorator('substract')(
+                <SpecSelect
+                  showSearch
+                  placeholder='选择或者输入病情首字母'
+                  defaultActiveFirstOption={false}
+                  filterOption={false}
+                  onChange={this.handleChange}
+                  onSearch={this.handleSearch}
+                  notFoundContent={null}
+                >
+                {
+                  substractData.map(d => <Option key={d.id}>{d.treatdiseaseName}</Option>)
+                }
+                </SpecSelect>
+              )}
             </FormItem>
           </Col>
           <Col span={12}>
             <FormItem
               {...separateFormItemLayout}
               label=" ">
-              {getFieldDecorator('illSymbal')(
-                <SpecSelect placeholder='选择穴位'>
-                  <Option value="风热感冒">风热感冒</Option>
-                  <Option value="风寒感冒">风寒感冒</Option>
+              {getFieldDecorator('illSymbal', {
+                initialValue: acupointsData.length ? acupointsData[0].id : ''
+              })(
+                <SpecSelect placeholder='选择穴位' onDropdownVisibleChange={() => {alert()}}>
+                {
+                  acupointsData.map((item, index) => <Option key={index} value={item.id}>{item.acupointName}</Option>)
+                }
                 </SpecSelect>
               )}
             </FormItem>
@@ -399,30 +383,18 @@ class Index extends Component {
               </SpecFormItem>
           </Col>
           <Col span={16}>
-            <QuickAddHerb placeholder='请输入中药首字母快速添加' icon='true' ref={ref => this.quickAddHerb = ref} getQuickData = {this.addHerbalData.bind(this)}/>
+            <QuickAddHerb placeholder='请输入穴位首字母快速添加' icon='true' ref={ref => this.quickAddHerb = ref} getQuickData = {this.addHerbalData.bind(this)}/>
           </Col>
         </Row>
         <Footer>
-          {
-            showWay == 'list' ?
-            <ListShow
-              current={current}
-              buOrderDtlList={[]}
-              pageSize={pagination.pageSize}
-              herbalData={ herbalData }
-              delHerbal={this.delHerbal}
-              ref={ref => this.addListData = ref} />
-            :
-            <TableShow
-              current={current}
-              buOrderDtlList={[]}
-              herbalData={ herbalData }
-              delHerbal={this.delHerbal}
-              dosageChange={this.dosageChange}
-              usageChange={this.usageChange}
-              addHerbal={ () => { this.addHerbalForm.handleAddClick() }}
-              ref={ref => this.addTableData = ref} />
-          }
+          <TableShow
+            current={current}
+            buOrderDtlList={[]}
+            herbalData={ herbalData }
+            delHerbal={this.delHerbal}
+            dosageChange={this.dosageChange}
+            usageChange={this.usageChange}
+            ref={ref => this.addTableData = ref} />
           <Bottom>
             <Tip>💡提示：医保外项目以红色显示</Tip>
             <Doctor>医师：
@@ -431,7 +403,6 @@ class Index extends Component {
             <SimplePagination {...pagination}></SimplePagination>
           </Bottom>
         </Footer>
-        <AddHerbalForm wrappedComponentRef={ref=>{this.addHerbalForm = ref}}></AddHerbalForm>
         <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </SpecForm>
     )
@@ -440,6 +411,9 @@ class Index extends Component {
 const Title = styled.span`
   font-size: 12px;
   color: #666666;
+`;
+const WritePen = styled.img`
+  margin-top: 13px;
 `;
 const TitleItem = styled.span`
   font-size: 12px;
@@ -481,16 +455,6 @@ const SpecFormItem = styled(FormItem)`
     border-bottom: 1px solid rgba(215,215,215,1);
     height: 35px;
   }
-`;
-const TableIcon = styled(Table)`
-  background: ${props => props.showWay == 'table' ? 'rgb(178, 20, 20)' : '#999999'};
-`;
-const ListIcon = styled(List)`
-  > div{
-    background-color: ${props => props.showWay == 'list' ? 'rgb(178, 20, 20)' : '#999999'};
-  }
-  border-color: ${props => props.showWay == 'list' ? 'rgba(10, 110, 203, 1)' : '#999999'};
-  margin:0px 10px;
 `;
 const AddHerbal = styled.div`
   float: left;
@@ -548,7 +512,6 @@ const SimplePagination = styled(Pagination)`
   &&& {
     margin-top: 6px;
     float: right;
-    display: ${props => props.showWay == 'list' ? 'block' : 'none'};
   }
   &&& > .ant-pagination-next a , &&& > .ant-pagination-prev a, &&& > .ant-pagination-simple-pager{
     color: rgb(178, 20, 20) !important;

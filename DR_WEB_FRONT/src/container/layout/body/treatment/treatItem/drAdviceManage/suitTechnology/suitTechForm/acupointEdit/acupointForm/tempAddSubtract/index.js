@@ -1,17 +1,38 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import QuickInput from 'components/dr/input/quickInput';
+import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
 export default class TempAddSubtract extends Component {
   constructor(props){
     super(props);
     this.state = {
       showResult: false,
+      substractData: [], // 临症加减数据
     };
     this.showResult = this.showResult.bind(this);
     this.hideResult = this.hideResult.bind(this);
   };
+  /** [getSubstract 获取临症加减数据] */
+  getSubstract(keyword){
+    let params = {
+      url: 'tcmTreatdiseaseSt/getIdNameList',
+      server_url: 'http://10.192.1.115:8765/TCMAE/',
+      data: {
+        TreatdiseaseStName: keyword
+      }
+    };
+    let that = this;
+    function success(res) {
+      if(res.result){
+        let substractData = res.data;
+        that.setState({ substractData })
+      }
+    };
+    ajaxGetResource(params, success);
+  };
   showResult(value){
+    this.getSubstract(value);
     this.setState({
       showResult: true
     });
@@ -29,6 +50,7 @@ export default class TempAddSubtract extends Component {
   };
   render() {
     let showResult = this.state.showResult;
+    let substractData = this.state.substractData;
     let value = this.state.value;
     return (
       <SpecQuickInput placeholder='请选择或者输入症候首字母' {...this.props} displayed={this.showResult}>
@@ -36,9 +58,9 @@ export default class TempAddSubtract extends Component {
         showResult?
         (
           <Result>
-            <Line key='1' onClick={(e)=>{this.getValue(e)}}>临症加减oo</Line>
-            <Line key='2' onClick={(e)=>{this.getValue(e)}}>oo</Line>
-            <Line key='3' onClick={(e)=>{this.getValue(e)}}>oo</Line>
+          {
+            substractData.map((item, index) => <Line key={index} onClick={(e)=>{this.getValue(e)}}>{item.treatdiseaseName}</Line>)
+          }
           </Result>
         )
         :null

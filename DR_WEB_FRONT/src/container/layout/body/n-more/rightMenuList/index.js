@@ -27,11 +27,13 @@ export default class Index extends React.Component {
     let arr = newarrayR.map((item,index)=>{
       let items={}
          items.isShow= false;
-      RightData.forEach((item2,index2)=>{
-         if(item2.modid==item.modid){
-             items.isShow= true;
+         if(RightData.length!=0){
+           RightData.forEach((item2,index2)=>{
+              if(item2.modid==item.modid){
+                  items.isShow= true;
+              }
+           })
          }
-      })
       items={ ...item, ...items  };
       return items
     })
@@ -41,7 +43,6 @@ export default class Index extends React.Component {
   }
   /** [onChange 复选框改变事件] */
   onChange = (i) => {
-    debugger
     let isShow = this.state.rightMenuList[i].isShow;
     let rightList = this.state.rightMenuList;
     rightList[i].isShow = !isShow
@@ -171,8 +172,15 @@ const Key=styled.span `
 `
 const SpecTable = styled(Table)`
   .ant-table-body {
-    height: calc(60vh - 56px) !important;
+    height: 308px !important;
     overflow-y: scroll;
+    font-size: 14px !important;
+  }
+  .ant-table-row>tr>td{
+    height: 35px !important;
+  }
+  .ant-table-thead>tr>th{
+    height: 35px !important;
   }
 `;
 /*

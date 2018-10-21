@@ -223,7 +223,7 @@ export default class SyndromeTreatment extends Component {
             {
               showWay == 'grid' ?
               (
-                <Grid patienList={patienList} onStep={(step,cardno,casetype) => {this.props.onStep(step,cardno,casetype)}}>
+                <Grid patienList={patienList} onStep={(step,cardno,cardtype) => {this.props.onStep(step,cardno,cardtype)}}>
                   {
                   }
                 </Grid>

@@ -9,7 +9,12 @@ export default class DiseasePreventTreat extends Component {
     super(props);
     this.state = {
       visible: '',
-      userId: ''
+      userId: '',
+      imgUrl: '',
+      sex: '',
+      sexDesc: '',
+      name: '',
+      age: ''
     };
   };
   handleClick(pram){
@@ -38,7 +43,12 @@ export default class DiseasePreventTreat extends Component {
       console.log('父组件',res)
       that.setState({
         visible: res.data.first,
-        userId: res.data.user.userid
+        userId: res.data.user.userid,
+        imgUrl: res.data.qrcode,
+        sex: res.data.user.sex,
+        sexDesc: res.data.user.sexDesc,
+        name: res.data.user.name,
+        age: res.data.user.birthday
       })
     };
 
@@ -51,15 +61,15 @@ export default class DiseasePreventTreat extends Component {
 
   render() {
     console.log('usid',this.state.userId)
-    let {visible,userId}  = this.state
+    let {visible,userId,imgUrl,sex,sexDesc,name,age}  = this.state
     console.log('visible', visible);
     let t  = null;
     if(visible == 0){
-      t = <Cure onToggle={this.handleClick.bind(this)}/>
+      t = <Cure onToggle={this.handleClick.bind(this)} imgUrl={imgUrl} />
     } else if(visible == 2) {
-      t = <StartWork onToggle={this.handleClick.bind(this)} />
+      t = <StartWork onToggle={this.handleClick.bind(this)} sexDesc = {sexDesc} userId = {userId} />
     } else if(visible == 1) {
-      t = <TestResults onToggle={this.handleClick.bind(this)} userId = {userId}/>
+      t = <TestResults onToggle={this.handleClick.bind(this)} userId = {userId} sexDesc = {sexDesc} name={name} age={age}/>
     }
     return (
       <div>

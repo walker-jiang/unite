@@ -46,7 +46,7 @@ export default class Index extends Component {
     }
   };
   addMaterialItem(values, MaterialData){
-    let paramsData = convertAddFormData(values, MaterialData);
+    let paramsData = convertAddFormData(values, MaterialData, 7);
     let params = {
       url: 'BuOrderController/postData',
       type: 'post',

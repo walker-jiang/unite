@@ -9,7 +9,7 @@ import inputSty from 'components/antd/style/input';
 import selectSty from 'components/antd/style/select';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import TipModal from 'components/dr/modal/tip';
-import { getDiagnoseText } from 'commonFunc/transform';
+import { getDiagnoseText, converItemToNeeded } from 'commonFunc/transform';
 import deepClone from 'commonFunc/deepClone';
 import tableSty from 'components/antd/style/table';
 import tagsSty from 'components/antd/style/tags';
@@ -21,7 +21,7 @@ const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-class Index extends Component {
+class SuitTechForm extends Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -37,15 +37,21 @@ class Index extends Component {
       aim: '', // 检验目的
       miType: '1', // 0 医保外， 1医保内 默认选择医保内
       examineData: [], // 检验项目数据
-      visible: false, // 穴位编辑弹框是否可见
+      visible: true, // 穴位编辑弹框是否可见
+      curTechDetail: {}, // 当前需要编辑适宜技术明细的穴位
     }
-    this.handleAcupoint = this.handleAcupoint.bind(this);
   }
   componentWillMount(){
-    let buOrderDtlList = this.props.buOrderDtlList;
-    this.setState({
-      ...buOrderDtlList
-    });
+    if(JSON.stringify(this.props.buOrderDtlList) != '{}'){
+      let { buRecipe, buOrderDtlList, buOrdmedical, ...data } = this.props.buOrderDtlList;
+      this.setState({
+        examineData: buOrderDtlList.concat(buOrdmedical.buOrdmedicalSuitList),
+        data: data, // 原始医嘱信息
+        buOrdmedical: buOrdmedical, // 原始医嘱套对象信息
+        aim: buOrdmedical.aim, // 检验目的
+        miType: buOrdmedical.miType, // 医保类型
+      });
+    }
     this.getDiagnoseData();
     this.getDept();
     this.getFrequency();
@@ -122,22 +128,6 @@ class Index extends Component {
     function callBack(res) {
       if(res.result){
         let { buRecipe, buOrderDtlList, buOrdmedical, ...data } = res.data;
-        buOrderDtlList.forEach((item)=>{
-          item.medicalcode = item.itemcode;
-          item.medicalid = item.itemid;
-          item.medicalname = item.itemname;
-          item.medinsrem = item.remarks;
-        });
-        buOrdmedical.buOrdmedicalSuitList.forEach((item) => {
-          item.buOrderDtlList.forEach((itemChild) => {
-            itemChild.medicalcode = itemChild.itemcode;
-            itemChild.medicalname = itemChild.itemname;
-            itemChild.medicalid = itemChild.itemid;
-            itemChild.medinsrem = itemChild.remarks;
-          })
-          item.baMedicalDtlList = item.buOrderDtlList;
-        });
-
         that.setState({
           examineData: buOrderDtlList.concat(buOrdmedical.buOrdmedicalSuitList),
           // buRecipe: buRecipe, // 原始处方信息
@@ -167,29 +157,31 @@ class Index extends Component {
   /**
    * [onModifyInputValue 表格输入框值改变后改变数据源的函数]
    * @param  {[type]} newValue   [新值]
-   * @param  {[type]} medicalid [药品ID]
+   * @param  {[type]} itemid [药品ID]
    * @param  {[type]} item       [改变的药品项]
    * @param  {[type]} orderSuitid   [医嘱套ID， 此项不为空表示修改医嘱套明细项]
    * @return {[type]}            [void]
    */
-  onModifyInputValue(newValue, medicalid, item, orderSuitid){
+  onModifyInputValue(newValue, item){
     let examineData = this.state.examineData;
-    examineData.forEach((Dataitem, index)=>{
-      if(orderSuitid){ // 修改医嘱套明细项
-        if(Dataitem.orderSuitid == orderSuitid){
-          Dataitem.baMedicalDtlList.forEach((itemChild, index) => {
-            itemChild[item] = itemChild.medicalid == medicalid ? newValue : itemChild[item];
-          });
+    if(item.orderSuitid && item.orderSuitid != 0){ // 医嘱套
+      examineData.forEach((Dataitem, index)=>{
+        if(Dataitem.orderSuitid == item.orderSuitid){
+          Dataitem.count = newValue;
         }
-      }else{ // 修改非医嘱套项
-        Dataitem[item] = Dataitem.medicalid == medicalid ? newValue : Dataitem[item];
-      }
-    });
+      });
+    }else{
+      examineData.forEach((Dataitem, index)=>{
+        if(Dataitem.itemid == item.itemid){
+          Dataitem.count = newValue;
+        }
+      });
+    }
     this.setState({ examineData });
   };
   /**
    * [onModifySelectValue 表格中下拉框选项改变后触发的函数]
-   * @param  {[type]} medicalid [当前药品ID]
+   * @param  {[type]} itemid [当前药品ID]
    * @param  {[type]} idItem     [当前药品项ID]
    * @param  {[type]} nameItem   [当前药品项名称]
    * @param  {[type]} newID      [新药品项ID]
@@ -197,31 +189,27 @@ class Index extends Component {
    * @param  {[type]} orderSuitid    [医嘱套ID， 此项不为空表示修改医嘱套明细项]
    * @return {[type]}            [void]
    */
-  onModifySelectValue(medicalid, idItem, nameItem, newID, newName, orderSuitid){
+  onModifySelectValue(itemid, idItem, nameItem, newID, newName, orderSuitid){
     let examineData = this.state.examineData;
     examineData.forEach((Dataitem, index)=>{
       if(orderSuitid){ // 修改医嘱套明细项
         if(Dataitem.orderSuitid == orderSuitid){
-          Dataitem.baMedicalDtlList.forEach((itemChild, index) => {
-            itemChild[idItem] = itemChild.medicalid == medicalid ? newID : itemChild[idItem];
-            itemChild[nameItem] = itemChild.medicalid == medicalid ? newName : itemChild[nameItem];
+          Dataitem.buOrderDtlList.forEach((itemChild, index) => {
+            itemChild[idItem] = itemChild.itemid == itemid ? newID : itemChild[idItem];
+            itemChild[nameItem] = itemChild.itemid == itemid ? newName : itemChild[nameItem];
           });
         }
       }else{ // 修改非医嘱套项
-        Dataitem[idItem] = Dataitem.medicalid == medicalid ? newID : Dataitem[idItem];
-        Dataitem[nameItem] = Dataitem.medicalid == medicalid ? newName : Dataitem[nameItem];
+        Dataitem[idItem] = Dataitem.itemid == itemid ? newID : Dataitem[idItem];
+        Dataitem[nameItem] = Dataitem.itemid == itemid ? newName : Dataitem[nameItem];
       }
-    });
-
-    medicineData.forEach((Dataitem, index)=>{
-
     });
     this.setState({ examineData });
   };
   /**
    * [delExamineData 删除当前检查项目]
    * @param  {[type]} record [当前检查项目对象]
-   * @param  {[type]} medicalid [医嘱套明细ID， 若为undefined则为非医嘱套项目，否则删除医嘱套明细的某一项]
+   * @param  {[type]} itemid [医嘱套明细ID， 若为undefined则为非医嘱套项目，否则删除医嘱套明细的某一项]
    * @return {[type]}        [void]
    */
   delExamineData(record) {
@@ -238,7 +226,7 @@ class Index extends Component {
         }
       });
     }else{
-        examineData = examineData.remove({medicalid: record.medicalid});
+        examineData = examineData.remove({itemid: record.itemid});
         that.setState({examineData})
     }
   }
@@ -250,21 +238,85 @@ class Index extends Component {
   addExamineData (examineItem) {
     let examineData = this.state.examineData;
     for(let i=0; i < examineData.length; i++){
-      if(examineData[i].baMedicalDtlList){ // 医嘱套
+      if(examineData[i].buOrderDtlList){ // 医嘱套
         if(examineData[i].orderSuitid == examineItem.orderSuitid){
-          this.tipModal.showModal({stressContent: '该检验项已存在'});
+          this.tipModal.showModal({stressContent: '该项目项已存在'});
           return false;
         }
       }else{ // 非医嘱套
-        if(examineData[i].medicalid == examineItem.medicalid){
-          this.tipModal.showModal({stressContent: '该检验项已存在'});
+        if(examineData[i].itemid  == examineItem.medicalid){
+          this.tipModal.showModal({stressContent: '该项目项已存在'});
           return false;
         }
       }
     }
+    let item = converItemToNeeded(examineItem, examineData);
+    let detailData = [];
+    if(examineItem.buOrderDtlList){ // 医嘱套
+      examineItem.buOrderDtlList.forEach((item) => {
+        detailData.push(item);
+      });
+      this.getAcupoints(examineItem.buOrderDtlList);
+    }else{ // 非医嘱套
+      this.getAcupoints([examineItem]);
+    }
+    // let result = this.getAcupoints(detailData);
+    // console.log('examineItem123', result);
+    // if(result.length > 1){
+    //   examineItem.buOrderDtlList = result;
+    // }else{
+    //   examineItem = result;
+    // }
+    // console.log('examineItem123', examineItem);
     examineData.push(examineItem);
     this.setState({ examineData });
   }
+  /**
+   * [getAcupoints 从辨证论治服务获取适宜技术对应的穴位]
+   * @param  {[type]} item [适宜技术项目]
+   * @return {[type]}      [undefined]
+   */
+  getAcupoints(list){
+    let resultArray = [];
+    let buDiagnosisList = this.state.buDiagnosisList;
+    if(!buDiagnosisList.length){
+      alert('诊断信息不能空');
+      return;
+    }
+    let techFormItem = {
+      techItem: list,
+      buDiagnosisList: buDiagnosisList,
+    };
+    let params = {
+      url: 'baAcupoint/getAcu',
+      type: 'post',
+      async: false,
+      server_url: 'http://10.192.1.115:8765/TCMAE/',
+      data: JSON.stringify(techFormItem)
+    };
+    let that = this;
+    function success(res) {
+      if(res.result){
+        let result = res.data;
+        list.forEach((otherItem) => {
+          let sameItem = result.forEach((serviceItem, index) => {
+            if(serviceItem.itemcode == otherItem.itemcode){
+                let acupointNameArray = [];
+                serviceItem.buImtreatprelistStAcupoints.forEach((itemChildChild) => {
+                  Object.assign(itemChildChild, itemChildChild.baAcupoint);
+                  acupointNameArray.push(itemChildChild.acupointName);
+                });
+              resultArray.push(Object.assign(otherItem, serviceItem, { AcupointNames: acupointNameArray.join('、')}));
+              // console.log('otherItem12', otherItem);
+            }
+          });
+        });
+      }
+    };
+    ajaxGetResource(params, success);
+    // console.log('list', list);
+    return resultArray;
+  };
   /** [getTableColumns 设置表格列] */
   getTableColumns(){
     let deptData = this.state.deptData;
@@ -276,19 +328,22 @@ class Index extends Component {
       render: (text, record, index) => {
         if(index%2 == 0){
           return {
-            children: <span><Title>治疗项/治疗明细</Title>：<Item>针法/毫针法</Item>/毫针治疗</span>,
+            children: <span><Title>治疗项/治疗明细</Title>：<Item>{record.orderSuitname}</Item>/{record.itemname}</span>,
             props: {
               colSpan: 2,
             },
           };
         }else{
-          return <span>{text}</span>;
+          return {
+            children: <span>{parseInt(index/2 + 1)}</span>,
+          };
         }
       }
     }, {
       title: "取穴/部位",
-      dataIndex: 'buwei',
-      key: 'buwei',
+      dataIndex: 'spbody',
+      key: 'spbody',
+      width: '12%',
       render: (text, record, index) => {
         if(index%2 == 0){
           return {
@@ -298,33 +353,43 @@ class Index extends Component {
             },
           };
         }else{
-          return <EditDiv><Label>{text}</Label><Edit type='edit' onClick={this.handleAcupoint}/></EditDiv>;
+          let AcupointNames = [];
+          if(record.buImtreatprelistStAcupoints){
+            record.buImtreatprelistStAcupoints.forEach((item) => {
+              AcupointNames.push(item.acuname);
+            });
+          }
+          return(
+            <EditContainer><InputPop value={AcupointNames.join('、')}></InputPop><Edit type='edit' onClick={() => {this.handleAcupoint(record)}}/></EditContainer>
+          )
         }
       }
     }, {
       title: "操作方法",
-      dataIndex: 'fangfa',
-      key: 'fangfa',
+      dataIndex: 'uasge',
+      key: 'uasge',
+      width: '12%',
       render: (text, record, index) => {
         if(index%2 == 0){
           return '';
         }else{
-          return <EditDiv><Label>{text}</Label><Edit type='edit' /></EditDiv>;
+          return <EditContainer><InputPop value={record.operation}></InputPop><Edit type='edit' onClick={() => {this.handleAcupoint(record)}}/></EditContainer>
         }
       }
     }, {
       title: "执行科室",
-      dataIndex: 'keshi',
-      key: 'keshi',
+      dataIndex: 'dept',
+      key: 'dept',
+      width: '10%',
       render: (text, record, index)=>{
         if(index%2 == 0){
           return '';
         }else{
           return (
             <SpecSelect
-              defaultValue={{key: deptData.deptid, label: deptData.deptname}}
+              defaultValue={{key: record.deptid, label: record.deptname}}
               labelInValue={true}
-              onSelect={(e)=>{this.onModifySelectValue(record.medicalid, 'deptid', 'deptname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
+              onSelect={(e)=>{this.onModifySelectValue(record.itemid, 'deptid', 'deptname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
               {
                 deptData.map((item) => <Option key={item.deptid} value={item.deptid}>{item.deptname}</Option>)
               }
@@ -334,17 +399,17 @@ class Index extends Component {
       }
     }, {
       title: "频次",
-      dataIndex: 'pinci',
-      key: 'pinci',
+      dataIndex: 'frequency',
+      key: 'frequency',
       render: (text, record, index)=>{
         if(index%2 == 0){
-          return '';
+          return <span>单价：{record.unitprice}</span>;
         }else{
           return (
             <SpecSelect
-              defaultValue={{key: frequencyData.deptid, label: frequencyData.deptname}}
+              defaultValue={ frequencyData.length ? {key: frequencyData[0].deptid, label: frequencyData[0].deptname} : {key:'', label: ''}}
               labelInValue={true}
-              onSelect={(e)=>{this.onModifySelectValue(record.medicalid, 'deptid', 'deptname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
+              onSelect={(e)=>{this.onModifySelectValue(record.itemid, 'deptid', 'deptname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
               {
                 frequencyData.map((item) => <Option key={item.freqcode} value={item.freqcode}>{item.freqname}</Option>)
               }
@@ -354,12 +419,30 @@ class Index extends Component {
       }
     }, {
       title: "天数",
-      dataIndex: 'tianshu',
-      key: 'tianshu',
+      dataIndex: 'days',
+      key: 'days',
+      render: (text, record, index) => {
+        if(index%2 == 0){
+          return {
+            children: <span>金额：{record.unitprice * record.count}</span>,
+            props: {
+              colSpan: 2,
+            },
+          };
+        }else{
+          return{
+            children:(
+              <span>
+                <InputCount onBlur={(e)=>{ record.count != e.target.value ? this.onModifyInputValue(e.target.value, record.itemid, 'count', record.orderSuitid ? record.orderSuitid : '') : ''}} defaultValue={1} />
+              </span>
+            )
+          }
+        }
+      }
     }, {
       title: "数量/单位",
-      dataIndex: 'shuliang',
-      key: 'shuliang',
+      dataIndex: 'count',
+      key: 'count',
       render: (text, record, index) => {
         if(index%2 == 0){
           return {
@@ -369,12 +452,13 @@ class Index extends Component {
             },
           };
         }else{
-          return
-            <div>
-              <InputCount
-                onBlur={(e)=>{ record.count != e.target.value ? this.onModifyInputValue(e.target.value, record.medicalid, 'count', record.orderSuitid ? record.orderSuitid : '') : ''}}
-                defaultValue={1} />盒
-           </div>
+          return {
+            children:(
+              <span>
+                <InputCount onBlur={(e)=>{ record.count != e.target.value ? this.onModifyInputValue(e.target.value, record) : ''}} defaultValue={1} />盒
+              </span>
+            )
+          }
         }
       }
     }, {
@@ -402,59 +486,84 @@ class Index extends Component {
    * @return {[type]}            [void]
    */
   getTableDataSource(originData){
-    // let dataSource = [];
+    let dataSource = [];
     let feeAll = 0;
-    // originData.forEach((item) => {
-    //   if(item.baMedicalDtlList){ // 医嘱套
-    //     item.baMedicalDtlList.forEach((itemChild) => {
-    //       itemChild.key = dataSource.length
-    //       itemChild.orderSuitid = item.orderSuitid;
-    //       itemChild.orderSuitname = item.orderSuitname;
-    //       feeAll += itemChild.count * itemChild.unitprice;
-    //       dataSource.push(itemChild);
-    //     });
-    //
-    //   }else{ // 非医嘱套
-    //     item.key = dataSource.length
-    //     feeAll += item.count * item.unitprice;
-    //     dataSource.push(item);
-    //   }
-    // });
+    originData.forEach((item, index) => {
+      if(item.buOrderDtlList){ // 医嘱套
+        item.key = dataSource.length;
+        item.contentDetail = '';
+        item.unitprice = 0;
+        item.buOrderDtlList.forEach((itemChild) => {
+          // item.contentDetail += '/' + itemChild.itemname; // 取穴、部位名称拼接
+          // item.unitprice += itemChild.count * itemChild.unitprice; // 医嘱套单价拼接
+          itemChild.orderSuitid = item.orderSuitid;
+          itemChild.orderSuitname = item.orderSuitname;
+          itemChild.key = dataSource.length;
+          dataSource.push(itemChild);
+
+          let secondLine = deepClone(itemChild);
+          secondLine.key = dataSource.length;
+          dataSource.push(secondLine);
+        });
+      }
+      else{ // 非医嘱套
+        item.key = dataSource.length
+        dataSource.push(item);
+        let secondLine = deepClone(item);
+        secondLine.key = dataSource.length;
+        dataSource.push(secondLine);
+      }
+    });
     // if(dataSource.length % 8 != 0){
     //   for(let i = dataSource.length % 8; i < 8 ; i++){
     //     let item = deepClone(dataSource[dataSource.length-1]);
     //     item.key = dataSource.length;
-    //     item.medicalid = ''; // 空行标识
+    //     item.itemid = ''; // 空行标识
     //     dataSource.push(item)
     //   }
     // }
-    //
-    let dataSource = [{
-      key: 1,
-      order: '',
-      buwei: '',
-      fangfa: '',
-      keshi: '单价：40.00',
-      pinci: '',
-      tianshu: '',
-      shuliang: ''
-    }, {
-      key: 2,
-      order: 1,
-      buwei: '迎香、风池、风池、合谷',
-      fangfa: '毫针浅刺用泻法',
-      keshi: '针灸',
-      pinci: '一天一次',
-      tianshu: '3天',
-      shuliang: '3项'
-    }];
+
+    // let dataSource = [{
+    //   key: 1,
+    //   order: '',
+    //   buwei: '',
+    //   fangfa: '',
+    //   keshi: '单价：40.00',
+    //   pinci: '',
+    //   tianshu: '',
+    //   shuliang: ''
+    // }, {
+    //   key: 2,
+    //   order: 1,
+    //   buwei: '迎香、风池、风池、合谷',
+    //   fangfa: '毫针浅刺用泻法',
+    //   keshi: '针灸',
+    //   pinci: '一天一次',
+    //   tianshu: '3天',
+    //   shuliang: '3项'
+    // }];
     return { dataSource, feeAll };
   };
-  handleAcupoint(e){
-    this.acupointEdit.handlePopOpen();
+  handleAcupoint(record){
+    this.setState({
+      curTechDetail: record
+    }, ()=>{
+      this.acupointEdit.handlePopOpen();
+    });
+  };
+  modifyHerbal(tectItemDetail){
+    console.log('tectItemDetail', tectItemDetail);
+    let examineData = this.state.examineData;
+    if(tectItemDetail.orderSuitid){
+      let curData = examineData.filter(item => item.orderSuitid == tectItemDetail.orderSuitid);
+      let curItem = curData[0].buOrderDtlList.filter(item => item.itemcode == tectItemDetail.itemcode)
+      curItem[0].buImtreatprelistStAcupoints = tectItemDetail.buImtreatprelistStAcupoints;
+      console.log('examineData', examineData);
+    }
+    this.setState({examineData});
   };
   render () {
-    let { visiblePop, examineData, buDiagnosisList, miType, aim, visible } = this.state;
+    let { visiblePop, examineData, buDiagnosisList, miType, aim, visible, curTechDetail } = this.state;
     const { getFieldDecorator } = this.props.form;
 
     const {dataSource, feeAll} = this.getTableDataSource(deepClone(examineData));
@@ -500,9 +609,10 @@ class Index extends Component {
     let openProps = {
       actionType: 'add',
       orderid: '',
-      reloadList: ()=>{},
-      buOrderDtlList: [],
+      modifyHerbal: (formData)=>{ this.modifyHerbal(formData.formData) },
+      buOrderDtlList: curTechDetail,
     };
+    console.log('curTechDetail', curTechDetail);
     return (
       <div>
         <SpecForm className='not-draggable' onClick={()=>{this.quickAddExamineItem.hideResult()}}>
@@ -570,7 +680,7 @@ class Index extends Component {
                       })(
                         <div>
                           {
-                            examineData.map((item, index) => <SpecTag onClose={(e) => {e.preventDefault();this.delExamineData(item)}} closable key={index} id={item.baMedicalDtlList ? item.orderSuitid : item.medicalid}>{item.baMedicalDtlList ? item.orderSuitname : item.medicalname}</SpecTag>)
+                            examineData.map((item, index) => <SpecTag onClose={(e) => {e.preventDefault();this.delExamineData(item)}} closable key={index} id={item.buOrderDtlList ? item.orderSuitid : item.itemid}>{item.buOrderDtlList ? item.orderSuitname : item.itemid}</SpecTag>)
                           }
                         </div>
                       )}
@@ -580,7 +690,7 @@ class Index extends Component {
                 <Footer>
                   <SpecTable
                     dataSource={dataSource}
-                    locale={{emptyText: '暂无检验项目数据' }}
+                    locale={{emptyText: '暂无项目数据' }}
                     columns={columns}
                     pagination={Pagination}>
                   </SpecTable>
@@ -589,7 +699,7 @@ class Index extends Component {
                 </Footer>
                 <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
         </SpecForm>
-        <AcupointEdit ref={ ref => { this.acupointEdit = ref }} {...openProps}></AcupointEdit>
+        <AcupointEdit ref={ ref => { this.acupointEdit = ref }} {...openProps} ></AcupointEdit>
       </div>
     )
   }
@@ -697,6 +807,9 @@ const SpecTable = styled(Table)`
   }
   &&& .ant-table-tbody > tr > td {
     background-color: #F8F4E7;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 `;
 const Title = styled.span`
@@ -705,24 +818,30 @@ const Title = styled.span`
 const Item = styled.span`
   color: #F8D17A;
 `;
-const EditDiv = styled.div`
-  width: 200px;
+const EditContainer = styled.div`
   position: relative;
-  padding: 16px 5px;
-  padding-bottom: 30px;
-  border-bottom: 1px solid #CCCCCC;
 `;
-const Label = styled.div`
-  float: left;
-  margin-bottom: 16px;
+const InputPop = styled(Input)`
+  &&&.ant-input {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #CCCCCC;
+    border-radius: 0px;
+    width: 200px;
+  }
+  &:focus {
+    border: none;
+  }
 `;
 const Edit = styled(Icon)`
   position: absolute;
   right: 0px;
+  top: 10px;
   width: 25px;
   height: 18px;
 `;
-const ChPatentMedicineForm = Form.create()(Index);
+
+const ChPatentMedicineForm = Form.create()(SuitTechForm);
 
 export default ChPatentMedicineForm;
 /*

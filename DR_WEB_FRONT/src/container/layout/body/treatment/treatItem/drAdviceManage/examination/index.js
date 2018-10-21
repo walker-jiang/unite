@@ -45,7 +45,7 @@ export default class examineForm extends Component {
     }
   };
   addExamineItem(values, examineData){
-    let paramsData = convertAddFormData(values, examineData);
+    let paramsData = convertAddFormData(values, examineData, 1);
     let params = {
       url: 'BuOrderController/postData',
       type: 'post',

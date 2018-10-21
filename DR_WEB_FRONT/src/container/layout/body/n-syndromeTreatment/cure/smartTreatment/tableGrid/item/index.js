@@ -35,7 +35,6 @@ export default class Index extends Component {
         <Action>
           <Icon type='delete' onClick={() => {operate('delete', dataItem)}}></Icon>
           <Icon type='view' onClick={() => {operate('view', dataItem)}}></Icon>
-          <Icon type='print' onClick={() => {operate('print', dataItem)}}></Icon>
           <Icon type='modify' onClick={() => {operate('modify', dataItem)}}></Icon>
         </Action>
         <OrderType ordertype={ordertype}>{ordertypeDic}</OrderType>

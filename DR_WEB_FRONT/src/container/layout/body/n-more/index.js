@@ -20,6 +20,8 @@ class SystemManagement extends React.Component {
       MenuData: [],
       totalModules: [], // 所有菜单
       frameData:[],  //列表菜单
+      clssName:true,
+      right:[],  //右侧选中列表
     };
   }
   componentWillMount(){
@@ -57,7 +59,12 @@ class SystemManagement extends React.Component {
        };
        function callBack1(res){
          if(res.result){
-           self.setState({ frameData: res.data });
+           if(res.data){
+              self.setState({ frameData: res.data });
+           }else{
+             let data={leftMenuList:[],rightMenuList:[] }
+             self.setState({ frameData: data});
+           }
          }else{
            console.log('异常响应信息', res);
          }
@@ -79,14 +86,16 @@ class SystemManagement extends React.Component {
      };
      function callBack1(res){
        if(res.result){
-         list=[];
+         if(window.setMenu){ // 通知客户端当前登录用户的菜单
+            window.setMenu(JSON.stringify(self.state.right));
+        }
        }else{
          console.log('异常响应信息', res);
        }
      };
      ajaxGetResource(paramss, callBack1);
    }
-   // 处理数据
+/** [ProcessingData 拿到请求需要的数据格式] */
   ProcessingData =()=>{
      let leftList=[];
      let a=1;
@@ -112,6 +121,30 @@ class SystemManagement extends React.Component {
              return
            }
      })
+     let rightData=[];
+      rightList.forEach(item=>{
+        if(item.modid!=7){
+          rightData.push({
+            modid:item.modid,
+            syModule:{
+                callurl:config_local_url+item.callurl,
+                modname:item.modname,
+                modid:item.modid,
+            },
+          })
+        }else{
+          rightData.push({
+            modid:item.modid,
+            syModule:{
+              callurl:item.callurl,
+              modname:item.modname,
+              modid:item.modid,
+            }
+          })
+        }
+
+      })
+     this.setState({right:rightData})
      let list =leftList.concat(rightList);
      return list
    }
@@ -122,10 +155,11 @@ class SystemManagement extends React.Component {
      this.handleCancel();
      location.reload();
    }
-   /** [handleCancel 关闭弹框组件] */
+ /** [handleCancel 关闭弹框组件] */
   handleCancel = (e) => {
     this.setState({visible: false});
   }
+  /** [handleOk 关闭事件] */
   handleOk = (e) => {
     this.setState({visible: false});
   }
@@ -135,6 +169,18 @@ class SystemManagement extends React.Component {
   onRefa = (ref) => {
           this.rightMenuList = ref
       }
+ /**
+  * [onChange Tab切换的onchang事件]
+  * @param  {[type]} activeKey [当前的tab的值 框架自带]
+  * @return {[type]}           [undefined]
+  */
+  onChange=(activeKey)=>{
+    if(activeKey==1){
+      this.setState({clssName:true})
+    }else{
+        this.setState({clssName:false})
+    }
+ }
   /**
    * [getCarouselCom description]
    * @param  {[type]} totalModules [平铺列表数据]
@@ -208,16 +254,17 @@ class SystemManagement extends React.Component {
           </SpecCarousel>
         </Body>
         {
+           //
           this.state.visible ? <SpecModal width={"700px"} height={"36px"} maskStyle={{ background: "rgba(0,0,0,.3)" }} title="应用设置" maskClosable={false} visible={true} onOk={this.handleOk} onCancel={this.handleCancel} footer={false}>
             <Form layout="inline" onSubmit={this.handleSubmit}>
-              <Tabs defaultActiveKey="1">
-                 <TabPane tab={<span><Icon type="apple" />左侧菜单栏</span>} key="1" >
+              <Tabbox defaultActiveKey="1" onChange={ this.onChange}>
+                 <Tables tab={<span>{this.state.clssName?<TabIcon type="m_leftMenu_on"/>:<TabIcon type="m_leftMenu"/>}左侧菜单栏</span>} key="1" >
                    <LeftMenuList onRef={this.onRef} totalModules={totalModules} leftMenuList={frameData.leftMenuList}/>
-                 </TabPane>
-                 <TabPane tab={<span><Icon type="android" />右侧悬浮框</span>} key="2" forceRender={true}>
+                 </Tables>
+                 <Tables tab={<span>{this.state.clssName?<TabIcon type="m_rightMenu"/>:<TabIcon type="m_rightMenu_on"/>}右侧悬浮框</span>} key="2" forceRender={true}>
                     <RightMenuList onRefa={this.onRefa} totalModules={totalModules} rightMenuList={frameData.rightMenuList} />
-                 </TabPane>
-              </Tabs>
+                 </Tables>
+              </Tabbox>
               <Row style={{
                   marginTop: "10px"
                 }}>
@@ -262,9 +309,13 @@ const Title = styled.span`
 `;
 const SureButton = styled(Button)`
   ${StyButton.semicircle}
+  width: 100px;
+  height: 30px;
 `;
 const CancelButton = styled(Button)`
   ${StyButton.gray}
+  width: 100px;
+  height: 30px;
 `;
 const AppSet = styled.span`
   float: right;
@@ -305,7 +356,6 @@ const SecondRowLine = RowLine.extend`
   justify-content: start;
   margin-left: 70px;
 `;
-
 const StyledLink = styled(Link)`
   display: flex;
   height:100px;
@@ -320,6 +370,19 @@ const StyleIcon = styled(Icon1)`
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 `;
+const TabIcon = styled(Icon1)`
+  width: 17px;
+  height: 17px;
+  &&&:hover{
+    color:#0088F7 !important;
+  }
+  .Select{
+    color:#0A6ECB !important;
+  }
+  .Unchecked{
+    color:#999 !important;
+  }
+`;
 const Label = styled.div`
   height: 19px;
   font-size: 14px;
@@ -330,6 +393,18 @@ const Label = styled.div`
   font-weight: 600;
   text-align: center;
 `;
+const Tabbox=styled(Tabs)`
+  height: 400px !important;
+  .ant-tabs-tab{
+    margin-right: 0px !important;
+  }
+  .ant-tabs-ink-bar{
+    margin-left: 19px !important;
+  }
+`
+const Tables=styled(TabPane)`
+
+`
 const SpecCarousel = styled(Carousel)`
 
   &&&.slick-slide {
@@ -357,6 +432,9 @@ const SpecCarousel = styled(Carousel)`
   }
 `;
 const SpecModal = styled(Modal)`
+  &&&.ant-modal-body{
+     padding-top: 18px !important;
+  }
   .ant-checkbox-inner{
     border-color: #000;
     background: #fff;

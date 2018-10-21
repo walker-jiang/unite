@@ -107,8 +107,8 @@ export default class Electronic extends Component {
     if(casetype != ''){//判断初复诊：1为初诊，2为复诊；
       var ct = casetype;
       ss = <RadioGroup name="radiogroup" disabled defaultValue={ct}>
-            <Radio value='0'>初诊</Radio>
-            <Radio value='1'>复诊</Radio>
+            <Radio value='1'>初诊</Radio>
+            <Radio value='2'>复诊</Radio>
            </RadioGroup>
     }
     let orgidDic = this.props.orgidDic;

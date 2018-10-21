@@ -47,19 +47,28 @@ export default class TestResults extends Component {
       echartLabel: '',
       echartValue: '',
       imgUrl: '',
-      printData: []
+      printDataSource: []
     };
     this.handClick = this.handClick.bind(this);
+    window.RportPrintCure = (params) => this.RportPrintCure(params)
   };
+
   handClick(){
     let pram = 0;
     this.props.onToggle(pram);
   }
 
+  /**
+   * [RportPrintCure 从客户端打印回调函数]
+   * @param {[type]} params [返回打印是否完成]
+   */
+  RportPrintCure(params){
+    console.log('返回打印是否完成',params);
+  };
+
   //加载时间菜单
   getTimeMenuData(){
     let userId = this.props.userId;//子组件拿到父组件的属性
-    console.log('+++++++',userId)
     let params = {
           type: 'GET',
           async : true,
@@ -103,7 +112,7 @@ export default class TestResults extends Component {
         let that = this;
         function success(res){
           that.setState({
-            printData: res.data,
+            printDataSource: res.data,
             scoreChart: res.data.scoreChart,//echert数据
             bodyType: res.data.conclusion.bodyType,//体质
             performance: res.data.conclusion.performance,//体质描述
@@ -140,6 +149,7 @@ export default class TestResults extends Component {
         let that = this;
         function success(res){
           that.setState({
+            printDataSource: res.data,
             scoreChart: res.data.scoreChart,//echert数据
             bodyType: res.data.conclusion.bodyType,//体质
             performance: res.data.conclusion.performance,//体质描述
@@ -173,7 +183,7 @@ export default class TestResults extends Component {
     })
   }
 
-    iconClick(){
+  iconClick(){
     // 显示隐藏左侧菜单
     if(this.state.display == 'none'){
       this.setState({
@@ -186,7 +196,7 @@ export default class TestResults extends Component {
         status: 0
       })
     }
-    }
+  }
 
   printClick(){
     // 打印
@@ -197,9 +207,17 @@ export default class TestResults extends Component {
     // LODOP.ADD_PRINT_HTM(0,0,1000,1900,document.getElementById("testResult").innerHTML);
     // LODOP.PREVIEW();
     //LODOP.PRINT();
-    let printData = this.state.printData;
-    console.log('printData',JSON.stringify(printData));
-    
+    let printDataSource = this.state.printDataSource;
+    let time = this.state.time || this.state.yearEight[0];
+    let { sexDesc, name, age } = this.props;
+    let patientYear = age.substr(0,4);
+    var date=new Date;
+    var year=date.getFullYear(); 
+    let patientAge = year - patientYear;
+    let newData={ name, time, sexDesc, patientAge, ...printDataSource }
+    console.log('newData',JSON.stringify(newData));
+    window.reportPrint(1,JSON.stringify(newData))
+
     // window.reportPrint(1,JSON.stringify(printData))
   }
 

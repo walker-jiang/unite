@@ -20,7 +20,7 @@ const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-class Index extends Component {
+class Examination extends Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -38,10 +38,16 @@ class Index extends Component {
     }
   }
   componentWillMount(){
-    let buOrderDtlList = this.props.buOrderDtlList;
-    this.setState({
-      ...buOrderDtlList
-    });
+    if(JSON.stringify(this.props.buOrderDtlList) != '{}'){
+      let { buRecipe, buOrderDtlList, buOrdmedical, ...data } = this.props.buOrderDtlList;
+      this.setState({
+        examineData: buOrderDtlList.concat(buOrdmedical.buOrdmedicalSuitList),
+        data: data, // 原始医嘱信息
+        buOrdmedical: buOrdmedical, // 原始医嘱套对象信息
+        aim: buOrdmedical.aim, // 检验目的
+        miType: buOrdmedical.miType, // 医保类型
+      });
+    }
     this.getDiagnoseData();
     this.getDept();
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
@@ -211,7 +217,7 @@ class Index extends Component {
           return false;
         }
       }else{ // 非医嘱套
-        if(examineData[i].itemid == examineItem.itemid){
+        if(examineData[i].itemid == examineItem.medicalid){
           this.tipModal.showModal({stressContent: '该检验项已存在'});
           return false;
         }
@@ -312,7 +318,7 @@ class Index extends Component {
       for(let i = dataSource.length % 8; i < 8 ; i++){
         let item = deepClone(dataSource[dataSource.length-1]);
         item.key = dataSource.length;
-        item.itemid = ''; // 空行标识
+        item.itemid = '空'; // 空行标识
         dataSource.push(item)
       }
     }
@@ -440,7 +446,7 @@ class Index extends Component {
             locale={{emptyText: '暂无检验项目数据' }}
             columns={columns}
             pagination={Pagination}
-            rowClassName={(record, index)=>record.itemid ? 'dotted' : 'dotted clear'} >
+            rowClassName={(record, index)=> record.itemid != '空' ? 'dotted' : 'dotted clear'} >
           </SpecTable>
           <Tip>💡提示：医保外项目以红色显示</Tip>
           <Total>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
@@ -546,9 +552,9 @@ const SpecTable = styled(Table)`
     color: rgb(102, 102, 102);
   }
 `;
-const ChPatentMedicineForm = Form.create()(Index);
+const ExaminationForm = Form.create()(Examination);
 
-export default ChPatentMedicineForm;
+export default ExaminationForm;
 /*
 @作者：姜中希
 @日期：2018-08-21

@@ -7,7 +7,7 @@ import "./iconfont.css";
 import Icon1 from 'components/dr/icon';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 const { Header, Content, Footer, Sider } = Layout;
-const SubMenu = Menu.SubMenu;
+const SubMenu = Menu.Item;
 var onresize= window;
 
 class SiderDemo extends React.Component {
@@ -30,25 +30,32 @@ class SiderDemo extends React.Component {
   /** [getLeftMoules 获取左侧菜单] */
   getLeftMoules(){
     let self = this;
-    let params = {
-      url: 'SyQuickmenuController/getQuickMenu',
-      server_url: config_login_url,
-      data: {
-        userid: window.sessionStorage.getItem('userid')
-      },
-    };
-    function callBack(res){
-      if(res.result){
-        self.setState({ leftModules: res.data.leftMenuList });
-      }else{
-        console.log('异常响应信息', res);
-      }
-    };
-    ajaxGetResource(params, callBack);
+    if( window.sessionStorage.getItem('userid')==undefined){
+        self.setState({ leftModules: defaultSysModuleList });
+    }else{
+      let params = {
+        url: 'SyQuickmenuController/getQuickMenu',
+        server_url: config_login_url,
+        data: {
+          userid: window.sessionStorage.getItem('userid')
+        },
+      };
+      function callBack(res){
+        if(res.result){
+          if(res.data==null){
+            self.setState({ leftModules: [] });
+          }else{
+            self.setState({ leftModules: res.data.leftMenuList });
+          }
+        }else{
+          console.log('异常响应信息', res);
+        }
+      };
+      ajaxGetResource(params, callBack);
+    }
   };
   //侧边抽屉打开与关闭
   onCollapse = (collapsed) => {
-    console.log(collapsed);
     var style
     if (!this.state.collapsed) {
       style={fontSize:"20px"}
@@ -70,22 +77,15 @@ class SiderDemo extends React.Component {
     height,
   })
 }
-  onSelect=(sss)=>{
-  }
   down=()=>{
-    console.log("高度高度",this.state.height);
     var dom1=document.getElementById("kk")  //内容
     var domHeight1=dom1.offsetHeight
     var dom=document.getElementById("height") //一个
     var domHeight=dom.offsetHeight+8
-    console.log("skjhoiahsd",domHeight1);
     var num =domHeight1-parseInt(this.state.height)-3
-    console.log("54645",num);
-    console.log("66666",this.state.length);
     if (this.state.length > -num) {
       var length = this.state.length-domHeight
       this.setState({length,down:true,up:true})
-      console.log("hahahaha",dom);
     }else{
       this.setState({down:false,up:true})
     }
@@ -96,7 +96,6 @@ class SiderDemo extends React.Component {
       var domHeight=dom.offsetHeight+8
       var length = this.state.length+domHeight
       this.setState({length,up:true,down:true})
-      console.log("hahahaha",dom);
     }else {
       this.setState({up:false})
     }
@@ -104,11 +103,13 @@ class SiderDemo extends React.Component {
   render() {
     let { collapsed ,leftModules} = this.state;
     const MenuOption=[]
-    leftModules.forEach(item=>{
-      var div
-      div=<Menu.Item key={item.syModule.moddesc}><Link to={item.syModule.callurl}><StyleICon type={item.syModule.moddesc} value={collapsed}/><span>{item.syModule.modname}</span></Link></Menu.Item>
-      MenuOption.push(div)
-    })
+    if(leftModules.length !=0){
+      leftModules.forEach(item=>{
+        var div
+        div=<MenuItems trigger={null} key={item.syModule.moddesc}><Link to={item.syModule.callurl}><StyleICon type={item.syModule.moddesc} value={collapsed}/><span>{item.syModule.modname}</span></Link></MenuItems>
+        MenuOption.push(div)
+      })
+    }
     return (
         <SpecSider
           ref="Sider"
@@ -129,12 +130,13 @@ class SiderDemo extends React.Component {
                 onSelect={this.onSelect}
                >
                 {MenuOption}
-                <Menu.Item id="height">
-                  <Link to='/Layout/more'>
+                {( window.sessionStorage.getItem('userid')!=undefined)?
+                <MenuItems id="height" trigger={null}>
+                  <Link to='/Layout/more' trigger={null}>
                     <StyleICon type='more' value={collapsed}/>
                     <span>更多</span>
                   </Link>
-                </Menu.Item>
+                </MenuItems>:null}
               </SpecMenu>
           </div>
         </SpecSider>
@@ -142,6 +144,9 @@ class SiderDemo extends React.Component {
   }
 }
 const SpecSider = styled(Sider)`
+ box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+ z-index: 99;
+
   &&& {
     max-height: 100vh;
     overflow: scroll;
@@ -170,6 +175,12 @@ const SpecSider = styled(Sider)`
   .ant-menu-inline-collapsed{
     width: 50px;
   }
+  .ant-tooltip-content{
+         line-height: 1.6  !important;
+      .ant-tooltip-inner{
+         padding: 6px 21px !important;
+   }
+ }
 `;
 const StyleICon = styled(Icon1)`
   width: ${ props => props.value ? '20px' : '16px'};
@@ -181,7 +192,12 @@ const SpecMenu = styled(Menu)`
   &&&.ant-menu-dark, .ant-menu-dark .ant-menu-sub {
     background-color: rgba(31, 63, 105, 1);
   }
+
 `;
+const MenuItems =styled(SubMenu)`
+
+`
+
 export default SiderDemo
 
 /*
