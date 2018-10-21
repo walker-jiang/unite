@@ -222,8 +222,8 @@ export default class SelectPatient extends Component {
               </Toggle>
               <Bread></Bread>
               <SpecTabs>
-                <TabPane activeTab={rcStatus} _key={0} onClick={(e) => this.toggleTabs(0)}>待接诊（{numbers.noVisit}）</TabPane>
-                <TabPane activeTab={rcStatus} _key={1} onClick={(e) => this.toggleTabs(1)}>接诊中（{numbers.visiting}）</TabPane>
+                <TabPane activeTab={rcStatus} _key={0} onClick={(e) => this.toggleTabs(0)}>等待辨证论治（{numbers.noVisit}）</TabPane>
+                <TabPane activeTab={rcStatus} _key={1} onClick={(e) => this.toggleTabs(1)}>辨证论治中（{numbers.visiting}）</TabPane>
               </SpecTabs>
             </Left>
             <Right>

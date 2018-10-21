@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import { Table, Tabs, Checkbox, Button } from 'antd';
+import { Table, Tabs, Checkbox, Button, Input } from 'antd';
 import buttonSty from 'components/antd/style/button';
 import TipModal from 'components/dr/modal/tip';
 import Diagnose from '../../../treatment/treatItem/drAdviceManage/diagnose';
@@ -15,6 +15,7 @@ import Inspection from '../../../treatment/treatItem/drAdviceManage/inspection';
 import WesternMedicine from '../../../treatment/treatItem/drAdviceManage/westernMedicine';
 import Material from '../../../treatment/treatItem/drAdviceManage/material';
 import AddHeader from '../../../treatment/treatItem/drAdviceManage/addHeader';
+import re_diagnose from './re_diagnose.png';
 
 const TabPane = Tabs.TabPane;
 
@@ -418,7 +419,11 @@ export default class SmartDistinguish extends Component {
       <Container>
         <Left>
           <Content>
-            <Diagnose diagnoseUpdate={this.diagnoseUpdate}/>
+            <ReadableDiagnose>
+              <Label>诊断：</Label>
+              <SpecInput />
+              <ReDiagnose><img src={re_diagnose} onClick={() => {this.props.onStep(1)}}/>重新辩证</ReDiagnose>
+            </ReadableDiagnose>
             <AddHeader operate={this.actionManager}></AddHeader>
             <TableGrid dataSource={dataSource} operate={this.actionManager}/>
           </Content>
@@ -463,6 +468,41 @@ const Content = styled.div`
 const Right = styled.div`
   width: 422px;
   border-top: 1px solid #CCCCCC;
+`;
+const ReadableDiagnose = styled.div`
+  display: flex;
+`;
+const Label = styled.div`
+  width: 60px;
+  white-space: nowrap;
+`;
+const ReDiagnose = styled.div`
+  width: 90px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #0066CC;
+`;
+const SpecInput = styled(Input)`
+  &&&.ant-input {
+    border-bottom: 1px solid rgba(215, 215, 215, 1);
+    border-top: none;
+    border-left: none;
+    line-height: 25px;
+    color: black;
+    border-right: none;
+    font-size: 12px;
+    width: 100%;
+    margin-left: 15px;
+    margin-top: 1px;
+  }
+  &&&.ant-input:focus {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid rgba(215, 215, 215, 1);
+    outline: none
+  }
 `;
 const SpecTabs = styled(Tabs)`
   .ant-tabs-nav-container {

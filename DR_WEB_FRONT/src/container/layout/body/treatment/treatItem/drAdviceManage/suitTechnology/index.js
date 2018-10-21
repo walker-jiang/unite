@@ -6,7 +6,7 @@ import SuitTechForm from './suitTechForm';
 import buttonSty from 'components/antd/style/button';
 import TipModal from 'components/dr/modal/tip';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
-import { convertAddFormData, convertModifyFormData } from 'commonFunc/transform';
+import { convertAddFormData, combinedFormData } from 'commonFunc/transform';
 
 export default class SuitTechnology extends Component {
   constructor(props) {

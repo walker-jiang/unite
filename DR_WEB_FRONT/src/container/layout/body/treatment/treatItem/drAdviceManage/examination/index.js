@@ -5,7 +5,7 @@ import BasicModal from 'components/dr/modal/basicModal';
 import ExamineForm from './examineForm';
 import buttonSty from 'components/antd/style/button';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
-import { convertAddFormData, convertModifyFormData } from 'commonFunc/transform';
+import { convertAddFormData, combinedFormData } from 'commonFunc/transform';
 import TipModal from 'components/dr/modal/tip';
 
 export default class examineForm extends Component {
@@ -59,7 +59,7 @@ export default class examineForm extends Component {
     ajaxGetResource(params, success);
   };
   modifyExamineItem(values, examineData){
-    let data = convertModifyFormData(values, examineData, this.form.state.data, this.form.state.buDiagnosisInfo, this.form.state.buOrdmedical);
+    let data = combinedFormData(values, examineData, this.form.state.data, this.form.state.buDiagnosisInfo, this.form.state.buOrdmedical);
     let params = {
       url: 'BuOrderController/putData',
       type: 'put',

@@ -85,7 +85,7 @@ class Index extends Component {
             <CarefulItem getFieldDecorator={getFieldDecorator} initialValue={{originData: [], extractionData: initData.allergyHis}}/>
             <OtherInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.psycheck}></OtherInspect>
           </FormSpec>
-          <Checkbox>同步到患者病历</Checkbox>
+          <Checkbox>忽略病情病历确认</Checkbox>
           <SureButton type="primary" onClick={() => {this.props.onStep(2)}}>智能辩证</SureButton>
           <BorderButton type="primary" onClick={() => {this.props.onStep(0)}}>返回上一步</BorderButton>
         </Container>

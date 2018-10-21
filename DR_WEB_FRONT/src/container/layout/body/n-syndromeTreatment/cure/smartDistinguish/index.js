@@ -324,8 +324,11 @@ export default class SmartDistinguish extends Component {
           <DiaTitle>患者诊断</DiaTitle>
           <Middle>
             <AddContainer>
+              <Name>疾病：</Name>
               <AddIllBySymptom  icon='#0A6ECB' ref={ref => this.addIllBySymptom = ref} placeholder='请输入病症中文关键字活拼音简写搜索' notify={this.getMessage}/>
+              <Name>证候：</Name>
               <AddIllByManifestations addChinaMedicineData={this.addChinaMedicineData} icon='#0A6ECB' ref={ref => this.addIllByManifestation = ref} placeholder='请输入病侯中文关键字货拼音简写搜索' symptomId={symptomId}/>
+              <AddAction type="primary">添加诊断</AddAction>
             </AddContainer>
             <SpecTable
               dataSource={diagnoseData}
@@ -405,7 +408,11 @@ const Middle = styled.div`
 `;
 const AddContainer = styled.div`
   display: flex;
-  margin: 10px 0px;
+  align-items: center;
+`;
+const Name = styled.div`
+  width: 60px;
+  white-space: nowrap;
 `;
 const SpecTable = styled(Table)`
   ${tableSty.selectedTable};
@@ -470,6 +477,12 @@ const SpecTabs = styled(Tabs)`
     background-color: #F2F2F2;
     padding: 0px;
     margin-top: -17px;
+  }
+`;
+const AddAction = styled(Button)`
+  ${buttonSty.semicircle}
+  &&& {
+    padding: 2px 20px;
   }
 `;
 const ActionButton = styled.div`

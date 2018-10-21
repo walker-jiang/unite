@@ -30,8 +30,8 @@ export default class Index extends Component {
         render: (text, record, index)=> <span>{index+1}</span>
       },{
         title: '草药名称',
-        dataIndex: 'medicinename',
-        key: 'medicinename',
+        dataIndex: 'itemname',
+        key: 'itemname',
         render: (text, record, index)=> <span>{text}</span>
       },{
         title: '剂量/单位',
@@ -63,7 +63,7 @@ export default class Index extends Component {
       for(let i = dataSource.length % 8; i < 8 ; i++){
         let item = deepClone(dataSource[dataSource.length-1]);
         item.key = dataSource.length;
-        item.medicineid = ''; // 空行标识
+        item.itemcode = '空'; // 空行标识
         dataSource.push(item)
       }
     }
@@ -80,7 +80,7 @@ export default class Index extends Component {
         columns={columns}
         pagination={false}
         locale={{emptyText: '暂无草药数据' }}
-        rowClassName={(record, index)=>record.medicineid ? 'dotted' : 'dotted clear'} >
+        rowClassName={(record, index)=>record.itemcode != '空' ? 'dotted' : 'dotted clear'} >
       </ListWrap>
     )
   }

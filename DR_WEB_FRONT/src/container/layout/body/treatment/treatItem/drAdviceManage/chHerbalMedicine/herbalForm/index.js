@@ -17,7 +17,7 @@ import down from './down.png';
 import up from './up.png';
 import selectSty from 'components/antd/style/select';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
-import { getDiagnoseText } from 'commonFunc/transform';
+import { getDiagnoseText, converItemToNeededCN } from 'commonFunc/transform';
 import paginationSty from 'components/antd/style/pagination';
 
 const FormItem = Form.Item;
@@ -137,15 +137,6 @@ class Index extends Component {
     };
     ajaxGetResource(params, callBack);
   };
-  clearData(){
-    this.setState({
-      recipename: '', // 处方名称
-      usagename: '', // 治疗方法
-      remark: '', // 付数
-      freq: null, // 频次
-      herbalData: [], // 草药数据
-    });
-  };
   /** [toggleShowWay 切换草药展示形式] */
   toggleShowWay (index) {
     this.setState({
@@ -158,12 +149,62 @@ class Index extends Component {
    * @return {[type]}              [void]
    */
   addHerbalData (herbalItem) {
-    herbalItem.usageid = herbalItem.baUsage ? herbalItem.baUsage.usageid : 9; // 从用法对象转换成字符串用法ID
-    herbalItem.usagename = herbalItem.baUsage ? herbalItem.baUsage.usagename : '无'; // 从用法对象转换成字符串用法名称
+    // herbalItem = {
+    //   "baUsage": {
+    //     "ctstamp": "2018-07-05 14:52:40",
+    //     "orgid": "3",
+    //     "pinyin": "xianjian",
+    //     "seqno": 1,
+    //     "usagecode": 3,
+    //     "usagedesc": "先煎",
+    //     "usageid": 3,
+    //     "usagename": "先煎",
+    //     "useflag": "1",
+    //     "utstamp": "2018-07-16 17:18:40",
+    //     "utype": 2
+    //   },
+    //   "baseUnit": 1,
+    //   "ctstamp": "2018-08-28 10:07:45",
+    //   "defQty": 10,
+    //   "doseid": 7,
+    //   "dosename": "",
+    //   "freqname": "",
+    //   "hmSortid": 2,
+    //   "manufacturer": "1",
+    //   "manuid": "12",
+    //   "mediUnit": 1,
+    //   "medicinecode": 1117,
+    //   "medicineid": "1117",
+    //   "medicinename": "鸡矢藤",
+    //   "medinslevel": "01",
+    //   "medinsrem": "无",
+    //   "orgid": "1",
+    //   "otherPinyin": "test",
+    //   "pinyin": "test",
+    //   "remarks": "",
+    //   "seqno": 1,
+    //   "specialUsageid": 3,
+    //   "specification": "",
+    //   "suppid": "1",
+    //   "supplier": "1",
+    //   "unitprice": 1123,
+    //   "useflag": "1",
+    //   "utstamp": "2018-08-28 10:07:45",
+    //   "medinslevelDic": "一级",
+    //   "baseUnitDic": "克",
+    //   "key": 0,
+    //   "status": 0,
+    //   "usageid": 3,
+    //   "usagename": "先煎",
+    //   "exist": 1
+    // }
+    // herbalItem.usageid = herbalItem.baUsage ? herbalItem.baUsage.usageid : 9; // 从用法对象转换成字符串用法ID
+    // herbalItem.usagename = herbalItem.baUsage ? herbalItem.baUsage.usagename : '无'; // 从用法对象转换成字符串用法名称
     let { herbalData , showWay } = this.state;
+    let formateItem = converItemToNeededCN(herbalItem, herbalData, 0);
     herbalItem.exist = 1
     for(let i=0; i < herbalData.length; i++){
-      if(herbalData[i].medicinename == herbalItem.medicinename){
+      if(herbalData[i].itemcode == formateItem.itemcode){
         this.tipModal.showModal({
           stressContent: '草药已存在'
         });
@@ -173,8 +214,8 @@ class Index extends Component {
     if(showWay == 'table'){
       this.addTableData.scrollTop = this.addTableData.scrollHeight; // 自动滚动到滚动区域的最底部
     }
-    console.log('herbalItem', JSON.stringify(herbalItem));
-    herbalData.push(herbalItem);
+    // console.log('herbalItem', JSON.stringify(herbalItem));
+    herbalData.push(formateItem);
     this.setState({ herbalData });
   }
   /**
@@ -184,40 +225,40 @@ class Index extends Component {
    */
   delHerbal(herbalItem){
     let herbalData = this.state.herbalData;
-    herbalData.pop(herbalItem);
+    herbalData = herbalData.remove({itemid: herbalItem.itemid});
     this.setState({ herbalData });
   };
   /**
    * [dosageChange 修改草药剂量]
-   * @param  {[type]} medicinename [草药名称]
+   * @param  {[type]} itemcode [草药名称]
    * @param  {[type]} newDosage    [新剂量]
    * @return {[type]}              [void]
    */
-  dosageChange(medicinename, newDosage) {
+  dosageChange(itemcode, newDosage) {
     let herbalData = this.state.herbalData;
     herbalData.forEach((item)=>{
-      if(item.medicinename == medicinename){
+      if(item.itemcode == itemcode){
         item.count = newDosage;
       }
     })
-    console.log('herbalData数据' ,herbalData);
+    // console.log('herbalData数据' ,herbalData);
     this.setState({herbalData});
   }
   /**
    * [usageChange 某药的用法进行修改]
-   * @param  {[type]} medicineid [该药ID]
+   * @param  {[type]} combinedFormData [该药ID]
    * @param  {[type]} newUsage [该药用法对象（包含名称、ID）]
    * @return {[type]}            [void]
    */
-  usageChange(medicineid, newUsage) {
+  usageChange(itemcode, newUsage) {
     let herbalData = this.state.herbalData;
     herbalData.forEach((item)=>{
-      if(item.medicineid == medicineid){
+      if(item.itemcode == itemcode){
         item.usageid = newUsage.key;
         item.usagename = newUsage.label;
       }
     })
-    this.setState({herbalData});
+    this.setState({ herbalData });
   }
   // 保存
   handleSubmit(e){
@@ -328,7 +369,7 @@ class Index extends Component {
               {getFieldDecorator('treatMethods', {
                 initialValue: treatway
               })(
-                <Input />
+                <Input/>
               )}
               </FormItem>
           </Col>

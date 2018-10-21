@@ -151,7 +151,7 @@ function convertAddFormData(values, itemData, type){
   return paramsData;
 };
 /**
- * [convertModifyFormData 将检验、检查、西医、材料表单项转为后台服务所需的表单数据]
+ * [combinedFormData 将检验、检查、西医、材料表单项转为后台服务所需的表单数据]
  * @param  {[type]}  values          [表单数据]
  * @param  {[type]}  itemData        [项目数据（检验项、检查项、西医项、材料项）]
  * @param  {[type]}  data            [修改前查询的原始的医嘱数据]
@@ -159,7 +159,7 @@ function convertAddFormData(values, itemData, type){
  * @param  {[type]}  buOrdmedical    [修改前查询的原始的医嘱套对象]
  * @return {[type]}                  [格式化后的JOSN]
  */
-function convertModifyFormData(values, itemData, data, buDiagnosisInfo, buOrdmedical){
+function combinedFormData(values, itemData, data, buDiagnosisInfo, buOrdmedical){
   let ordercontent = '';
   let feeall = 0;
   let self = this;
@@ -193,7 +193,7 @@ function convertModifyFormData(values, itemData, data, buDiagnosisInfo, buOrdmed
   return data;
 };
 /**
- * [converItemToNeeded 将从后台查出来的遗嘱项目转为后台接收需要的格式]
+ * [converItemToNeeded 将从后台查出来的检验、检查、西医、材料项目转为后台接收需要的格式]
  * @param  {[type]} Item [查询出的项目]
  * * @param  {[type]} ItemArray [所有已添加项目数组]
  * @return {[type]}      [格式化后的项目]
@@ -230,4 +230,28 @@ function converItemToNeeded(Item, ItemArray){
   }
   return Item;
 };
-export { getDiagnoseText, getDiagnoseDataSource, convertAddFormData, convertModifyFormData, converItemToNeeded };
+/**
+ * [converItemToNeededCN 将从后台查出来的中药、中草药项目转为后台接收需要的格式]
+ * @param  {[type]} Item [查询出的项目]
+ * * @param  {[type]} ItemArray [所有已添加项目数组]
+ * @return {[type]}      [格式化后的项目]
+ */
+function converItemToNeededCN(Item, ItemArray, type){
+  Item.count = Item.defQty;
+  Item.dosage = Item.defQty;
+  Item.usageid = Item.baUsage ? Item.baUsage.usageid : 9; // 从用法对象转换成字符串用法ID
+  Item.usagename = Item.baUsage ? Item.baUsage.usagename : '无'; // 从用法对象转换成字符串用法名称
+  // Item.freqid = values.frequency.key;
+  // Item.freqname = values.frequency.label;
+  Item.itemcode = Item.medicinecode;
+  Item.itemid = Item.medicineid;
+  Item.itemname = Item.medicinename;
+  Item.itemno = ItemArray.length;
+  Item.itemtype = type; // 中药0
+  delete Item.defQty;
+  delete Item.medicinecode;
+  delete Item.medicineid;
+  delete Item.medicinename;
+  return Item;
+};
+export { getDiagnoseText, getDiagnoseDataSource, convertAddFormData, combinedFormData, converItemToNeeded, converItemToNeededCN };

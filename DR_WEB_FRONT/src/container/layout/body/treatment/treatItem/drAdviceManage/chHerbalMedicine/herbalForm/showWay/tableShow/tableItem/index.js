@@ -28,7 +28,7 @@ export default class Index extends Component {
    * @return {[type]}         [void]
    */
   handleEnterPress(keyCode, name) {
-    console.log('keyCode', keyCode);
+    // console.log('keyCode', keyCode);
     switch(keyCode+name){
       case '13numberInput':
         this.specialUsage.focus();
@@ -58,12 +58,12 @@ export default class Index extends Component {
    */
   dosageChange(value, e, oldDosage) {
     if(!(oldDosage == e.target.value)){ // 只有值改变了才去触发改变原数组的函数
-      this.props.dosageChange(value.medicinename, e.target.value)
+      this.props.dosageChange(value.itemcode, e.target.value)
     }
   }
   usageChange(value, e, oldUsage){
     if(e.key != oldUsage){
-        this.props.onUsageChange(value.medicineid, e)
+        this.props.onUsageChange(value.itemcode, e)
     }
   };
   // 获取特殊用法下拉数据
@@ -84,7 +84,7 @@ export default class Index extends Component {
   componentDidMount(){
     let autofocus = this.props.autofocus;
     if(autofocus == 'autofocus'){
-      console.log('this.numberInput', this.numberInput);
+      // console.log('this.numberInput', this.numberInput);
       ReactDOM.findDOMNode(this.numberInput).select();
       // this.numberInput.select();
     }
@@ -102,12 +102,12 @@ export default class Index extends Component {
             <NumberInput
               type="text"
               ref={ref=>{this.numberInput = ref}}
-              onBlur={(e)=>{this.dosageChange(value,e,value.defQty)}}
-              defaultValue={value.defQty}
+              onBlur={(e)=>{this.dosageChange(value,e,value.count)}}
+              defaultValue={value.count}
               autoFocus={autofocus}
               onKeyDown={(e) => {this.handleEnterPress(e.keyCode, 'numberInput')}}
                />
-            <HerBalName innerRef={ref=>{this.test=ref}}>{value.medicinename}</HerBalName>
+            <HerBalName innerRef={ref=>{this.test=ref}}>{value.itemname}</HerBalName>
             <span>{value.baseUnitDic}</span>
           </CenterWrapper>
         </DataWrapper>

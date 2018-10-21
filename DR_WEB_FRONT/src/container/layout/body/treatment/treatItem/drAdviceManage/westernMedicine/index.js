@@ -6,7 +6,7 @@ import WestMedicineForm from './westMedicineForm';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import TipModal from 'components/dr/modal/tip';
 import buttonSty from 'components/antd/style/button';
-import { convertAddFormData, convertModifyFormData } from 'commonFunc/transform';
+import { convertAddFormData, combinedFormData } from 'commonFunc/transform';
 
 export default class Index extends Component {
   constructor (props) {
@@ -61,7 +61,7 @@ export default class Index extends Component {
     ajaxGetResource(params, success);
   };
   modifyWestMedicineItem(values, WestMedicineData){
-    let data = convertModifyFormData(values, WestMedicineData, this.form.state.data, this.form.state.buDiagnosisInfo, this.form.state.buOrdmedical);
+    let data = combinedFormData(values, WestMedicineData, this.form.state.data, this.form.state.buDiagnosisInfo, this.form.state.buOrdmedical);
     let params = {
       url: 'BuOrderController/putData',
       type: 'put',
