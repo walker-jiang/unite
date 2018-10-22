@@ -9,17 +9,20 @@ export default class SyndromeTreatment extends Component {
   constructor(props){
     super(props);
     this.state = {
-      current: 3, //当前步
+      current: 0, //当前步
       registerid: '', //选择的当前患者
     };
     this.stepFunc = this.stepFunc.bind(this);
+  };
+  componentWillReceiveProps(){
+    self.setState({ current: 0 })
   };
   getCaseData(){};
   getSyndromeData(registerid){
     let self = this;
     let params = {
-      url: 'TCMAE/BuPatientCaseController/getData',
-      server_url: config_InteLigenTreat_url,
+      url: 'BuPatientCaseController/getData',
+      server_url: config_InteLigenTreat_url + 'TCMAE/',
       data: {
         registerid: registerid
       },
@@ -47,7 +50,7 @@ export default class SyndromeTreatment extends Component {
   render() {
     let { current, registerid } = this.state;
     let compo = null;
-    if(current == -1){
+    if(current == 0){
       compo = <SelectPatient onStep={this.stepFunc}/>;
     }else{
       compo = <Cure onStep={this.stepFunc} current={current} registerid={registerid}/>;

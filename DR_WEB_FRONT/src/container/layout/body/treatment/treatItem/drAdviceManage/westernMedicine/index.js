@@ -52,6 +52,9 @@ export default class Index extends Component {
       url: 'BuOrderController/postData',
       type: 'post',
       data: JSON.stringify(paramsData)
+    };
+    if(this.props.syndrome){ // 辨证论治添加处方
+      params.server_url = config_InteLigenTreat_url+'TCMAE/';
     }
     let that = this;
     function success(res) {
@@ -66,6 +69,9 @@ export default class Index extends Component {
       url: 'BuOrderController/putData',
       type: 'put',
       data: JSON.stringify(data)
+    };
+    if(this.props.syndrome){ // 辨证论治添加处方
+      params.server_url = config_InteLigenTreat_url+'TCMAE/';
     }
     let that = this;
     function success(res) {
@@ -86,7 +92,7 @@ export default class Index extends Component {
           {
             actionType == 'view' ? null :
             <Footer>
-              <SureButton type="primary" onClick={this.saveForm} disabled={!window.modifyPermission}>保存</SureButton>
+              <SureButton type="primary" onClick={this.saveForm} disabled={!!window.modifyPermission}>保存</SureButton>
               <CancelButton type="primary" onClick={this.handlePopClose.bind(this)}>取消</CancelButton>
             </Footer>
           }

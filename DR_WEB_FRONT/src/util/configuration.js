@@ -20,7 +20,7 @@ const colorData = ['#33cc00', '#ff0000', '#6cc' ] // His系统背景颜色
 const pageSize = 5; // 分页时每页显示的记录数
 const bundleMode = 'BS'; // CS 客户端模式，BS 浏览器模式
 const questionTemplate = "1" //治疗反馈题目模板类型
-const defaultSysModuleList = [ // 系统在未登录状态下的默认菜单
+const defaultSysModuleList = [
   {
     "ctstamp": "2018-10-09 10:46:33",
     "menuid": "7",

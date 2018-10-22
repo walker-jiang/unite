@@ -51,6 +51,9 @@ export default class examineForm extends Component {
       type: 'post',
       data: JSON.stringify(paramsData)
     }
+    if(this.props.syndrome){ // 辨证论治添加处方
+      params.server_url = config_InteLigenTreat_url+'TCMAE/';
+    }
     let that = this;
     function success(res) {
       that.handlePopClose();
@@ -64,6 +67,9 @@ export default class examineForm extends Component {
       url: 'BuOrderController/putData',
       type: 'put',
       data: JSON.stringify(data)
+    }
+    if(this.props.syndrome){ // 辨证论治添加处方
+      params.server_url = config_InteLigenTreat_url+'TCMAE/';
     }
     let that = this;
     function success(res) {
@@ -84,7 +90,7 @@ export default class examineForm extends Component {
             {
               actionType == 'view' ? null :
               <Footer>
-                <SureButton type="primary" onClick={this.saveForm} disabled={!window.modifyPermission}>保存</SureButton>
+                <SureButton type="primary" onClick={this.saveForm} disabled={!!window.modifyPermission}>保存</SureButton>
                 <CancelButton type="primary" onClick={this.handlePopClose.bind(this)}>取消</CancelButton>
               </Footer>
             }
@@ -97,7 +103,7 @@ export default class examineForm extends Component {
 
 const Wrap = styled.div`
   width: 857px;
-  height: 548px;
+  height: 575px;
   overflow: hidden;
   padding: 10px
 `;

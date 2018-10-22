@@ -106,11 +106,19 @@ function convertAddFormData(values, itemData, type){
     orgid: window.sessionStorage.getItem('orgid'), // 机构ID
   };
   let buOrdmedicalSuitList = new Array(); // 医嘱套列表
+  let spbody = [];
   itemData.forEach((item, index) => {
     if(item.buOrderDtlList){ // 医嘱套
       ordercontent += item.orderSuitname + '、';
       buOrdmedicalSuitList.push(item); // 将非医嘱套项目存入非医嘱套数组
       feeall += item.feesum;
+      if(item.buOrderDtlList.buImtreatprelistStAcupoints){
+        let spbody = [];
+        item.buOrderDtlList.buImtreatprelistStAcupoints.forEach((itemChildChild) => {
+          spbody.push(itemChildChild.acupointName);
+        });
+        item.spbody = spbody.join('、');
+      }
     }else{ // 非医嘱套
       ordercontent += item.itemname + '、';
       feeall += item.unitprice * item.count;
@@ -144,7 +152,7 @@ function convertAddFormData(values, itemData, type){
     orgUserid: window.sessionStorage.getItem('userid'),
     orgid: window.sessionStorage.getItem('orgid'),
     parientid: window.patientID,  // 患者ID
-    parientname: window.patientName,  // 患者姓名
+    patientname: window.patientName,  // 患者姓名
     registerid: window.registerID, // 挂号ID
     orgUsername: window.sessionStorage.getItem('username'),
   }
@@ -239,6 +247,7 @@ function converItemToNeeded(Item, ItemArray){
 function converItemToNeededCN(Item, ItemArray, type){
   Item.count = Item.defQty;
   Item.dosage = Item.defQty;
+  Item.miType = '';
   Item.usageid = Item.baUsage ? Item.baUsage.usageid : 9; // 从用法对象转换成字符串用法ID
   Item.usagename = Item.baUsage ? Item.baUsage.usagename : '无'; // 从用法对象转换成字符串用法名称
   // Item.freqid = values.frequency.key;
@@ -248,7 +257,7 @@ function converItemToNeededCN(Item, ItemArray, type){
   Item.itemname = Item.medicinename;
   Item.itemno = ItemArray.length;
   Item.itemtype = type; // 中药0
-  delete Item.defQty;
+  // delete Item.defQty;
   delete Item.medicinecode;
   delete Item.medicineid;
   delete Item.medicinename;

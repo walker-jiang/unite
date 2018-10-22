@@ -46,13 +46,13 @@ export default class Index extends Component {
   addPatentMedicine(values, medicineData){
     let baMedicines = this.props.buOrderDtlList;
     if(baMedicines != undefined){
-      let mergeArray = baMedicines.concat(medicineData);//合并数组
-      console.log('合并数组',mergeArray)
+      // let mergeArray = baMedicines.concat(medicineData);//合并数组
+      console.log('合并数组',medicineData)
       let medicineNameData = [];
       let price = 0;
       let self = this;
       // 草药对象
-      let formatedMedicineData = mergeArray.map((item, index) => {
+      let formatedMedicineData = medicineData.map((item, index) => {
         medicineNameData.push(item.medicinename)
         price += item.unitprice * (item.count ? item.count : item.defQty);
         item.baseUnit = item.baseUnit;

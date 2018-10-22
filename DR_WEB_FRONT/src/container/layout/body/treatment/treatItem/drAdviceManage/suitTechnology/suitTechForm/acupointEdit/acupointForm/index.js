@@ -183,7 +183,6 @@ class Index extends Component {
   render () {
     let { freq, herbalData, frequencyData, current, deptData, operateData, substractData, acupointsData, acupointDetail } = this.state;
     let buOrderDtlList = this.props.buOrderDtlList;
-    console.log('herbalDatasss', herbalData);
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {

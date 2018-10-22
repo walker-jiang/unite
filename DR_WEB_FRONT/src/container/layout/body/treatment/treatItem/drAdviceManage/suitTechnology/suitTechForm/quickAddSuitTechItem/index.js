@@ -29,7 +29,7 @@ export default class Index extends Component {
     };
     let that = this;
     function success(res) {
-      if(res.result){
+      if(res.result && res.data){
         let examineItemsData = res.data.baMedicalDtlList.map((item, index)=>{
           item.key = index; // 加唯一key值
           item.status = (index == 0) ? 1 : 0; // 0表示全部未选中,1表示选择了该行,初始化时默认选中第一行

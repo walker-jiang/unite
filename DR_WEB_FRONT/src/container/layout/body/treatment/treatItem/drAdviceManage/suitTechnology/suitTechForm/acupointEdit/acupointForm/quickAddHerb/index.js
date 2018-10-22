@@ -22,7 +22,7 @@ export default class QuickAddHerb extends Component {
   getHerbData(value){
     let params = {
       url: 'baAcupoint/getList',
-      server_url: 'http://10.192.1.115:8765/TCMAE/',
+      server_url: config_InteLigenTreat_url+'TCMAE/',
       data: {
         keyword: value
       }

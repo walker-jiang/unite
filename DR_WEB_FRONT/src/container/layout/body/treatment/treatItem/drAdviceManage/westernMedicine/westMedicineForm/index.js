@@ -81,6 +81,9 @@ class Index extends Component {
         registerid: window.registerID
       },
     };
+    if(this.props.syndrome){ // 辨证论治添加处方
+      params.server_url = config_InteLigenTreat_url+'TCMAE/';
+    }
     function callBack(res){
       if(res.result && res.data){ // 获取当前诊断明细数据
         let { buDiagnosisList, ...buDiagnosisInfo } = res.data;
@@ -101,6 +104,9 @@ class Index extends Component {
         orderid: orderid
       }
     };
+    if(this.props.syndrome){ // 辨证论治添加处方
+      params.server_url = config_InteLigenTreat_url+'TCMAE/';
+    }
     let that = this;
     function callBack(res) {
       if(res.result){
@@ -380,7 +386,7 @@ class Index extends Component {
     };
     return (
       <SpecForm className='not-draggable' onClick={()=>{this.quickAddWestMedicineItem.hideResult()}}>
-        <Row>
+        <HiddenRow>
           <Col span={24}>
             <FormItem
               {...formItemLayout}
@@ -392,7 +398,7 @@ class Index extends Component {
             )}
             </FormItem>
           </Col>
-        </Row>
+        </HiddenRow>
         <Row>
           <Col span={24}>
             <FormItem
@@ -469,6 +475,11 @@ class Index extends Component {
 const SpecForm = styled(Form)`
   &&& > div > div > .ant-form-item {
     margin-bottom: -8px !important;
+  }
+`;
+const HiddenRow = styled(Row)`
+  .ant-row {
+    display: none;
   }
 `;
 const SpecRow = styled(Row)`

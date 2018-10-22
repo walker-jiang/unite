@@ -28,9 +28,6 @@ export default class Index extends Component {
   render() {
     let herbalData = this.props.herbalData;
     let baHerbalMedicines = this.props.buOrderDtlList;
-    console.log('herbalData', JSON.stringify(herbalData));
-
-    // console.log('baHerbalMedicines', baHerbalMedicines);
     let mergeArray = baHerbalMedicines.concat(herbalData);
     let rows = new Array();
     for(let i = 0; i < parseInt((mergeArray.length -1) / 4) + 1; i++){

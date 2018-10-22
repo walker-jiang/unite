@@ -106,6 +106,11 @@ export default class Index extends Component {
 const Container = styled.div`
   position: relative;
   width: 100%;
+  height: 100%;
+  overflow: hidden;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 const RowLine = styled.div`
   display: flex;

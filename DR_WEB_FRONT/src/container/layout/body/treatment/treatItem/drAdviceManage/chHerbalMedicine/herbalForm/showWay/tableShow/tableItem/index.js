@@ -93,7 +93,6 @@ export default class Index extends Component {
     let { selectData, openstatus } = this.state;
     let { value , autofocus } = this.props;
     let { usageid, usagename } = value;
-    console.log('openstatus', openstatus);
     return (
       <Container>
         <CloseIcon type="close" onClick={()=>{this.props.onDelete(value)}} />

@@ -4,6 +4,7 @@ import { Table } from 'antd';
 import deepClone from 'commonFunc/deepClone';
 import getResource from 'commonFunc/ajaxGetResource';
 import tableSty from 'components/antd/style/table';
+import paginationSty from 'components/antd/style/pagination';
 
 export default class Index extends Component {
   // 获取特殊用法下拉数据
@@ -87,6 +88,7 @@ export default class Index extends Component {
 }
 const ListWrap = styled(Table)`
   ${tableSty.dottedRowTable};
+  ${paginationSty.easyPagination};
   & {
     position: relative;
     width: 857px;

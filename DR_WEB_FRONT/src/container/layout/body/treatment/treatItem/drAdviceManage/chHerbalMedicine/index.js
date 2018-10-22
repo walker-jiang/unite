@@ -65,7 +65,7 @@ export default class Index extends Component {
     let price = 0;
     let self = this;
     let medicineArr = herbalData.filter((item, index) => {
-      nameArr.push(item.medicinename);
+      nameArr.push(item.itemname);
       price += item.unitprice * (item.count/item.defQty);
       // if(item.exist == 1){
       // }
@@ -130,7 +130,7 @@ export default class Index extends Component {
         countnum: values.doseNum, //付数
         remark: typeof(values.remark) == 'string' ? values.remark : values.remark.extractionData, // 嘱托
       },
-      buOrderDtlList: medicineArr,   // 药品信息
+      buOrderDtlList: herbalData,   // 药品信息
     }
     // console.log('paramsData', paramsData);
     let params = {
@@ -155,8 +155,9 @@ export default class Index extends Component {
     let price = 0;
     let self = this;
     // 药品数据
+    // console.log('herbalData', herbalData);
     let medicineArr = herbalData.forEach((item, index) => {
-      nameArr.push(item.medicinename)
+      nameArr.push(item.itemname)
       price += item.unitprice * (item.count/item.defQty);
       // item.baseUnit = item.baseUnit;
       // item.dosage = item.defQty;
@@ -189,7 +190,7 @@ export default class Index extends Component {
     // 最终医嘱数据
     data.buDiagnosisInfo = buDiagnosisInfo; // 诊断信息
     data.buRecipe = buRecipe; // 处方信息
-    data.buOrderDtlList = medicineArr; // 处方信息
+    data.buOrderDtlList = herbalData; // 处方信息
     data.feeall = price * values.doseNum; // 总费用
     data.ordercontent = prescriptionContent;  // 医嘱内容
     let params = {

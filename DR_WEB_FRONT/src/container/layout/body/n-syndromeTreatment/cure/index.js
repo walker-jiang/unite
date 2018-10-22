@@ -38,6 +38,13 @@ export default class Cure extends Component {
     };
     function callBack(res){
       if(res.result){
+        window.cardno = res.data.baPatient.cardno;
+        window.cardtype = res.data.baPatient.cardtype;
+        window.birthday = res.data.baPatient.birthday;
+        window.sex = res.data.baPatient.sex;
+        window.patientName = res.data.baPatient.patientname;
+        window.patientID = res.data.baPatient.patientid;
+        window.registerID = registerid;
         let { baPatient } = res.data;
         self.setState({ baPatient });
       }else{
@@ -63,7 +70,7 @@ export default class Cure extends Component {
     let current = this.props.current;
     let bodyComponent = null;
     if(current == 1){
-      bodyComponent = <CaseConfirm onStep={(step) => {this.props.onStep(step)}} ref={ ref => { this.caseConfirm = ref }}/>;
+      bodyComponent = <CaseConfirm onStep={(step) => {this.props.onStep(step)}} ref={ ref => { this.caseConfirm = ref }} registerid={this.props.registerid}/>;
     }
     if(current == 2){
       bodyComponent = <SmartDistinguish onStep={(step) => {this.props.onStep(step)}} caseBasicInfo={caseBasicInfo} registerid={this.props.registerid} baPatient={ this.state.baPatient}/>;
@@ -232,7 +239,7 @@ const TextInfo = styled.div`
 const Img = styled.img`
 `;
 const Info = styled.div`
-  margin-top: 30px;
+  margin-top: 16px;
   width: 100%;
   display: flex;
   flex-direction: row;

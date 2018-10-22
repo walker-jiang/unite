@@ -61,8 +61,8 @@ export default class SuitTechnology extends Component {
     // console.log('表单数据', formData);
     // console.log('草药数据', herbalData);
   };
-  addHerbalData(values, examineData){
-    let paramsData = convertAddFormData(values, examineData, 5);
+  addHerbalData(values, SuitTechData){
+    let paramsData = convertAddFormData(values, SuitTechData, 5);
       let params = {
         url: 'BuOrderController/postData',
         type: 'post',
@@ -75,52 +75,8 @@ export default class SuitTechnology extends Component {
       };
       ajaxGetResource(params, success);
   };
-  mmodifyHerbalData(values, herbalData){
-    let buRecipe = this.form.state.buRecipe;
-    let buDiagnosisInfo = this.form.state.buDiagnosisInfo;
-    let data = this.form.state.data;
-
-    let nameArr = [];
-    let price = 0;
-    let self = this;
-    // 药品数据
-    let medicineArr = herbalData.map((item, index) => {
-      nameArr.push(item.medicinename)
-      price += item.unitprice * (item.count ? (item.count/item.defQty) : 1);
-      item.baseUnit = item.baseUnit;
-      item.dosage = item.defQty;
-      item.freqid = values.frequency.key;
-      item.freqname = values.frequency.label;
-      item.doseid = item.doseid;
-      item.miType = '';
-      item.dosename = item.dosename;
-      item.itemcode = item.medicinecode;
-      item.itemid = item.medicineid;
-      item.itemname = item.medicinename;
-      item.itemno = index;
-      item.itemtype = 0; // 中药0
-      item.unitprice = item.unitprice;
-      item.specification = item.specification;
-      item.useflag = item.useflag;
-      return item;
-    })
-    let prescriptionContent = nameArr.join('、')
-    // 诊断数据
-    buDiagnosisInfo.buDiagnosisList = values.diagnose.originData;
-    // 处方数据
-    buRecipe.diagnosename = values.diagnose.extractionData.substr(0,4);  // 诊断名称
-    buRecipe.diagnosisDesc = values.diagnose.extractionData;  // 诊断描述
-    buRecipe.freqname = values.frequency.label;   // 频次
-    buRecipe.freqid = values.frequency.key;   // 频次
-    buRecipe.recipename = values.recipename;   // 处方名称
-    buRecipe.usagename = values.treatMethods;   // 治疗方法
-    buRecipe.remark = values.doseNum;   // 治疗方法
-    // 最终医嘱数据
-    data.buDiagnosisInfo = buDiagnosisInfo; // 诊断信息
-    data.buRecipe = buRecipe; // 处方信息
-    data.buOrderDtlList = medicineArr; // 处方信息
-    data.feeall = price * values.doseNum; // 总费用
-    data.ordercontent = prescriptionContent;  // 医嘱内容
+  mmodifyHerbalData(values, SuitTechData){
+    let data = combinedFormData(values, SuitTechData, this.form.state.data, this.form.state.buDiagnosisInfo, this.form.state.buOrdmedical);
     let params = {
       url: 'BuOrderController/putData',
       type: 'put',
@@ -177,6 +133,7 @@ const SpecBasicModal = styled(BasicModal)`
 `;
 const Footer = styled.div`
   width: 100%;
+  position: absolute;
   bottom: 0px;
   margin-top: -20px;
   display: flex;
@@ -192,7 +149,7 @@ const Gray = styled(Button)`
   ${buttonSty.gray}
 `;
 /*
-@作者：马晓敏
-@日期：2018-06-29
-@描述：新增中草药处方部分
+@作者：姜中希
+@日期：2018-10-22
+@描述：新增中适宜技术部分
 */

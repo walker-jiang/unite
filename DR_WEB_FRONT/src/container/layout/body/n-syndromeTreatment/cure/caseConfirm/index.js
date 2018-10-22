@@ -36,6 +36,44 @@ class Index extends Component {
       },
     };
   };
+  componentWillMount(){
+    this.getSyndromeData(this.props.registerid);
+  };
+  getSyndromeData(registerid){
+    let self = this;
+    let params = {
+      url: 'BuPatientCaseController/getData',
+      server_url: config_InteLigenTreat_url + 'TCMAE/',
+      data: {
+        registerid: registerid
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        if(res.data){
+          let initData = {
+            casetype: res.data.casetype, // 就诊类型
+            treatprinciple: res.data.pridepict, // 主症
+            otherSymptom: res.data.hpi, //其它症状
+            allergyHis: res.data.allergichistory, //过敏史
+            inspection: res.data.inspection, // 望诊
+            palpation: res.data.palpation, // 脉诊
+            temperature: res.data.temperature, //体温
+            breath: res.data.breath, // 呼吸
+            pulse: res.data.pulse, // 脉搏
+            systolicPressure: res.data.systolicPressure, // 收缩压
+            diastolicPressure: res.data.diastolicPressure, // 舒张压
+            heightnum: res.data.heightnum , // 身高
+            weightnum: res.data.weightnum, // 体重
+            psycheck: res.data.psycheck, // 其它
+          };
+          self.setState({ initData });
+        }else{
+        }
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {

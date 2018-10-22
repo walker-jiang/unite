@@ -22,10 +22,12 @@ export default class SmartDistinguish extends Component {
       diaCurPage: 1,
       hisCurPage: 1,
       diagnoseFinalInfo: [], // 最终数据
+      diagnoseFinalInfoOrigin: {}, // 原始数据
       diagnoseHisOriginData: [], //诊断历史原始数据
       initData: {}, // 初始化数据
       diagnoseHisData: [], // 诊断数据
       symptomId: '', // 病症ID
+      initCaseData: {}, // 初始化病历信息
     };
     this.changeInitDataTwo = this.changeInitDataTwo.bind(this);
     this.addChinaMedicineData = this.addChinaMedicineData.bind(this);
@@ -35,6 +37,33 @@ export default class SmartDistinguish extends Component {
   };
   componentWillMount(){
     this.initialData();
+    this.getSyndromeData(this.props.registerid);
+  };
+  getSyndromeData(registerid){
+    let self = this;
+    let params = {
+      url: 'BuPatientCaseController/getData',
+      server_url: config_InteLigenTreat_url + 'TCMAE/',
+      data: {
+        registerid: registerid
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        if(res.data){
+          let { buDiagnosisInfo, ...initCaseData} = res.data
+          let { buDiagnosisList, ...diagnoseFinalInfoOrigin} = buDiagnosisInfo;
+            self.setState({
+              initCaseData,
+              diagnoseFinalInfo: buDiagnosisList,
+              diagnoseFinalInfoOrigin
+            });
+        }
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
   };
   /** [hideFloatLayer 点击诊断的某些部分触发子组件浮层隐藏事件] */
   hideFloatLayer(){
@@ -214,6 +243,8 @@ export default class SmartDistinguish extends Component {
   /** [submitCaseData 提交病历] */
   submitCaseData(e){
     let diagnoseFinalInfo = this.state.diagnoseFinalInfo;
+    let initCaseData = this.state.initCaseData;
+    let diagnoseFinalInfoOrigin = this.state.diagnoseFinalInfoOrigin;
     let values = this.props.caseBasicInfo;
     let buDiagnosisInfo = {};
     buDiagnosisInfo.buDiagnosisList = diagnoseFinalInfo;
@@ -227,6 +258,7 @@ export default class SmartDistinguish extends Component {
     buDiagnosisInfo.patientno = "test";
     buDiagnosisInfo.registerid = this.props.registerid,
     buDiagnosisInfo.registerno = "12312";
+    Object.assign(diagnoseFinalInfoOrigin, buDiagnosisInfo);
     let finalObj = {
       casetype: values.casetype,
       pridepict: this.getString(values.pridepict),
@@ -245,22 +277,24 @@ export default class SmartDistinguish extends Component {
       ispregnancy: values.ispregnancy,
       gestationalWeeks: values.gestationalWeeks,
       psycheck: values.psycheck,
-      buDiagnosisInfo: buDiagnosisInfo,
+      buDiagnosisInfo: diagnoseFinalInfoOrigin,
       deptid: window.sessionStorage.getItem('deptid'),
       doctorid: window.sessionStorage.getItem('userid'),
       doctorname: window.sessionStorage.getItem('username'),
       orgid: window.sessionStorage.getItem('orgid'),
       registerid: this.props.registerid,
     };
+    Object.assign(initCaseData, finalObj);
+    let self = this;
     let params = {
-      url: 'TCMAE/BuPatientCaseController/postData',
+      url: 'TCMAE/BuPatientCaseController/' + (initCaseData.billid ? 'putData' : 'postData'),
       server_url: config_InteLigenTreat_url,
-      data: JSON.stringify(finalObj),
-      type: 'post',
+      data: JSON.stringify(initCaseData),
+      type: initCaseData.billid ? 'put' : 'post',
     };
     function callBack(res){
-      if(res.result){
-
+      if(res.flag){
+        self.props.onStep(3);
       }else{
         console.log('异常响应信息', res);
       }
@@ -328,7 +362,7 @@ export default class SmartDistinguish extends Component {
               <AddIllBySymptom  icon='#0A6ECB' ref={ref => this.addIllBySymptom = ref} placeholder='请输入病症中文关键字活拼音简写搜索' notify={this.getMessage}/>
               <Name>证候：</Name>
               <AddIllByManifestations addChinaMedicineData={this.addChinaMedicineData} icon='#0A6ECB' ref={ref => this.addIllByManifestation = ref} placeholder='请输入病侯中文关键字货拼音简写搜索' symptomId={symptomId}/>
-              <AddAction type="primary">添加诊断</AddAction>
+              <AddAction type="primary" onClick={this.addChinaMedicineData}>添加诊断</AddAction>
             </AddContainer>
             <SpecTable
               dataSource={diagnoseData}

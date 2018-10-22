@@ -70,7 +70,7 @@ export default class ObserveCure extends Component {
     // image.src = url;
     // image.onload = function(){
     //   var base64 = ;
-    //   self.props.modifyPicture(base64);
+    //   self.props.modify_picture(base64);
     // }
   };
   getBase64Image(img) {

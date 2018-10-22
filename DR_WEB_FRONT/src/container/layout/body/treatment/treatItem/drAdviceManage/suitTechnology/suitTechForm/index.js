@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Table, Form, Select, Radio, Input, Row, Col, Modal, Tag } from 'antd';
 import Diagnose from '../../chHerbalMedicine/herbalForm/diagnose';
-import QuickAddExamineItem from './quickAddExamineItem';
+import QuickAddSuitTechItem from './quickAddSuitTechItem';
 import InputBaseLine from 'components/dr/input/basicInput';
 import 'components/antd/style/pagination.less';
 import inputSty from 'components/antd/style/input';
@@ -13,6 +13,7 @@ import { getDiagnoseText, converItemToNeeded } from 'commonFunc/transform';
 import deepClone from 'commonFunc/deepClone';
 import tableSty from 'components/antd/style/table';
 import tagsSty from 'components/antd/style/tags';
+import paginationSty from 'components/antd/style/pagination';
 import Icon from 'components/dr/icon';
 import AcupointEdit from './acupointEdit';
 
@@ -34,29 +35,29 @@ class SuitTechForm extends Component {
       feeAll: 0, // 合计费用
       // 初始化数据
       buDiagnosisList: [], // 诊断明细信息
-      aim: '', // 检验目的
+      aim: '', // 适宜技术目的
       miType: '1', // 0 医保外， 1医保内 默认选择医保内
-      examineData: [], // 检验项目数据
+      suitTechData: [], // 适宜技术项目数据
       visible: true, // 穴位编辑弹框是否可见
       curTechDetail: {}, // 当前需要编辑适宜技术明细的穴位
     }
   }
   componentWillMount(){
-    if(JSON.stringify(this.props.buOrderDtlList) != '{}'){
-      let { buRecipe, buOrderDtlList, buOrdmedical, ...data } = this.props.buOrderDtlList;
-      this.setState({
-        examineData: buOrderDtlList.concat(buOrdmedical.buOrdmedicalSuitList),
-        data: data, // 原始医嘱信息
-        buOrdmedical: buOrdmedical, // 原始医嘱套对象信息
-        aim: buOrdmedical.aim, // 检验目的
-        miType: buOrdmedical.miType, // 医保类型
-      });
-    }
+    // if(JSON.stringify(this.props.buOrderDtlList) != '{}'){
+    //   let { buRecipe, buOrderDtlList, buOrdmedical, ...data } = this.props.buOrderDtlList;
+    //   this.setState({
+    //     suitTechData: buOrderDtlList.concat(buOrdmedical.buOrdmedicalSuitList),
+    //     data: data, // 原始医嘱信息
+    //     buOrdmedical: buOrdmedical, // 原始医嘱套对象信息
+    //     aim: buOrdmedical.aim, // 适宜技术目的
+    //     miType: buOrdmedical.miType, // 医保类型
+    //   });
+    // }
     this.getDiagnoseData();
     this.getDept();
     this.getFrequency();
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
-      this.getExamineData(this.props.orderid);
+      this.getSuitTechData(this.props.orderid);
     }
   };
   // 组件初始化获取频次数据下拉列表
@@ -117,7 +118,7 @@ class SuitTechForm extends Component {
     };
     ajaxGetResource(params, callBack);
   };
-  getExamineData(orderid){
+  getSuitTechData(orderid){
     let params = {
       url: 'BuOrderController/getData',
       data: {
@@ -128,12 +129,39 @@ class SuitTechForm extends Component {
     function callBack(res) {
       if(res.result){
         let { buRecipe, buOrderDtlList, buOrdmedical, ...data } = res.data;
+        let suitTechData = buOrderDtlList.concat(buOrdmedical.buOrdmedicalSuitList);
+        suitTechData.forEach((item) => {
+          if(item.buOrderDtlList){ // 医嘱套
+            item.buOrderDtlList.forEach((itemChild) => {
+              let buImtreatprelistStAcupoints = [];
+              let buImtreatprelistStAcupointNames = [];
+              if(itemChild.spbody){
+                buImtreatprelistStAcupointNames = itemChild.spbody.split("、")
+              }
+              buImtreatprelistStAcupointNames.forEach((itemChildChild, index) => {
+                let obj = {
+                  acudesc: itemChildChild,
+                  acuid: index,
+                  acuname: itemChildChild
+                };
+                buImtreatprelistStAcupoints.push(obj);
+              });
+              itemChild.buImtreatprelistStAcupoints = buImtreatprelistStAcupoints;
+            });
+            // that.getAcupoints(item.buOrderDtlList);
+          }else{ // 非医嘱套
+            if(item.spbody){
+              // buImtreatprelistStAcupointNames = itemChild.spbody.split("、")
+            }
+            // that.getAcupoints([item]);
+          }
+        });
         that.setState({
-          examineData: buOrderDtlList.concat(buOrdmedical.buOrdmedicalSuitList),
+          suitTechData: suitTechData,
           // buRecipe: buRecipe, // 原始处方信息
           data: data, // 原始医嘱信息
           buOrdmedical: buOrdmedical, // 原始医嘱套对象信息
-          aim: buOrdmedical.aim, // 检验目的
+          aim: buOrdmedical.aim, // 适宜技术目的
           miType: buOrdmedical.miType, // 医保类型
         });
       }
@@ -145,14 +173,14 @@ class SuitTechForm extends Component {
   handleSubmit = (e) => {
     e.preventDefault();
     let formData = new Object();
-    let examineData = this.state.examineData;
+    let suitTechData = this.state.suitTechData;
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         formData = values;
         console.log('Received values of form: ', values);
       }
     });
-    return {formData, examineData}
+    return {formData, suitTechData}
   }
   /**
    * [onModifyInputValue 表格输入框值改变后改变数据源的函数]
@@ -163,21 +191,21 @@ class SuitTechForm extends Component {
    * @return {[type]}            [void]
    */
   onModifyInputValue(newValue, item){
-    let examineData = this.state.examineData;
+    let suitTechData = this.state.suitTechData;
     if(item.orderSuitid && item.orderSuitid != 0){ // 医嘱套
-      examineData.forEach((Dataitem, index)=>{
+      suitTechData.forEach((Dataitem, index)=>{
         if(Dataitem.orderSuitid == item.orderSuitid){
           Dataitem.count = newValue;
         }
       });
     }else{
-      examineData.forEach((Dataitem, index)=>{
+      suitTechData.forEach((Dataitem, index)=>{
         if(Dataitem.itemid == item.itemid){
           Dataitem.count = newValue;
         }
       });
     }
-    this.setState({ examineData });
+    this.setState({ suitTechData });
   };
   /**
    * [onModifySelectValue 表格中下拉框选项改变后触发的函数]
@@ -190,8 +218,8 @@ class SuitTechForm extends Component {
    * @return {[type]}            [void]
    */
   onModifySelectValue(itemid, idItem, nameItem, newID, newName, orderSuitid){
-    let examineData = this.state.examineData;
-    examineData.forEach((Dataitem, index)=>{
+    let suitTechData = this.state.suitTechData;
+    suitTechData.forEach((Dataitem, index)=>{
       if(orderSuitid){ // 修改医嘱套明细项
         if(Dataitem.orderSuitid == orderSuitid){
           Dataitem.buOrderDtlList.forEach((itemChild, index) => {
@@ -204,72 +232,60 @@ class SuitTechForm extends Component {
         Dataitem[nameItem] = Dataitem.itemid == itemid ? newName : Dataitem[nameItem];
       }
     });
-    this.setState({ examineData });
+    this.setState({ suitTechData });
   };
   /**
-   * [delExamineData 删除当前检查项目]
+   * [delSuitTechData 删除当前检查项目]
    * @param  {[type]} record [当前检查项目对象]
    * @param  {[type]} itemid [医嘱套明细ID， 若为undefined则为非医嘱套项目，否则删除医嘱套明细的某一项]
    * @return {[type]}        [void]
    */
-  delExamineData(record) {
+  delSuitTechData(record) {
     let that = this;
-    let examineData = this.state.examineData;
+    let suitTechData = this.state.suitTechData;
     if(record.orderSuitid){
       confirm({
         title: '该项属于医嘱套，继续执行将删除整个医嘱套',
         cancelText: '取消',
         okText: '确定',
         onOk() {
-          examineData = examineData.remove({orderSuitid: record.orderSuitid});
-          that.setState({examineData})
+          suitTechData = suitTechData.remove({orderSuitid: record.orderSuitid});
+          that.setState({suitTechData})
         }
       });
     }else{
-        examineData = examineData.remove({itemid: record.itemid});
-        that.setState({examineData})
+        suitTechData = suitTechData.remove({itemid: record.itemid});
+        that.setState({suitTechData})
     }
   }
   /**
-   * [addExamineData 添加检验项目列表]
+   * [addSuitTechData 添加适宜技术项目列表]
    * @param  {[type]} medicineItem [新增项]
    * @return {[type]}              [void]
    */
-  addExamineData (examineItem) {
-    let examineData = this.state.examineData;
-    for(let i=0; i < examineData.length; i++){
-      if(examineData[i].buOrderDtlList){ // 医嘱套
-        if(examineData[i].orderSuitid == examineItem.orderSuitid){
+  addSuitTechData (examineItem) {
+    let suitTechData = this.state.suitTechData;
+    for(let i=0; i < suitTechData.length; i++){
+      if(suitTechData[i].buOrderDtlList){ // 医嘱套
+        if(suitTechData[i].orderSuitid == examineItem.orderSuitid){
           this.tipModal.showModal({stressContent: '该项目项已存在'});
           return false;
         }
       }else{ // 非医嘱套
-        if(examineData[i].itemid  == examineItem.medicalid){
+        if(suitTechData[i].itemid  == examineItem.medicalid){
           this.tipModal.showModal({stressContent: '该项目项已存在'});
           return false;
         }
       }
     }
-    let item = converItemToNeeded(examineItem, examineData);
-    let detailData = [];
+    let item = converItemToNeeded(examineItem, suitTechData);
     if(examineItem.buOrderDtlList){ // 医嘱套
-      examineItem.buOrderDtlList.forEach((item) => {
-        detailData.push(item);
-      });
       this.getAcupoints(examineItem.buOrderDtlList);
     }else{ // 非医嘱套
       this.getAcupoints([examineItem]);
     }
-    // let result = this.getAcupoints(detailData);
-    // console.log('examineItem123', result);
-    // if(result.length > 1){
-    //   examineItem.buOrderDtlList = result;
-    // }else{
-    //   examineItem = result;
-    // }
-    // console.log('examineItem123', examineItem);
-    examineData.push(examineItem);
-    this.setState({ examineData });
+    suitTechData.push(examineItem);
+    this.setState({ suitTechData });
   }
   /**
    * [getAcupoints 从辨证论治服务获取适宜技术对应的穴位]
@@ -291,7 +307,7 @@ class SuitTechForm extends Component {
       url: 'baAcupoint/getAcu',
       type: 'post',
       async: false,
-      server_url: 'http://10.192.1.115:8765/TCMAE/',
+      server_url: config_InteLigenTreat_url+'TCMAE/',
       data: JSON.stringify(techFormItem)
     };
     let that = this;
@@ -299,22 +315,25 @@ class SuitTechForm extends Component {
       if(res.result){
         let result = res.data;
         list.forEach((otherItem) => {
-          let sameItem = result.forEach((serviceItem, index) => {
+          result.forEach((serviceItem, index) => {
             if(serviceItem.itemcode == otherItem.itemcode){
+              if(serviceItem.buImtreatprelistStAcupoints){
                 let acupointNameArray = [];
                 serviceItem.buImtreatprelistStAcupoints.forEach((itemChildChild) => {
                   Object.assign(itemChildChild, itemChildChild.baAcupoint);
                   acupointNameArray.push(itemChildChild.acupointName);
                 });
-              resultArray.push(Object.assign(otherItem, serviceItem, { AcupointNames: acupointNameArray.join('、')}));
-              // console.log('otherItem12', otherItem);
+                resultArray.push(Object.assign(otherItem, serviceItem, { spbody: acupointNameArray.join('、')}));
+              }else{
+                serviceItem.buImtreatprelistStAcupoints = [];
+                resultArray.push(Object.assign(otherItem, serviceItem, { spbody: '无'}));
+              }
             }
           });
         });
       }
     };
     ajaxGetResource(params, success);
-    // console.log('list', list);
     return resultArray;
   };
   /** [getTableColumns 设置表格列] */
@@ -353,14 +372,8 @@ class SuitTechForm extends Component {
             },
           };
         }else{
-          let AcupointNames = [];
-          if(record.buImtreatprelistStAcupoints){
-            record.buImtreatprelistStAcupoints.forEach((item) => {
-              AcupointNames.push(item.acuname);
-            });
-          }
           return(
-            <EditContainer><InputPop value={AcupointNames.join('、')}></InputPop><Edit type='edit' onClick={() => {this.handleAcupoint(record)}}/></EditContainer>
+            <EditContainer><InputPop value={record.spbody}></InputPop><Edit type='edit' onClick={() => {this.handleAcupoint(record)}}/></EditContainer>
           )
         }
       }
@@ -373,7 +386,7 @@ class SuitTechForm extends Component {
         if(index%2 == 0){
           return '';
         }else{
-          return <EditContainer><InputPop value={record.operation}></InputPop><Edit type='edit' onClick={() => {this.handleAcupoint(record)}}/></EditContainer>
+          return <EditContainer><InputPop value={record.operation ? record.operation : '无'}></InputPop><Edit type='edit' onClick={() => {this.handleAcupoint(record)}}/></EditContainer>
         }
       }
     }, {
@@ -474,7 +487,7 @@ class SuitTechForm extends Component {
             },
           };
         }else{
-          return <a onClick={() => { this.delExamineData(record) }}>删除</a>;
+          return <a onClick={() => { this.delSuitTechData(record) }}>删除</a>;
         }
       }
     }];
@@ -552,26 +565,54 @@ class SuitTechForm extends Component {
     });
   };
   modifyHerbal(tectItemDetail){
-    console.log('tectItemDetail', tectItemDetail);
-    let examineData = this.state.examineData;
+    let suitTechData = this.state.suitTechData;
     if(tectItemDetail.orderSuitid){
-      let curData = examineData.filter(item => item.orderSuitid == tectItemDetail.orderSuitid);
-      let curItem = curData[0].buOrderDtlList.filter(item => item.itemcode == tectItemDetail.itemcode)
-      curItem[0].buImtreatprelistStAcupoints = tectItemDetail.buImtreatprelistStAcupoints;
-      console.log('examineData', examineData);
+      suitTechData.forEach(item => { // 遍历原始数据
+        if(item.orderSuitid == tectItemDetail.orderSuitid){ // 医嘱套ID匹配
+          item.buOrderDtlList.forEach(itemChild => { // 遍历医嘱明细项目
+            if(itemChild.itemcode == tectItemDetail.itemcode){ // 项目ID匹配
+              itemChild.buImtreatprelistStAcupoints = tectItemDetail.buImtreatprelistStAcupoints; // 穴位赋值
+              if(itemChild.buImtreatprelistStAcupoints){ // 提取穴位名称
+                let acupointNameArray = [];
+                itemChild.buImtreatprelistStAcupoints.forEach((itemChildChild) => {
+                  acupointNameArray.push(itemChildChild.acuname);
+                });
+                itemChild.spbody = acupointNameArray.join('、');
+              }else{
+                itemChild.spbody = '无';
+              }
+            }
+          })
+        }
+      });
+    }else{
+      suitTechData.forEach(item => { // 遍历原始数据
+        if(item.itemcode == tectItemDetail.itemcode){ // 非医嘱套ID匹配
+          item.buImtreatprelistStAcupoints = tectItemDetail.buImtreatprelistStAcupoints; // 穴位赋值
+          if(item.buImtreatprelistStAcupoints){ // 提取穴位名称
+            let acupointNameArray = [];
+            item.buImtreatprelistStAcupoints.forEach((itemChildChild) => {
+              acupointNameArray.push(itemChildChild.acuname);
+            });
+            item.spbody = acupointNameArray.join('、');
+          }else{
+            item.spbody = '无';
+          }
+        }
+      });
     }
-    this.setState({examineData});
+    this.setState({suitTechData});
   };
   render () {
-    let { visiblePop, examineData, buDiagnosisList, miType, aim, visible, curTechDetail } = this.state;
+    let { visiblePop, suitTechData, buDiagnosisList, miType, aim, visible, curTechDetail } = this.state;
     const { getFieldDecorator } = this.props.form;
 
-    const {dataSource, feeAll} = this.getTableDataSource(deepClone(examineData));
+    const {dataSource, feeAll} = this.getTableDataSource(deepClone(suitTechData));
     const columns = this.getTableColumns();
     const Pagination = {
       simple: true,
       className: 'custom',
-      pageSize: 8,
+      pageSize: 6,
       total: dataSource.length,
       itemRender: (current, type, originalElement)=>{
           if (type === 'prev') {
@@ -584,6 +625,7 @@ class SuitTechForm extends Component {
           return originalElement;
         }
     };
+    console.log('Pagination', Pagination);
     const formItemLayout = {
       labelCol: {
         xs: { span: 3 },
@@ -612,10 +654,9 @@ class SuitTechForm extends Component {
       modifyHerbal: (formData)=>{ this.modifyHerbal(formData.formData) },
       buOrderDtlList: curTechDetail,
     };
-    console.log('curTechDetail', curTechDetail);
     return (
       <div>
-        <SpecForm className='not-draggable' onClick={()=>{this.quickAddExamineItem.hideResult()}}>
+        <SpecForm className='not-draggable' onClick={()=>{this.quickAddSuitTechItem.hideResult()}}>
           <Row>
             <Col span={24}>
               <FormItem
@@ -643,7 +684,7 @@ class SuitTechForm extends Component {
                   )}
                 </FormItem>
               </Col>
-            </Row>
+          </Row>
             <Row>
               <Col span={8}>
                 <SpecFormItem
@@ -659,45 +700,45 @@ class SuitTechForm extends Component {
                       </SpecRadioGroup>
                     )}
                   </SpecFormItem>
-                </Col>
-                <Col span={16}>
-                  <FormItem
-                    {...formItemLayout}
-                    >
-                      {getFieldDecorator('addQuickly')(
-                        <QuickAddExamineItem placeholder='请输入治疗项目首字母快速添加' icon='#0A6ECB' ref={ref => this.quickAddExamineItem = ref} getQuickData = {this.addExamineData.bind(this)}/>
-                      )}
-                    </FormItem>
-                  </Col>
-                </Row>
-                <SpecRow>
-                  <Col span={24}>
-                    <FormItem
-                      {...formItemLayout}
-                      label="已选项目：">
-                      {getFieldDecorator('choosedItem', {
-                        initialValue: ''
-                      })(
-                        <div>
-                          {
-                            examineData.map((item, index) => <SpecTag onClose={(e) => {e.preventDefault();this.delExamineData(item)}} closable key={index} id={item.buOrderDtlList ? item.orderSuitid : item.itemid}>{item.buOrderDtlList ? item.orderSuitname : item.itemid}</SpecTag>)
-                          }
-                        </div>
-                      )}
-                    </FormItem>
-                  </Col>
-                </SpecRow>
-                <Footer>
-                  <SpecTable
-                    dataSource={dataSource}
-                    locale={{emptyText: '暂无项目数据' }}
-                    columns={columns}
-                    pagination={Pagination}>
-                  </SpecTable>
-                  <Tip>💡提示：医保外项目以红色显示</Tip>
-                  <Total>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
-                </Footer>
-                <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
+              </Col>
+              <Col span={16}>
+                <FormItem
+                  {...formItemLayout}
+                  >
+                    {getFieldDecorator('addQuickly')(
+                      <QuickAddSuitTechItem placeholder='请输入治疗项目首字母快速添加' icon='#0A6ECB' ref={ref => this.quickAddSuitTechItem = ref} getQuickData = {this.addSuitTechData.bind(this)}/>
+                    )}
+                  </FormItem>
+              </Col>
+            </Row>
+            <SpecRow>
+              <Col span={24}>
+                <FormItem
+                  {...formItemLayout}
+                  label="已选项目：">
+                  {getFieldDecorator('choosedItem', {
+                    initialValue: ''
+                  })(
+                    <div>
+                      {
+                        suitTechData.map((item, index) => <SpecTag onClose={(e) => {e.preventDefault();this.delSuitTechData(item)}} closable key={index} id={item.buOrderDtlList ? item.orderSuitid : item.itemid}>{item.buOrderDtlList ? item.orderSuitname : item.itemid}</SpecTag>)
+                      }
+                    </div>
+                  )}
+                </FormItem>
+              </Col>
+            </SpecRow>
+            <Footer>
+              <SpecTable
+                dataSource={dataSource}
+                locale={{emptyText: '暂无项目数据' }}
+                columns={columns}
+                pagination={Pagination}>
+              </SpecTable>
+              <Tip>💡提示：医保外项目以红色显示</Tip>
+              <Total>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
+            </Footer>
+            <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
         </SpecForm>
         <AcupointEdit ref={ ref => { this.acupointEdit = ref }} {...openProps} ></AcupointEdit>
       </div>
@@ -789,6 +830,7 @@ const Status = styled.span`
   color: ${props => props.status ? '#009900' : '#0A6ECB'}
 `;
 const SpecTable = styled(Table)`
+  ${paginationSty.easyPagination};
   .ant-table {
     border-bottom: 1px solid #0A6ECB;
     height: 290px;
@@ -846,6 +888,6 @@ const ChPatentMedicineForm = Form.create()(SuitTechForm);
 export default ChPatentMedicineForm;
 /*
 @作者：姜中希
-@日期：2018-08-21
-@描述：新增检验申请单表单部分
+@日期：2018-10-22
+@描述：新增适宜适宜技术表单部分
 */

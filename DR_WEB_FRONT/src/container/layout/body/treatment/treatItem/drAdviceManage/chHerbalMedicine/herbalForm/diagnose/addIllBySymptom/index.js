@@ -158,7 +158,6 @@ export default class AddIllBySymptom extends Component {
     let { formItemProps, placeholder, icon } = this.props;
     let { showResult, illData } = this.state;
     let columns = this.getTableCol();
-    console.log('illDataillData', illData);
     return (
       <Semicircle id='symptom'  onKeyDown={this.handleEnterPress} icon={icon} autofocus='autofocus' displayed={this.showResult} placeholder={placeholder}>
         {
@@ -205,5 +204,5 @@ const SpecTable = styled(Table)`
 /*
 @作者：姜中希
 @日期：2018-07-11
-@描述：添加病症输入框组件
+@描述：添加疾病输入框组件
 */

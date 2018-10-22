@@ -10,7 +10,7 @@ import TipModal from 'components/dr/modal/tip';
 import deepClone from 'commonFunc/deepClone';
 import inputSty from 'components/antd/style/input';
 import selectSty from 'components/antd/style/select';
-import { getDiagnoseText } from 'commonFunc/transform';
+import { getDiagnoseText, converItemToNeededCN } from 'commonFunc/transform';
 import tableSty from 'components/antd/style/table';
 import paginationSty from 'components/antd/style/pagination';
 
@@ -168,18 +168,17 @@ class Index extends Component {
    */
   addMedicineData (medicineItem) {
     let feeAll = 0;
-    medicineItem.usageid = medicineItem.baUsage ? medicineItem.baUsage.usageid : 9; // 从用法对象转换成字符串用法ID
-    medicineItem.usagename = medicineItem.baUsage ? medicineItem.baUsage.usagename : '无'; // 从用法对象转换成字符串用法名称
     let medicineData = this.state.medicineData;
+    let formateItem = converItemToNeededCN(medicineItem, medicineData, 0);
     for(let i=0; i < medicineData.length; i++){
-      if(medicineData[i].medicinename == medicineItem.medicinename){
+      if(medicineData[i].itemname == formateItem.itemname){
         this.tipModal.showModal({
           stressContent: '该中成药/西药已存在'
         });
         return false;
       }
     }
-    medicineData.push(medicineItem);
+    medicineData.push(formateItem);
     this.setState({ medicineData });
   }
   /** [getTableColumns 设置表格列] */
@@ -316,7 +315,7 @@ class Index extends Component {
           return originalElement;
         }
     };
-    if(false || baMedicines == [] || baMedicines == '' || baMedicines == undefined){
+    if(true || baMedicines == [] || baMedicines == '' || baMedicines == undefined){
       return (
         <SpecForm className='not-draggable' onClick={()=>{this.quickAddMedicine.hideResult()}}>
           <Row>
