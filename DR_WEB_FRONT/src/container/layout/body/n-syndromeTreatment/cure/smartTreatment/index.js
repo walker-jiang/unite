@@ -16,6 +16,7 @@ import WesternMedicine from '../../../treatment/treatItem/drAdviceManage/western
 import Material from '../../../treatment/treatItem/drAdviceManage/material';
 import AddHeader from '../../../treatment/treatItem/drAdviceManage/addHeader';
 import re_diagnose from './re_diagnose.png';
+import { getDiagnoseText } from 'commonFunc/transform';
 
 const TabPane = Tabs.TabPane;
 
@@ -23,13 +24,12 @@ export default class SmartDistinguish extends Component {
   constructor(props){
     super(props);
     this.state = {
-      diagnoseText: '',
+      buDiagnosisList: [],
       dataSource: [],
       actionType: '', // 打开弹框的目的（添加，查看，修改，删除）
       orderid: '', // 修改、查看、删除时的医嘱ID
       buOrderDtlList: {}, // 打开添加弹框时初始化的数据
     };
-    this.diagnoseUpdate = this.diagnoseUpdate.bind(this);
     this.actionManager = this.actionManager.bind(this);
     this.getOrderData = this.getOrderData.bind(this);
   };
@@ -54,8 +54,31 @@ export default class SmartDistinguish extends Component {
     };
     ajaxGetResource(params, callBack);
   };
+  /** [getDiagnoseData 组件初始化获取加载诊断数据] */
+  getDiagnoseData(){
+    let self = this;
+    let params = {
+      url: 'BuDiagnosisInfoController/getData',
+      server_url: config_InteLigenTreat_url+'TCMAE/',
+      data: {
+        registerid: this.props.registerid
+      },
+    };
+    function callBack(res){
+      if(res.result && res.data){ // 获取当前诊断明细数据
+        let { buDiagnosisList, ...buDiagnosisInfo } = res.data;
+        self.setState({
+          buDiagnosisList: buDiagnosisList,
+        });
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
   componentWillMount(){
     this.getOrderData();
+    this.getDiagnoseData();
     // let dataSource = [{
 		// 	"buDiagnosisInfo": null,
 		// 	"buOrderDtlList": [],
@@ -168,14 +191,6 @@ export default class SmartDistinguish extends Component {
     // this.setState({ dataSource });
   };
   /**
-   * [diagnoseUpdate 诊断更新后的诊断组合文本]
-   * @param  {[type]} diagnoseText [文本内容]
-   * @return {[type]}              [undefined]
-   */
-  diagnoseUpdate(diagnoseText){
-    this.setState({ diagnoseText });
-  };
-  /**
    * [onDelete 删除医嘱信息]
    * @param  {[type]} orderid [医嘱ID]
    * @return {[type]}        [void]
@@ -242,7 +257,7 @@ export default class SmartDistinguish extends Component {
     }
   };
   render() {
-    let { dataSource, actionType, orderid, buOrderDtlList } = this.state;
+    let { dataSource, actionType, orderid, buOrderDtlList, buDiagnosisList } = this.state;
 //     buOrderDtlList = {
 // 	"buOrderDtlList": [{
 // 		"baseUnit": "02",
@@ -425,8 +440,8 @@ export default class SmartDistinguish extends Component {
           <Content>
             <ReadableDiagnose>
               <Label>诊断：</Label>
-              <SpecInput />
-              <ReDiagnose><img src={re_diagnose} onClick={() => {this.props.onStep(1)}}/>重新辩证</ReDiagnose>
+              <SpecInput defaultValue={getDiagnoseText(buDiagnosisList)} disabled/>
+              <ReDiagnose onClick={() => {this.props.onStep(1)}}><img src={re_diagnose}/>重新辩证</ReDiagnose>
             </ReadableDiagnose>
             <AddHeader operate={this.actionManager}></AddHeader>
             <TableGrid dataSource={dataSource} operate={this.actionManager}/>
@@ -481,6 +496,7 @@ const Label = styled.div`
   white-space: nowrap;
 `;
 const ReDiagnose = styled.div`
+  cursor: pointer;
   width: 90px;
   display: flex;
   justify-content: space-between;

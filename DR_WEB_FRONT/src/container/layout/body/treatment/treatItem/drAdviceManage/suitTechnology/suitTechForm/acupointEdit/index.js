@@ -40,13 +40,12 @@ export default class Index extends Component {
   // 点击确定按钮触发提交操作
   submit(e){
     let formData = this.form.handleSubmit(e); /// 获取表单数据、草药数据集
-    this.props.modifyHerbal(formData);
+    this.props.modifyAcupoint(formData);
     this.handlePopClose();
   };
   render () {
     let { visiblePop , initData } = this.state;
     let { actionType } = this.props;
-    let title = actionType == 'add' ? '新增' : (actionType == 'modify' ? '修改' : '查看');
     return (
       <SpecBasicModal visible={visiblePop} onClose={() => this.handlePopClose()}>
         <AcupointForm
@@ -54,13 +53,10 @@ export default class Index extends Component {
           initData={initData}
           {...this.props}>
         </AcupointForm>
-        {
-          this.props.actionType == 'view' ? null :
-          <Footer>
-            <SureButton type="primary" onClick={this.submit} disabled={!window.modifyPermission}>保存</SureButton>
-            <Gray type="primary" onClick={()=>{this.handlePopClose()}}>返回</Gray>
-          </Footer>
-        }
+        <Footer>
+          <SureButton type="primary" onClick={this.submit} disabled={!window.modifyPermission}>保存</SureButton>
+          <Gray type="primary" onClick={()=>{this.handlePopClose()}}>返回</Gray>
+        </Footer>
         <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </SpecBasicModal>
     )

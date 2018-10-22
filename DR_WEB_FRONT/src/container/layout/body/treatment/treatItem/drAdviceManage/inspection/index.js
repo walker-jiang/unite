@@ -4,7 +4,7 @@ import { Button } from 'antd';
 import BasicModal from 'components/dr/modal/basicModal';
 import InspectionForm from './inspectionForm';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
-import { convertAddFormData, combinedFormData } from 'commonFunc/transform';
+import { combinedAddFormData, combinedModifyFormData } from 'commonFunc/transform';
 import TipModal from 'components/dr/modal/tip';
 import buttonSty from 'components/antd/style/button';
 
@@ -46,7 +46,7 @@ export default class Index extends Component {
     }
   };
   addExamineItem(values, inspectionData){
-    let paramsData = convertAddFormData(values, inspectionData, 2);
+    let paramsData = combinedAddFormData(values, inspectionData, 2);
     let params = {
       url: 'BuOrderController/postData',
       type: 'post',
@@ -63,7 +63,7 @@ export default class Index extends Component {
     ajaxGetResource(params, success);
   };
   modifyExamineItem(values, inspectionData){
-    let data = combinedFormData(values, inspectionData, this.form.state.data, this.form.state.buDiagnosisInfo, this.form.state.buOrdmedical);
+    let data = combinedModifyFormData(values, inspectionData, this.form.state.data, this.form.state.buDiagnosisInfo, this.form.state.buOrdmedical);
     let params = {
       url: 'BuOrderController/putData',
       type: 'put',

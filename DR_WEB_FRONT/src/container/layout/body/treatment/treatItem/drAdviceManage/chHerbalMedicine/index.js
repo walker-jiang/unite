@@ -66,26 +66,7 @@ export default class Index extends Component {
     let self = this;
     let medicineArr = herbalData.filter((item, index) => {
       nameArr.push(item.itemname);
-      price += item.unitprice * (item.count/item.defQty);
-      // if(item.exist == 1){
-      // }
-      // item.baseUnit = item.baseUnit;
-      // item.count = item.defQty;
-      // item.dosage = item.defQty;
-      // item.freqid = values.frequency.key;
-      // item.freqname = values.frequency.label;
-      // item.miType = '';
-      // item.doseid = item.doseid;
-      // item.dosename = item.dosename;
-      // item.itemcode = item.medicinecode;
-      // item.itemid = item.medicineid;
-      // item.itemname = item.medicinename;
-      // item.itemno = index;
-      // item.itemtype = 0; // 中药0
-      // item.unitprice = item.unitprice;
-      // item.specification = item.specification;
-      // item.useflag = item.useflag;
-      // return item.exist == 1;
+      price += item.unitprice * (item.count);
     })
     let prescriptionContent = nameArr.join('、')
     let patientId = window.patientID;
@@ -158,23 +139,7 @@ export default class Index extends Component {
     // console.log('herbalData', herbalData);
     let medicineArr = herbalData.forEach((item, index) => {
       nameArr.push(item.itemname)
-      price += item.unitprice * (item.count/item.defQty);
-      // item.baseUnit = item.baseUnit;
-      // item.dosage = item.defQty;
-      // item.freqid = values.frequency.key;
-      // item.freqname = values.frequency.label;
-      // item.doseid = item.doseid;
-      // item.miType = '';
-      // item.dosename = item.dosename;
-      // item.itemcode = item.medicinecode;
-      // item.itemid = item.medicineid;
-      // item.itemname = item.medicinename;
-      // item.itemno = index;
-      // item.itemtype = 0; // 中药0
-      // item.unitprice = item.unitprice;
-      // item.specification = item.specification;
-      // item.useflag = item.useflag;
-      // return item;
+      price += item.unitprice * (item.count);
     })
     let prescriptionContent = nameArr.join('、')
     // 诊断数据

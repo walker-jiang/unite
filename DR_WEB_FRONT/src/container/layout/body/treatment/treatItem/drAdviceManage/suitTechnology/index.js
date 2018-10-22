@@ -6,7 +6,7 @@ import SuitTechForm from './suitTechForm';
 import buttonSty from 'components/antd/style/button';
 import TipModal from 'components/dr/modal/tip';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
-import { convertAddFormData, combinedFormData } from 'commonFunc/transform';
+import { combinedAddFormData, combinedModifyFormData } from 'commonFunc/transform';
 
 export default class SuitTechnology extends Component {
   constructor(props) {
@@ -40,29 +40,27 @@ export default class SuitTechnology extends Component {
   };
   // 点击确定按钮触发提交操作
   submit(e){
-    let { formData, examineData } = this.form.handleSubmit(e); /// 获取表单数据、草药数据集
+    let { formData, suitTechData } = this.form.handleSubmit(e); /// 获取表单数据、草药数据集
     if(formData.diagnose.originData.length <= 0 ){
       this.tipModal.showModal({
         stressContent: '诊断数据不能空'
       });
       return;
     }
-    if( examineData.length <= 0 ){
+    if( suitTechData.length <= 0 ){
       this.tipModal.showModal({
-        stressContent: '草药数据不能空'
+        stressContent: '适宜技术数据不能空'
       });
       return;
     }
     if(this.props.actionType == 'add'){
-      this.addHerbalData(formData, examineData);
+      this.addSuitTechData(formData, suitTechData);
     }else{ // 修改保存
-      this.mmodifyHerbalData(formData, examineData);
+      this.modifySuitTechData(formData, suitTechData);
     }
-    // console.log('表单数据', formData);
-    // console.log('草药数据', herbalData);
   };
-  addHerbalData(values, SuitTechData){
-    let paramsData = convertAddFormData(values, SuitTechData, 5);
+  addSuitTechData(values, suitTechData){
+    let paramsData = combinedAddFormData(values, suitTechData, 5);
       let params = {
         url: 'BuOrderController/postData',
         type: 'post',
@@ -75,8 +73,8 @@ export default class SuitTechnology extends Component {
       };
       ajaxGetResource(params, success);
   };
-  mmodifyHerbalData(values, SuitTechData){
-    let data = combinedFormData(values, SuitTechData, this.form.state.data, this.form.state.buDiagnosisInfo, this.form.state.buOrdmedical);
+  modifySuitTechData(values, suitTechData){
+    let data = combinedModifyFormData(values, suitTechData, this.form.state.data, this.form.state.buDiagnosisInfo, this.form.state.buOrdmedical);
     let params = {
       url: 'BuOrderController/putData',
       type: 'put',

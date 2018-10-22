@@ -6,7 +6,7 @@ import { Table } from 'antd';
 import getResource from 'commonFunc/ajaxGetResource';
 import tableSty from 'components/antd/style/table';
 
-export default class QuickAddHerb extends Component {
+export default class QuickAddAcupoint extends Component {
   constructor(props){
     super(props);
     this.state = {

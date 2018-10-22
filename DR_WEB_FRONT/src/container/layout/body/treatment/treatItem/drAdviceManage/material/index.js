@@ -6,7 +6,7 @@ import MaterialForm from './materialForm';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import TipModal from 'components/dr/modal/tip';
 import buttonSty from 'components/antd/style/button';
-import { convertAddFormData, combinedFormData } from 'commonFunc/transform';
+import { combinedAddFormData, combinedModifyFormData } from 'commonFunc/transform';
 
 export default class Index extends Component {
   constructor (props) {
@@ -46,7 +46,7 @@ export default class Index extends Component {
     }
   };
   addMaterialItem(values, MaterialData){
-    let paramsData = convertAddFormData(values, MaterialData, 7);
+    let paramsData = combinedAddFormData(values, MaterialData, 7);
     let params = {
       url: 'BuOrderController/postData',
       type: 'post',
@@ -63,7 +63,7 @@ export default class Index extends Component {
     ajaxGetResource(params, success);
   };
   modifyMaterialItem(values, MaterialData){
-    let data = combinedFormData(values, MaterialData, this.form.state.data, this.form.state.buDiagnosisInfo, this.form.state.buOrdmedical);
+    let data = combinedModifyFormData(values, MaterialData, this.form.state.data, this.form.state.buDiagnosisInfo, this.form.state.buOrdmedical);
     let params = {
       url: 'BuOrderController/putData',
       type: 'put',

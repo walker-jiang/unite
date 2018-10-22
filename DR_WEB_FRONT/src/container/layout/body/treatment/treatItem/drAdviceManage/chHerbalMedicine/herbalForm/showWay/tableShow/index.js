@@ -27,26 +27,26 @@ export default class Index extends Component {
   };
   render() {
     let herbalData = this.props.herbalData;
-    let baHerbalMedicines = this.props.buOrderDtlList;
-    console.log('herbalData', JSON.stringify(herbalData));
+    // let baHerbalMedicines = this.props.buOrderDtlList;
+    // console.log('herbalData', JSON.stringify(herbalData));
 
     // console.log('baHerbalMedicines', baHerbalMedicines);
-    let mergeArray = baHerbalMedicines.concat(herbalData);
+    // let mergeArray = baHerbalMedicines.concat(herbalData);
     let rows = new Array();
-    for(let i = 0; i < parseInt((mergeArray.length -1) / 4) + 1; i++){
+    for(let i = 0; i < parseInt((herbalData.length -1) / 4) + 1; i++){
       let row = new Array();
-      let len = mergeArray.length - (i + 1) * 4;
+      let len = herbalData.length - (i + 1) * 4;
       len = (len > 0) ? 4 : (4 + len);
       for(let j = i * 4; j < i * 4 + len; j++){
-        row.push(<TableItem value={mergeArray[j]} onDelete={()=>{this.props.delHerbal(mergeArray[j])}} onUsageChange = {this.usageChange} dosageChange={this.dosageChange} autofocus={(mergeArray.length == j + 1) ? 'autofocus' : 'none'} key={j}></TableItem>);
-        if(j == (mergeArray.length - 1) && mergeArray.length % 4 != 0){
+        row.push(<TableItem value={herbalData[j]} onDelete={()=>{this.props.delHerbal(herbalData[j])}} onUsageChange = {this.usageChange} dosageChange={this.dosageChange} autofocus={(herbalData.length == j + 1) ? 'autofocus' : 'none'} key={j}></TableItem>);
+        if(j == (herbalData.length - 1) && herbalData.length % 4 != 0){
           row.push(<Add onClick = { () => { this.props.addHerbal() }} key={'j'}>+</Add>);
         }
       }
       let rowLine = <Row key={i} width={row.length/4}>{row}</Row>
       rows.push(rowLine);
     }
-    if(mergeArray.length % 4 == 0){ // 添加到下一行
+    if(herbalData.length % 4 == 0){ // 添加到下一行
       let rowLine = <Row key={rows.legnth +1} width={0.25}>
                       <Add  key={'add'} onClick = { () => { this.props.addHerbal() }}>+</Add>
                     </Row>
@@ -58,7 +58,7 @@ export default class Index extends Component {
         rows.map((item, index) => item)
       }
       {
-        mergeArray.length == 0 ? <TipWrap>
+        herbalData.length == 0 ? <TipWrap>
         <TipImg src={Addtip} />
         <TipTitle>处方中还没有添加草药</TipTitle>
         <TipText>请点击左侧➕号添加或者<br />通过<TipTextBlue>草药搜索框</TipTextBlue>快速添加</TipText>

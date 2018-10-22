@@ -72,14 +72,23 @@ class Index extends Component {
     ajaxGetResource(params, callBack);
   };
   componentWillMount(){
-    let buOrderDtlList = this.props.buOrderDtlList;
-    this.setState({
-      ...buOrderDtlList
-    });
     this.getDiagnoseData();
     this.getSpecialUsage();
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
       this.getCHMedicineAdvice(this.props.orderid);
+    }else{ // 添加可以初始化数据
+      if(JSON.stringify(this.props.attachOrder) != '{}'){
+        let { buOrderDtlList, buRecipe } = this.props.attachOrder;
+        this.setState({
+          medicineData: buOrderDtlList,
+        });
+        if(JSON.stringify(buRecipe) != '{}'){
+          this.setState({
+            recipename: buRecipe.recipename,
+            miType: buRecipe.miType
+          });
+        }
+      }
     }
   };
   getCHMedicineAdvice(orderid){
@@ -94,7 +103,7 @@ class Index extends Component {
       if(res.result){
         let { buRecipe, buOrderDtlList, ...data } = res.data;
         buOrderDtlList.forEach((item)=>{
-          item.medicinename = item.itemname;
+          item.itemname = item.itemname;
           item.defQty = item.dosage;
         });
         that.setState({
@@ -133,31 +142,31 @@ class Index extends Component {
   /**
    * [onModifyInputValue 表格输入框值改变后改变数据源的函数]
    * @param  {[type]} newValue   [新值]
-   * @param  {[type]} medicineid [药品ID]
+   * @param  {[type]} itemid [药品ID]
    * @param  {[type]} item       [改变的药品项]
    * @return {[type]}            [void]
    */
-  onModifyInputValue(newValue, medicineid, item){
+  onModifyInputValue(newValue, itemid, item){
     let medicineData = this.state.medicineData;
     medicineData.forEach((Dataitem, index)=>{
-      Dataitem[item] = Dataitem.medicineid == medicineid ? newValue : Dataitem[item];
+      Dataitem[item] = Dataitem.itemid == itemid ? newValue : Dataitem[item];
     });
     this.setState({ medicineData });
   };
   /**
    * [onModifySelectValue 表格中下拉框选项改变后触发的函数]
-   * @param  {[type]} medicineid [当前药品ID]
+   * @param  {[type]} itemid [当前药品ID]
    * @param  {[type]} idItem     [当前药品项ID]
    * @param  {[type]} nameItem   [当前药品项名称]
    * @param  {[type]} newID      [新药品项ID]
    * @param  {[type]} newName    [新药品项名称]
    * @return {[type]}            [void]
    */
-  onModifySelectValue(medicineid, idItem, nameItem, newID, newName){
+  onModifySelectValue(itemid, idItem, nameItem, newID, newName){
     let medicineData = this.state.medicineData;
     medicineData.forEach((Dataitem, index)=>{
-      Dataitem[idItem] = Dataitem.medicineid == medicineid ? newID : Dataitem[idItem];
-      Dataitem[nameItem] = Dataitem.medicineid == medicineid ? newName : Dataitem[nameItem];
+      Dataitem[idItem] = Dataitem.itemid == itemid ? newID : Dataitem[idItem];
+      Dataitem[nameItem] = Dataitem.itemid == itemid ? newName : Dataitem[nameItem];
     });
     this.setState({ medicineData });
   };
@@ -167,7 +176,6 @@ class Index extends Component {
    * @return {[type]}              [void]
    */
   addMedicineData (medicineItem) {
-    let feeAll = 0;
     let medicineData = this.state.medicineData;
     let formateItem = converItemToNeededCN(medicineItem, medicineData, 0);
     for(let i=0; i < medicineData.length; i++){
@@ -178,7 +186,7 @@ class Index extends Component {
         return false;
       }
     }
-    medicineData.push(formateItem);
+    medicineData.push(medicineItem);
     this.setState({ medicineData });
   }
   /** [getTableColumns 设置表格列] */
@@ -191,8 +199,8 @@ class Index extends Component {
       render: (text, record, index) => <span>{index + 1}</span>
     }, {
       title: "药名",
-      dataIndex: 'medicinename',
-      key: 'medicinename',
+      dataIndex: 'itemname',
+      key: 'itemname',
       render: (text, record, index) => <span>{text}</span>
     }, {
       title: "数量/单位",
@@ -200,7 +208,7 @@ class Index extends Component {
       key: 'unitprice',
       render: (text, record, index)=>
       <span>
-        <InputCount onBlur={(e)=>{ record.defQty != e.target.value ? this.onModifyInputValue(e.target.value, record.medicineid, 'count') : ''}} defaultValue={record.defQty} />{record.baseUnitDic}
+        <InputCount onBlur={(e)=>{ record.defQty != e.target.value ? this.onModifyInputValue(e.target.value, record.itemid, 'count') : ''}} defaultValue={record.defQty} />{record.baseUnitDic}
       </span>
     }, {
       title: "单位剂量",
@@ -221,7 +229,7 @@ class Index extends Component {
       title: "天数",
       dataIndex: 'defTakedays',
       key: 'defTakedays',
-      render: (text, record, index)=><InputDays onBlur={(e)=>{ record.defTakedays != e.target.value ? this.onModifyInputValue(e.target.value, record.medicineid, 'defTakedays') : ''}} defaultValue={record.defTakedays}/>
+      render: (text, record, index)=><InputDays onBlur={(e)=>{ record.defTakedays != e.target.value ? this.onModifyInputValue(e.target.value, record.itemid, 'defTakedays') : ''}} defaultValue={record.defTakedays}/>
     }, {
       title: "用法",
       dataIndex: 'usagename',
@@ -230,7 +238,7 @@ class Index extends Component {
         <SpecSelect
           defaultValue={{key: record.usageid, label: record.usagename}}
           labelInValue={true}
-          onSelect={(e)=>{this.onModifySelectValue(record.medicineid, 'usageid', 'usagename', e.key, e.label)}}>
+          onSelect={(e)=>{this.onModifySelectValue(record.itemid, 'usageid', 'usagename', e.key, e.label)}}>
           {
             usageData.map((item) => <Option key={item.usageid} value={item.usageid}>{item.usagename}</Option>)
           }
@@ -260,13 +268,13 @@ class Index extends Component {
     medicineData.forEach((item) => {
       item.key = dataSource.length;
       dataSource.push(item);
-      feeAll += item.count ? item.count / item.mediUnit * item.unitprice : item.unitprice;
+      feeAll += item.count * item.unitprice;
     });
     if(dataSource.length % 8 != 0){
       for(let i = dataSource.length % 8; i < 8 ; i++){
         let item = deepClone(dataSource[dataSource.length-1]);
         item.key = dataSource.length;
-        item.medicineid = ''; // 空行标识
+        item.itemid = '空'; // 空行标识
         dataSource.push(item)
       }
     }
@@ -315,8 +323,7 @@ class Index extends Component {
           return originalElement;
         }
     };
-    if(true || baMedicines == [] || baMedicines == '' || baMedicines == undefined){
-      return (
+    return (
         <SpecForm className='not-draggable' onClick={()=>{this.quickAddMedicine.hideResult()}}>
           <Row>
             <Col span={24}>
@@ -376,7 +383,7 @@ class Index extends Component {
               locale={{emptyText: '暂无中成药/西药数据' }}
               columns={columns}
               pagination={Pagination}
-              rowClassName={(record, index)=>record.medicineid ? 'dotted' : 'dotted clear'} >
+              rowClassName={(record, index)=> record.itemid != '空' ? 'dotted' : 'dotted clear'} >
             </SpecTable>
             <Tip>💡提示：医保外项目以红色显示</Tip>
             <Total>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
@@ -384,52 +391,6 @@ class Index extends Component {
           <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
         </SpecForm>
       )
-    } else {
-      // let mergeArray = baMedicines.concat(medicineData);
-      return (
-        <SpecForm className='not-draggable' onClick={()=>{this.quickAddMedicine.hideResult()}}>
-          <Row>
-            <Col span={24}>
-              <FormItem
-                {...formItemLayout}
-                label="诊断：">
-              {getFieldDecorator('diagnose', {
-                initialValue: {originData: buDiagnosisList, extractionData: getDiagnoseText(buDiagnosisList)}
-              })(
-                <Diagnose />
-              )}
-              </FormItem>
-            </Col>
-          </Row>
-          <Row>
-            <Col span={24}>
-              <FormItem
-                {...formItemLayout}
-                label="处方名称："
-              >
-              {getFieldDecorator('recipename', {
-                initialValue: recipename
-              })(
-                <InputBaseLine />
-              )}
-              </FormItem>
-            </Col>
-          </Row>
-          <Footer>
-            <SpecTable
-              dataSource={dataSource}
-              locale={{emptyText: '暂无中成药/西药数据' }}
-              columns={columns}
-              pagination={Pagination}
-              rowClassName={(record, index)=>record.medicineid ? 'dotted' : 'dotted clear'} >
-            </SpecTable>
-            <Tip>💡提示：医保外项目以红色显示</Tip>
-            <Total>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
-          </Footer>
-          <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
-        </SpecForm>
-      )
-    }
   }
 }
 const SpecForm = styled(Form)`

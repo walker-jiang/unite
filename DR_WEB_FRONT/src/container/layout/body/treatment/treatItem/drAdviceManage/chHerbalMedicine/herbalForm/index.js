@@ -49,23 +49,43 @@ class Index extends Component {
   }
   /** [componentWillReceiveProps 当从知识库添加处方时会需要改函数] */
   componentWillReceiveProps(nextProps){
-    let buOrderDtlList = nextProps.buOrderDtlList;
-    if(JSON.stringify(this.props.buOrderDtlList) != JSON.stringify(nextProps.buOrderDtlList)){
+    if(JSON.stringify(nextProps.props.attachOrder) != '{}'){
+      let { buOrderDtlList, buRecipe } = nextProps.props.attachOrder;
       this.setState({
-        ...buOrderDtlList
+        herbalData: buOrderDtlList,
       });
+      if(JSON.stringify(buRecipe) != '{}'){
+        this.setState({
+          recipename: buRecipe.recipename,
+          remark: buRecipe.remark,
+          treatway: buRecipe.treatway,
+          countnum: buRecipe.countnum,
+          freq: { key: buRecipe.freqid, label: buRecipe.freqname}
+        });
+      }
     }
   };
   componentWillMount(){
-    let buOrderDtlList = this.props.buOrderDtlList;
-    console.log('buOrderDtlList', buOrderDtlList);
-    this.setState({
-      ...buOrderDtlList
-    });
     this.getDiagnoseData();
     this.getFrequency();
     if(this.props.initData){ // 修改、查看需要初始化数据
       this.getCHMedicineAdvice(this.props.orderid);
+    }else{ // 添加可以初始化数据
+      if(JSON.stringify(this.props.attachOrder) != '{}'){
+        let { buOrderDtlList, buRecipe } = this.props.attachOrder;
+        this.setState({
+          herbalData: buOrderDtlList,
+        });
+        if(JSON.stringify(buRecipe) != '{}'){
+          this.setState({
+            recipename: buRecipe.recipename,
+            remark: buRecipe.remark,
+            treatway: buRecipe.treatway,
+            countnum: buRecipe.countnum,
+            freq: { key: buRecipe.freqid, label: buRecipe.freqname}
+          });
+        }
+      }
     }
   };
   /** [getDiagnoseData 组件初始化获取加载诊断数据] */
@@ -149,57 +169,6 @@ class Index extends Component {
    * @return {[type]}              [void]
    */
   addHerbalData (herbalItem) {
-    // herbalItem = {
-    //   "baUsage": {
-    //     "ctstamp": "2018-07-05 14:52:40",
-    //     "orgid": "3",
-    //     "pinyin": "xianjian",
-    //     "seqno": 1,
-    //     "usagecode": 3,
-    //     "usagedesc": "先煎",
-    //     "usageid": 3,
-    //     "usagename": "先煎",
-    //     "useflag": "1",
-    //     "utstamp": "2018-07-16 17:18:40",
-    //     "utype": 2
-    //   },
-    //   "baseUnit": 1,
-    //   "ctstamp": "2018-08-28 10:07:45",
-    //   "defQty": 10,
-    //   "doseid": 7,
-    //   "dosename": "",
-    //   "freqname": "",
-    //   "hmSortid": 2,
-    //   "manufacturer": "1",
-    //   "manuid": "12",
-    //   "mediUnit": 1,
-    //   "medicinecode": 1117,
-    //   "medicineid": "1117",
-    //   "medicinename": "鸡矢藤",
-    //   "medinslevel": "01",
-    //   "medinsrem": "无",
-    //   "orgid": "1",
-    //   "otherPinyin": "test",
-    //   "pinyin": "test",
-    //   "remarks": "",
-    //   "seqno": 1,
-    //   "specialUsageid": 3,
-    //   "specification": "",
-    //   "suppid": "1",
-    //   "supplier": "1",
-    //   "unitprice": 1123,
-    //   "useflag": "1",
-    //   "utstamp": "2018-08-28 10:07:45",
-    //   "medinslevelDic": "一级",
-    //   "baseUnitDic": "克",
-    //   "key": 0,
-    //   "status": 0,
-    //   "usageid": 3,
-    //   "usagename": "先煎",
-    //   "exist": 1
-    // }
-    // herbalItem.usageid = herbalItem.baUsage ? herbalItem.baUsage.usageid : 9; // 从用法对象转换成字符串用法ID
-    // herbalItem.usagename = herbalItem.baUsage ? herbalItem.baUsage.usagename : '无'; // 从用法对象转换成字符串用法名称
     let { herbalData , showWay } = this.state;
     let formateItem = converItemToNeededCN(herbalItem, herbalData, 0);
     herbalItem.exist = 1
@@ -214,7 +183,6 @@ class Index extends Component {
     if(showWay == 'table'){
       this.addTableData.scrollTop = this.addTableData.scrollHeight; // 自动滚动到滚动区域的最底部
     }
-    // console.log('herbalItem', JSON.stringify(herbalItem));
     herbalData.push(formateItem);
     this.setState({ herbalData });
   }
@@ -246,7 +214,7 @@ class Index extends Component {
   }
   /**
    * [usageChange 某药的用法进行修改]
-   * @param  {[type]} combinedFormData [该药ID]
+   * @param  {[type]} combinedModifyFormData [该药ID]
    * @param  {[type]} newUsage [该药用法对象（包含名称、ID）]
    * @return {[type]}            [void]
    */
@@ -275,7 +243,6 @@ class Index extends Component {
   }
   render () {
     let { recipename, usagename, remark, treatway, countnum, freq, herbalData, buDiagnosisList, frequencyData, showWay, current} = this.state;
-    let buOrderDtlList = this.props.buOrderDtlList;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
@@ -454,7 +421,6 @@ class Index extends Component {
             showWay == 'list' ?
             <ListShow
               current={current}
-              buOrderDtlList={[]}
               pageSize={pagination.pageSize}
               herbalData={ herbalData }
               delHerbal={this.delHerbal}
@@ -462,7 +428,6 @@ class Index extends Component {
             :
             <TableShow
               current={current}
-              buOrderDtlList={[]}
               herbalData={ herbalData }
               delHerbal={this.delHerbal}
               dosageChange={this.dosageChange}

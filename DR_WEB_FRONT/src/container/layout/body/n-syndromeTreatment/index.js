@@ -15,7 +15,7 @@ export default class SyndromeTreatment extends Component {
     this.stepFunc = this.stepFunc.bind(this);
   };
   componentWillReceiveProps(){
-    self.setState({ current: 0 })
+    this.setState({ current: 0 })
   };
   getCaseData(){};
   getSyndromeData(registerid){

@@ -11,14 +11,14 @@ export default class Index extends Component {
     super(props);
     this.state = {
       showResult: false, // 是否显示浮窗
-      examineItemsData: [], // 检验项目数据数组
+      examineItemsData: [], // 适宜技术项目数据数组
       totalLines: 0, // 查询结果总行数
       curLine: 0, // 当前行,从0开始，-1表示未选中任何行
     };
     this.showResult = this.showResult.bind(this);
     this.hideResult = this.hideResult.bind(this);
   };
-  /* getExamineData 获取检验项目数据 */
+  /* getExamineData 获取适宜技术项目数据 */
   getExamineData(value){
     let params = {
       url: 'BaOrderSuitController/getList',
@@ -210,7 +210,7 @@ export default class Index extends Component {
                 rowClassName={(record, index)=>{
                   return record.status ? (record.status == 1 ? 'Selected' : 'checked') : 'unSelected';
                 }}
-                locale={{emptyText: '暂无检验项目数据' }}
+                locale={{emptyText: '暂无适宜技术项目数据' }}
                 columns={columns}
                 dataSource={examineItemsData}
                 pagination={false}
@@ -246,5 +246,5 @@ const SpecTable = styled(Table)`
 /*
 @作者：姜中希
 @日期：2018-08-22
-@描述：快速添加检验项目
+@描述：快速添加适宜技术项目
 */

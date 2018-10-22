@@ -84,12 +84,12 @@ function getDiagnoseDataSource(originData = [], type = 'now'){
 @描述：从对象中提取文本
 */
 /**
- * [convertAddFormData 将检验、检查、西医、材料表单项转为后台服务所需的表单数据]
+ * [combinedAddFormData 将检验、检查、西医、材料表单项转为后台服务所需的表单数据]
  * @param  {[type]} values   [表单数据]
  * @param  {[type]} itemData [项目数据（检验项、检查项、西医项、材料项）]
  * @return {[type]}          [格式化后的JOSN]
  */
-function convertAddFormData(values, itemData, type){
+function combinedAddFormData(values, itemData, type){
   let ordercontent = '';
   let feeall = 0;
   let self = this;
@@ -135,7 +135,7 @@ function convertAddFormData(values, itemData, type){
     "doctorid": window.sessionStorage.getItem('userid'),
     "orgid": window.sessionStorage.getItem('orgid'),
     "patientid": window.patientID,
-    "patientname": window.patientName,
+    "patientname": window.patientName, // ***************
     "patientno": "test", // 患者编号 暂空
     "registerid":window.registerID,
     "registerno": "12312" // his挂号流水号 暂空
@@ -152,14 +152,14 @@ function convertAddFormData(values, itemData, type){
     orgUserid: window.sessionStorage.getItem('userid'),
     orgid: window.sessionStorage.getItem('orgid'),
     parientid: window.patientID,  // 患者ID
-    patientname: window.patientName,  // 患者姓名
+    parientname: window.patientName,  // 患者姓名
     registerid: window.registerID, // 挂号ID
     orgUsername: window.sessionStorage.getItem('username'),
   }
   return paramsData;
 };
 /**
- * [combinedFormData 将检验、检查、西医、材料表单项转为后台服务所需的表单数据]
+ * [combinedModifyFormData 将检验、检查、西医、材料表单项转为修改后台服务所需的表单数据]
  * @param  {[type]}  values          [表单数据]
  * @param  {[type]}  itemData        [项目数据（检验项、检查项、西医项、材料项）]
  * @param  {[type]}  data            [修改前查询的原始的医嘱数据]
@@ -167,7 +167,7 @@ function convertAddFormData(values, itemData, type){
  * @param  {[type]}  buOrdmedical    [修改前查询的原始的医嘱套对象]
  * @return {[type]}                  [格式化后的JOSN]
  */
-function combinedFormData(values, itemData, data, buDiagnosisInfo, buOrdmedical){
+function combinedModifyFormData(values, itemData, data, buDiagnosisInfo, buOrdmedical){
   let ordercontent = '';
   let feeall = 0;
   let self = this;
@@ -181,7 +181,9 @@ function combinedFormData(values, itemData, data, buDiagnosisInfo, buOrdmedical)
     if(item.buOrderDtlList){ // 医嘱套
       ordercontent += item.orderSuitname + '、';
       buOrdmedicalSuitList.push(item);
-      feeall += item.feesum;
+      item.buOrderDtlList.forEach((itemChild) => {
+        feeall += itemChild.unitprice * itemChild.count;
+      });
     }else{ // 非医嘱套
       ordercontent += item.itemname + '、';
       feeall += item.unitprice * item.count;
@@ -263,4 +265,4 @@ function converItemToNeededCN(Item, ItemArray, type){
   delete Item.medicinename;
   return Item;
 };
-export { getDiagnoseText, getDiagnoseDataSource, convertAddFormData, combinedFormData, converItemToNeeded, converItemToNeededCN };
+export { getDiagnoseText, getDiagnoseDataSource, combinedAddFormData, combinedModifyFormData, converItemToNeeded, converItemToNeededCN };

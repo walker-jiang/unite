@@ -39,13 +39,12 @@ export default class Index extends Component {
       actionType: '', // modify、view、add
       orderid: '', // 当前医嘱ID
       showWay: 'table', // 展示形式
-      buOrderDtlList: [], // 辨证论治数据
+      attachOrder: [], // 辨证论治数据
       diagnoseText: '', // 诊断文本
     };
     this.actionManager = this.actionManager.bind(this);
     this.getData = this.getData.bind(this);
     this.submit = this.submit.bind(this);
-    this.modelData = this.modelData.bind(this);
     this.diagnoseUpdate = this.diagnoseUpdate.bind(this);
     window.noticeAddMedicalFunc = (params) => this.noticeAddMedicalFuncLocal(params);
   }
@@ -55,10 +54,14 @@ export default class Index extends Component {
    * @return {[type]}        [undefined]
    */
   noticeAddMedicalFuncLocal(params){
+    // let herbalData = JSON.parse(params);
+    // herbalData.forEach((item) => {
+    //   let formateItem = converItemToNeededCN(item, herbalData, 0);
+    // });
     this.setState({
       actionType: 'add', // modify、view、add
       orderid: '', // 当前医嘱ID
-      buOrderDtlList: {herbalData: JSON.parse(params)}, // 草药数据
+      attachOrder: {}, // 草药数据
     }, () => {
       this.chHerbalMedicine.handlePopOpen();
     });
@@ -164,21 +167,15 @@ export default class Index extends Component {
     this.inteligentTreat.handlePopClose()
   }
   //辨证论治组件“添加医嘱”按钮显示中药
-  loadClick (buOrderDtlList,type) {
+  loadClick (attachOrder,type) {
     if (type == 1) {
-      this.actionManager('add', {orderid:'', ordertype: 3}, buOrderDtlList)
+      this.actionManager('add', {orderid:'', ordertype: 3}, attachOrder)
     } else if (type == 2) {
-      this.actionManager('add', {orderid:'', ordertype: 4}, buOrderDtlList)
+      this.actionManager('add', {orderid:'', ordertype: 4}, attachOrder)
     } else if (type == 3) {
-      this.suitTechnology.handlePopOpen(buOrderDtlList,type)
+      this.suitTechnology.handlePopOpen(attachOrder,type)
     }
   }
-  // 初始化模板数据打开添加弹框
-  modelData(buOrderDtlList, ordertype){
-    // ordertype = 1,
-    buOrderDtlList = this.herbalSampleData();
-    this.actionManager('add', {orderid:'', ordertype: ordertype}, buOrderDtlList)
-  };
   previewClick (printData) {
     this.previewPrint.handlePopOpen(printData)
   }
@@ -188,7 +185,7 @@ export default class Index extends Component {
    * @param  {[type]} orderid    [携带数据(包含操作目标)]
    * @return {[type]}            [void]
    */
-  actionManager(actionType, record, buOrderDtlList = {}){
+  actionManager(actionType, record, attachOrder = {}){
     let that = this;
     if(actionType == 'delete'){ // 删除操作
       that.onDelete(record.orderid)
@@ -198,7 +195,7 @@ export default class Index extends Component {
       that.setState({
         actionType: actionType, // modify、view、add
         orderid: record.orderid, // 当前医嘱ID
-        buOrderDtlList: buOrderDtlList, //
+        attachOrder: attachOrder, //
       }, ()=>{
         // console.log('医嘱对象', record.ordertype);
         switch (record.ordertype) {
@@ -957,106 +954,6 @@ export default class Index extends Component {
   			}],
       }
   };
-  /** [herbalSampleData 中药数据项] */
-  herbalSampleData(){
-    return {
-    	herbalData: [
-        {
-        	"baUsage": {
-        		"ctstamp": "2018-07-05 14:52:40",
-        		"orgid": "3",
-        		"pinyin": "xianjian",
-        		"seqno": 1,
-        		"usagecode": 3,
-        		"usagedesc": "先煎",
-        		"usageid": 3,
-        		"usagename": "先煎",
-        		"useflag": "1",
-        		"utstamp": "2018-07-16 17:18:40",
-        		"utype": 2
-        	},
-        	"baseUnit": 1,
-        	"ctstamp": "2018-08-28 10:07:45",
-        	"defQty": 10,
-        	"doseid": 7,
-        	"dosename": "",
-        	"freqname": "",
-        	"hmSortid": 2,
-        	"manufacturer": "1",
-        	"manuid": "12",
-        	"mediUnit": 1,
-        	"medicinecode": 1117,
-        	"medicineid": "1117",
-        	"medicinename": "鸡矢藤",
-        	"medinslevel": "01",
-        	"medinsrem": "无",
-        	"orgid": "1",
-        	"otherPinyin": "test",
-        	"pinyin": "test",
-        	"remarks": "",
-        	"seqno": 1,
-        	"specialUsageid": 3,
-        	"specification": "",
-        	"suppid": "1",
-        	"supplier": "1",
-        	"unitprice": 1123,
-        	"useflag": "1",
-        	"utstamp": "2018-08-28 10:07:45",
-        	"medinslevelDic": "一级",
-        	"baseUnitDic": "克",
-        	"key": 0,
-        	"status": 0,
-        	"usageid": 3,
-        	"usagename": "先煎",
-        	"exist": 1
-        }
-      ],
-      recipename: '处方名称', // 处方名称
-      remark: '嘱托', // 嘱托
-      treatway: '开水煮', // 治疗方法
-      countnum: 3, // 付数
-      freq: {key: '1', label: '每日一次'}, // 频次
-    	"buDiagnosisList": [{
-  				"buDiagnosisDismainfList": [{
-  					"ctstamp": "2018-09-22 10:55:46",
-  					"diagnosisid": "201837584946816406",
-  					"diseaseid": 18,
-  					"id": "201837584946816407",
-  					"manifcode": "ZBXM10",
-  					"manifdesc": "身热，微恶风，汗少，肢体酸重或疼痛，头昏重胀痛，咳嗽痰黏，鼻流浊涕，心烦口渴，或口中黏腻，渴不多饮，",
-  					"manifid": 29,
-  					"manifname": "暑湿伤表证",
-  					"registerid": "201837493347470156",
-  					"useflag": "1",
-  					"utstamp": "2018-09-22 10:55:46"
-  				}],
-  				"cmDiagnosisType": null,
-  				"codetype": "",
-  				"ctstamp": "2018-09-22 10:55:46",
-  				"diacode": "",
-  				"diadesc": "",
-  				"diagnosisCode": "BNW010",
-  				"diagnosisName": "感冒",
-  				"diagnosisNo": null,
-  				"diagnosisType": null,
-  				"diagnosisWay": 1,
-  				"diagnosisid": "201837584946816406",
-  				"diaid": null,
-  				"dianame": "",
-  				"discode": "BNW010",
-  				"disdesc": "感冒",
-  				"diseaseid": 18,
-  				"disname": "感冒",
-  				"doubtDiaType": "",
-  				"mainDiaType": "",
-  				"registerid": "201837493347470156",
-  				"seqno": 4,
-  				"useflag": "1",
-  				"utstamp": "2018-09-22 10:55:46",
-  				"diagnosisWayDic": "中医"
-  			}],
-      }
-  };
   /** [PatentSampleData 中成药数据项] */
   PatentSampleData(){
     return {
@@ -1173,7 +1070,7 @@ export default class Index extends Component {
     this.setState({ diagnoseText });
   };
   render() {
-    let { dataSource, tatalRecords, currentPage, actionType, orderid, buOrderDtlList , showWay, diagnoseText } = this.state;
+    let { dataSource, tatalRecords, currentPage, actionType, orderid, attachOrder , showWay, diagnoseText } = this.state;
     let that = this;
     let selectedRows = dataSource.filter((item) => item.checkState);
     let pagination = {
@@ -1196,12 +1093,11 @@ export default class Index extends Component {
         that.getData(nextPage);
       },
     };
-    // alert('xin123', buOrderDtlList);
     let openProps = {
       actionType: actionType,
       orderid: orderid,
       reloadList: this.getData,
-      buOrderDtlList: buOrderDtlList,
+      attachOrder: attachOrder,
       selectedRows: selectedRows
     };
     return (

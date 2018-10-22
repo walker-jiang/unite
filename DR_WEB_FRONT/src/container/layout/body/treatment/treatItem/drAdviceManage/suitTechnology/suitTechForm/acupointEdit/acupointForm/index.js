@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Form, Select, Button, Row, Col, Pagination, Radio } from 'antd';
 import TempAddSubtract from './tempAddSubtract';
-import QuickAddHerb from './quickAddHerb';
+import QuickAddAcupoint from './quickAddAcupoint';
+import TableShow from './showWay/tableShow';
 import Input from 'components/dr/input/basicInput';
 import TipModal from 'components/dr/modal/tip';
 import down from './down.png';
@@ -11,7 +12,6 @@ import pen from './pen.png';
 import selectSty from 'components/antd/style/select';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import paginationSty from 'components/antd/style/pagination';
-import TableShow from './showWay/tableShow';
 
 const FormItem = Form.Item;
 const Option = Select.Option;
@@ -86,7 +86,7 @@ class Index extends Component {
   getOperateWay(){
     let params = {
       url: 'baDatadict/getList',
-      server_url: 'http://10.192.1.115:8765/TCMAE/',
+      server_url: config_InteLigenTreat_url+'TCMAE/',
       data: {
         keyword: ''
       }
@@ -146,7 +146,7 @@ class Index extends Component {
   getSubstract(keyword){
     let params = {
       url: 'tcmTreatdiseaseSt/getIdNameList',
-      server_url: 'http://10.192.1.115:8765/TCMAE/',
+      server_url: config_InteLigenTreat_url+'TCMAE/',
       data: {
         TreatdiseaseStName: keyword
       }
@@ -166,7 +166,7 @@ class Index extends Component {
     console.log('this.state.substractID', this.state.substractID);
     let params = {
       url: 'tcmTreatacupoint/getIdNameList',
-      server_url: 'http://10.192.1.115:8765/TCMAE/',
+      server_url: config_InteLigenTreat_url+'TCMAE/',
       data: {
         treatId: this.state.substractID,
       }
@@ -238,7 +238,7 @@ class Index extends Component {
         }
     };
     return (
-      <SpecForm className='not-draggable' onClick={()=>{this.quickAddHerb.hideResult()}}>
+      <SpecForm className='not-draggable' onClick={()=>{this.quickAddAcupoint.hideResult()}}>
         <Row>
           <Col span={24}>
             <Title>治疗项/治疗明细：
@@ -253,7 +253,7 @@ class Index extends Component {
               {...separateFormItemLayout}
               label="执行科室：">
               {getFieldDecorator('execDept', {
-                initialValue: deptData.length ? ( { key: deptData[0].deptid, label: deptData[0].deptname } ) : { key: '', label: '' }
+                initialValue: deptData.length ? ( acupointDetail.deptid ? { key: acupointDetail.deptid, label: acupointDetail.deptname }:  { key: deptData[0].deptid, label: deptData[0].deptname } ) : { key: '', label: '' }
               })(
                 <SpecSelect labelInValue>
                   {
@@ -272,7 +272,7 @@ class Index extends Component {
               {...separateFormItemLayout}
               label="频次：">
               {getFieldDecorator('frequency', {
-                initialValue: (frequencyData.length ? {key: frequencyData[0].freqcode, label: frequencyData[0].freqname} : {key: '', label: ''})
+                initialValue: (frequencyData.length ? ( acupointDetail.freqid ? {key: acupointDetail.freqid, label: acupointDetail.freqname} : {key: frequencyData[0].freqcode, label: frequencyData[0].freqname}) : {key: '', label: ''})
               })(
                 <SpecSelect labelInValue>
                   {
@@ -291,7 +291,7 @@ class Index extends Component {
               {...separateFormItemLayout}
               label="天数：">
               {getFieldDecorator('takedays', {
-                initialValue: 1,
+                initialValue: acupointDetail.takedays ? acupointDetail.takedays : 1,
               })(
                 <SpecSelect>
                   <Option value={1}>1天</Option>
@@ -356,7 +356,7 @@ class Index extends Component {
               {getFieldDecorator('illSymbal', {
                 initialValue: acupointsData.length ? acupointsData[0].id : ''
               })(
-                <SpecSelect placeholder='选择穴位' onDropdownVisibleChange={() => {alert()}}>
+                <SpecSelect placeholder='选择穴位' onDropdownVisibleChange={() => {}}>
                 {
                   acupointsData.map((item, index) => <Option key={index} value={item.id}>{item.acupointName}</Option>)
                 }
@@ -382,7 +382,7 @@ class Index extends Component {
               </SpecFormItem>
           </Col>
           <Col span={16}>
-            <QuickAddHerb placeholder='请输入穴位首字母快速添加' icon='true' ref={ref => this.quickAddHerb = ref} getQuickData = {this.addHerbalData.bind(this)}/>
+            <QuickAddAcupoint placeholder='请输入穴位首字母快速添加' icon='true' ref={ref => this.quickAddAcupoint = ref} getQuickData = {this.addHerbalData.bind(this)}/>
           </Col>
         </Row>
         <Footer>

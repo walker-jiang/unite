@@ -7,7 +7,7 @@ import buttonSty from 'components/antd/style/button';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import TipModal from 'components/dr/modal/tip';
 
-export default class Index extends Component {
+export default class ChPatentMedicine extends Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -44,32 +44,28 @@ export default class Index extends Component {
     }
   };
   addPatentMedicine(values, medicineData){
-    let baMedicines = this.props.buOrderDtlList;
-    if(baMedicines != undefined){
-      // let mergeArray = baMedicines.concat(medicineData);//合并数组
-      console.log('合并数组',medicineData)
       let medicineNameData = [];
-      let price = 0;
+      let feeall = 0;
       let self = this;
       // 草药对象
-      let formatedMedicineData = medicineData.map((item, index) => {
-        medicineNameData.push(item.medicinename)
-        price += item.unitprice * (item.count ? item.count : item.defQty);
-        item.baseUnit = item.baseUnit;
-        item.count = item.defQty;
-        item.dosage = item.defQty;
-        item.doseid = item.doseid;
-        item.miType = '';
-        item.dosename = item.dosename;
-        item.itemcode = item.medicinecode;
-        item.itemid = item.medicineid;
-        item.itemname = item.medicinename;
-        item.itemno = index;
-        item.itemtype = 0; // 中药0
-        item.unitprice = item.unitprice;
-        item.specification = item.specification;
-        item.useflag = item.useflag;
-        return item;
+      medicineData.forEach((item, index) => {
+        medicineNameData.push(item.itemname)
+        feeall += item.unitprice * item.count;
+        // item.baseUnit = item.baseUnit;
+        // item.count = item.defQty;
+        // item.dosage = item.defQty;
+        // item.doseid = item.doseid;
+        // item.miType = '';
+        // item.dosename = item.dosename;
+        // item.itemcode = item.medicinecode;
+        // item.itemid = item.medicineid;
+        // item.itemname = item.medicinename;
+        // item.itemno = index;
+        // item.itemtype = 0; // 中药0
+        // item.unitprice = item.unitprice;
+        // item.specification = item.specification;
+        // item.useflag = item.useflag;
+        // return item;
       })
       let prescriptionContent = medicineNameData.join('、')
       let patientId = window.patientID;
@@ -103,13 +99,13 @@ export default class Index extends Component {
         parientname: patientName,  // 患者姓名
         orgUserid: window.sessionStorage.getItem('userid'),
         orgid: window.sessionStorage.getItem('orgid'),
-        feeall: price,
+        feeall: feeall,
         orgUsername: window.sessionStorage.getItem('username'),
         ordertype: '4',   // 医嘱类型
         ordercontent: prescriptionContent, // 医嘱内容
         orderstate: '1',  // 缴费状态 1 未缴费
         buRecipe: buRecipe, // 处方
-        buOrderDtlList: formatedMedicineData,   // 药品信息
+        buOrderDtlList: medicineData,   // 药品信息
       }
       let params = {
         url: 'BuOrderController/postData',
@@ -122,7 +118,6 @@ export default class Index extends Component {
         that.props.reloadList();
       };
       ajaxGetResource(params, success);
-    }
   };
   modifyPatentMedicine(values, medicineData){
     let buRecipe = this.form.state.buRecipe;
@@ -130,26 +125,26 @@ export default class Index extends Component {
     let data = this.form.state.data;
 
     let medicineNameData = [];
-    let price = 0;
+    let feeall = 0;
     let self = this;
     // 药品数据
-    let formatMedicineData = medicineData.map((item, index) => {
-      medicineNameData.push(item.medicinename)
-      price += item.unitprice * (item.count ? item.count : item.defQty);
-      item.baseUnit = item.baseUnit;
-      item.dosage = item.defQty;
-      item.doseid = item.doseid;
-      item.miType = '';
-      item.dosename = item.dosename;
-      item.itemcode = item.medicinecode;
-      item.itemid = item.medicineid;
-      item.itemname = item.medicinename;
-      item.itemno = index;
-      item.itemtype = 0; // 中药0
-      item.unitprice = item.unitprice;
-      item.specification = item.specification;
-      item.useflag = item.useflag;
-      return item;
+    medicineData.forEach((item, index) => {
+      medicineNameData.push(item.itemname)
+      feeall += item.unitprice * item.count;
+      // item.baseUnit = item.baseUnit;
+      // item.dosage = item.defQty;
+      // item.doseid = item.doseid;
+      // item.miType = '';
+      // item.dosename = item.dosename;
+      // item.itemcode = item.medicinecode;
+      // item.itemid = item.medicineid;
+      // item.itemname = item.medicinename;
+      // item.itemno = index;
+      // item.itemtype = 0; // 中药0
+      // item.unitprice = item.unitprice;
+      // item.specification = item.specification;
+      // item.useflag = item.useflag;
+      // return item;
     })
     let prescriptionContent = medicineNameData.join('、')
     // 诊断数据
@@ -161,8 +156,8 @@ export default class Index extends Component {
     // 最终医嘱数据
     data.buDiagnosisInfo = buDiagnosisInfo; // 诊断信息
     data.buRecipe = buRecipe; // 处方信息
-    data.buOrderDtlList = formatMedicineData; // 处方信息
-    data.feeall = price; // 总费用
+    data.buOrderDtlList = medicineData; // 处方信息
+    data.feeall = feeall; // 总费用
     data.ordercontent = prescriptionContent;  // 医嘱内容
     let params = {
       url: 'BuOrderController/putData',

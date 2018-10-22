@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react'; // react核心
+import { withRouter } from 'react-router-dom';
 import { Steps } from 'antd';
 import header from './header.png';
 import re_select from './re_select.png';
@@ -12,7 +13,7 @@ import Finish from './finish';
 import Icon from 'components/dr/icon';
 const Step = Steps.Step;
 
-export default class Cure extends Component {
+class Cure extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -126,7 +127,7 @@ export default class Cure extends Component {
                 <Label>医保类型 :</Label>
                 <Value>{patienttypeDic}</Value>
               </Info>
-              <ActionButton>
+              <ActionButton onClick={() => { this.props.history.push('/Layout/syndromeTreatment')}}>
                 <img src={re_select} />
                 <Value>重选患者</Value>
               </ActionButton>
@@ -260,6 +261,7 @@ const Value = styled.div`
   text-overflow: ellipsis;
 `;
 const ActionButton = Info.extend`
+  cursor: pointer;
   width: 60%;
   padding: 5px 0px;
   border-top: 1px solid #CCCCCC;
@@ -274,3 +276,4 @@ const Body = styled.div`
 @日期：2018-10-15
 @描述：辨证论治智能辩证、智能论治、完成组件容器
 */
+export default withRouter(Cure);
