@@ -91,9 +91,9 @@ export default class Index extends Component {
 
     let paramsData = {
       buDiagnosisInfo: buDiagnosisInfo,
-      parientid: patientId,  // 患者ID
+      patientid: patientId,  // 患者ID
       registerid: window.registerID, // 挂号ID
-      parientname: patientName,  // 患者姓名
+      patientname: patientName,  // 患者姓名
       orgUserid: window.sessionStorage.getItem('userid'),
       orgid: window.sessionStorage.getItem('orgid'),
       feeall: price * values.doseNum,
@@ -118,6 +118,9 @@ export default class Index extends Component {
       url: 'BuOrderController/postData',
       type: 'post',
       data: JSON.stringify(paramsData)
+    }
+    if(this.props.syndrome){ // 辨证论治添加处方
+      params.server_url = config_InteLigenTreat_url+'TCMAE/';
     }
     let that = this;
     function success(res) {
@@ -162,6 +165,9 @@ export default class Index extends Component {
       url: 'BuOrderController/putData',
       type: 'put',
       data: JSON.stringify(data)
+    }
+    if(this.props.syndrome){ // 辨证论治添加处方
+      params.server_url = config_InteLigenTreat_url+'TCMAE/';
     }
     let that = this;
     function success(res) {

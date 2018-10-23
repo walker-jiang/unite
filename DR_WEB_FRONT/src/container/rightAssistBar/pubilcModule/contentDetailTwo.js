@@ -17,52 +17,36 @@ class ContentDetailTwoItem extends Component {
   unfoldAll = (isUnfoldAll) => {
     this.setState({isUnfoldAll:!isUnfoldAll})
   }
-  getcmdrugs = () =>{
-    var self = this;
-    let params = {
-      imtreatprelist:JSON.stringify(self.props.item),
-      bu:self.props.bu
-    };
-    function callBack(res){
-      if(res.flag == 1){
-        //alert("草药转换成功==============");
-        self.props.changeInitData(res.data);
-      }else{
-        console.log('草药转换失败', res);
-      }
-    };
-    doctorAdviceService.getcmdrugs(params, callBack);
-  }
   render() {
     var { isUnfoldAll } = this.state;
     const { content } = this.props;
     console.log("临证加减为========",content);
     return (
-      <div>
-      <div className="content-detail-two-Button">
-        <Button onClick={()=>{ this.getcmdrugs(this.props.item) }}>引入</Button>
-      </div>
-      <span className="content-detail-two-Button-p" onClick={()=>{ this.unfoldAll(isUnfoldAll) }}>
-        收起<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" />
-      </span>
-      <hr/>
-      {
-        isUnfoldAll
-        ?
-        content.map((item,index)=>{
-          return(
-            <div className="content-detail-two-div" key={index}>
-              <p>{index+1}.病情：</p>
-              <p>{item.severity}</p>
-              <p>加减药：</p>
-              <p>{item.drugNamesList}</p>
-              <hr className="hr2"/>
-            </div>
-          )
-        })
-        :
-        null
-      }
+      <div style={{marginBottom:-25}}>
+        <div className="content-detail-two-Button">
+          <Button onClick={()=>{ this.props.getcmdrugs(this.props.item) }}>引入</Button>
+        </div>
+        <span className="content-detail-two-Button-p" onClick={()=>{ this.unfoldAll(isUnfoldAll) }}>
+          收起<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" />
+        </span>
+        <hr/>
+        {
+          isUnfoldAll
+          ?
+          content.map((item,index)=>{
+            return(
+              <div className="content-detail-two-div" key={index}>
+                <p>{index+1}.病情：</p>
+                <p>{item.severity}</p>
+                <p>加减药：</p>
+                <p>{item.drugNamesList}</p>
+                <hr className="hr2"/>
+              </div>
+            )
+          })
+          :
+          null
+        }
       </div>
 
     );
@@ -104,7 +88,7 @@ export default class ContentDetail extends Component {
   cutOut = (value) =>{
     //console.log("value=======",value);
     if(value == "" || value == null || JSON.stringify(value) == "undefined" ){
-      return " ";//空格占位
+      return "无";//空格占位
     }else{
       if(value.length > 24){
         return value.substr(0,24)+"...";
@@ -117,18 +101,35 @@ export default class ContentDetail extends Component {
     console.log("pullDown====================",unfold);
     this.setState({unfold:!unfold});
   }
+  getcmdrugs = () =>{
+    var self = this;
+    let params = {
+      imtreatprelist:JSON.stringify(self.props.item),
+      bu:self.props.bu
+    };
+    function callBack(res){
+      if(res.flag == 1){
+        //alert("草药转换成功==============");
+        //* 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
+        self.props.changeInitData(res.data,3);
+      }else{
+        console.log('草药转换失败', res);
+      }
+    };
+    doctorAdviceService.getcmdrugs(params, callBack);
+  }
   render() {
     var { isCut, isUnfoldAll, drugName, treatname, therapy, four, buImlistEntities, item, unfold  } = this.state;
-    //console.log("this.props.item====",this.props.item);
+    console.log("this.props.item====",item.therapy == "");
     return (
       <div>
-        <div className="content-detail-two">
+        <div className="content-detail-two" style={{paddingBottom:25}}>
           <p onClick={()=>this.unfold("drugName",drugName)}><Icon type={drugName?"down":"right"}/>主方：</p>
-          <p>{ drugName?item.drugName:this.cutOut(item.drugName) }</p>
+          <p>{ drugName?(item.drugName == ""?"无":item.drugName):this.cutOut(item.drugName) }</p>
           <p onClick={()=>this.unfold("treatname",treatname)}><Icon type={treatname?"down":"right"}/>主治：</p>
-          <p>{ treatname?item.treatname:this.cutOut(item.treatname) }</p>
+          <p>{ treatname?(item.treatname == ""?"无":item.treatname):this.cutOut(item.treatname) }</p>
           <p onClick={()=>this.unfold("therapy",therapy)}><Icon type={therapy?"down":"right"}/>治则治法：</p>
-          <p>{ therapy?item.therapy:this.cutOut(item.therapy) }</p>
+          <p>{ therapy?(item.therapy == ""?"无":item.therapy):this.cutOut(item.therapy) }</p>
           {/*
             <p onClick={()=>this.unfold("four",four)}><Icon type={four?"down":"right"}/>用法/频次：</p>
             <p>{ four?item.four:this.cutOut(item.four) }</p>
@@ -142,9 +143,15 @@ export default class ContentDetail extends Component {
               bu={this.props.bu}
               content={item.buImlistEntities}
               changeInitData={this.props.changeInitData}
+              getcmdrugs = {this.getcmdrugs}
             />
             :
-            <p style={{fontSize:12}}>无</p>
+            <div style={{fontSize:12}}>
+              <p style={{color:'#333333',fontWeight:500}}>无</p>
+              <div className="content-detail-two-Button">
+                <Button onClick={()=>{ this.getcmdrugs(item) }}>引入</Button>
+              </div>
+            </div>
           }
         </div>
       </div>

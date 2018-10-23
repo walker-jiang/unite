@@ -20,7 +20,7 @@ const Container = styled.div`
   align-items: center;
 `;
 const StyledLink = styled(Link)`
-  padding: 0px 12px;
+  padding: 0px 10px;
   height: 17px;
   display: flex;
   align-items: center;

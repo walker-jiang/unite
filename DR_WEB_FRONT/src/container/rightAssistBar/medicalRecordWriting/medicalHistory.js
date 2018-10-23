@@ -8,6 +8,7 @@ import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, A
 import './style/rightAssistBar.less';
 import ContentDetail from '../pubilcModule/contentDetail.js';
 import medicalRWService from '../service/medicalRWService.js';
+import zanwunerong from './style/zanwunerong.png';
 const Search = Input.Search;
 
 export default class template extends Component {
@@ -121,6 +122,8 @@ export default class template extends Component {
         <div className="medicalHistory_data">
           <p className="data_p">共<span>{content.length}</span>次病历记录</p>
           {
+            content.length != 0
+            ?
             content.map((item,index)=>{
               return(
                 <div className="medicalHistory_content" key={index}>
@@ -142,6 +145,8 @@ export default class template extends Component {
                 </div>
               )
             })
+            :
+            <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据，该病人没有历史病历</center>
           }
         </div>
       </div>

@@ -36,7 +36,6 @@ export default class TestResults extends Component {
       url: '',
       openKeys: ['2018'],
       time: '',
-      yearSeven: [],
       yearEight: [],
       bodyType: '',
       performance: '',
@@ -48,14 +47,24 @@ export default class TestResults extends Component {
       echartLabel: '',
       echartValue: '',
       imgUrl: '',
-      printDataSource: [],//传给后台打印数据
+      printDataSource: []
     };
     this.handClick = this.handClick.bind(this);
+    window.RportPrintCure = (params) => this.RportPrintCure(params)
   };
+
   handClick(){
-    let pram = 0;
+    let pram = 3;
     this.props.onToggle(pram);
   }
+
+  /**
+   * [RportPrintCure 从客户端打印回调函数]
+   * @param {[type]} params [返回打印是否完成]
+   */
+  RportPrintCure(params){
+    console.log('返回打印是否完成',params);
+  };
 
   //加载时间菜单
   getTimeMenuData(){
@@ -174,7 +183,7 @@ export default class TestResults extends Component {
     })
   }
 
-    iconClick(){
+  iconClick(){
     // 显示隐藏左侧菜单
     if(this.state.display == 'none'){
       this.setState({
@@ -187,23 +196,19 @@ export default class TestResults extends Component {
         status: 0
       })
     }
-    }
+  }
 
   printClick(){
-    // 打印
-    // var LODOP=getLodop();
-    // LODOP.SET_PRINT_PAGESIZE(2,2100,2970,"A4");
-    // LODOP.SET_PRINT_STYLE("FontSize",12);
-    // LODOP.SET_PRINT_STYLE("Bold",1);
-    // LODOP.ADD_PRINT_HTM(0,0,1000,1900,document.getElementById("testResult").innerHTML);
-    // LODOP.PREVIEW();
-    //LODOP.PRINT();
     let printDataSource = this.state.printDataSource;
     let time = this.state.time || this.state.yearEight[0];
     let { sexDesc, name, age } = this.props;
-    console.log('this.props;',this.props.sexDesc,this.props.name,this.props.age);
-    let add = printDataSource.push({time: time, sexDesc: sexDesc, name: name, age: age});
-    console.log('printDataSource',printDataSource);
+    let patientYear = age.substr(0,4);
+    var date=new Date;
+    var year=date.getFullYear(); 
+    let patientAge = year - patientYear;
+    let newData={ name, time, sexDesc, patientAge, ...printDataSource }
+    console.log('newData',JSON.stringify(newData));
+    window.reportPrint(1,JSON.stringify(newData))
   }
 
   pdfClick(){
@@ -305,6 +310,11 @@ export default class TestResults extends Component {
 
   render() {
     let { imgUrl, url, status, yearEight, bodyType, performance, diet, motion, reminder, lifeWay} = this.state;
+    let sexDesc = this.props.sexDesc;
+    let name = this.props.name;
+    let patientAge = this.props.patientAge;
+    let phone = this.props.phone;
+    let time = this.state.time?this.state.time:this.state.yearEight[0];
     let s = null;
     if(status == 0){
       s = history
@@ -336,41 +346,17 @@ export default class TestResults extends Component {
     return (
       <div id="testResult" style={styles.names}>
           <Row type="flex" justify="start" style={styles.rowMarginTop}>
-            {/* <Col lg={24} xl={24} xxl={24}>
-              <div>
-                <div>
-                  <img src={duihao} style={styles.duihao}/>
-                  <span style={styles.testTip}>该患者本次体质辨析测评已完成，结果如下：</span>
-                </div>
-                <div>
-                  <img src={imgUrl} style={styles.erweima}/>
-                </div>  
-                <div id="noPrint" style={styles.testResult2}>
-                  <img src={s} style={styles.history}
-                  onClick={this.iconClick.bind(this)}/>&nbsp;&nbsp;&nbsp;&nbsp;
-                  <img src={xian} style={styles.xian}/>&nbsp;&nbsp;&nbsp;&nbsp;
-                  <img src={test} style={styles.test}
-                  onClick={this.handClick}/>&nbsp;&nbsp;&nbsp;&nbsp;
-                  <img src={xian} style={styles.xian}/>&nbsp;&nbsp;&nbsp;&nbsp;
-                  <img src={printImages} style={styles.printImages} id="snapshotButton"
-                  onClick={this.printClick.bind(this)}/>&nbsp;&nbsp;&nbsp;&nbsp;
-                  <img src={xian} style={styles.xian}/>&nbsp;&nbsp;&nbsp;&nbsp;
-                  <img src={exportFile} style={styles.exportFile}
-                  onClick={this.pdfClick.bind(this)}/>&nbsp;&nbsp;&nbsp;&nbsp;
-                </div>
-              </div>
-            </Col> */}
             <Col lg={2} xl={2} xxl={2} offset={1}>
               <div>
                 <img src={duihao} style={styles.duihao}/>
               </div>
             </Col>  
-            <Col lg={8} xl={8} xxl={8} style={styles.long}>
+            <Col lg={14} xl={14} xxl={14} style={styles.long}>
               <div>
-                <span style={styles.testTip}>该患者本次体质辨析测评已完成，结果如下：</span>
-                </div>
+                <span style={styles.testTip}>该患者本次体质辨析测评已完成，结果如下(时间：{time})：</span>
+              </div>
             </Col>    
-            <Col lg={2} xl={2} xxl={2} offset={6}> 
+            <Col lg={1} xl={1} xxl={1} offset={1}> 
                 <img src={imgUrl} style={styles.erweima}/>
             </Col>  
             <Col lg={5} xl={5} xxl={5} style={styles.rightImage}> 
@@ -391,8 +377,16 @@ export default class TestResults extends Component {
           </Row>
           <Row type="flex" justify="start">
             <Col lg={24} xl={24} xxl={24}>
+              <div style={styles.patientSecond}>
+                <span style={styles.patientText}>测评患者:</span>
+                <span style={styles.patientMessage}>{name}&nbsp;&nbsp;/&nbsp;&nbsp;{sexDesc}&nbsp;&nbsp;/&nbsp;&nbsp;{patientAge}&nbsp;&nbsp;/&nbsp;&nbsp;{phone}</span>
+              </div>
+            </Col>
+          </Row>
+          <Row type="flex" justify="start">
+            <Col lg={24} xl={24} xxl={24}>
               <div style={styles.flexStyle}>
-                <div className="firstBorder" style={{display:this.state.display}}>
+                <div style={styles.firstBorder} style={{display:this.state.display}}>
                   <div style={styles.historyRemember}>
                     <p style={styles.fontStyle}>• 历史测评记录 </p>
                     <img src={his} style={styles.his}/>
@@ -402,7 +396,7 @@ export default class TestResults extends Component {
                   </div>
                 </div>
                 <div style={styles.threeBorder}>
-                  <ScrollArea height={170}>
+                  <ScrollArea height={222}>
                     <div style={styles.allStyle}>
                       <div style={styles.allStyle1}>
                         <div style={styles.jielun}>
@@ -427,7 +421,7 @@ export default class TestResults extends Component {
                         </div>
                         <div id="echartBorder" style={styles.echartThink}>
                           <img style={styles.snapshotImageElement} src={url}/>
-                          <canvas id="canvas" width="500" height="178">canvas not supported</canvas>
+                          <canvas id="canvas" style={styles.canvasImage} width="500" height="178">canvas not supported</canvas>
                         </div>
                       </div>
                     </div>
@@ -463,8 +457,6 @@ export default class TestResults extends Component {
               </div>
             </Col>
           </Row>
-
-
       </div>
     );
   }
@@ -477,8 +469,16 @@ export default class TestResults extends Component {
 */
 
 const styles = {
+  canvasImage:{
+    backgroundColor: 'white'
+  },
+  firstBorder: {
+    marginTop: '3%'
+  },
   names:{
-    overflow: 'hidden'
+    overflow: 'hidden',
+    width: '100%',
+    height: 'cal(100% - 400px)'
   },
   testResult2:{
     float: 'right',
@@ -511,7 +511,7 @@ const styles = {
     // marginLeft: '1.5%'
   },
   erweima: {
-    width: '8rem',
+    width: '4rem',
     // marginLeft: '74rem',
     // marginTop: '-5rem'
   },
@@ -602,19 +602,21 @@ const styles = {
     marginTop: '0.7rem'
   },
   advice:{
-    marginTop: '1.3%',
-    marginLeft: '-0.5%'
+    marginTop: '1rem',
+    marginLeft: '-0.8rem',
+    position: 'relative'
   },
   adviceP:{
-    marginLeft: '1.7%',
-    marginTop: '-1.6%',
+    marginLeft: '2rem',
+    marginTop: '-1.8rem',
     color: 'black',
     fontStyle: 'normal',
-    fontSize: '14px'
+    fontSize: '14px',
+    position: 'relative'
   },
   xiatu:{
-    marginTop: '-2.4%',
-    marginLeft: '-0.5%'
+    marginTop: '-2rem',
+    marginLeft: '-0.8rem'
   },
   ul1:{
     color: '#1A76D1',
@@ -682,5 +684,25 @@ const styles = {
     width: '33px',
     height: '34px',
     backgroundColor:'white'
+  },
+  patientText:{
+    fontFamily: 'MicrosoftYaHei, Microsoft YaHei',
+    fontWeight: '400',
+    fontStyle: 'normal',
+    fontSize: '12px',
+    color: '#666666',
+  },
+  patientMessage: {
+    fontFamily: 'MicrosoftYaHei,Microsoft YaHei',
+    fontWeight: '400',
+    fontStyle: 'normal',
+    fontSize: '12px',
+    color: '#0A6ECB',
+    marginLeft: '1rem'
+  },
+  patientSecond: {
+    display: 'flex',
+    marginLeft: '4rem',
+    marginTop: '1rem'
   }
 };

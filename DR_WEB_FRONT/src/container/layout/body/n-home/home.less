@@ -1,9 +1,10 @@
 
 .home{
+  height: calc(100% - 50px);
   @import "./iconfont/iconfont.css";
   :global(.anticon){
     &:before{
-      font-family:"anticon","iconfont" !important;
+      font-family:"iconfont1" !important;
     }
   }
   .dian{
@@ -28,6 +29,7 @@
       margin: 0;
     }
     p:nth-child(1){
+      color:#666666;
       font-size: 16px;
     }
     p:nth-child(2){
@@ -53,7 +55,11 @@
     margin: 0;
   }
   .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab{
-    border-radius: 10px 10px 0 0
+    border-radius: 10px 10px 0 0;
+    line-height: 30px;
+    width:105px;
+    text-align: center;
+    margin-right: 10px;
   }
   .ant-table-tbody > tr > td{
     border-bottom: 1px dashed #D7D7D7
@@ -75,4 +81,7 @@
   .ant-table-pagination.ant-pagination{
     margin:  7px 10px 7px 0;
   }
+}
+.ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-nav-container {
+    height: 30px;
 }

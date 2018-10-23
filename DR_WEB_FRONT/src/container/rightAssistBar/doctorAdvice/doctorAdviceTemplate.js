@@ -77,8 +77,9 @@ export default class template extends Component {
     ];
     content={
       data:newItem,
+      temname:data.temname,
       diagnose:diagnose,
-      temlevelDic:temlevelDic,
+      temlevelDic:temlevelDic == ""?"未知模板":temlevelDic,
       initData:data
     };
     console.log("==================",content);
@@ -246,7 +247,7 @@ export default class template extends Component {
             </Col>
           </Row>
         </div>
-        <div className="data">
+        <div className="data" style={{backgroundColor:'#F2F2F2'}}>
           {
             isCut
             ?
@@ -256,15 +257,18 @@ export default class template extends Component {
               :
               content.map((item,index)=>{
                 return(
-                  <div className="content" key={index}>
-                    <div className="content-title">
+                  <div className="content" key={index} style={{marginBottom:20}}>
+                    <div className="content-title" style={{height:50,marginBottom:10}}>
                       <Row>
-                        <Col span={12}><p className="content-p"><div dangerouslySetInnerHTML = {{ __html:item.diagnose }}></div></p></Col>
+                        <Col span={12}><p className="content-p"><span style={{fontWeight:700}} dangerouslySetInnerHTML = {{ __html:item.temname }}></span></p></Col>
                         <Col span={4}><p className="content-p-two">• {item.temlevelDic}</p></Col>
                         <Col span={8}>
                           <Button onClick={()=>{ this.importTem(item) }}>引入模板</Button>
                           <Divider type="vertical" />
                         </Col>
+                      </Row>
+                      <Row>
+                        <Col span={24}>诊断:{item.diagnose}</Col>
                       </Row>
                     </div>
                     <ContentDetailSeven changeInitData ={this.changeInitData} item={item.data} unfold={unfold}/>

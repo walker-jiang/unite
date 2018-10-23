@@ -44,6 +44,10 @@ class Index extends Component {
     ajaxGetResource(params, callBack);
   };
   submit = (e) =>{
+    const { handSonsson } = this.props
+      if(handSonsson){
+        handSonsson(1)
+      }
     let baPatient = this.state.baPatient;
     let basicOperation = this.props.basicOperation;
     let finalBaisicInfo = deepClone(baPatient); // 添加修改这个初始化都没毛病
@@ -75,13 +79,14 @@ class Index extends Component {
       function callBack(res){
         if(res.result){
           self.saveTip.showModal(2);
-          self.props.history.push('/Layout/patientArchives');
+          // self.props.history.push('/Layout/patientArchives');
         }else{
           self.saveTip.showModal(3);
           console.log('异常响应信息', res);
         }
       };
       ajaxGetResource(params, callBack);
+      
     }
   }
   /**
@@ -144,6 +149,7 @@ const ArrowIcon = styled(Icon)`
 const Content = styled.div`
   width: 100%;
   height: calc(100% - 50px);
+  margin-top: 5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;

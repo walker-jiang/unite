@@ -4,10 +4,11 @@
 @描述：右侧辅助栏-----医嘱-----智能论治-----名医医案
 */
 import React, {Component} from 'react';
-import { Icon, Row, Col, Button, Radio, Input, Rate, Tabs, Divider   } from 'antd';
+import { Icon, Row, Col, Button, Radio, Input, Rate, Tabs, Divider, Spin   } from 'antd';
 import '../style/doctorAdvice.less';
 import '../style/doctorAdvice.less';
 import ContentDetailFive from '../../pubilcModule/contentDetailFive.js';
+import zanwunerong from '../style/zanwunerong.png';
 const TabPane = Tabs.TabPane;
 
 export default class IntelligentTreat extends Component {
@@ -15,14 +16,22 @@ export default class IntelligentTreat extends Component {
     super(props);
     this.state = {
       content:[],
+      isQuery:false,//是都查询过，spin专用
     };
   };
   componentWillMount(){
     console.log("名医医案json========",this.props.dataSource);
-    if(this.props.dataSource.dataList){
+    this.insertData(this.props.dataSource);
+  }
+  componentWillReceiveProps(nextProps){
+    console.log("方剂的json为",nextProps.dataSource);
+    this.insertData(nextProps.dataSource);
+  }
+  insertData = (dataSource) => {
+    if(dataSource.dataList){
       var array = [];
-      this.props.dataSource.dataList.forEach((item,index)=>{//辩证论治套的一层
-        if(this.props.dataSource.dataList){
+      dataSource.dataList.forEach((item,index)=>{//辩证论治套的一层
+        if(dataSource.dataList){
           var objectList = JSON.parse(item).objectList;
           objectList.forEach((j,k)=>{//知识库套的一层
             console.log("名医医案json一条=============",j);
@@ -37,9 +46,10 @@ export default class IntelligentTreat extends Component {
           })
         }
       })
-      this.setState({ content:array });
+      this.setState({ content:array,isQuery:true });
     }else{
-      console.log("方剂暂无数据");
+      console.log("名医医案暂无数据");
+      this.setState({ isQuery:true });
     }
   }
   /**
@@ -55,11 +65,13 @@ export default class IntelligentTreat extends Component {
     console.log(key);
   }
   render() {
-    var { content } = this.state;
+    var { content, isQuery } = this.state;
     return (
       <div className="prescription">
         <div className="data">
           {
+            content.length != 0
+            ?
             content.map((item,index)=>{
               return(
                 <div style={{paddingBottom:8}} key={index}>
@@ -77,6 +89,14 @@ export default class IntelligentTreat extends Component {
                 </div>
               )
             })
+            :
+            (
+              isQuery
+              ?
+              <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据，请输入诊断信息后方可查询</center>
+              :
+              <center style={{marginTop:50}}><div className="example"><Spin/>正在加载中,请稍后...</div></center>
+            )
           }
         </div>
       </div>

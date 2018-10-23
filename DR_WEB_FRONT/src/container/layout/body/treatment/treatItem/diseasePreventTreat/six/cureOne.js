@@ -27,15 +27,15 @@ const styles = {
   },
   littlePeople:{
     position: 'absolute',
-    left: '6.6%',
-    top: '20%',
+    left: '4.6%',
+    top: '3rem',
     width: '36px',
     height: '50px'
   },
   noEnd:{
     position: 'absolute',
-    left: '6.6%',
-    top: '59.4%',
+    left: '4.6%',
+    top: '4.4rem',
     width: '36px',
     height: '19px'
   },
@@ -46,9 +46,9 @@ const styles = {
     fontStyle: 'normal',
     fontSize: '18px',
     textAlign: 'left',
-    position: 'relative',
-    top: '0.5em',
-    left: '10.5%'
+    position: 'absolute',
+    top: '1.8em',
+    left: '10rem'
   },
   changeTwo:{
     fontFamily: 'MicrosoftYaHei 微软雅黑',
@@ -59,8 +59,8 @@ const styles = {
     fontSize: '14px',
     textAlign: 'left',
     position: 'relative',
-    top: '0.6em',
-    left: '10.5%'
+    top: '4.6em',
+    left: '10rem'
   }
 }
 

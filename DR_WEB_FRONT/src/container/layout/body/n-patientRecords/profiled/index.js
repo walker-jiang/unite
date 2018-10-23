@@ -3,12 +3,12 @@ import styled from 'styled-components';
 import { Button, Form, Col, Row, Modal, Select, DatePicker } from 'antd';
 import Input from 'components/dr/input/basicInput';
 import { today } from 'commonFunc/defaultData';
+import health from '../images/health.png'
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
 import RegisterForm from '../registerForm';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
-import QuickAddName from './quickAddName';
 import selectSty from 'components/antd/style/select';
 import buttonSty from 'components/antd/style/button';
 import datePickerSty from 'components/antd/style/datePicker';
@@ -20,42 +20,19 @@ class Index extends Component {
   constructor(props){
     super(props);
     this.state = {
-      country: [], // 国籍列表
-      nation: [], // 民族列表
-      sex: [] , // 性别列表
-      marry: [], // 婚姻状态
-      occupation: [], // 职业类型
-      pationtype: [], // 患者类型
-      cardtype: [], // 证件类型
-      pationrel: [], //与患者关系
-      province: [], // 省数据
-      city: [], // 城市数据
-      area: [], //县数据
-      patientInfo: {
-        patientname: '',
-        patientno: '',
-        mobile: '',
-        country: '',
-        nation: '',
-        cardtype: '',
-        cardno: '',
-        sex: '',
-        birthday: '1992-08-21',
-        patienttype: '',
-        maritalStatus: '',
-        occupation: '', // 职业
-        ABO: '', // 血型
-        phoneHome: '', // 座机
-        province: '', // 所属省份
-        city: '', // 所属城市
-        area: '', // 区县,
-        streetdesc: '', //详细
-        ctName: '', // 联系人
-        ctRole: '', //与患者关系
-        ctPhone: '', //联系电话
-      }
+      
     };
+    this.patientArchives = this.patientArchives.bind(this)
+    this.handSonsson = this.props.handSonsson.bind(this);
   };
+
+  patientArchives(){
+    let patientid = this.props.patientid;
+    let basicOperation = this.props.basicOperation;
+    let pram = 1;
+    this.props.onToggle(basicOperation,pram,patientid);
+  }
+
   render() {
     let patientid = this.props.patientid;
     let basicOperation = this.props.basicOperation;
@@ -63,11 +40,12 @@ class Index extends Component {
       <Container>
         <Header>
             <Left>
-                <Title>患者档案>患者建档</Title>
+                <ImageHealth src={health}/>
+                <Title><BeforePantient onClick={this.patientArchives}>患者档案</BeforePantient>><AfterPantient>患者建档</AfterPantient></Title>
             </Left>
         </Header>
         <Content>
-            <RegisterForm patientid = {patientid} basicOperation = {basicOperation} />
+            <RegisterForm patientid = {patientid} basicOperation = {basicOperation} handSonsson={this.handSonsson}/>
         </Content>  
       </Container>
     )
@@ -85,6 +63,21 @@ const Header = styled.div`
     background-color: rgba(242, 242, 242, 1);
     padding: 0px 10px;
     box-shadow: rgba(0, 0, 0, 0.35) 1px 1px 5px;
+`;
+const ImageHealth = styled.img`
+  width: 2rem;
+`;
+const BeforePantient = styled.span`
+    font-size: 18px;
+    font-family: '微软雅黑';
+    font-weight: 400;
+    font-style: normal;
+`;
+const AfterPantient = styled.span`
+    font-size: 16px;
+    font-family: '微软雅黑';
+    font-weight: 400;
+    font-style: normal;
 `;
 const Left = styled.div`
   height: 100%;

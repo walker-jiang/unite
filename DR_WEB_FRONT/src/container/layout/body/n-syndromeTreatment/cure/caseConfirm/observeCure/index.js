@@ -110,7 +110,7 @@ export default class ObserveCure extends Component {
   };
   /** [tagsOut 鼠标画出] */
   tagsOut(){
-    this.tongueShow.handleClose();
+    // this.tongueShow.handleClose();
   };
   /** [getUrl 获取拍照图片路径] */
   getUrl(url){

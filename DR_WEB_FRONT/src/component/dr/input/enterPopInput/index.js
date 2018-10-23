@@ -17,8 +17,10 @@ export default class InputSelect extends Component {
   /** [handleEnterPress 包括enter显示，esc隐藏的判断函数] */
   handleEnterPress = (e) => {
     if(e.keyCode == 13){ // enter
-      this.setState({visible:true});
-      this.props.displayed(); // 通知父组件已显示弹框
+      if(!this.props.formItemProps.disable){ // 诊断是否只读模式
+        this.setState({visible:true});
+        this.props.displayed(); // 通知父组件已显示弹框
+      }
     }
     if(e.keyCode == 27){ // ESC
       this.setState({visible:false});

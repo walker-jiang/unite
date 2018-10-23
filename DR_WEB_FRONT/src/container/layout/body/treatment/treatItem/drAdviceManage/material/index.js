@@ -90,7 +90,7 @@ export default class Index extends Component {
           {
             actionType == 'view' ? null :
             <Footer>
-              <SureButton type="primary" onClick={this.saveForm} disabled={!!window.modifyPermission}>保存</SureButton>
+              <SureButton type="primary" onClick={this.saveForm} disabled={!window.modifyPermission}>保存</SureButton>
               <CancelButton type="primary" onClick={this.handlePopClose.bind(this)}>取消</CancelButton>
             </Footer>
           }

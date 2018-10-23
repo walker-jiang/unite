@@ -120,10 +120,6 @@ class Cure extends Component {
                 <Value>{mobile}</Value>
               </Info>
               <Info>
-                <Label>身份证号 :</Label>
-                <Value>{cardno}</Value>
-              </Info>
-              <Info>
                 <Label>医保类型 :</Label>
                 <Value>{patienttypeDic}</Value>
               </Info>

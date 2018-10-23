@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import 'antd/lib/button/style';
 import PatientTable from './patientTable/index.js';
+import RegisterForm from './registerForm';
 import Ssc from './profiled';
 import PatientDetails from './patientDetails';
 
@@ -14,15 +15,28 @@ export default class index extends Component {
       ctsorgidDic: '',
       upstamp: '',
       patientname: '',
+      sex: '',
       sexDic: '',
       birthday: '',
       patienttypeDic: '',
-      basicOperation: ''
+      basicOperation: '',
+      cardtype: '',
+      cardno: '',
+      mobile: '',
     };
     this.handleClick = this.handleClick.bind(this)
+    this.handSonsson = this.handSonsson.bind(this)
   }
 
-  handleClick(basicOperation,pram,patientid,ctsorgidDic,upstamp,patientname,sexDic,birthday,patienttypeDic){
+  handSonsson(visible) {
+debugger
+    this.setState({
+      visible,
+    })
+
+  }
+
+  handleClick(basicOperation,pram,patientid,ctsorgidDic,upstamp,patientname,sex,sexDic,birthday,patienttypeDic,cardtype,cardno,mobile){
     console.log('pram',pram)
     this.setState({
       basicOperation: basicOperation,
@@ -31,19 +45,23 @@ export default class index extends Component {
       ctsorgidDic: ctsorgidDic,
       upstamp: upstamp,
       patientname: patientname,
+      sex: sex,
       sexDic: sexDic,
       birthday: birthday,
       patienttypeDic: patienttypeDic,
+      cardtype: cardtype,
+      cardno: cardno,
+      mobile: mobile
     });
   };
 
   render() { 
-    let { basicOperation, visible,  patientid, ctsorgidDic, upstamp, patientname, sexDic, birthday, patienttypeDic }  = this.state;
+    let { basicOperation, visible,  patientid, ctsorgidDic, upstamp, patientname, sex, sexDic, birthday, patienttypeDic,cardtype,cardno,mobile }  = this.state;
     let t  = null;
     if(visible == 1){
-      t = <PatientTable onToggle={this.handleClick} />
+      t = <PatientTable  onToggle={this.handleClick} />
     } else if (visible == 2) {
-      t = <Ssc onToggle={this.handleClick} patientid = {patientid} basicOperation = {basicOperation} />
+      t = <Ssc onToggle={this.handleClick} patientid = {patientid} basicOperation = {basicOperation} handSonsson={this.handSonsson}/>
     } else if (visible == 3) {
       t = <PatientDetails onToggle={this.handleClick} 
       basicOperation = {basicOperation}
@@ -51,11 +69,17 @@ export default class index extends Component {
       ctsorgidDic = {ctsorgidDic}
       upstamp = {upstamp}
       patientname = {patientname}
+      sex = {sex}
       sexDic = {sexDic}
       birthday = {birthday}
       patienttypeDic = {patienttypeDic}
+      cardtype = {cardtype}
+      cardno = {cardno}
+      mobile = {mobile}
       />
-    } 
+    } else if (visible == 4){
+      <RegisterForm />
+    }
     return (
       <FatherDiv>
        {

@@ -17,52 +17,36 @@ class ContentDetailTwoItem extends Component {
   unfoldAll = (isUnfoldAll) => {
     this.setState({isUnfoldAll:!isUnfoldAll})
   }
-  getSt = () =>{
-    var self = this;
-    let params = {
-      imtreatprelist:JSON.stringify(this.props.item),
-      bu:this.props.bu
-    };
-    function callBack(res){
-      if(res.flag == 1){
-        alert("适宜技术转换成功==============");
-        self.setState({ dataSource:res.data });
-      }else{
-        console.log('适宜技术转换失败', res);
-      }
-    };
-    doctorAdviceService.getSt(params, callBack);
-  }
   render() {
     var { isUnfoldAll } = this.state;
     const { content } = this.props;
     console.log("临证加减为========",content);
     return (
-      <div>
-      <div className="content-detail-two-Button">
-        <Button onClick={()=>{ this.getSt(this.props.item) }}>引入</Button>
-      </div>
-      <span className="content-detail-two-Button-p" onClick={()=>{ this.unfoldAll(isUnfoldAll) }}>
-        收起<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" />
-      </span>
-      <hr/>
-      {
-        isUnfoldAll
-        ?
-        content.map((item,index)=>{
-          return(
-            <div className="content-detail-two-div" key={index}>
-              <p>{index+1}.病情：</p>
-              <p>{item.symptom}</p>
-              <p>加减药：</p>
-              <p>{item.info}</p>
-              <hr className="hr2"/>
-            </div>
-          )
-        })
-        :
-        null
-      }
+      <div style={{paddingBottom:-25}}>
+        <div className="content-detail-two-Button">
+          <Button onClick={()=>{ this.props.getSt(this.props.item) }}>引入</Button>
+        </div>
+        <span className="content-detail-two-Button-p" onClick={()=>{ this.unfoldAll(isUnfoldAll) }}>
+          收起<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" />
+        </span>
+        <hr/>
+        {
+          isUnfoldAll
+          ?
+          content.map((item,index)=>{
+            return(
+              <div className="content-detail-two-div" key={index}>
+                <p>{index+1}.病情：</p>
+                <p>{item.symptom}</p>
+                <p>加减药：</p>
+                <p>{item.info}</p>
+                <hr className="hr2"/>
+              </div>
+            )
+          })
+          :
+          null
+        }
       </div>
 
     );
@@ -133,24 +117,46 @@ export default class ContentDetail extends Component {
     console.log("pullDown====================",unfold);
     this.setState({unfold:!unfold});
   }
+  getSt = () =>{
+    var self = this;
+    let params = {
+      imtreatprelist:JSON.stringify(this.props.item),
+      bu:this.props.bu
+    };
+    function callBack(res){
+      if(res.flag == 1){
+        //alert("适宜技术转换成功==============");
+        //* 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
+        self.props.changeInitData(res.data,5);
+      }else{
+        console.log('适宜技术转换失败', res);
+      }
+    };
+    doctorAdviceService.getSt(params, callBack);
+  }
   render() {
     var { isCut, isUnfoldAll, one, treatname, attention, four, five, six, seven, item, unfold  } = this.state;
     return (
       <div>
-        <div className="content-detail-two">
+        <div className="content-detail-two" style={{paddingBottom:25}}>
           <p onClick={()=>this.unfold("one",one)}><Icon type={one?"down":"right"}/>取穴/部位：</p>
-          <p>{ one?item.one:this.cutOut(item.one) }</p>
+          <p>{ one?(item.one == ""?"无":item.one):this.cutOut(item.one) }</p>
           <p onClick={()=>this.unfold("treatname",treatname)}><Icon type={treatname?"down":"right"}/>主治：</p>
-          <p>{ treatname?item.treatname:this.cutOut(item.treatname) }</p>
+          <p>{ treatname?(item.treatname == ""?"无":item.treatname):this.cutOut(item.treatname) }</p>
           <p onClick={()=>this.unfold("attention",attention)}><Icon type={attention?"down":"right"}/>操作方法：</p>
-          <p>{ attention?item.attention:this.cutOutTwo(item.attention) }</p>
+          <p>{ attention?(item.attention == ""?"无":item.attention):this.cutOutTwo(item.attention) }</p>
           <p onClick={()=>this.unfold("five",five)}><Icon type={five?"down":"right"}/> 临证加减（+/-）：</p>
           {
             item.priors == "1"
             ?
-            <ContentDetailTwoItem item={item} bu={this.props.bu} content={item.buMatchingAcupoints}/>
+            <ContentDetailTwoItem getSt ={this.getSt} item={item} bu={this.props.bu} content={item.buMatchingAcupoints}/>
             :
-            <p style={{fontSize:12}}>无</p>
+            <div style={{fontSize:12}}>
+              <p style={{color:'#333333',fontWeight:500}}>无</p>
+              <div className="content-detail-two-Button">
+                <Button onClick={()=>{ this.getSt(item) }}>引入</Button>
+              </div>
+            </div>
           }
         </div>
       </div>

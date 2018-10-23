@@ -151,12 +151,12 @@ export default class template extends Component {
             </Col>
           </Row>
         </div>
-        <div className="data">
+        <div className="data" style={{backgroundColor:'#F2F2F2'}}>
           {
             content.map((item,index)=>{
               console.log("item.signName",item.signName);
               return(
-                <div className="content" key={index}>
+                <div className="content" key={index} style={{marginBottom:10}}>
                   <div className="content-title">
                     <Row>
                       <Col span={12}>

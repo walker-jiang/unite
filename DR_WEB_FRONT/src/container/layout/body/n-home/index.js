@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import { Switch, Route } from 'react-router-dom';
 import Loadable from 'react-loadable'; // 加载时进行模块分离
-import { Layout, Menu, Breadcrumb, Icon,Carousel,Row,Col,Button,Modal,Table,Form,Checkbox,Card,Tabs,Radio } from 'antd';
+import { Layout, Menu, Breadcrumb,Carousel,Row,Col,Button,Modal,Table,Form,Checkbox,Card,Tabs,Radio } from 'antd';
+import Icon from 'components/dr/icon';
 const RadioButton = Radio.Button;
 const RadioGroup = Radio.Group;
 const TabPane = Tabs.TabPane;
@@ -299,7 +300,19 @@ class Home extends React.Component {
   //完成接诊跳转
   overjz=(rec)=>{
     console.log('recrececcc',rec);
-    ()=>{this_.render}
+    if(rec.registerid){
+      let path = {
+        pathname: '/layout/treatment/' + rec.registerid,
+      };
+      window.registerID = rec.registerid;
+      window.patientID = rec.patientid;
+      window.modifyPermission = 1;
+      // 跳转到接诊界面
+      console.log('self.props',this.props);
+      this.props.history.push(path);
+    }else{
+      console.log('异常响应信息', res);
+    }
   }
   //年龄计算
   ages=(str)=>{
@@ -591,30 +604,36 @@ class Home extends React.Component {
         ];
       const data3 = this.state.data3;
     return (
-      <div className="home" style={{margin:"20px 25px",background:"",position:"relative"}}>
-        <div id="deng" style={{
-            position:"absolute",
-            display:`${this.state.set?"none":"block"}`,
-            width:"28px",
-            height:"28px",
-            background:"#fff",
-            border:"3px solid #1675CD",
-            borderRadius:"50%",
-            textAlign:"center",
-            lineHeight:"28px",
-            zIndex:100,
-            top:`${this.state.show?"-10px":"13px"}`,
-            transition: "top, .5s",
-            left:"93%",
-            lineHeight:'22px',
-            transition:"all .5s"}}
-            onClick={this.deng}><span style={{position:"absolute",height:`${this.state.show?'12px':"33px"}`,width:"2px",background:"#797979",top:`${this.state.show?'-12px':"-36px"}`,left:"10px",transition: "height,top, .5s"}}></span>析</div>
+    <div>
+      <div id="deng" style={{
+          zIndex:'111111',
+          position:"absolute",
+          display:`${this.state.set?"none":"block"}`,
+          width:"28px",
+          height:"28px",
+          background:"#fff",
+          border:"3px solid #1675CD",
+          borderRadius:"50%",
+          textAlign:"center",
+          lineHeight:"28px",
+          zIndex:100,
+          top:`${this.state.show?"-10px":"13px"}`,
+          transition: "top, .5s",
+          left:"93%",
+          lineHeight:'22px',
+          transition:"all .5s"}}
+          onClick={this.deng}>
+          <span style={{position:"absolute",height:`${this.state.show?'12px':"33px"}`,width:"2px",background:"#797979",top:`${this.state.show?'-12px':"-36px"}`,left:"10px",transition: "height,top, .5s"}}>
+          </span>析
+      </div>
+
+      <div className="home" style={{overflow:"auto",height:"100%",position:"relative",width:"100%",margin:'20px'}}>
         <div style={{width:`${!this.state.set?"100%":"70%"}`,float:"left",background:""}}>
         <Row className="fontStyle">
           <Col xs={{ span: 5, offset: 1 }} lg={{ span: 7, offset: 0 }}>
             <Card >
-              <p>今日接诊总量</p>
-              <p>{this.state.daTa?this.state.daTa:'0'}人</p>
+              <p style={{color:'#666666',fontSize:'16px'}}>今日接诊总量</p>
+              <p style={{color:'#0A6ECB',fontSize:'28px'}}>{this.state.daTa?this.state.daTa:'0'}人</p>
             </Card></Col>
           <Col xs={{ span: 11, offset: 1 }} lg={{ span:7, offset: 1 }} style={{marginLeft:"6%"}}>
             <Card>
@@ -649,7 +668,7 @@ class Home extends React.Component {
                 }}>
                   患者疾病占比<button onClick={this.dingzhu} style={{float:"right",width:"22px",height:"27px",border:'0px',background:"#fff",cursor: "pointer",outline:'none'}}
                   >
-                  {this.state.set?<i className="iconfont1" style={{color:'#DF5827'}}>&#xe6d3;</i>:<i className="iconfont1" style={{color:'#DF5827'}}>&#xe6d2;</i>}
+                  {this.state.set?<Icon type='Ding'/>:<Icon type='disDing'/>}
                 </button>
               </Row>
 
@@ -668,7 +687,7 @@ class Home extends React.Component {
               </div>
         </div>
       </div>
-
+    </div>
     );
   }
 }

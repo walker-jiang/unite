@@ -52,7 +52,7 @@ const RedDot = styled.div`
 `;
 const Item = styled.div`
   border-left: 1px solid #1770C8;
-  padding: 0px 12px;
+  padding: 0px 10px;
   height: 17px;
   display: flex;
   align-items: center;

@@ -25,12 +25,11 @@ export default class CurePriciple extends Component {
   };
   /** [getKeysData 请求关键词列表] */
   getKeysData(){
-    console.log('请求关键词');
     let self = this;
     let params = {
       url: 'BaEnteritemKeywordController/getList',
       data: {
-        itemFieldname: '主症',
+        itemFieldname: '主诉',
       },
     };
     function callBack(res){
@@ -52,7 +51,7 @@ export default class CurePriciple extends Component {
       url: 'BaEnteritemDictController/getList',
       data: {
         keyword: key,
-        itemFieldname: '主症',
+        itemFieldname: '主诉',
       },
     };
     function callBack(res){

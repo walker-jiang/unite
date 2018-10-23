@@ -29,7 +29,7 @@ export default class index extends Component {
       keyword: '', // 查询关键字
       totalRecords: 0, // 总记录数
       curPage: 1, // 当前页
-      pageSize: pageSize * 4, // 每页记录数
+      pageSize: 5, // 每页记录数
     };
     this.onStartChange = this.onStartChange.bind(this);
     this.handleStartOpenChange = this.handleStartOpenChange.bind(this);
@@ -298,7 +298,8 @@ disabledStartDate = (startValue) => {
 }
 
 const Container = styled.div`
-  width: 100%
+  width: 100%;
+  height: 100%;
 `;
 const SpecTable = styled(Table)`
   margin: 16px;
@@ -310,13 +311,13 @@ const SpecTable = styled(Table)`
   }
 `;
 const Title = styled.div`
-  border: 1px solid;
-  border-color: rgba(204, 204, 204, 1);
-  background-color: rgb(242, 242, 242);
-  width: 100%;
   height: 50px;
-  margin-left: 0.3rem;
-  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(242, 242, 242, 1);
+  padding: 0px 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 1px 1px 5px;
 `;
 const ImgBingLi = styled.img`
   width: 2rem;
@@ -368,26 +369,23 @@ const SearchIcon = styled(Icon)`
   margin-top: 3px;
   margin-left: -2px;
 `;
-const Operation = styled.div`
-
-`;
-const OperationSpan = styled.span`
-  color: #0a6ecb;
-`;
 const TableDiv = styled.div`
-  margin-top: 2rem;
   width: 100%;
+  overflow: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  height: calc(100% - 110px);
+  position: relative;
 `;
 const PageContainer = styled.div`
   width: 100%;
   float: left;
   padding: 0px 20px;
-  margin: 5px;
   display: flex;
   justify-content: space-between;
 `;
 const SpecPagination = styled(Pagination)`
-  margin-bottom: 10px;
   .ant-pagination-item-active {
     background-color: #1890ff;
   }

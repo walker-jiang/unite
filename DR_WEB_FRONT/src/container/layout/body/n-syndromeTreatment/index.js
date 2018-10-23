@@ -4,6 +4,7 @@ import Icon from 'components/dr/icon';
 import SelectPatient from './selectPatient';
 import Cure from './cure';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
+import SyndromeDetail from './syndromeDetail';
 
 export default class SyndromeTreatment extends Component {
   constructor(props){
@@ -52,10 +53,11 @@ export default class SyndromeTreatment extends Component {
     let compo = null;
     if(current == 0){
       compo = <SelectPatient onStep={this.stepFunc}/>;
+    }else if(current == -1){ // 辨证论治详情
+      compo = <SyndromeDetail registerid={registerid}/>
     }else{
       compo = <Cure onStep={this.stepFunc} current={current} registerid={registerid}/>;
     }
-
     return (
       <Container>
         {compo}

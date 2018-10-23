@@ -27,8 +27,9 @@ class ContentDetailFiveItem extends Component {
     };
     function callBack(res){
       if(res.flag == 1){
-        alert("名医医案转换成功==============");
-        self.props.changeInitData(item);
+        //alert("名医医案转换成功==============");
+        //* 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
+        self.props.changeInitData(res.data,3);
       }else{
         console.log('名医医案转换失败', res);
       }

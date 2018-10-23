@@ -16,7 +16,7 @@ export default class Index extends Component {
             <SexIocn themeType={themeType}></SexIocn>
             <Info>
               <Name>{dataSource.patientname}</Name>
-              <div>{dataSource.sexDic} | {dataSource.casetype ? dataSource.casetype : '未知'}｜{dataSource.mobile}</div>
+              <div>{dataSource.sexDic} | {dataSource.casetypeDic ? dataSource.casetypeDic : '未知'}｜{dataSource.mobile}</div>
               <div>全天号 ｜ {dataSource.regDate.substr(8,2)}号</div>
             </Info>
           </Body>

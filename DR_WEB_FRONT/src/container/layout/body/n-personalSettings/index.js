@@ -255,7 +255,7 @@ class PersonalSettings extends React.Component{
             <div style={{width:"70%",marginLeft:"10px",float:"left"}}>
               <Collapse accordion={false} activeKey={this.state.status}>
                 <Panel   showArrow={false} header={
-                    <div style={{overflow:"hidden",height:"40px",position:"absolute",top:0,width:"100%",lineHeight:"40px"}}>
+                    <div style={{overflow:"hidden",height:"44px",position:"absolute",top:0,width:"100%",lineHeight:"44px"}}>
                       <p style={{width:"50%",float:"left"}}>
                         <span>个人信息设置</span>
                         <sapn style={{color:"#999",fontSize:"12px",marginLeft:"20px"}}>修改和完善个人登录信息</sapn>

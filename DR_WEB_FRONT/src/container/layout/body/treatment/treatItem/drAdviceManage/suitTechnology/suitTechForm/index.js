@@ -595,7 +595,6 @@ class SuitTechForm extends Component {
   render () {
     let { visiblePop, suitTechData, buDiagnosisList, miType, aim, visible, curTechDetail } = this.state;
     const { getFieldDecorator } = this.props.form;
-
     const {dataSource, feeAll} = this.getTableDataSource(deepClone(suitTechData));
     const columns = this.getTableColumns();
     const Pagination = {

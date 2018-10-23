@@ -207,8 +207,8 @@
                 "ordertype": 1,//医嘱订单类型
                 "orgUserid": 0,//医嘱订单ID
                 "orgid": 10000,//机构编码
-                "parientid": 0,//病人ID
-                "parientname": "01",//病人姓名
+                "patientid": 0,//病人ID
+                "patientname": "01",//病人姓名
                 "registerid": 2,//挂号ID
                 "ctstamp":"2018-01-01 10:55:48",//创建时间戳
               }

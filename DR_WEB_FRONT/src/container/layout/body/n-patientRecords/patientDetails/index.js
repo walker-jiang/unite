@@ -92,10 +92,14 @@ export default class Index extends Component {
     let ctsorgidDic = this.props.ctsorgidDic;
     let upstamp = this.props.upstamp;
     let patientname = this.props.patientname;
+    let sex = this.props.sex;
     let sexDic = this.props.sexDic;
     let birthday = this.props.birthday;
     let patienttypeDic = this.props.patienttypeDic;
     let basicOperation = this.props.basicOperation;
+    let cardtype = this.props.cardtype;
+    let cardno = this.props.cardno;
+    let mobile = this.props.mobile;
     let curTabComponet = null;
     console.log('data',data);
     if(rcStatus == 0) {
@@ -112,13 +116,14 @@ export default class Index extends Component {
                           ctsorgidDic = {ctsorgidDic}
                           upstamp = {upstamp}
                           patientname = {patientname}
+                          sex = {sex}
                           sexDic = {sexDic}
                           birthday = {birthday}
                           patienttypeDic = {patienttypeDic}
                           />
       }
     } else if(rcStatus == 2) {
-        curTabComponet = <Cure/>
+        curTabComponet = <Cure patientid = {patientid} patientname = {patientname} sex = {sex} sexDic = {sexDic} birthday = {birthday} cardtype = {cardtype} cardno = {cardno} mobile = {mobile} />
     }
     return (
       <Container>

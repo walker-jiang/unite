@@ -28,7 +28,7 @@ export default class SmartDistinguish extends Component {
       dataSource: [],
       actionType: '', // 打开弹框的目的（添加，查看，修改，删除）
       orderid: '', // 修改、查看、删除时的医嘱ID
-      buOrderDtlList: {}, // 打开添加弹框时初始化的数据
+      attachOrder: {}, // 打开添加弹框时初始化的数据
     };
     this.actionManager = this.actionManager.bind(this);
     this.getOrderData = this.getOrderData.bind(this);
@@ -79,116 +79,6 @@ export default class SmartDistinguish extends Component {
   componentWillMount(){
     this.getOrderData();
     this.getDiagnoseData();
-    // let dataSource = [{
-		// 	"buDiagnosisInfo": null,
-		// 	"buOrderDtlList": [],
-		// 	"buOrdmedical": null,
-		// 	"buRecipe": null,
-		// 	"ctstamp": "2018-10-16 14:32:45",
-		// 	"execDepaid": null,
-		// 	"feeall": 15.5,
-		// 	"ordercontent": "磷酸酶测定",
-		// 	"orderid": "201839671565541105",
-		// 	"orderno": "",
-		// 	"orderstate": "6",
-		// 	"ordertype": 1,
-		// 	"orgUserid": "2",
-		// 	"orgUsername": "姜中希",
-		// 	"orgid": "14",
-		// 	"parientid": "201839655147820209",
-		// 	"parientname": "李锐通",
-		// 	"printnum": 0,
-		// 	"printstate": "02",
-		// 	"registerid": "201839655147863211",
-		// 	"submitstate": "01",
-		// 	"useflag": "1",
-		// 	"utstamp": "2018-10-16 15:01:22",
-		// 	"orderstateDic": "未提交",
-		// 	"ordertypeDic": "检验",
-		// 	"printstateDic": "未打印"
-		// }, {
-		// 	"buDiagnosisInfo": null,
-		// 	"buOrderDtlList": [],
-		// 	"buOrdmedical": null,
-		// 	"buRecipe": null,
-		// 	"ctstamp": "2018-10-16 14:32:45",
-		// 	"execDepaid": null,
-		// 	"feeall": 15.5,
-		// 	"ordercontent": "磷酸酶测定",
-		// 	"orderid": "201839671565541105",
-		// 	"orderno": "",
-		// 	"orderstate": "6",
-		// 	"ordertype": 1,
-		// 	"orgUserid": "2",
-		// 	"orgUsername": "姜中希",
-		// 	"orgid": "14",
-		// 	"parientid": "201839655147820209",
-		// 	"parientname": "李锐通",
-		// 	"printnum": 0,
-		// 	"printstate": "02",
-		// 	"registerid": "201839655147863211",
-		// 	"submitstate": "01",
-		// 	"useflag": "1",
-		// 	"utstamp": "2018-10-16 15:01:22",
-		// 	"orderstateDic": "未提交",
-		// 	"ordertypeDic": "检验",
-		// 	"printstateDic": "未打印"
-		// }, {
-		// 	"buDiagnosisInfo": null,
-		// 	"buOrderDtlList": [],
-		// 	"buOrdmedical": null,
-		// 	"buRecipe": null,
-		// 	"ctstamp": "2018-10-16 14:32:45",
-		// 	"execDepaid": null,
-		// 	"feeall": 15.5,
-		// 	"ordercontent": "磷酸酶测定",
-		// 	"orderid": "201839671565541105",
-		// 	"orderno": "",
-		// 	"orderstate": "6",
-		// 	"ordertype": 1,
-		// 	"orgUserid": "2",
-		// 	"orgUsername": "姜中希",
-		// 	"orgid": "14",
-		// 	"parientid": "201839655147820209",
-		// 	"parientname": "李锐通",
-		// 	"printnum": 0,
-		// 	"printstate": "02",
-		// 	"registerid": "201839655147863211",
-		// 	"submitstate": "01",
-		// 	"useflag": "1",
-		// 	"utstamp": "2018-10-16 15:01:22",
-		// 	"orderstateDic": "未提交",
-		// 	"ordertypeDic": "检验",
-		// 	"printstateDic": "未打印"
-		// }, {
-		// 	"buDiagnosisInfo": null,
-		// 	"buOrderDtlList": [],
-		// 	"buOrdmedical": null,
-		// 	"buRecipe": null,
-		// 	"ctstamp": "2018-10-16 14:32:45",
-		// 	"execDepaid": null,
-		// 	"feeall": 15.5,
-		// 	"ordercontent": "磷酸酶测定",
-		// 	"orderid": "201839671565541105",
-		// 	"orderno": "",
-		// 	"orderstate": "6",
-		// 	"ordertype": 1,
-		// 	"orgUserid": "2",
-		// 	"orgUsername": "姜中希",
-		// 	"orgid": "14",
-		// 	"parientid": "201839655147820209",
-		// 	"parientname": "李锐通",
-		// 	"printnum": 0,
-		// 	"printstate": "02",
-		// 	"registerid": "201839655147863211",
-		// 	"submitstate": "01",
-		// 	"useflag": "1",
-		// 	"utstamp": "2018-10-16 15:01:22",
-		// 	"orderstateDic": "未提交",
-		// 	"ordertypeDic": "检验",
-		// 	"printstateDic": "未打印"
-		// }];
-    // this.setState({ dataSource });
   };
   /**
    * [onDelete 删除医嘱信息]
@@ -214,7 +104,7 @@ export default class SmartDistinguish extends Component {
    * @param  {[type]} orderid    [携带数据(包含操作目标)]
    * @return {[type]}            [void]
    */
-  actionManager(actionType, record, buOrderDtlList = {}){
+  actionManager(actionType, record, attachOrder = {}){
     console.log('height: 575px;', record);
     let that = this;
     if(actionType == 'delete'){ // 删除操作
@@ -225,7 +115,7 @@ export default class SmartDistinguish extends Component {
       that.setState({
         actionType: actionType, // modify、view、add
         orderid: record.orderid, // 当前医嘱ID
-        buOrderDtlList: buOrderDtlList, //
+        attachOrder: attachOrder, //
       }, ()=>{
         // console.log('医嘱对象', record.ordertype);
         switch (record.ordertype) {
@@ -257,183 +147,26 @@ export default class SmartDistinguish extends Component {
     }
   };
   render() {
-    let { dataSource, actionType, orderid, buOrderDtlList, buDiagnosisList } = this.state;
-//     buOrderDtlList = {
-// 	"buOrderDtlList": [{
-// 		"baseUnit": "02",
-// 		"conversion": "02",
-// 		"count": 1.0,
-// 		"ctstamp": "2018-07-12 17:50:27",
-// 		"deptid": "0",
-// 		"deptname": "02",
-// 		"dosage": "02",
-// 		"doseid": 0,
-// 		"dosename": "02",
-// 		"feeout": 0.0,
-// 		"feesum": 0.0,
-// 		"feesumType": "02",
-// 		"feesumin": 0.0,
-// 		"freqid": 0,
-// 		"freqname": "02",
-// 		"hiscode": "02",
-// 		"hisname": "02",
-// 		"itemcode": "02",
-// 		"itemid": 1,
-// 		"itemname": "02",
-// 		"itemno": 0,
-// 		"itemtype": 0,
-// 		"miType": "1",
-// 		"orderid": "201831389027636137",
-// 		"packageUnit": 0,
-// 		"packaging": "02",
-// 		"paytype": "02",
-// 		"preferentialfee": 0.0,
-// 		"preferentialscale": 0.0,
-// 		"recipeno": "02",
-// 		"remarks": "02",
-// 		"spbody": "02",
-// 		"specification": "02",
-// 		"suitid": null,
-// 		"takedays": 0,
-// 		"uniqueid": "201831389027636138",
-// 		"unitprice": 2.0,
-// 		"usageid": 0,
-// 		"usagename": "02",
-// 		"useflag": "1",
-// 		"utstamp": "2018-07-12 17:50:27"
-// 	}],
-// 	"buOrdmedical": {
-// 		"aim": "02",
-//     "miType": '1',
-// 		"buOrdmedicalSuitList": [{
-// 			"baseUnit": "02",
-// 			"buOrderDtlList": [{
-// 				"baseUnit": "02",
-// 				"conversion": "02",
-// 				"count": 1.0,
-// 				"ctstamp": "2018-07-12 17:50:27",
-// 				"deptid": "0",
-// 				"deptname": "02",
-// 				"dosage": "02",
-// 				"doseid": 0,
-// 				"dosename": "02",
-// 				"feeout": 0.0,
-// 				"feesum": 0.0,
-// 				"feesumType": "02",
-// 				"feesumin": 0.0,
-// 				"freqid": 0,
-// 				"freqname": "02",
-// 				"hiscode": "02",
-// 				"hisname": "02",
-// 				"itemcode": "02",
-// 				"itemid": 3,
-// 				"itemname": "02",
-// 				"itemno": 0,
-// 				"itemtype": 0,
-// 				"miType": "1",
-// 				"orderid": "201831389027636137",
-// 				"packageUnit": 0,
-// 				"packaging": "02",
-// 				"paytype": "02",
-// 				"preferentialfee": 0.0,
-// 				"preferentialscale": 0.0,
-// 				"recipeno": "02",
-// 				"remarks": "02",
-// 				"spbody": "02",
-// 				"specification": "02",
-// 				"suitid": "201831389027636141",
-// 				"takedays": 0,
-// 				"uniqueid": "201831389027636142",
-// 				"unitprice": 2.0,
-// 				"usageid": 0,
-// 				"usagename": "02",
-// 				"useflag": "1",
-// 				"utstamp": "2018-07-12 17:50:27"
-// 			}],
-// 			"count": 1,
-// 			"ctstamp": "2018-07-12 17:50:27",
-// 			"feesum": 0.0,
-// 			"orderSuitcode": "02",
-// 			"orderSuitid": 0,
-// 			"orderSuitname": "02",
-// 			"ordmedicalid": "201831389027636140",
-// 			"seqno": 0,
-// 			"specification": "02",
-// 			"suitid": "201831389027636141",
-// 			"useflag": "1",
-// 			"utstamp": "2018-07-12 17:50:27"
-// 		}],
-// 		"ctstamp": "2018-07-12 17:50:27",
-// 		"deptcode": "02",
-// 		"deptname": "02",
-// 		"diagnosecode": "02",
-// 		"diagnosename": "02",
-// 		"diagnoseno": "02",
-// 		"doctorid": "02",
-// 		"doctorname": "02",
-// 		"drlevel": "02",
-// 		"hissectionname": "02",
-// 		"medicalrecord": "02",
-// 		"orderid": "201831389027636137",
-// 		"ordmedicalid": "201831389027636140",
-// 		"orgid": "0",
-// 		"remarks": "02",
-// 		"seqno": 0,
-// 		"useflag": "1",
-// 		"utstamp": "2018-07-12 17:50:27"
-// 	},
-// 	"buRecipe": {
-// 		"ctstamp": "2018-07-12 17:50:27",
-// 		"deptcode": "02",
-// 		"deptname": "02",
-// 		"diagnosecode": "02",
-// 		"diagnosename": "02",
-// 		"diagnoseno": "02",
-// 		"doctorid": "02",
-// 		"doctorname": "02",
-// 		"doseid": 0,
-// 		"dosename": "02",
-// 		"drlevel": "02",
-// 		"freqid": 0,
-// 		"freqname": "02",
-// 		"hissectionname": "02",
-// 		"medicalrecord": "02",
-// 		"orderid": "201831389027636137",
-// 		"personid": "02",
-// 		"recipedate": "2018-07-12 17:34:36",
-// 		"recipeid": "201831389027636139",
-// 		"recipeno": "02",
-// 		"recipetype": "02",
-// 		"registerid": "2",
-// 		"remark": "02",
-// 		"usageid": 0,
-// 		"usagename": "02",
-// 		"useflag": "1",
-// 		"utstamp": "2018-07-12 17:50:27"
-// 	},
-// 	"ctstamp": "2018-07-12 17:50:27",
-// 	"execDepaid": "0",
-// 	"feeall": 0.0,
-// 	"ordercontent": "02",
-// 	"orderid": "201831389027636137",
-// 	"orderno": "02",
-// 	"orderstate": "1",
-// 	"ordertype": 1,
-// 	"orgUserid": "0",
-// 	"orgid": "0",
-// 	"parientid": "0",
-// 	"parientname": "02",
-// 	"registerid": "2",
-// 	"useflag": "1",
-// 	"utstamp": "2018-07-12 17:50:27"
-// };
+    let { dataSource, actionType, orderid, buDiagnosisList, attachOrder } = this.state;
     let openProps = {
       actionType: actionType,
       orderid: orderid,
       reloadList: () => { this.getOrderData() },
-      buOrderDtlList: buOrderDtlList,
+      attachOrder: attachOrder,
       syndrome: true
     };
+    let girdProps = {
+      dataSource: dataSource,
+      operate: this.actionManager
+    };
+    console.log(!!this.props.readonly);
+    if(!!this.props.readonly){
+      girdProps.view = true;
+    }else{
+      girdProps.view = true;
+      girdProps.modify = true;
+      girdProps.del = true;
+    }
     return (
       <Container>
         <Left>
@@ -444,12 +177,12 @@ export default class SmartDistinguish extends Component {
               <ReDiagnose onClick={() => {this.props.onStep(1)}}><img src={re_diagnose}/>重新辩证</ReDiagnose>
             </ReadableDiagnose>
             <AddHeader operate={this.actionManager}></AddHeader>
-            <TableGrid dataSource={dataSource} operate={this.actionManager}/>
+            <TableGrid {...girdProps}/>
           </Content>
-          <ActionButton>
+          <ActionButton readonly={this.props.readonly}>
             <Checkbox>同步到患者医嘱</Checkbox>
-            <SureButton type="primary" onClick={() => {this.props.onStep(3)}}>完成</SureButton>
-            <BorderButton type="primary" onClick={() => {this.props.onStep(1)}}>返回上一步</BorderButton>
+            <SureButton type="primary" onClick={() => {this.props.onStep(4)}}>完成</SureButton>
+            <BorderButton type="primary" onClick={() => {this.props.onStep(2)}}>返回上一步</BorderButton>
           </ActionButton>
         </Left>
         <Examination {...openProps} ref={ref => this.examination = ref} />
@@ -490,6 +223,7 @@ const Right = styled.div`
 `;
 const ReadableDiagnose = styled.div`
   display: flex;
+  align-items: center;
 `;
 const Label = styled.div`
   width: 60px;
@@ -504,8 +238,12 @@ const ReDiagnose = styled.div`
   color: #0066CC;
 `;
 const SpecInput = styled(Input)`
+  &&&.ant-input-disabled {
+    background-color: transparent;
+  }
   &&&.ant-input {
     border-bottom: 1px solid rgba(215, 215, 215, 1);
+    border-radius: 0px;
     border-top: none;
     border-left: none;
     line-height: 25px;
@@ -554,6 +292,7 @@ const SpecTabs = styled(Tabs)`
 const ActionButton = styled.div`
   border-top: 1px solid #CCCCCC;
   margin-top: 40px;
+  display: ${props => props.readonly ? 'none' : 'block'}
 `;
 const BorderButton = styled(Button)`
   ${buttonSty.white}

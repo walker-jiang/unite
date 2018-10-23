@@ -14,7 +14,8 @@ export default class DiseasePreventTreat extends Component {
       sex: '',
       sexDesc: '',
       name: '',
-      age: ''
+      patientAge: '',
+      phone: ''
     };
   };
   handleClick(pram){
@@ -41,14 +42,17 @@ export default class DiseasePreventTreat extends Component {
     let that = this;
     function success(res){
       console.log('父组件',res)
+      var date = new Date;
+      var year = date.getFullYear(); 
       that.setState({
         visible: res.data.first,
-        userId: res.data.user.userid,
+        userId: res.data.user.userid || that.props.patientid,
         imgUrl: res.data.qrcode,
-        sex: res.data.user.sex,
-        sexDesc: res.data.user.sexDesc,
-        name: res.data.user.name,
-        age: res.data.user.birthday
+        sex: res.data.user.sex || that.props.sex,
+        sexDesc: res.data.user.sexDesc || that.props.sexDic,
+        name: res.data.user.name || that.props.patientname,
+        patientAge: that.props.birthday || (year - res.data.user.birthday.substr(0,4)) ,
+        phone: res.data.user.phone || that.props.mobile
       })
     };
 
@@ -60,14 +64,23 @@ export default class DiseasePreventTreat extends Component {
   }
 
   render() {
-    let {visible,userId,imgUrl,sex,sexDesc,name,age}  = this.state
+    console.log('usid',this.state.userId)
+    console.log('sex&&&&&&&&&&',this.state.sex)
+    console.log('#################',this.state.patientAge)
+    let {visible,userId,imgUrl,sex,sexDesc,name,patientAge,phone}  = this.state
+    // var date = new Date;
+    // var year = date.getFullYear(); 
+    // let patientAge = year - age.substr(0,4)
+    // console.log('patientAge', patientAge);
     let t  = null;
     if(visible == 0){
-      t = <Cure onToggle={this.handleClick.bind(this)} imgUrl={imgUrl} />
+      t = <Cure onToggle={this.handleClick.bind(this)} visible={visible} imgUrl={imgUrl} sexDesc = {sexDesc} name={name} patientAge={patientAge} phone={phone} />
     } else if(visible == 2) {
-      t = <StartWork onToggle={this.handleClick.bind(this)} sex = {sex} userId = {userId} />
+      t = <StartWork onToggle={this.handleClick.bind(this)} userId = {userId} sex = {sex} sexDesc = {sexDesc} name={name} patientAge={patientAge} phone={phone} />
     } else if(visible == 1) {
-      t = <TestResults onToggle={this.handleClick.bind(this)} userId = {userId} sexDesc = {sexDesc} name={name} age={age} />
+      t = <TestResults onToggle={this.handleClick.bind(this)} userId = {userId} sexDesc = {sexDesc} name={name} patientAge={patientAge} phone={phone}/>
+    } else if(visible == 3) {
+      t = <Cure onToggle={this.handleClick.bind(this)} visible={visible} imgUrl={imgUrl} sexDesc = {sexDesc} name={name} patientAge={patientAge}  phone={phone} />
     }
     return (
       <div>

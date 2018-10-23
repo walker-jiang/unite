@@ -35,6 +35,7 @@ class Index extends Component {
   };
   setUserInfoForClient(){
     let userInfoObj = JSON.parse(window.getLoginState());
+    console.log('userInfoObj.userid123', userInfoObj);
     window.sessionStorage.setItem('username', userInfoObj.username); // 用户名
     window.sessionStorage.setItem('deptid', userInfoObj.deptid); // 科室ID
     window.sessionStorage.setItem('orgid', userInfoObj.orgid); // 机构ID
@@ -43,12 +44,12 @@ class Index extends Component {
   };
   render() {
     return (
-      <Layout style={{minHeight: '100vh',width:"100%"}}>
-         <Sider style={{width:"10%",float:'left'}} ref="MenuItem"></Sider>
-         <SpecLayout>
-           <Header {...this.props}/>
-           <Body {...this.props}/>
-         </SpecLayout>
+      <Layout style={{minHeight: '100vh',width:"100%",background:'#fff !important'}}>
+        <Sider style={{height:'100%',width:"10%",float:'left'}} ref="MenuItem"></Sider>
+        <SpecLayout style={{minHeight: '100vh'}} >
+          <Header {...this.props}/>
+          <Body style={{ background: '#FFFFFF'}} {...this.props}/>
+        </SpecLayout>
      </Layout>
     );
   }
@@ -60,7 +61,6 @@ const SpecLayout = styled(Layout)`
   flex-direction: column;
   &&& {
     background-color: white;
-    z-index: 2;
   }
 `;
 /*

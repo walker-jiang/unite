@@ -30,6 +30,7 @@ class Index extends Component {
     function callBack(res){
       if(res.result && res.data){ // 获取当前诊断明细数据
         let { buDiagnosisList, ...buDiagnosisInfo } = res.data;
+        window.searchITList();
         self.setState({
           buDiagnosisList: buDiagnosisList,
           buDiagnosisInfo: buDiagnosisInfo

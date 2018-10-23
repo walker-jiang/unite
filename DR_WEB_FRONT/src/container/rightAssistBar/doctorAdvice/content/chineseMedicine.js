@@ -8,6 +8,7 @@ import { Icon, Row, Col, Button, Radio, Input, Rate, Tabs, Divider } from 'antd'
 import '../style/doctorAdvice.less';
 import '../style/doctorAdvice.less';
 import ContentDetailThree from '../../pubilcModule/contentDetailThree.js';
+import zanwunerong from '../style/zanwunerong.png';
 const TabPane = Tabs.TabPane;
 
 export default class IntelligentTreat extends Component {
@@ -19,9 +20,16 @@ export default class IntelligentTreat extends Component {
   };
   componentWillMount(){
     console.log("中成药props===========",this.props.dataSource);
-    if(this.props.dataSource.dataList){
+    this.insertData(this.props.dataSource);
+  }
+  componentWillReceiveProps(nextProps){
+    console.log("方剂的json为",nextProps.dataSource);
+    this.insertData(nextProps.dataSource);
+  }
+  insertData = (dataSource) => {
+    if(dataSource.dataList){
       var array = [];
-      this.props.dataSource.dataList.forEach((item,index)=>{
+      dataSource.dataList.forEach((item,index)=>{
         array.push({
          title:item.cpmName,
          stars:item.stars,
@@ -31,9 +39,9 @@ export default class IntelligentTreat extends Component {
       this.setState({ content:array });
     }else{
       console.log("中成药暂无数据");
+      this.setState({ isQuery:true });
     }
   }
-
   callback(key) {
     console.log(key);
   }
@@ -43,6 +51,8 @@ export default class IntelligentTreat extends Component {
       <div className="prescription">
         <div className="data">
           {
+            content.length != 0
+            ?
             content.map((item,index)=>{
               return(
                 <div style={{paddingBottom:8}} key={index}>
@@ -56,10 +66,12 @@ export default class IntelligentTreat extends Component {
                       </Row>
                     </div>
                   </div>
-                  <ContentDetailThree item={item.initData} bu={this.props.bu}/>
+                  <ContentDetailThree changeInitData={this.props.changeInitData} item={item.initData} bu={this.props.bu}/>
                 </div>
               )
             })
+            :
+            <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据，请输入诊断信息后方可查询</center>
           }
         </div>
       </div>

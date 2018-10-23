@@ -82,7 +82,7 @@ class Index extends Component {
         function success(res){
           console.log('父组件',res)
           that.setState({
-            visible: 1
+            visible: 2
           })
         };
     
@@ -149,7 +149,7 @@ class Index extends Component {
                       rules: [{ required: true, message: '请输入患者姓名!' }],
                       initialValue: ''
                     })(
-                      <Input placeholder='请输入患者移动电话' />
+                      <Input placeholder='请输入患者姓名' />
                     )}
                   </FormItem>
                 </Col>

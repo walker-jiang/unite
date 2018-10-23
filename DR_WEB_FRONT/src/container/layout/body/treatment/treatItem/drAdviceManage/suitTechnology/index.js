@@ -66,6 +66,9 @@ export default class SuitTechnology extends Component {
         type: 'post',
         data: JSON.stringify(paramsData)
       }
+      if(this.props.syndrome){ // 辨证论治添加处方
+        params.server_url = config_InteLigenTreat_url+'TCMAE/';
+      }
       let that = this;
       function success(res) {
         that.handlePopClose();
@@ -79,6 +82,9 @@ export default class SuitTechnology extends Component {
       url: 'BuOrderController/putData',
       type: 'put',
       data: JSON.stringify(data)
+    }
+    if(this.props.syndrome){ // 辨证论治添加处方
+      params.server_url = config_InteLigenTreat_url+'TCMAE/';
     }
     let that = this;
     function success(res) {

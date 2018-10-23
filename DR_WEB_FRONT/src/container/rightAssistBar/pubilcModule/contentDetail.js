@@ -32,16 +32,16 @@ class ContentOne extends Component {
     this.setState({isUnfold:!isUnfold});
   }
   changeInitData(item){
-    console.log("===============",item);
+    //console.log("===============",item);
     var params = {};
     params[item.nameDesc] = item.value;
-    console.log("params=====",params);
+    //console.log("params=====",params);
     this.props.changeInitData(params);
   }
   render(){
     var name = this.props.oneItem.name;
     var value = this.props.oneItem.value;
-    console.log("value@@@@@@@@@@@=======",value);
+    //console.log("value@@@@@@@@@@@=======",value);
     var { isUnfold } = this.state;
     return (
       <div>
@@ -82,23 +82,23 @@ class ContentDetail extends Component {
     };
   };
   componentWillReceiveProps(nextProps){
-    console.log("!!!!!!!!!!!!",nextProps.item);
+    //console.log("!!!!!!!!!!!!",nextProps.item);
     this.setState({item:nextProps.item  })
   }
   cut = (isCut) =>{
-    console.log("isCut",isCut);
+    //console.log("isCut",isCut);
     this.setState({isCut})
   }
   unfoldAll = (isUnfoldAll) => {
     this.setState({isUnfoldAll:!isUnfoldAll})
   }
   pullDown = (unfold) =>{
-    console.log("pullDown====================",unfold);
+    //console.log("pullDown====================",unfold);
     this.setState({unfold:!unfold});
   }
   render() {
     var { isCut, isUnfoldAll, pridepict, item, unfold  } = this.state;
-    console.log("item@@@@@@@",item);
+    //console.log("item@@@@@@@",item);
     return (
       <div>
         <div className="content-icon">

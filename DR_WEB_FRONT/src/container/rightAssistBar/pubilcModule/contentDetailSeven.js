@@ -128,7 +128,7 @@ class ContentDetailSeven extends Component {
     console.log("item=====",item);
     return (
       <div>
-        <div className="content-icon">
+        <div className="content-icon" style={{marginTop:-52}}>
           <Icon type={unfold?"up":"down"} onClick={()=>{ this.pullDown(unfold) }}/>
         </div>
         {

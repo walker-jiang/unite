@@ -38,20 +38,20 @@ class Examination extends Component {
     }
   }
   componentWillMount(){
-    if(JSON.stringify(this.props.buOrderDtlList) != '{}'){
-      let { buRecipe, buOrderDtlList, buOrdmedical, ...data } = this.props.buOrderDtlList;
-      this.setState({
-        examineData: buOrderDtlList.concat(buOrdmedical.buOrdmedicalSuitList),
-        data: data, // 原始医嘱信息
-        buOrdmedical: buOrdmedical, // 原始医嘱套对象信息
-        aim: buOrdmedical.aim, // 检验目的
-        miType: buOrdmedical.miType, // 医保类型
-      });
-    }
     this.getDiagnoseData();
     this.getDept();
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
       this.getExamineData(this.props.orderid);
+    }else{ // 添加可以初始化数据
+      if(JSON.stringify(this.props.attachOrder) != '{}'){
+        let { buOrderDtlList = [], buOrdmedical } = this.props.attachOrder;
+        let { buOrdmedicalSuitList = [], ...Recipe } = buOrdmedical;
+        this.setState({
+          suitTechData: buOrderDtlList.concat(buOrdmedicalSuitList),
+          aim: Recipe.aim,
+          miType: Recipe.miType,
+        });
+      }
     }
   };
   /** [getDept 执行科室数据] */
@@ -377,7 +377,7 @@ class Examination extends Component {
     };
     return (
       <SpecForm className='not-draggable' onClick={()=>{this.quickAddExamineItem.hideResult()}}>
-        <HiddenRow>
+        <Row>
           <Col span={24}>
             <FormItem
               {...formItemLayout}
@@ -385,11 +385,11 @@ class Examination extends Component {
             {getFieldDecorator('diagnose', {
               initialValue: {originData: buDiagnosisList, extractionData: getDiagnoseText(buDiagnosisList)}
             })(
-              <Diagnose />
+              <Diagnose disable={true}/>
             )}
             </FormItem>
           </Col>
-        </HiddenRow>
+        </Row>
         <Row>
           <Col span={24}>
             <FormItem

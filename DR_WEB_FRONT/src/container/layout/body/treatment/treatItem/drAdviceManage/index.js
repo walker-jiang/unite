@@ -24,7 +24,7 @@ import TipModal from 'components/dr/modal/tip';
 import buttonSty from 'components/antd/style/button';
 import MedicalHistoryTwo from "../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
 import DoctorAdviceTemplate from "../../../../../rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
-// import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
+import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
 const TabPane = Tabs.TabPane;
 
 export default class Index extends Component {
@@ -39,7 +39,7 @@ export default class Index extends Component {
       actionType: '', // modify、view、add
       orderid: '', // 当前医嘱ID
       showWay: 'table', // 展示形式
-      attachOrder: [], // 辨证论治数据
+      attachOrder: {}, // 辨证论治数据
       diagnoseText: '', // 诊断文本
     };
     this.actionManager = this.actionManager.bind(this);
@@ -1153,9 +1153,7 @@ export default class Index extends Component {
         <Modal>
           <SpecTabs key='1' defaultActiveKey='1' animated={false}>
             <TabPane tab="智能论治" key="1">
-              {
-                // <IntelligentTreat modelData={this.modelData}/>
-              }
+              <IntelligentTreat actionManager= {this.actionManager} modelData={this.modelData}/>
             </TabPane>
             <TabPane tab="历史模板" key="2">
               <MedicalHistoryTwo actionManager= {this.actionManager} getData={this.getData}/>

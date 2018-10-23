@@ -49,8 +49,8 @@ class Index extends Component {
   }
   /** [componentWillReceiveProps 当从知识库添加处方时会需要改函数] */
   componentWillReceiveProps(nextProps){
-    if(JSON.stringify(nextProps.props.attachOrder) != '{}'){
-      let { buOrderDtlList, buRecipe } = nextProps.props.attachOrder;
+    if(JSON.stringify(nextProps.attachOrder) != '{}'){
+      let { buOrderDtlList, buRecipe } = nextProps.attachOrder;
       this.setState({
         herbalData: buOrderDtlList,
       });

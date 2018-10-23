@@ -28,8 +28,6 @@ import Template from "roots/rightAssistBar/medicalRecordWriting/medicalRecordTem
 import MedicalHistory from "roots/rightAssistBar/medicalRecordWriting/medicalHistory.js";
 import BiofeedbckTherpy from "roots/rightAssistBar/medicalRecordWriting/BiofeedbckTherpy.js";
 import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
-import DoctorAdviceTemplate from "roots/rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
-import IntelligentTreat from "roots/rightAssistBar/doctorAdvice/intelligentTreat.js";
 
 const TabPane = Tabs.TabPane;
 const bodyHeight = document.body.clientHeight;

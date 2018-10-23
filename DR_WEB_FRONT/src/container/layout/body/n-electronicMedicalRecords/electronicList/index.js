@@ -20,11 +20,12 @@ export default class index extends Component {
         data: [],
         arr: [],//后台数据
         valueColor: {0: 'selectColor'},
-        show:'显示',
+        show: true,
         disable: true,
         i: '',//左侧key
         orgidDic: '',//机构名称
     };
+    this.handClickShow = this.handClickShow.bind(this)
   }
   
   componentWillMount () {
@@ -53,10 +54,22 @@ export default class index extends Component {
     getResource(params, callBack);
   }
 
+  //点击控制显示隐藏 ，控制显示list长度
   handClickShow () {
-      this.setState({
-          data: this.state.arr
-      })
+      if(this.state.show){
+        this.setState({
+            data: this.state.arr,
+            show: false
+        })
+      }else{
+        let datas=[]
+        datas.push(this.state.data[0])
+        this.setState({
+            data: datas,
+            show: true
+        })
+      }
+      
   }
 
   //点击左侧List,div
@@ -155,7 +168,7 @@ export default class index extends Component {
                     <ScrollArea height={100}>
                         <ListBorder className="listRightLine">
                             {lodeData}
-                            <ShowHidden onClick={this.handClickShow.bind(this)}>{data.length == 1? '显示':'隐藏'}<Patientname>{patientname}</Patientname>更多病例信息>></ShowHidden>
+                            <ShowHidden onClick={this.handClickShow}>{show == true? '显示':'隐藏'}<Patientname>{patientname}</Patientname>更多病例信息>></ShowHidden>
                         </ListBorder>
                     </ScrollArea>    
                 </Col>

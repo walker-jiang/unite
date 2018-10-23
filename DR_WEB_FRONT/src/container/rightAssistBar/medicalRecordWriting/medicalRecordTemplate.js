@@ -4,13 +4,14 @@
 @描述：右侧辅助栏----病历模板
 */
 import React, {Component} from 'react';
-import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, Alert, Modal } from 'antd';
+import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, Alert, Modal, Spin } from 'antd';
 import './style/rightAssistBar.less';
 import SearchTree from '../pubilcModule/searchTree.js';
 import ContentDetail from '../pubilcModule/contentDetail.js';
 import medicalRWService from '../service/medicalRWService.js';
 import doctorAdviceService from '../service/doctorAdviceService.js';
 import pingpu1 from './style/pingpu1.png';
+import zanwunerong from './style/zanwunerong.png';
 import pingpu2 from './style/pingpu2.png';
 import shuzhuang1 from './style/shuzhuang1.png';
 import shuzhuang2 from './style/shuzhuang2.png';
@@ -25,6 +26,7 @@ export default class MedicalRecordTemplate extends Component {
       unfold:true,
       pingpu:true,
       shuzhuang:false,
+      isQuery:false,
       searchValue:"",
       page:1,
       size:10,
@@ -101,14 +103,15 @@ export default class MedicalRecordTemplate extends Component {
           content.push({
             data:newItem,
             temname:item.temname,
-            temlevelDic:item.temlevelDic,
+            temlevelDic:item.temlevelDic == ""?"未知模板":item.temlevelDic,
             initData:item
           });
         })
-        self.setState({ content });
+        self.setState({ content:content,isQuery:true });
         self.queryTree();//获取树状图
       }else{
         console.log('获取table列表失败', res);
+        self.setState({ isQuery:true });
       }
     };
     medicalRWService.QueryTable(params, callBack);
@@ -150,7 +153,7 @@ export default class MedicalRecordTemplate extends Component {
    * @return {[type]}        [description]
    */
   repalceHtml = (str) =>{
-    console.log("str@@@@@@@@@@@@@@@@@@",str);
+    //console.log("str@@@@@@@@@@@@@@@@@@",str);
   	if(str && str != ""){
       var dd=str.toString().replace(/<\/?.+?>/g,"");
     	var dds=dd.replace(/ /g,"");//dds为得到后的内容
@@ -205,7 +208,7 @@ export default class MedicalRecordTemplate extends Component {
     medicalRWService.QueryTreeDetail(params, callBack);
   }
   render() {
-    var { content, isCut, unfold, searchValue, page, size, listenFormData, dataSource, pingpu, shuzhuang } = this.state;
+    var { isQuery, content, isCut, unfold, searchValue, page, size, listenFormData, dataSource, pingpu, shuzhuang } = this.state;
     console.log("=========================",content);
     return (
       <div className="rightAssistBar_template">
@@ -232,28 +235,40 @@ export default class MedicalRecordTemplate extends Component {
             </Col>
           </Row>
         </div>
-        <div className="data">
+        <div className="data" style={{backgroundColor:'#F2F2F2'}}>
           {
             isCut
             ?
-            content.map((item,index)=>{
-              console.log("--------------------------------------",item);
-              return(
-                <div className="content">
-                  <div className="content-title">
-                    <Row>
-                      <Col span={12}><p className="content-p"><div dangerouslySetInnerHTML = {{ __html:item.temname }}></div></p></Col>
-                      <Col span={4}><p className="content-p-two">• {item.temlevelDic}</p></Col>
-                      <Col span={8}>
-                        <Button onClick={()=>{ this.changeInitData(item.initData) }}>引入模板</Button>
-                        <Divider type="vertical" />
-                      </Col>
-                    </Row>
+            (
+              content.length != 0
+              ?
+              content.map((item,index)=>{
+                //console.log("--------------------------------------",item);
+                return(
+                  <div className="content" style={{marginBottom:10}}>
+                    <div className="content-title">
+                      <Row>
+                        <Col span={12}><p className="content-p"><div dangerouslySetInnerHTML = {{ __html:item.temname }}></div></p></Col>
+                        <Col span={4}><p className="content-p-two">• {item.temlevelDic}</p></Col>
+                        <Col span={8}>
+                          <Button onClick={()=>{ this.changeInitData(item.initData) }}>引入模板</Button>
+                          <Divider type="vertical" />
+                        </Col>
+                      </Row>
+                    </div>
+                    <ContentDetail item={item.data} unfold={unfold} changeInitData={this.changeInitData}/>
                   </div>
-                  <ContentDetail item={item.data} unfold={unfold} changeInitData={this.changeInitData}/>
-                </div>
+                )
+              })
+              :
+              (
+                isQuery
+                ?
+                <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据，请输入诊断信息后方可查询</center>
+                :
+                <center style={{marginTop:50}}><div className="example"><Spin/>正在加载中,请稍后...</div></center>
               )
-            })
+            )
             :
             <div>
               <SearchTree

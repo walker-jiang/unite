@@ -151,8 +151,8 @@ function combinedAddFormData(values, itemData, type){
     ordertype: type,   // 医嘱类型
     orgUserid: window.sessionStorage.getItem('userid'),
     orgid: window.sessionStorage.getItem('orgid'),
-    parientid: window.patientID,  // 患者ID
-    parientname: window.patientName,  // 患者姓名
+    patientid: window.patientID,  // 患者ID
+    patientname: window.patientName,  // 患者姓名
     registerid: window.registerID, // 挂号ID
     orgUsername: window.sessionStorage.getItem('username'),
   }

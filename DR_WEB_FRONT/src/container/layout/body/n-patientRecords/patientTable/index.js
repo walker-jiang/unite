@@ -32,8 +32,11 @@ export default class Index extends Component {
     };
     this.getPatientData = this.getPatientData.bind(this);
     this.quickReceive = this.quickReceive.bind(this);
+    
+    
   };
   quickReceive(){
+    
     this.setState({
       basicOperation: 'add'
     },function(){
@@ -83,11 +86,15 @@ export default class Index extends Component {
       let ctsorgidDic = record.ctsorgidDic;//机构
       let upstamp = record.upstamp;//就诊日期
       let patientname = record.patientname;//患者姓名
+      let sex = record.sex;//患者性别
       let sexDic = record.sexDic;//患者性别
       let birthday = y - record.birthday.substr(0,4);//患者年龄
       let patienttypeDic = record.patienttypeDic;//患者类型
+      let cardtype = record.cardtype;
+      let cardno = record.cardno;
+      let mobile = record.mobile;
       let pram = 3;
-      this.props.onToggle(basicOperation,pram,patientid,ctsorgidDic,upstamp,patientname,sexDic,birthday,patienttypeDic);
+      this.props.onToggle(basicOperation,pram,patientid,ctsorgidDic,upstamp,patientname,sex,sexDic,birthday,patienttypeDic,cardtype,cardno,mobile);
     })
   }
   onEdit(text, index, record){
@@ -100,11 +107,15 @@ export default class Index extends Component {
       let ctsorgidDic = record.ctsorgidDic;//机构
       let upstamp = record.upstamp;//就诊日期
       let patientname = record.patientname;//患者姓名
+      let sex = record.sex;//患者性别
       let sexDic = record.sexDic;//患者性别
       let birthday = y - record.birthday.substr(0,4);//患者年龄
       let patienttypeDic = record.patienttypeDic;//患者类型
+      let cardtype = record.cardtype;
+      let cardno = record.cardno;
+      let mobile = record.mobile;
       let pram = 3;
-      this.props.onToggle(basicOperation,pram,patientid,ctsorgidDic,upstamp,patientname,sexDic,birthday,patienttypeDic);
+      this.props.onToggle(basicOperation,pram,patientid,ctsorgidDic,upstamp,patientname,sex,sexDic,birthday,patienttypeDic,cardtype,cardno,mobile);
     })
   }
   /**
@@ -240,8 +251,7 @@ const RegisterButton = styled(Button)`
 `;
 const Header = styled.div`
   height: 50px;
-  margin-left: 0.3%;
-  width: 99.7%;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   background-color: rgba(242, 242, 242, 1);
@@ -285,6 +295,11 @@ const SearchIcon = styled(Icon)`
 `;
 const Content = styled.div`
   width: 100%;
+  overflow: scroll;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  height: calc(100% - 110px);
   position: relative;
 `;
 const SpecTable = styled(Table)`
@@ -314,7 +329,7 @@ const SpecPagination = styled(Pagination)`
   }
 `;
 const OperationCell = styled.i`
-  color: #0a6ecb;
+  color: #108DE9;
   cursor: pointer;
 `;
 /*

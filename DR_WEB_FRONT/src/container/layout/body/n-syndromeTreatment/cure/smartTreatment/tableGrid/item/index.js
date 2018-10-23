@@ -20,22 +20,20 @@ export default class Index extends Component {
     this.forceUpdate();
   };
   render() {
-    let { dataItem, operate } = this.props;
+    let { dataItem, operate, view = false , del = false, modify = false, print = false} = this.props;
     let { orderstate = '6', orderstateDic = '未提交', printstate = '02', printstateDic = '未打印', ordertype = 1, ordertypeDic = '中药处方', ordercontent = '无', checkState = false} = dataItem;
     return (
       <Container ordertype={ordertype}>
         <Header>
-          <SpecCheckbox checked={checkState} onClick={this.modifyCheckState}></SpecCheckbox>
-          <PayState status={orderstate}>{orderstateDic}</PayState>
-          <PrintState status={printstate}>{printstateDic}</PrintState>
+
         </Header>
         <Body id={dataItem.orderid}>
           {ordercontent}
         </Body>
         <Action>
-          <Icon type='delete' onClick={() => {operate('delete', dataItem)}}></Icon>
-          <Icon type='view' onClick={() => {operate('view', dataItem)}}></Icon>
-          <Icon type='modify' onClick={() => {operate('modify', dataItem)}}></Icon>
+          { del ? <Icon type='delete' onClick={() => {operate('delete', dataItem)}} /> : null}
+          { view ? <Icon type='view' onClick={() => {operate('view', dataItem)}} /> : null}
+          { modify ? <Icon type='modify' onClick={() => {operate('modify', dataItem)}} /> : null}
         </Action>
         <OrderType ordertype={ordertype}>{ordertypeDic}</OrderType>
     </Container>

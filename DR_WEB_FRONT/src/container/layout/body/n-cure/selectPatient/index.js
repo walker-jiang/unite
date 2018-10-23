@@ -384,7 +384,7 @@ const SearchIcon = styled(Icon)`
 const Content = styled.div`
   width: 100%;
   position: relative;
-  border: 1px solid #CCCCCC;
+  // border: 1px solid #CCCCCC;
 `;
 const SpecTable = styled(Table)`
   margin: 16px;

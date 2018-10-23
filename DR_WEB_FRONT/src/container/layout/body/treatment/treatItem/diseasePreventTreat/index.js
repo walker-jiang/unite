@@ -14,7 +14,8 @@ export default class DiseasePreventTreat extends Component {
       sex: '',
       sexDesc: '',
       name: '',
-      age: ''
+      age: '',
+      phone: ''
     };
   };
   handleClick(pram){
@@ -48,7 +49,8 @@ export default class DiseasePreventTreat extends Component {
         sex: res.data.user.sex,
         sexDesc: res.data.user.sexDesc,
         name: res.data.user.name,
-        age: res.data.user.birthday
+        age: res.data.user.birthday,
+        phone: res.data.user.phone
       })
     };
 
@@ -61,15 +63,20 @@ export default class DiseasePreventTreat extends Component {
 
   render() {
     console.log('usid',this.state.userId)
-    let {visible,userId,imgUrl,sex,sexDesc,name,age}  = this.state
-    console.log('visible', visible);
+    let {visible,userId,imgUrl,sex,sexDesc,name,age,phone}  = this.state
+    var date = new Date;
+    var year = date.getFullYear(); 
+    let patientAge = year - age.substr(0,4)
+    console.log('patientAge', patientAge);
     let t  = null;
     if(visible == 0){
-      t = <Cure onToggle={this.handleClick.bind(this)} imgUrl={imgUrl} />
+      t = <Cure onToggle={this.handleClick.bind(this)} visible={visible} imgUrl={imgUrl} sexDesc = {sexDesc} name={name} patientAge={patientAge} phone={phone} />
     } else if(visible == 2) {
-      t = <StartWork onToggle={this.handleClick.bind(this)} sexDesc = {sexDesc} userId = {userId} />
+      t = <StartWork onToggle={this.handleClick.bind(this)} userId = {userId} sexDesc = {sexDesc} name={name} patientAge={patientAge} phone={phone} />
     } else if(visible == 1) {
-      t = <TestResults onToggle={this.handleClick.bind(this)} userId = {userId} sexDesc = {sexDesc} name={name} age={age}/>
+      t = <TestResults onToggle={this.handleClick.bind(this)} userId = {userId} sexDesc = {sexDesc} name={name} patientAge={patientAge} phone={phone}/>
+    } else if(visible == 3) {
+      t = <Cure onToggle={this.handleClick.bind(this)} visible={visible} imgUrl={imgUrl} sexDesc = {sexDesc} name={name} patientAge={patientAge}  phone={phone} />
     }
     return (
       <div>

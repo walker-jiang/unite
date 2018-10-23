@@ -73,7 +73,7 @@ export default class Index extends Component {
     let girds = [];
     let rowLines = [];
     patienList.map((item, index) => {
-      let girdItem = <Item dataItem={item} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} operate={(type, record) => {this.props.operate(type, record)}}></Item>
+      let girdItem = <Item dataItem={item} view={this.props.view} del={this.props.del} modify={this.props.modify} onMouseOver={this.handleMouseOver} onMouseLeave={this.handleMouseLeave} operate={(type, record) => {this.props.operate(type, record)}}></Item>
       girds.push(girdItem);
     })
     let rowLength = parseInt(totalLength / cols);
