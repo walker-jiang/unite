@@ -77,13 +77,13 @@ class Cure extends Component {
     let current = this.state.current;
     let bodyComponent = null;
     if(current == 1){
-      bodyComponent = <CaseConfirm onStep={(step) => {}} registerid={this.props.registerid}  readonly={true}/>;
+      bodyComponent = <CaseConfirm onStep={(step) => {}} registerid={this.props.registerid}  readOnly={true}/>;
     }
     if(current == 2){
-      bodyComponent = <SmartDistinguish onStep={(step) => {}} registerid={this.props.registerid}  readonly={true}/>;
+      bodyComponent = <SmartDistinguish onStep={(step) => {}} registerid={this.props.registerid}  readOnly={true}/>;
     }
     if(current == 3){
-      bodyComponent = <SmartTreatment onStep={(step) => {}} registerid={this.props.registerid}  readonly={true}/>;
+      bodyComponent = <SmartTreatment onStep={(step) => {}} registerid={this.props.registerid}  readOnly={true}/>;
     }
     return (
         <Container >

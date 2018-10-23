@@ -110,7 +110,6 @@ class Index extends Component {
         sm: { span: 21 },
       },
      };
-     console.log('this.props.readonly', this.props.readonly);
      return (
         <Container >
           <FormSpec>
@@ -124,7 +123,7 @@ class Index extends Component {
             <CarefulItem getFieldDecorator={getFieldDecorator} initialValue={{originData: [], extractionData: initData.allergyHis}}/>
             <OtherInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.psycheck}></OtherInspect>
           </FormSpec>
-          <SpecCheckbox readonly={this.props.readonly}>忽略病情病历确认</SpecCheckbox>
+          <SpecCheckbox readOnly={this.props.readOnly}>忽略病情病历确认</SpecCheckbox>
           <SureButton type="primary" onClick={() => {this.props.onStep(2)}} readonly={this.props.readonly}>智能辩证</SureButton>
           <BorderButton type="primary" onClick={() => {this.props.onStep(0)}} readonly={this.props.readonly}>返回上一步</BorderButton>
         </Container>
@@ -154,20 +153,20 @@ const FormSpec = styled(Form)`
 const Exsaple = styled.img``;
 const SpecCheckbox = styled(Checkbox)`
   &&& {
-    display: ${props => props.readonly ? 'none' : 'block'};
+    display: ${props => props.readOnly ? 'none' : 'block'};
   }
 `;
 const BorderButton = styled(Button)`
   ${buttonSty.white};
   &&& {
-    display: ${props => props.readonly ? 'none' : 'block'};
+    display: ${props => props.readOnly ? 'none' : 'block'};
   }
   border: 1px solid rgba(10, 110, 203, 1) !important;
 `;
 const SureButton = styled(Button)`
   ${buttonSty.semicircle};
   &&& {
-    display: ${props => props.readonly ? 'none' : 'block'};
+    display: ${props => props.readOnly ? 'none' : 'block'};
   }
 `;
 /*

@@ -187,6 +187,13 @@ export default class Index extends Component {
    */
   actionManager(actionType, record, attachOrder = {}){
     let that = this;
+    if(!this.diagnose.state.buDiagnosisList.length){
+      this.tipModal.showModal({
+        content: '诊断信息不能为空',
+        stressContent: ''
+      });
+      return;
+    }
     if(actionType == 'delete'){ // 删除操作
       that.onDelete(record.orderid)
       return;
@@ -1111,7 +1118,7 @@ export default class Index extends Component {
                   <SpecTableIcon showWay={showWay} onClick={() => {this.setState({ showWay: 'table'})}}/>
                   <SpecListIcon showWay={showWay} onClick={() => {this.setState({ showWay: 'list'})}}/>
                 </Toggle>
-                <Diagnose diagnoseUpdate={this.diagnoseUpdate}/>
+                <Diagnose diagnoseUpdate={this.diagnoseUpdate} wrappedComponentRef={ ref => { this.diagnose = ref }}/>
               </Header>
               {
                 showWay == 'list' ?

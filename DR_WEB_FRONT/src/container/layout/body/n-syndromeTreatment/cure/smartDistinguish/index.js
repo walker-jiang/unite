@@ -396,7 +396,7 @@ export default class SmartDistinguish extends Component {
               pagination={Pagination_his}/>
           </History>
           <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
-          <ActionButton readonly={this.props.readonly}>
+          <ActionButton readOnly={this.props.readOnly}>
             <Checkbox >同步到患者诊断</Checkbox>
             <SureButton type="primary" onClick={this.submitCaseData}>智能论治</SureButton>
             <BorderButton type="primary" onClick={() => {this.props.onStep(1)}}>返回上一步</BorderButton>
@@ -522,7 +522,7 @@ const AddAction = styled(Button)`
 const ActionButton = styled.div`
   border-top: 1px solid #CCCCCC;
   margin-top: 30px;
-  display: ${props => props.readonly ? 'none' : 'block'}
+  display: ${props => props.readOnly ? 'none' : 'block'}
 `;
 const BorderButton = styled(Button)`
   ${buttonSty.white}

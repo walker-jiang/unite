@@ -179,7 +179,7 @@ export default class SmartDistinguish extends Component {
             <AddHeader operate={this.actionManager}></AddHeader>
             <TableGrid {...girdProps}/>
           </Content>
-          <ActionButton readonly={this.props.readonly}>
+          <ActionButton readOnly={this.props.readOnly}>
             <Checkbox>同步到患者医嘱</Checkbox>
             <SureButton type="primary" onClick={() => {this.props.onStep(4)}}>完成</SureButton>
             <BorderButton type="primary" onClick={() => {this.props.onStep(2)}}>返回上一步</BorderButton>
@@ -292,7 +292,7 @@ const SpecTabs = styled(Tabs)`
 const ActionButton = styled.div`
   border-top: 1px solid #CCCCCC;
   margin-top: 40px;
-  display: ${props => props.readonly ? 'none' : 'block'}
+  display: ${props => props.readOnly ? 'none' : 'block'}
 `;
 const BorderButton = styled(Button)`
   ${buttonSty.white}

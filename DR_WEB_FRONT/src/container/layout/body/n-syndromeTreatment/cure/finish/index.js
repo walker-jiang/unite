@@ -8,7 +8,7 @@ import { getDiagnoseText } from 'commonFunc/transform';
 import finish from './finish.png';
 import right from './right.png';
 
-export default class Index extends Component {
+export default class Finish extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -78,21 +78,99 @@ export default class Index extends Component {
     let that = this;
     function callBack(res) {
       if(res.result){
-        let dataSource = this.state.dataSource;
+        let dataSource = that.state.dataSource;
         dataSource.push(res.data);
-        this.setState({ dataSource });
+        that.setState({ dataSource });
       }
     };
     ajaxGetResource(params, callBack);
   };
-  getOrderTypeDic(orderTypr){
-
+  /**
+   * [getOrderTypeDic 获取医嘱组件]
+   * @param  {[type]} item  [医嘱对象]
+   * @param  {[type]} index [索引]
+   * @return {[type]}       [组件]
+   */
+  getOrderTypeDic(item, index){
+    switch (item.ordertype) {
+      case 1:
+        return (
+          <Line key={item.orderid}>{index + 1}.检验处方：</Line>
+        );
+        break;
+      case 2:
+        return (
+          <Line key={item.orderid}>{index + 1}.检查处方：</Line>
+        );
+        break;
+      case 3:
+        return (
+          <div>
+            <Line key={item.orderid}>{index + 1}.中药处方：</Line>
+            <Line>&nbsp;&nbsp;&nbsp;&nbsp;药单：{this.getHerbalNames(item.buOrderDtlList)}</Line>
+            <Line>&nbsp;&nbsp;&nbsp;&nbsp;用法/频次：{item.buRecipe.treatway}/{item.buRecipe.freqname}</Line>
+          </div>
+        );
+      case 4:
+        return (
+          <div>
+            <Line key={item.orderid}>{index + 1}.中成药/西药处方：</Line>
+            <Line>&nbsp;&nbsp;&nbsp;&nbsp;{this.getChMedicineNames(item.buOrderDtlList)}</Line>
+          </div>
+        );
+        break;
+      case 5:
+        let suitTechData = [];
+        item.buOrdmedical.buOrdmedicalSuitList.forEach((itemChild) => {
+          itemChild.buOrderDtlList.forEach((itemChildChild) => {
+            suitTechData.push(itemChildChild); // 遍历出医嘱明细项
+          });
+        })
+        suitTechData.concat(item.buOrderDtlList);
+        return (
+          <div>
+            <Line key={item.orderid}>{index + 1}.适宜技术处方：</Line>
+            <Line>&nbsp;&nbsp;&nbsp;&nbsp;{this.getSuitTechNames(suitTechData)}</Line>
+          </div>
+        );
+        break;
+      case 6:
+        return (
+          <Line key={item.orderid}>{index + 1}.西医治疗处方：</Line>
+        );
+        break;
+      case 7:
+        return (
+          <Line key={item.orderid}>{index + 1}.材料处方：</Line>
+        );
+        break;
+      default:
+    }
+  };
+  getHerbalNames(herbalData = []){
+    let herbalNames = herbalData.map((item) => item.itemname + item.count + 'g');
+    return herbalNames.join('、');
+  };
+  getChMedicineNames(medicineData = []){
+    let medicineNames = medicineData.map((item) => item.itemname + ' | ' + item.usagename + ' |  ' + item.freqname);
+    return medicineNames.join('、');
+  };
+  getSuitTechNames(suitTechData = []){
+    let suitTechNames = suitTechData.map((item) => {
+      let acunames = [];
+      if(item.buImtreatprelistStAcupoints){
+        acunames = item.buImtreatprelistStAcupoints.map( itemChild => itemChild.acuname); // 穴位
+      }
+      return '适宜技术类型：' + item.itemname + ' | ' + '取穴：' +  acunames.join('、')
+    });
+    return suitTechNames.join('，');
   };
   render() {
     let { dataSource, buDiagnosisList } = this.state;
+    console.log('dataSource', dataSource);
     return (
         <Container >
-          <Finish src={finish} />
+          <FinishImg src={finish} />
           <FinishTip>辩证论治已完成</FinishTip>
           <Content>
             <RightTip><Right src={right} />已确认诊断结果：（成功加入该患者诊断）</RightTip>
@@ -100,22 +178,24 @@ export default class Index extends Component {
             <RightTip><Right src={right} />已确认治疗方案：（成功加入该患者医嘱）</RightTip>
             {
               dataSource.map((item, index) => {
-                <Line>{index + 1}.{item.ordertype}：</Line>
+                return this.getOrderTypeDic(item, index)
               })
             }
-            <Line>1.中药处方：</Line>
-            <Line>&nbsp;&nbsp;&nbsp;&nbsp;药单：金银花10g、柴胡10g、栀子20g、枸杞10g、党参10g、黄芪20g</Line>
-            <Line>&nbsp;&nbsp;&nbsp;&nbsp;用法/频次：口服/一日2次</Line>
-            <Line>2.中成药处方：感冒清热颗粒 | 口服 | 1日2次</Line>
-            <Line>3.中医适宜技术：适宜技术类型：针刺 |  取穴：大椎、合谷、风池</Line>
-            <RightTip><Right src={right} />已确认诊断结果：（成功加入该患者诊断）</RightTip>
-            <Line>感冒/风寒感冒</Line>
-            <RightTip><Right src={right} />已确认治疗方案：（成功加入该患者医嘱）</RightTip>
-            <Line>1.中药处方：</Line>
-            <Line>&nbsp;&nbsp;&nbsp;&nbsp;药单：金银花10g、柴胡10g、栀子20g、枸杞10g、党参10g、黄芪20g</Line>
-            <Line>&nbsp;&nbsp;&nbsp;&nbsp;用法/频次：口服/一日2次</Line>
-            <Line>2.中成药处方：感冒清热颗粒 | 口服 | 1日2次</Line>
-            <Line>3.中医适宜技术：适宜技术类型：针刺 |  取穴：大椎、合谷、风池</Line>
+            {
+              // <Line>1.中药处方：</Line>
+              // <Line>&nbsp;&nbsp;&nbsp;&nbsp;药单：金银花10g、柴胡10g、栀子20g、枸杞10g、党参10g、黄芪20g</Line>
+              // <Line>&nbsp;&nbsp;&nbsp;&nbsp;用法/频次：口服/一日2次</Line>
+              // <Line>2.中成药处方：感冒清热颗粒 | 口服 | 1日2次</Line>
+              // <Line>3.中医适宜技术：适宜技术类型：针刺 |  取穴：大椎、合谷、风池</Line>
+              // <RightTip><Right src={right} />已确认诊断结果：（成功加入该患者诊断）</RightTip>
+              // <Line>感冒/风寒感冒</Line>
+              // <RightTip><Right src={right} />已确认治疗方案：（成功加入该患者医嘱）</RightTip>
+              // <Line>1.中药处方：</Line>
+              // <Line>&nbsp;&nbsp;&nbsp;&nbsp;药单：金银花10g、柴胡10g、栀子20g、枸杞10g、党参10g、黄芪20g</Line>
+              // <Line>&nbsp;&nbsp;&nbsp;&nbsp;用法/频次：口服/一日2次</Line>
+              // <Line>2.中成药处方：感冒清热颗粒 | 口服 | 1日2次</Line>
+              // <Line>3.中医适宜技术：适宜技术类型：针刺 |  取穴：大椎、合谷、风池</Line>
+            }
           </Content>
           <ActionButton>
             <SureButton type="primary">关闭并返回HIS</SureButton>
@@ -134,7 +214,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
 `;
-const Finish = styled.img`
+const FinishImg = styled.img`
   width: 73px;
   height: 79px;
 `;

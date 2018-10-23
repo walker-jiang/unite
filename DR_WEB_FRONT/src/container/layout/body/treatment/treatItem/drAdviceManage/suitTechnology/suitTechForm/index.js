@@ -402,10 +402,9 @@ class SuitTechForm extends Component {
         if(index%2 == 0){
           return '';
         }else{
-          console.log('record', record);
           return (
             <SpecSelect
-              defaultValue={ frequencyData.length ? ( record.deptid ? { key:record.deptid, label: record.deptname } : { key: deptData[0].deptid, label: deptData[0].deptname }) : {key: '', label: ''}}
+              value={deptData.length ? ( record.deptid ? { key:record.deptid, label: record.deptname } : { key: deptData[0].deptid, label: deptData[0].deptname }) : {key: '', label: ''}}
               labelInValue={true}
               onSelect={(e)=>{this.onModifySelectValue(record.itemid, 'deptid', 'deptname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
               {
@@ -425,7 +424,7 @@ class SuitTechForm extends Component {
         }else{
           return (
             <SpecSelect
-              defaultValue={ frequencyData.length ? ( record.freqid ? {key:record.freqid, label: record.freqname} : {key: frequencyData[0].freqcode, label: frequencyData[0].freqname}) : {key:'', label: ''}}
+              value={ frequencyData.length ? ( record.freqid ? {key:record.freqid, label: record.freqname} : {key: frequencyData[0].freqcode, label: frequencyData[0].freqname}) : {key:'', label: ''}}
               labelInValue={true}
               onSelect={(e)=>{this.onModifySelectValue(record.itemid, 'freqid', 'freqname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
               {
@@ -451,7 +450,7 @@ class SuitTechForm extends Component {
           return{
             children:(
               <span>
-                <InputCount onBlur={(e)=>{ record.count != e.target.value ? this.onModifyInputValue(e.target.value, record, 'takedays') : ''}} defaultValue={record.takedays ? record.takedays : 1 } />
+                <InputCount onBlur={(e)=>{ record.count != e.target.value ? this.onModifyInputValue(e.target.value, record, 'takedays') : ''}} value={record.takedays ? record.takedays : 1 } />
               </span>
             )
           }
@@ -548,6 +547,11 @@ class SuitTechForm extends Component {
       this.acupointEdit.handlePopOpen();
     });
   };
+  /**
+   * [modifyAcupoint 点击穴位修改适宜技术明细]
+   * @param  {[type]} tectItemDetail [适宜技术明细]
+   * @return {[type]}                [description]
+   */
   modifyAcupoint(tectItemDetail){
     let suitTechData = this.state.suitTechData;
     if(tectItemDetail.orderSuitid){
@@ -561,7 +565,7 @@ class SuitTechForm extends Component {
               itemChild.freqname = tectItemDetail.frequency.label;
               itemChild.takedays = tectItemDetail.takedays;
               itemChild.buImtreatprelistStAcupoints = tectItemDetail.buImtreatprelistStAcupoints; // 穴位赋值
-              if(itemChild.buImtreatprelistStAcupoints){ // 提取穴位名称
+              if(itemChild.buImtreatprelistStAcupoints && itemChild.buImtreatprelistStAcupoints.length){ // 提取穴位名称
                 let acupointNameArray = [];
                 itemChild.buImtreatprelistStAcupoints.forEach((itemChildChild) => {
                   acupointNameArray.push(itemChildChild.acuname);
