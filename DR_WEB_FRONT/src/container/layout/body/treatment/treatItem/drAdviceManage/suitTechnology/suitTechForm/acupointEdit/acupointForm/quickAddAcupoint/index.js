@@ -13,7 +13,7 @@ export default class QuickAddAcupoint extends Component {
       showResult: false, // 是否显示浮窗
       herbData: [], //草药数据数组
       totalLines: 0, // 查询结果总行数
-      curLine: 0, // 当前行,从0开始，-1表示未选中任何行
+      curLine: -1, // 当前行,从0开始，-1表示未选中任何行
     };
     this.showResult = this.showResult.bind(this);
     this.hideResult = this.hideResult.bind(this);
@@ -114,14 +114,17 @@ export default class QuickAddAcupoint extends Component {
     let herbData = this.state.herbData;
     let curLine = this.state.curLine;
     let totalLines = this.state.totalLines;
+    let showResult = this.state.showResult;
     switch(e.keyCode){
       case 40:         // 向下箭头, 选择下一行
+      if(showResult){
         if(curLine >= totalLines-1){
           curLine = 0;
         }else{
           curLine++;
         }
         this.SelectedLine(herbData[curLine]);
+      }
         break;
       case 38:         // 向上箭头，选择上一行
         if(curLine <= 0){

@@ -12,7 +12,7 @@ export default class AddIllByDiagnose extends Component {
       showResult: false, // 是否展示疾病搜索结果
       illData: [], // 疾病数据数组
       totalLines: 0, // 查询结果总行数
-      curLine: 0, // 当前行,从0开始，-1表示未选中任何行
+      curLine: -1, // 当前行,从-1开始，-1表示未选中任何行
     };
     this.showResult = this.showResult.bind(this);
     this.hideResult = this.hideResult.bind(this);
@@ -41,11 +41,12 @@ export default class AddIllByDiagnose extends Component {
       if(res.result){
         let illData = res.data.map((item, index)=>{
           item.key = index; // 加唯一key值
-          item.status = (index == 0) ? 1 : 0; // 0表示全部未选中， 1表示选择了该行，初始化时默认选中第一行
+          item.status = 0; // 0表示全部未选中， 1表示选择了该行，初始化时默认选中第一行
+          item.checkedStatus = 0; // 0表示全部未选中 2 表示选中
           return item
         });
           let totalLines = illData.length;
-        self.setState({illData, totalLines});
+        self.setState({illData, totalLines, showResult: true, curLine: -1 });
       }else{
         console.log('异常响应信息', res);
       }
@@ -53,7 +54,6 @@ export default class AddIllByDiagnose extends Component {
     ajaxGetResource(params, callBack);
   };
   showResult(value){
-    this.setState({showResult: true});
     this.getIllData(value);
   };
   hideResult(){
@@ -61,34 +61,25 @@ export default class AddIllByDiagnose extends Component {
   };
   /** [getSelectedData 获取到选中行的数据] */
   getSelectedData(){
-    let selectedIllData = {};
     let { illData, showResult } = this.state;
-    if(showResult){ // 只有显示着查询结果浮框才能添加进诊断
-      illData.forEach((item, index)=>{ // 只返回选中的行
-        if(item.status == 2){
-          selectedIllData = item;
-        }
-      });
-    }
+    let selectedIllData = illData.filter(item => item.checkedStatus == 2);
     return selectedIllData;
   };
   /** [SelectedLine 选中表格行] */
   SelectedLine(record){
     let illData = this.state.illData;
-    illData.map((item)=>{ // 将除当前点击行外的所有行均设置为未选中
-      if(item.status != 2){
-        if(item.key == record.key){
-          if(item.status == 1){
-            item.status = 0;
-          }else{
-            item.status = 1;
-          }
+    illData.map((item)=>{ // 改变当前行的选中状态
+      if(item.key == record.key){
+        if(item.status == 0){
+          item.status = 1;
         }
         else{
           item.status = 0;
         }
-        return item;
+      }else{
+          item.status = 0;
       }
+      return item;
     });
     this.setState({ illData });
   };
@@ -97,12 +88,10 @@ export default class AddIllByDiagnose extends Component {
     let illData = this.state.illData;
     illData.map((item)=>{ // 改变当前行的选中状态
       if(item.key == record.key){
-        item.status = status;
-        if(status == 2){
-          this.props.addWestMedicineData({});
-        }
-      }else{
-        item.status = 0;
+          item.checkedStatus = status;
+          if(status == 0){
+            item.status = 1;
+          }
       }
       return item;
     });
@@ -113,35 +102,66 @@ export default class AddIllByDiagnose extends Component {
     let illData = this.state.illData;
     let curLine = this.state.curLine;
     let totalLines = this.state.totalLines;
+    let showResult = this.state.showResult;
     switch(e.keyCode){
       case 40:         // 向下箭头, 选择下一行
-        if(curLine >= totalLines-1){
-          curLine = 0;
-        }else{
-          curLine++;
+        if(showResult){ // 防止出现弹框还未出现用户已经按键导致展示的不是期望行
+          if(curLine >= totalLines-1){
+            curLine = 0;
+          }else{
+            curLine++;
+          }
+          this.SelectedLine(illData[curLine]);
         }
-        this.SelectedLine(illData[curLine]);
         break;
       case 38:         // 向上箭头，选择上一行
-        if(curLine <= 0){
-          curLine = totalLines-1;
-        }else{
-          curLine--;
+        if(showResult){ // 防止出现弹框还未出现用户已经按键导致展示的不是期望行
+          if(curLine <= 0){
+            curLine = totalLines-1;
+          }else{
+            curLine--;
+          }
+          this.SelectedLine(illData[curLine]);
         }
-        this.SelectedLine(illData[curLine]);
         break;
-      case 13:         // enter，切换到病侯
-        this.checkedLine(illData[curLine], 2);
+      case 37:         // 向左箭头， 选中该行
+        if(showResult){ // 防止出现弹框还未出现用户已经按键导致展示的不是期望行
+          this.checkedLine(illData[curLine], 2);
+        }
+        break;
+      case 39:         // 向右箭头，取消选中该行
+        if(showResult){ // 防止出现弹框还未出现用户已经按键导致展示的不是期望行
+          this.checkedLine(illData[curLine], 0);
+        }
+        break;
+      case 13:         // enter
+        if(showResult){ // 弹框显示的时候enter键的执行步骤是收起弹框给输入框赋值通知父组件更新疾病ID
+          let selectedDianame = [];
+          illData.forEach(item => {
+            if(item.checkedStatus == 2){
+              selectedDianame.push(item.dianame);
+            }
+          });
+          this.semicircleInput.changeInputValue(selectedDianame.join('、'));
+          // this.checkedLine(illData[curLine], 2);
+          this.hideResult();
+        }else{ // 其余的enter事件包括 需要将焦点切换给病候的情况
+          this.props.enterEvent(this.semicircleInput.state.value, 'diagnose');
+        }
         break;
     };
     this.setState({ curLine });
+  };
+  clearInputValue(){
+    this.semicircleInput.changeInputValue('');
+    this.setState({ illData: [] });
   };
   render() {
     let { formItemProps, placeholder, icon } = this.props;
     let { showResult, illData } = this.state;
     let columns = this.getTableCol();
     return (
-      <Semicircle icon={icon} onKeyDown={this.handleEnterPress} autofocus displayed={this.showResult} placeholder={placeholder}>
+      <Semicircle {...this.props} ref={ ref => { this.semicircleInput  = ref}} hideEmpty={this.hideResult} onKeyDown={this.handleEnterPress} autofocus displayed={this.showResult}>
         {
           showResult?
           <Result>
@@ -149,14 +169,15 @@ export default class AddIllByDiagnose extends Component {
               onRow={(record) => {
                 return {
                   onClick: (e) => {
-                    this.checkedLine(record, record.status == 0 || record.status == 1 ? 2 : 0 );
+                    this.checkedLine(record, record.checkedStatus == 0 ? 2 : 0 );
+                    document.getElementById('diagnoseIll').focus(); // 焦点切换到病候输入框
                     e.stopPropagation();
                     e.nativeEvent.stopImmediatePropagation();
                   },       // 点击行
                 };
               }}
               rowClassName={(record, index)=>{
-                return record.status ? (record.status == 1 ? 'Selected' : 'checked') : 'unSelected';
+                return record.status ? (record.checkedStatus ? 'Selected checked' : 'Selected') : ( record.checkedStatus ? 'checked' : 'unSelected');
               }}
               showHeader={false}
               columns={columns}
@@ -178,7 +199,6 @@ const Result = styled.div`
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
   color: rgba(0,0,0,0.65);
   background: white;
-  padding: 0px 5px;
 `;
 const SpecTable = styled(Table)`
   ${tableSty.selectedTable}

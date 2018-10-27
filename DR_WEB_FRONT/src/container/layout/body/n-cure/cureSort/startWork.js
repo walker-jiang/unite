@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import ReactDom from "react-dom"
 import { Button, Input, Radio, Progress, Row, Col } from 'antd'
+import "../css/startWork.css";
 import tp from "../images/tipPhoto.png";
 import bg from "../images/background.png";
 import ic from "../images/iconCount.png";
@@ -167,7 +168,7 @@ export default class StartWork extends Component {
         <ScrollArea height={100}>
           <Row type="flex" justify="start">
             <Col lg={24} xl={24} xxl={24}>
-              <div>
+              <div style={styles.titleHeight}>
                 <img src={tp} style={styles.tipPhoto}/>
                 <p style={styles.tipTitle}>患者体质辨析测评</p>
                 <p style={styles.tipText}>请您通过问答形式协助患者完成“体质辨析测评”
@@ -187,7 +188,7 @@ export default class StartWork extends Component {
             <Col lg={24} xl={24} xxl={24}>
               <div className="percentLeft">
                 {mmuu}
-                <div style={styles.answerProgress} style={{ width: 300 }}>
+                <div className="answerProgress" style={{ width: 300 }}>
                   <Progress percent={this.state.percent} size="small" />
                 </div>
               </div>
@@ -203,22 +204,24 @@ const styles = {
   all: {
     marginLeft: '6%'
   },
+  titleHeight: {
+    height: '72px'
+  },
   tipPhoto: {
     marginTop: '1.7%',
     width: '4rem'
   },
   tipTitle: {
-    fontFamily: 'MicrosoftYaHei, 微软雅黑',
-	  color: 'black',
+    color: 'black',
 	  fontWeight: '400',
     fontStyle: 'normal',
     fontSize: '18px',
     textAlign: 'left',
 	  marginLeft: '5rem',
-    marginTop: '-4.3rem'   
+    marginTop: '-4.3rem',
+    height: '36px' 
   },
   tipText: {
-    fontFamily: 'MicrosoftYaHei, 微软雅黑',
     color: 'black',
     fontWeight: '400',
     fontStyle: 'normal',
@@ -226,7 +229,8 @@ const styles = {
     fontSize: '14px',
     textAlign: 'left',
 	  marginLeft: '5rem',
-    marginTop: '-1.3rem'
+    marginTop: '-0.5rem',
+    height: '36px' 
   },
   bgDiv: {
     position: 'relative'
@@ -288,11 +292,6 @@ const styles = {
   },
   rember: {
     marginTop: '1.2%'
-  },
-  answerProgress: {
-    float: 'right',
-    marginRight: '5.8%',
-    marginTop: '-1.5%'
   },
   patientText:{
     fontFamily: 'MicrosoftYaHei, Microsoft YaHei',

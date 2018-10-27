@@ -20,21 +20,25 @@ class ContentDetailFiveItem extends Component {
   addPrescription = (item) => {
     console.log("item===============",item);
     var self = this;
-    let params = {
-      tzVnCmtreatment:JSON.stringify(item.tzVnCmtreatment),
-      sinomedicineList:JSON.stringify(item.sinomedicineList),
-      bu:this.props.bu
-    };
-    function callBack(res){
-      if(res.flag == 1){
-        //alert("名医医案转换成功==============");
-        //* 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
-        self.props.changeInitData(res.data,3);
-      }else{
-        console.log('名医医案转换失败', res);
-      }
-    };
-    doctorAdviceService.addPrescription(params, callBack);
+    //JSON.stringify(JSON.parse(this.props.bu).buPatientCase)
+    if(this.props.bu){
+      let params = {
+        "tzVnCmtreatment":JSON.stringify(item.tzVnCmtreatment),
+        "sinomedicineList":JSON.stringify(item.sinomedicineList),
+        "bu":this.props.bu
+      };
+      function callBack(res){
+        if(res.result && res.result){
+          //* 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
+          self.props.changeInitData(res.data,3);
+        }else{
+          alert('名医医案转换失败', res);
+        }
+      };
+      doctorAdviceService.addPrescription(params, callBack);
+    }else{
+      alert("病历信息为空，请检查数据项");
+    }
   }
   render() {
     var { isUnfoldAll } = this.state;
@@ -54,7 +58,7 @@ class ContentDetailFiveItem extends Component {
           {
             content.map((item,index)=>{
               return(
-                  <div>
+                  <div key={index}>
                     <p><Icon type="right"/>病案信息{index+1}：</p>
                     <p>&nbsp;</p>
                     <p>患者:</p>
@@ -77,7 +81,7 @@ class ContentDetailFiveItem extends Component {
                           }
                         })
                         return(
-                          <div className="content-detail-Five-div">
+                          <div className="content-detail-Five-div" key={k}>
                             <p><Icon style={{fontSize:14,marginRight:5}} type="right-circle" theme="outlined" />{j.tzVisitsnum.visitsnum == 1?"初诊":"复诊"}：</p>
                             <p>{desc}</p>
                             <div style={{marginLeft:55}}>
@@ -92,7 +96,7 @@ class ContentDetailFiveItem extends Component {
                                     }
                                   })
                                   return(
-                                    <div>
+                                    <div key={b}>
                                       <p>{b+1}.中药处方：</p>
                                       <p>{sinomedicinedesc}</p>
                                       <p style={{marginLeft:10}}>
@@ -212,7 +216,7 @@ export default class ContentDetail extends Component {
             bu={this.props.bu}
             content={item.tm_DetailAndDoctor.detailList}
             item={this.props.item}
-            changeInitData={this.changeInitData}
+            changeInitData={this.props.changeInitData}
           />
         </div>
       </div>

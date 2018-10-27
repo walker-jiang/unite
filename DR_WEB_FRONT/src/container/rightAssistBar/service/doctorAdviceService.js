@@ -56,7 +56,7 @@ class DoctorAdviceService {
      * 辩证论证列表获取-----获取证侯对应治法列表-----孙磊
      */
     ImtreatprelistGetList(params,callBack){
-        //callBack(Simulation.ImtreatprelistGetList())
+        //config_InteLigenTreat_url+
         if(testData){
           return Simulation.ImtreatprelistGetList(callBack);
         }else{
@@ -92,14 +92,14 @@ class DoctorAdviceService {
      * 中成药引入
      */
     getCpm(params,callBack){
-        //callBack(Simulation.ImtreatprelistGetList())
+        //config_InteLigenTreat_url
         if(testData){
           return Simulation.getCpm(callBack);
         }else{
           Xhr.post(
             'get',
             'application/x-www-form-urlencoded;charset=utf-8',
-            config_InteLigenTreat_url+'TCMAE/api/scheme/getCpm',
+            config_InteLigenTreat_url+'/TCMAE/api/scheme/getCpm',
             params,
             false,
             callBack
@@ -118,6 +118,24 @@ class DoctorAdviceService {
             'get',
             'application/x-www-form-urlencoded;charset=utf-8',
             config_InteLigenTreat_url+'TCMAE/api/scheme/getSt',
+            params,
+            false,
+            callBack
+          );
+        }
+    }
+    /**
+     * 适宜技术引入-----选择中医适宜技术治疗项/治疗明细-----易超文
+     */
+    getStQueryTable(params,callBack){
+      //config_AssistBar_url
+        if(testData){
+          return Simulation.GetList();
+        }else{
+          Xhr.post(
+            'get',
+            'application/json;charset=utf-8',
+            config_AssistBar_url+'BaMedicalDtlController/getDtlWithOrderSuit',
             params,
             false,
             callBack
@@ -147,14 +165,14 @@ class DoctorAdviceService {
      * 名医医案引入
      */
     addPrescription(params,callBack){
-        //callBack(Simulation.ImtreatprelistGetList())
+        //config_InteLigenTreat_url+
         if(testData){
           return Simulation.getSt(callBack);
         }else{
           Xhr.post(
             'get',
             'application/x-www-form-urlencoded;charset=utf-8',
-            config_InteLigenTreat_url+'TCMAE/MedicalCase/addPrescription',
+            config_InteLigenTreat_url+'TCMAE/medicalCase/addPrescription',
             params,
             false,
             callBack

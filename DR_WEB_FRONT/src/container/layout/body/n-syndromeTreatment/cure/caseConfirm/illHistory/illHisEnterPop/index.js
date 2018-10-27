@@ -37,7 +37,7 @@ export default class illHisEnterPop extends Component{
       url: 'BaEnteritemDictController/getList',
       data: {
         keyword: key,
-        itemFieldname: title == '其它症状' ? '现病史' : title,
+        itemFieldname: title,
       },
     };
     function callBack(res){

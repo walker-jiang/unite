@@ -126,10 +126,10 @@ export default class ObserveCure extends Component {
     let { expand, tonguePicture, standard } = this.state;
     return (
       <Container>
-        <SpecRow>
+        <Row>
           <SpecCol span={3} onClick={(e)=>this.expand(e, 'expand', !expand)}>
             <Arrow type={expand ? 'up-circle' : 'down-circle'}/>
-            <span>舌诊：</span>
+            <span>望诊：</span>
           </SpecCol>
           <Col span={21}>
             <SpecFormItem>
@@ -141,7 +141,18 @@ export default class ObserveCure extends Component {
               <ObserveTags onClick={this.observeTagsClick} expand={expand} tagsOver={this.tagsOver} tagsOut={this.tagsOut}/>
             </SpecFormItem>
           </Col>
-        </SpecRow>
+          <ShowTongueAction src={tip} onClick={() => {this.tongueShow.handleOpen()}}></ShowTongueAction>
+          <Sign type='camera' width='18px' height='18px' fill='#33CC00' onClick={this.takePicture}/>
+          <Camera ref={ref => this.camera = ref} returPicture={this.returTonguePicture}></Camera>
+          <PicureEditor getUrl={this.getUrl} retakePicture={() => {this.camera.handleOpen()}} ref={ ref => { this.picureEditor = ref }}></PicureEditor>
+        </Row>
+        <HiddenFormItem>
+          {getFieldDecorator('inspectionPicture', {
+            initialValue: initialValue.urlArr
+          })(
+            <TongueShow standard={standard} ref = { ref => {this.tongueShow = ref}} modify_picture={(url) => {this.picureEditor.handleOpen(url)}}></TongueShow>
+          )}
+        </HiddenFormItem>
       </Container>
     );
   }

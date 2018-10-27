@@ -174,7 +174,10 @@ export default class MedicalRecordTemplate extends Component {
     for(key in item){
       newItem[key] = this.repalceHtml(item[key])
     }
-    newItem['buDiagnosisInfo'] = {};//暂无信息
+    var buDiagnosisInfo = item.buDiagnosisInfo;
+    buDiagnosisInfo['buDiagnosisList'] = buDiagnosisInfo.buDiagnosisTempletList;
+    delete buDiagnosisInfo.buDiagnosisTempletList;
+    newItem['buDiagnosisInfo'] = buDiagnosisInfo;
     this.props.changeInitData(newItem);
   }
   cut = (isCut,type) =>{

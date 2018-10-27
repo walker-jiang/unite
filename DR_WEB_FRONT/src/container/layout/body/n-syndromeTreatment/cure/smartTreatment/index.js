@@ -6,7 +6,7 @@ import TipModal from 'components/dr/modal/tip';
 import Diagnose from '../../../treatment/treatItem/drAdviceManage/diagnose';
 import TableGrid from './tableGrid';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
-import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
+import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
 import ChHerbalMedicine from '../../../treatment/treatItem/drAdviceManage/chHerbalMedicine';
 import ChPatentMedicine from '../../../treatment/treatItem/drAdviceManage/chPatentMedicine';
 import SuitTechnology from '../../../treatment/treatItem/drAdviceManage/suitTechnology';
@@ -14,13 +14,13 @@ import Examination from '../../../treatment/treatItem/drAdviceManage/examination
 import Inspection from '../../../treatment/treatItem/drAdviceManage/inspection';
 import WesternMedicine from '../../../treatment/treatItem/drAdviceManage/westernMedicine';
 import Material from '../../../treatment/treatItem/drAdviceManage/material';
-import AddHeader from '../../../treatment/treatItem/drAdviceManage/addHeader';
+// import AddHeader from '../../../treatment/treatItem/drAdviceManage/addHeader';
 import re_diagnose from './re_diagnose.png';
 import { getDiagnoseText } from 'commonFunc/transform';
 
 const TabPane = Tabs.TabPane;
 
-export default class SmartDistinguish extends Component {
+export default class SmartTreatment extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -67,6 +67,7 @@ export default class SmartDistinguish extends Component {
     function callBack(res){
       if(res.result && res.data){ // 获取当前诊断明细数据
         let { buDiagnosisList, ...buDiagnosisInfo } = res.data;
+        window.searchITList();
         self.setState({
           buDiagnosisList: buDiagnosisList,
         });
@@ -173,10 +174,12 @@ export default class SmartDistinguish extends Component {
           <Content>
             <ReadableDiagnose>
               <Label>诊断：</Label>
-              <SpecInput defaultValue={getDiagnoseText(buDiagnosisList)} disabled/>
+              <SpecInput value={getDiagnoseText(buDiagnosisList)} disabled/>
               <ReDiagnose onClick={() => {this.props.onStep(1)}}><img src={re_diagnose}/>重新辩证</ReDiagnose>
             </ReadableDiagnose>
-            <AddHeader operate={this.actionManager}></AddHeader>
+            {
+              // <AddHeader operate={this.actionManager}></AddHeader>
+            }
             <TableGrid {...girdProps}/>
           </Content>
           <ActionButton readOnly={this.props.readOnly}>
@@ -196,7 +199,7 @@ export default class SmartDistinguish extends Component {
           <SpecTabs key='1' defaultActiveKey='1' animated={false}>
             <TabPane tab="智能论治" key="1">
               {
-                <AuxiliaryDiagnosis changeInitDataTwo={this.changeInitDataTwo} listenFormData={{}}/>
+                <IntelligentTreat type={2} actionManager= {this.actionManager}/>
               }
             </TabPane>
           </SpecTabs>
@@ -291,7 +294,6 @@ const SpecTabs = styled(Tabs)`
 `;
 const ActionButton = styled.div`
   border-top: 1px solid #CCCCCC;
-  margin-top: 40px;
   display: ${props => props.readOnly ? 'none' : 'block'}
 `;
 const BorderButton = styled(Button)`

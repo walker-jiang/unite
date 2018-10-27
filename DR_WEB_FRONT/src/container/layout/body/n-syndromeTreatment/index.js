@@ -10,7 +10,7 @@ export default class SyndromeTreatment extends Component {
   constructor(props){
     super(props);
     this.state = {
-      current: 0, //当前步
+      current: 1, //当前步
       registerid: '', //选择的当前患者
     };
     this.stepFunc = this.stepFunc.bind(this);
@@ -30,6 +30,7 @@ export default class SyndromeTreatment extends Component {
     };
     function callBack(res){
       if(res.result){
+        window.registerID = registerid;
         if(res.data){
           self.setState({ current: 3, registerid })
         }else{

@@ -11,17 +11,18 @@ export default class AddIllByManifestations extends Component {
     this.state = {
       showResult: false, // 是否展示疾病搜索结果
       illData: [], // 疾病数据数组
-      keyword: '', //为了能够保持和病症组件联动需要记住keyword
+      // keyword: '', //为了能够保持和病症组件联动需要记住keyword
       totalLines: 0, // 查询结果总行数
-      curLine: 0, // 当前行,从0开始，-1表示未选中任何行
+      curLine: -1, // 当前行,从-1开始，, 初始化未选中任何行，-1表示未选中任何行
     };
     this.showResult = this.showResult.bind(this);
     this.hideResult = this.hideResult.bind(this);
+    this.clearInputValue = this.clearInputValue.bind(this);
   }
-  /** [componentWillReceiveProps 病症更新后更新病侯的查询结果] */
-  componentWillReceiveProps(nextProps){
-    this.getIllData(this.state.keyword, nextProps.symptomId);
-  };
+  // /** [componentWillReceiveProps 病症更新后更新病侯的查询结果] */
+  // componentWillReceiveProps(nextProps){
+  //   this.getIllData(this.state.keyword, nextProps.symptomId);
+  // };
   /** [getTableCol 获取表格项] */
   getTableCol(){
     const columns = [{
@@ -36,24 +37,25 @@ export default class AddIllByManifestations extends Component {
     return columns;
   };
   /** [getIllData 获取疾病数据] */
-  getIllData(keyword, symptomId){
+  getIllData(keyword){
     let self = this;
     let params = {
       url: 'BaDiseaseManifController/getList',
       data: {
         keyword: keyword,
-        diseaseid: symptomId,
+        diseaseid: this.props.symptomId,
       },
     };
     function callBack(res){
       if(res.result){
         let illData = res.data.map((item, index)=>{
           item.key = index; // 加唯一key值
-          item.status = (index == 0) ? 1 : 0; // 0表示全部未选中
+          item.status = 0; // 0表示全部未选择
+          item.checkedStatus = 0; // 0表示全部未选中 2 表示选中
           return item
         });
         let totalLines = illData.length;
-        self.setState({illData, totalLines});
+        self.setState({illData, totalLines, showResult: true});
       }else{
         console.log('异常响应信息', res);
       }
@@ -62,8 +64,7 @@ export default class AddIllByManifestations extends Component {
   };
   /** [showResult 显示查询结果] */
   showResult(value){
-    this.getIllData(value, this.props.symptomId);
-    this.setState({showResult: true, keyword: value});
+    this.getIllData(value);
   };
   /** [hideResult 隐藏查询结果] */
   hideResult(){
@@ -71,32 +72,23 @@ export default class AddIllByManifestations extends Component {
   };
   /** [getSelectedData 获取到选中行的数据] */
   getSelectedData(){
-    let selectedIllData = new Array();
     let { illData, showResult } = this.state;
-    if(showResult){ // 只有显示着查询结果浮框才能添加进诊断
-      illData.forEach((item, index)=>{ // 只返回选中的行
-        if(item.status == 2){
-          selectedIllData.push(item);
-        }
-      });
-    }
+    let selectedIllData = illData.filter(item => item.checkedStatus == 2);
     return selectedIllData;
   };
   /** [SelectedLine 选择表格行触发的函数] */
   SelectedLine(record){
     let illData = this.state.illData;
     illData.map((item)=>{ // 改变当前行的选中状态
-      if(item.status != 2){
-        if(item.key == record.key){
-          if(item.status == 0){
-            item.status = 1;
-          }
-          else{
-            item.status = 0;
-          }
-        }else{
-            item.status = 0;
+      if(item.key == record.key){
+        if(item.status == 0){
+          item.status = 1;
         }
+        else{
+          item.status = 0;
+        }
+      }else{
+        item.status = 0;
       }
       return item;
     });
@@ -107,7 +99,10 @@ export default class AddIllByManifestations extends Component {
     let illData = this.state.illData;
     illData.map((item)=>{ // 改变当前行的选中状态
       if(item.key == record.key){
-          item.status = status;
+          item.checkedStatus = status;
+          if(status == 0){
+            item.status = 1;
+          }
       }
       return item;
     });
@@ -117,42 +112,65 @@ export default class AddIllByManifestations extends Component {
     let illData = this.state.illData;
     let curLine = this.state.curLine;
     let totalLines = this.state.totalLines;
+    let showResult = this.state.showResult;
     switch(e.keyCode){
       case 40:         // 向下箭头, 选择下一行
-        if(curLine >= totalLines-1){
-          curLine = 0;
-        }else{
-          curLine++;
+        if(showResult){ // 防止出现弹框还未出现用户已经按键导致展示的不是期望行
+          if(curLine >= totalLines-1){
+            curLine = 0;
+          }else{
+            curLine++;
+          }
+          this.SelectedLine(illData[curLine]);
+          break;
         }
-        this.SelectedLine(illData[curLine]);
-        break;
       case 38:         // 向上箭头，选择上一行
-        if(curLine <= 0){
-          curLine = totalLines-1;
-        }else{
-          curLine--;
+        if(showResult){ // 防止出现弹框还未出现用户已经按键导致展示的不是期望行
+          if(curLine <= 0){
+            curLine = totalLines-1;
+          }else{
+            curLine--;
+          }
+          this.SelectedLine(illData[curLine]);
         }
-        this.SelectedLine(illData[curLine]);
         break;
       case 37:         // 向左箭头， 选中该行
-        this.checkedLine(illData[curLine], 2);
+        if(showResult){ // 防止出现弹框还未出现用户已经按键导致展示的不是期望行
+          this.checkedLine(illData[curLine], 2);
+        }
         break;
       case 39:         // 向右箭头，取消选中该行
-        this.checkedLine(illData[curLine], 1);
+        if(showResult){ // 防止出现弹框还未出现用户已经按键导致展示的不是期望行
+          this.checkedLine(illData[curLine], 0); // 先取消选中
+        }
         break;
-      case 13:         // enter，提交诊断到列表
-        document.getElementById('symptom').focus();
-        this.props.addChinaMedicineData({});
+      case 13:         // enter，
+        if(showResult){ // 弹框显示的时候enter键的执行步骤是收起弹框给输入框赋值通知父组件更新疾病ID
+          let selectedManifnames = [];
+          illData.forEach(item => {
+            if(item.checkedStatus == 2){
+              selectedManifnames.push(item.manifname);
+            }
+          });
+          this.semicircleInput.changeInputValue(selectedManifnames.join('、'));
+          this.hideResult();
+        }else{ // 其余的enter事件包括 需要将焦点切换给病候的情况
+          this.props.enterEvent(this.semicircleInput.state.value, 'manifestations');
+        }
         break;
     };
     this.setState({ curLine });
+  };
+  clearInputValue(){
+    this.semicircleInput.changeInputValue('');
+    this.setState({ illData: [] });
   };
   render() {
     let { formItemProps, placeholder, icon } = this.props;
     let { showResult, illData } = this.state;
     let columns = this.getTableCol();
     return (
-      <Semicircle id='manifestation' onKeyDown={this.handleEnterPress} icon={icon} displayed={this.showResult} placeholder={placeholder}>
+      <Semicircle {...this.props} ref={ ref => { this.semicircleInput  = ref}} onKeyDown={this.handleEnterPress} hideEmpty={this.hideResult} displayed={this.showResult}>
         {
           showResult?
           <Result>
@@ -161,14 +179,15 @@ export default class AddIllByManifestations extends Component {
               onRow={(record) => {
                 return {
                   onClick: (e) => {
-                    this.checkedLine(record, record.status == 0 || record.status == 1 ? 2 : 0 );
+                    this.checkedLine(record, record.checkedStatus == 0 ? 2 : 0 );
+                    document.getElementById('manifestations').focus(); // 焦点切换到病候输入框
                     e.stopPropagation();
                     e.nativeEvent.stopImmediatePropagation();
                   },       // 点击行
                 };
               }}
               rowClassName={(record, index)=>{
-                return record.status ? (record.status == 1 ? 'Selected' : 'checked') : 'unSelected';
+                return record.status ? (record.checkedStatus ? 'Selected checked' : 'Selected') : ( record.checkedStatus ? 'checked' : 'unSelected');
               }}
               showHeader={false}
               columns={columns}

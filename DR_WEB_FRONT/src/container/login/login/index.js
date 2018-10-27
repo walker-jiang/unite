@@ -31,7 +31,7 @@ export default class Login extends Component {
             <LoginLogoPic src={logo} />
             <LoginLogoTxt>
               <TxtChinese>中科软科技</TxtChinese>
-              <TxtEnglish>Sinosoft Co,.Ltd.10.19.v1</TxtEnglish>
+              <TxtEnglish>{release_version}</TxtEnglish>
             </LoginLogoTxt>
           </div>
         </Left>

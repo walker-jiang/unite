@@ -81,6 +81,8 @@ export default class FellCure extends Component {
     this.setState({
       curent: (this.state.curent == 0)?1:0
     });
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
   };
   // 鼠标停留两秒后显示右侧脉象详情
   handleMouseOver = (key) => {
@@ -100,16 +102,30 @@ export default class FellCure extends Component {
       pulseCondition: false,
     })
   }
+  componentWillReceiveProps(nextProps){
+    if(!nextProps.expand){
+      this.onClose();
+    }
+  };
+  /**
+   * [stopBubling 阻止事件冒泡的函数]
+   * @param  {[type]} e [事件源]
+   * @return {[type]}   [undefined]
+   */
+  stopBubling = (e) => {
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
+  };
   render() {
-    let {curent, list,pulseCondition,details} = this.state;
+    let {curent, list, pulseCondition, details} = this.state;
     let expand = this.props.expand;
     return (
       <Container expand={expand}>
         <FloatTip  onClose={this.onClose} pulseCondition={pulseCondition} details={details}></FloatTip>
-        <div>
-          <RadioGroup value={curent} onChange={(e)=>{this.toggleRadio(e)}}>
-            <Radio value={0}>脉象左</Radio>
-            <Radio value={1}>脉象右</Radio>
+        <div onClick={this.stopBubling}>
+          <RadioGroup value={curent} onChange={(e)=>{this.toggleRadio(e)}} >
+            <Radio value={0} >脉象左</Radio>
+            <Radio value={1} >脉象右</Radio>
           </RadioGroup>
         </div>
         <PulseLeft curent={curent}>

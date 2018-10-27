@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import { Button, Table, Radio, Checkbox, } from 'antd';
+import { Button, Table, Radio, Checkbox, Modal } from 'antd';
 import AddIllBySymptom from './addIllBySymptom';
 import AddIllByManifestations from './addIllByManifestations';
 import AddIllByDiagnose from './addIllByDiagnose';
@@ -16,6 +16,8 @@ import paginationSty from 'components/antd/style/pagination';
 
 const Pagination_his = deepClone(Pagination_dia);
 const RadioGroup = Radio.Group;
+const confirm = Modal.confirm;
+
 export default class Diagnose extends Component {
   constructor(props){
     super(props);
@@ -31,6 +33,7 @@ export default class Diagnose extends Component {
       doubleDiagnose: false, //疑似诊断
       diaCurPage: 1, // 诊断数据表格当前页
       hisCurPage: 1, // 历史数据表格当前页
+      focusCompo: 'symptom',
     }
     this.initialData = this.initialData.bind(this);
     this.hideFloatLayer = this.hideFloatLayer.bind(this);
@@ -39,12 +42,20 @@ export default class Diagnose extends Component {
     this.addWestMedicineData = this.addWestMedicineData.bind(this);
     this.onMainDiagnoseChange = this.onMainDiagnoseChange.bind(this);
     this.onDoubleDiagnoseChange = this.onDoubleDiagnoseChange.bind(this);
+    this.enterEvent = this.enterEvent.bind(this);
+    this.save = this.save.bind(this);
   }
   componentWillMount(){
     let diagnoseFinalInfo = this.props.value.originData;// 先获取该用户的诊断明细数组
-    this.setState({ diagnoseFinalInfo });
+    if(diagnoseFinalInfo.length){
+      this.setState({ diagnoseFinalInfo });
+    }
   };
   componentWillReceiveProps(nextProps){
+    let diagnoseFinalInfo = nextProps.value.originData;// 先获取该用户的诊断明细数组
+    if(diagnoseFinalInfo.length){
+      this.setState({ diagnoseFinalInfo });
+    }
   };
   /** [initialData 组件加载获取历史诊断数据] */
   initialData(){
@@ -56,14 +67,16 @@ export default class Diagnose extends Component {
       },
     };
     function callBack(res){
-      if(res.result && res.data.length > 0){
-        let diagnoseHisOriginData = res.data.records[0].buDiagnosisList;
-        diagnoseHisOriginData.forEach((item) => {
-          item.doctorname = res.data.records[0].doctorname;
-        });
-        self.setState({
-          diagnoseHisOriginData: diagnoseHisOriginData
-        });
+      if(res.result && res.data){
+        if(res.data.records.length){
+          let diagnoseHisOriginData = res.data.records[0].buDiagnosisList;
+          diagnoseHisOriginData.forEach((item) => {
+            item.doctorname = res.data.records[0].doctorname;
+          });
+          self.setState({
+            diagnoseHisOriginData: diagnoseHisOriginData
+          });
+        }
       }else{
         console.log('异常响应信息', res);
       }
@@ -88,26 +101,27 @@ export default class Diagnose extends Component {
       key: 'diagnosisName',
     }, {
       title: '诊断分类',
-      dataIndex: 'diagnosisWay',
+      dataIndex: 'diagnosisWayDic',
       align: 'center',
-      key: 'diagnosisWay',
-      render:(text, record, index)=> (text=='0')?'西医':'中医'
+      key: 'diagnosisWayDic',
     }, {
       title: '诊断类别',
       align: 'center',
       dataIndex: 'diagnosisType',
       key: 'diagnosisType',
-      render:(text, record, index)=> text == '1' ? '初步诊断' : (text == 2 ? '最终诊断' : '-')
+      render:(text, record, index)=> record.diagnosisTypeDic ?  record.diagnosisTypeDic : '-'
     }, {
       title: '主诊断',
       dataIndex: 'mainDiaTypeDic',
       align: 'center',
       key: 'mainDiaTypeDic',
+      render:(text, record, index)=> record.doubtDiaTypeDic ?  record.doubtDiaTypeDic : '-'
     }, {
       title: '疑似诊断',
       dataIndex: 'doubtDiaTypeDic',
       align: 'center',
       key: 'doubtDiaTypeDic',
+      render:(text, record, index)=> record.doubtDiaTypeDic ?  record.doubtDiaTypeDic : '-'
     }, {
       title: '诊断医生',
       align: 'center',
@@ -174,23 +188,8 @@ export default class Diagnose extends Component {
     let symptom = this.addIllBySymptom.getSelectedData(); // 获取疾病信息
     let manifestation = this.addIllByManifestation.getSelectedData(); // 获取症候信息
 
-    if('diseaseid' in symptom){
-      let exist = diagnoseFinalInfo.some((item) => {
-        if(item.diagnosisCode == symptom.discode){ // 存在该疾病
-          // console.log('存在该疾病');
-          manifestation.forEach((itemManifest) => {
-            let exist = item.buDiagnosisDismainfList.some((itemChild) => itemChild.manifcode == itemManifest.manifcode);
-            // console.log('症候是否存在', exist);
-            if(exist){
-              this.tipModal.showModal({ stressContent: '该症候已存在' });
-              console.log('症候',itemManifest.manifname,'已存在');
-            }else{
-              item.buDiagnosisDismainfList.push(itemManifest);
-            }
-          });
-          return true;
-        }
-      });
+    if(symptom && 'diseaseid' in symptom){ // 校验疾病非空
+      let exist = diagnoseFinalInfo.some(item => item.diagnosisCode == symptom.discode);
       if(!exist){ // 最终诊断对象中不存在该疾病
         // console.log('不存在该疾病');
         let item = deepClone(symptom);
@@ -200,13 +199,38 @@ export default class Diagnose extends Component {
         symptom.diaid = '';
         symptom.diagnosisWay = 1;
         diagnoseFinalInfo.push(symptom);
+      }else{ // 最终诊断对象中存在该疾病
+        if(manifestation.length){ // 选择病候则判断该疾病下的病候有没有重复
+          diagnoseFinalInfo.forEach(item => {
+            if(item.diagnosisCode == symptom.discode){ // 先遍历出该疾病
+              let existedManifestations = []; // 重复的病候们
+              manifestation.forEach(itemChild => { // 遍历档当前选择的病候们
+                let existedManifestation = []; // 存储重复的病候
+                if(item.buDiagnosisDismainfList){
+                  existedManifestation = item.buDiagnosisDismainfList.filter( itemChildChild => itemChildChild.manifcode == itemChild.manifcode); // 遍历出当前疾病下重复的病候
+                }
+                if(existedManifestation.length > 0){ // 存在重复病候
+                  existedManifestations = existedManifestations.concat(existedManifestation.map(itemObj => itemObj.manifname));
+                }else{ // 该病候和已有病候不重复则添加该病候
+                  item.buDiagnosisDismainfList.push(itemChild);
+                }
+              });
+              if(existedManifestations.length){
+                this.tipModal.showModal({ stressContent: '症候' + existedManifestations.join('、') + '已存在' });
+              }
+            }
+          });
+        }
+        else{ // 没有选择症候则提示该疾病已存在
+          this.tipModal.showModal({ stressContent: '该疾病已存在' });
+        }
+
       }
-    }else{ // 疾病不能为空
+    }
+    else{ // 疾病不能为空
       this.tipModal.showModal({ stressContent: '疾病不能为空' });
       return ;
     }
-    // this.addIllBySymptom.hideResult(); // 隐藏病症弹框
-    this.addIllByManifestation.hideResult(); // 隐藏病侯弹框
     this.setState({ diagnoseFinalInfo });
   };
   // 历史诊断双击选择
@@ -274,8 +298,13 @@ export default class Diagnose extends Component {
   };
   /** [onMainDiagnoseChange 主诊断单选按钮状态改变] */
   changediagnoseType(e){
+    let doubleDiagnose = false;
+    if(e.target.value == 2){
+      doubleDiagnose = '';
+    }
     this.setState({
-      repeatDiagnose: e.target.value
+      repeatDiagnose: e.target.value,
+      doubleDiagnose
     });
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();
@@ -286,51 +315,119 @@ export default class Diagnose extends Component {
     let addIllByDiagnose = this.addIllByDiagnose.getSelectedData();
     //诊断信息
     let diagnoseFinalInfo = this.state.diagnoseFinalInfo;
-    console.log('diagnoseFinalInfo', diagnoseFinalInfo);
-    let result = diagnoseFinalInfo.some((item) => item.diagnosisCode == addIllByDiagnose.diacode);
-    if(result){
-      this.tipModal.showModal({ stressContent: '该疾病已存在' });
-    }else{
-      addIllByDiagnose.buDiagnosisDismainfList = [];
-      addIllByDiagnose.diagnosisName = addIllByDiagnose.dianame;
-      addIllByDiagnose.diagnosisCode = addIllByDiagnose.diacode;
-      addIllByDiagnose.diagnosisWay = 0;
-      addIllByDiagnose.diagnosisType = repeatDiagnose;
-      addIllByDiagnose.mainDiaType = mainDiagnose ? '01' : '02';
-      addIllByDiagnose.doubtDiaType = doubleDiagnose  ? '01' : '02';
-
-      diagnoseFinalInfo.push(addIllByDiagnose);
-      this.setState({ diagnoseFinalInfo });
+    let filterIllByDiagnose = [];
+    addIllByDiagnose.forEach((itemChild) => {
+      let existedDiagnose = diagnoseFinalInfo.filter((item) => item.diagnosisCode == itemChild.diacode);
+      if(existedDiagnose.length){ // 已存在该对象
+        filterIllByDiagnose = filterIllByDiagnose.concat(existedDiagnose);
+      }else{ // 加入诊断数组中
+        itemChild.buDiagnosisDismainfList = [];
+        itemChild.diagnosisName = itemChild.dianame;
+        itemChild.diagnosisCode = itemChild.diacode;
+        itemChild.diagnosisWay = 0;
+        itemChild.diagnosisType = repeatDiagnose;
+        itemChild.mainDiaType = mainDiagnose ? '01' : '02';
+        itemChild.doubtDiaType = doubleDiagnose === '' ? '' : ( doubleDiagnose ? '01' : '02' );
+        diagnoseFinalInfo.push(itemChild);
+        // delete itemChild.dianame;
+        // delete itemChild.diacode;
+      }
+    });
+    let existedDiagnoseNames = [];
+    filterIllByDiagnose.forEach((item) => {
+      existedDiagnoseNames.push(item.dianame);
+    });
+    if(existedDiagnoseNames.length){
+      this.tipModal.showModal({ stressContent: existedDiagnoseNames.join('、') + '已存在' });
     }
+    this.setState({ diagnoseFinalInfo });
   };
   /** [save 从诊断数据对象提取要展示的文本然后将对象和文本都赋值给输入框] */
-  save(diagnoseFinalInfo){
+  save(){
+    let diagnoseFinalInfo = this.state.diagnoseFinalInfo;
     let text = getDiagnoseText(diagnoseFinalInfo);
-    console.log('diagnoseFinalInfo', JSON.stringify(diagnoseFinalInfo));
     let formValue = {
       originData: diagnoseFinalInfo,
       extractionData: text
     };
-    console.log('formValue', formValue);
     this.props.onChange(formValue); // 给输入框赋值，包含两部分，一部分是需要传往后台的对象，一部分是在输入框上显示的文本
     this.inputEnterPop.handleClose(); // 关闭弹窗
   };
   onChange(page, pageSize){
     console.log(page);
   };
+  enterEvent(value, type){
+    if(value.trim() != ''){
+      if(type == 'symptom'){
+        document.getElementById('manifestations').focus(); // 焦点切换到病候
+      }else if(type == 'manifestations'){
+        document.getElementById('symptom').focus(); // 焦点切换到病候
+        this.addChinaMedicineData();
+        this.addIllBySymptom.clearInputValue();
+        this.addIllByManifestation.clearInputValue();
+      }else if(type == 'diagnose'){
+        this.addWestMedicineData();
+        this.addIllByDiagnose.clearInputValue();
+      }
+    }else{
+      if(type == 'symptom'){
+        if(this.state.diagnoseFinalInfo.length){
+          let self = this;
+          confirm({
+            title: '确定即将保存诊断数据?',
+            cancelText: '取消',
+            okText: '保存',
+            onOk() {
+              self.save();
+            },
+            onCancel() {
+
+            },
+          });
+        }else{
+          this.tipModal.showModal({ stressContent: '未添加诊断不能提交' });
+        }
+      }else if(type == 'manifestations'){
+        document.getElementById('symptom').focus(); // 焦点切换到疾病
+        this.addChinaMedicineData();
+        this.addIllBySymptom.clearInputValue();
+        this.addIllByManifestation.clearInputValue();
+      }else if(type == 'diagnose'){
+        if(this.state.diagnoseFinalInfo.length){
+          let self = this;
+          confirm({
+            title: '确定即将保存诊断数据?',
+            cancelText: '取消',
+            okText: '保存',
+            onOk() {
+              self.save();
+            },
+            onCancel() {
+
+            },
+          });
+        }else{
+          this.tipModal.showModal({ stressContent: '未添加诊断不能提交' });
+        }
+        // this.addWestMedicineData();
+      }
+    }
+  };
   render() {
     let {icon, icon_right, ...formItemProps} = this.props;
-    let { curTab, symptomId, diagnoseHisOriginData, diagnoseFinalInfo, repeatDiagnose, mainDiagnose, doubleDiagnose, diaCurPage, hisCurPage} = this.state;
+    let { curTab, symptomId, diagnoseHisOriginData, diagnoseFinalInfo, repeatDiagnose, mainDiagnose, doubleDiagnose, diaCurPage, hisCurPage, focusCompo} = this.state;
     let diagnoseHisData =getDiagnoseDataSource(diagnoseHisOriginData, 'his'); // 历史诊断表格数据
     let diagnoseData = getDiagnoseDataSource(diagnoseFinalInfo, 'now'); // 当前诊断表格数据
     let columns = this.getTableCol();
     Pagination_dia.total = diagnoseData.length;
     Pagination_dia.current = diaCurPage;
+    Pagination_dia.pageSize = 5;
     Pagination_dia.onChange = (page, pageSize)=>{
       this.setState({ diaCurPage: page});
     }
     Pagination_his.total = diagnoseHisData.length;
     Pagination_his.current = hisCurPage;
+    Pagination_his.pageSize = 5;
     Pagination_his.onChange = (page, pageSize)=>{
       this.setState({ hisCurPage: page});
     }
@@ -345,10 +442,10 @@ export default class Diagnose extends Component {
           {
             (curTab == 0)?
             <ChinaMedicine >
-              <AddIllBySymptom  icon='#0A6ECB' ref={ref => this.addIllBySymptom = ref} placeholder='请输入病症中文关键字活拼音简写搜索' notify={this.getMessage}/>
-              <AddIllByManifestations addChinaMedicineData={this.addChinaMedicineData} icon='#0A6ECB' ref={ref => this.addIllByManifestation = ref} placeholder='请输入病侯中文关键字货拼音简写搜索' symptomId={symptomId}/>
+              <AddIllBySymptom enterEvent={this.enterEvent} autofocus='autofocus' id='symptom'  ref={ref => this.addIllBySymptom = ref} placeholder='请输入病症中文关键字活拼音简写搜索' notify={this.getMessage}/>
+              <AddIllByManifestations enterEvent={this.enterEvent} id='manifestations' ref={ref => this.addIllByManifestation = ref} placeholder='请输入病侯中文关键字货拼音简写搜索' symptomId={symptomId}/>
               <span>
-                <Button type="primary" shape="circle" onClick={this.addChinaMedicineData} icon="plus"></Button>
+                <Button type="primary" shape="circle" onClick={() => { this.enterEvent('', 'manifestations') }} icon="plus"></Button>
               </span>
             </ChinaMedicine>
             :
@@ -357,11 +454,13 @@ export default class Diagnose extends Component {
                 <Radio value={1}>初步诊断</Radio>
                 <Radio value={2}>确认诊断</Radio>
               </SpecRadioGroup>
-              <Check_box >
-                <Checkbox checked={mainDiagnose} className='small' onChange={this.onMainDiagnoseChange}>主诊断</Checkbox>
-                <Checkbox checked={doubleDiagnose} className='small' onChange={this.onDoubleDiagnoseChange}>疑似诊断</Checkbox>
+              <Check_box>
+                <Checkbox checked={mainDiagnose} onChange={this.onMainDiagnoseChange}>主诊断</Checkbox>
+                {
+                  doubleDiagnose !== '' ? <Checkbox checked={doubleDiagnose} onChange={this.onDoubleDiagnoseChange}>疑似诊断</Checkbox> : null
+                }
               </Check_box>
-              <AddIllByDiagnose ref={ref => this.addIllByDiagnose = ref} placeholder='请输入诊断拼音简码快速添加' addWestMedicineData={this.addWestMedicineData}/>
+              <AddIllByDiagnose ref={ref => this.addIllByDiagnose = ref} enterEvent={this.enterEvent} placeholder='请输入诊断拼音简码快速添加' id='diagnoseIll'/>
               <span>
                 <Button type="primary" shape="circle" icon="plus" onClick={this.addWestMedicineData}></Button>
               </span>
@@ -404,7 +503,7 @@ export default class Diagnose extends Component {
               <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
           </History>
           <Footer>
-            <SureButton type="primary" onClick={(e)=>{this.save(diagnoseFinalInfo)}} disabled={!window.modifyPermission}>确定</SureButton>
+            <SureButton type="primary" onClick={this.save} disabled={!window.modifyPermission}>确定</SureButton>
             <CancelButton type="primary" onClick={()=>{this.inputEnterPop.handleClose()}}>取消</CancelButton>
           </Footer>
         </Container>
@@ -466,7 +565,7 @@ const SpecRadioGroup = styled(RadioGroup)`
   }
 `;
 const Check_box = styled.div`
-  width: 350px;
+  width: 450px;
   margin-left: 20px;
   display: flex;
 `;

@@ -141,7 +141,7 @@ export default class CurePriciple extends Component {
       <SpecInputEnterPop icon_right='-20px' tabIndex='2' displayed = {this.initialData} formItemProps={formItemProps} innerRef={ref=>this.inputEnterPop = ref} title='主症' icon='#C6C6C6'>
         <Container>
           <Header innerRef={ref => this.header = ref}>
-            <Key>主症：</Key>
+            <Key>主诉：</Key>
             <SemiCircleInput autoFocus='autofocus' onKeyDown={this.handleEnterPress} innerRef={ref => {this.input = ref}} className='not-draggable' onChange={(e)=>{this.filter(e.target.value)}}/>
           </Header>
           <Result innerRef={ref => this.result = ref} lines={8} totalLines={totalLines}>

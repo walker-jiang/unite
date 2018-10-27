@@ -9,6 +9,7 @@ import './style/rightAssistBar.less';
 import TagGroup from '../pubilcModule/tag.js';
 import medicalRWService from '../service/medicalRWService.js';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
+import zanwunerong from './style/zanwunerong.png';
 const Search = Input.Search;
 
 export default class template extends Component {
@@ -102,7 +103,15 @@ export default class template extends Component {
           var newItem = {};
           newItem['buDiagnosisList'] = buDiagnosisList;
           console.log("最终的对象为========",newItem);
-          self.props.changeInitDataTwo(newItem);
+          if(self.props.type == "1"){ // 1代表是诊疗系统引入  2代表是辩证论治引入
+            self.props.changeInitDataTwo(newItem);
+          }else{
+            var symptom = newItem.buDiagnosisList[0];
+            var manifestation = newItem.buDiagnosisList[0].buDiagnosisDismainfList;
+            console.log("symptom====",symptom);
+            console.log("manifestation====",manifestation);
+            self.props.changeInitDataTwo( symptom, manifestation );
+          }
         }else{
           alert("中医疾病对象获取成功，获取西医疾病对象为空");
         }
@@ -139,6 +148,8 @@ export default class template extends Component {
 
   render() {
     var { content, isCut, listenFormData } = this.state;
+    console.log("content=======",content);
+    console.log("!!content=======",!!content);
     return (
       <div className="rightAssistBar_template">
         <div className="tab">
@@ -153,6 +164,8 @@ export default class template extends Component {
         </div>
         <div className="data" style={{backgroundColor:'#F2F2F2'}}>
           {
+            !!content
+            ?
             content.map((item,index)=>{
               console.log("item.signName",item.signName);
               return(
@@ -176,6 +189,8 @@ export default class template extends Component {
                 </div>
               )
             })
+            :
+            <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据，请重新搜索</center>
           }
         </div>
       </div>

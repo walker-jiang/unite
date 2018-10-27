@@ -22,9 +22,9 @@ import AddHeader from './addHeader';
 import dashed from './imgs/dashed.png';
 import TipModal from 'components/dr/modal/tip';
 import buttonSty from 'components/antd/style/button';
-import MedicalHistoryTwo from "../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
-import DoctorAdviceTemplate from "../../../../../rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
-import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
+// import MedicalHistoryTwo from "../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
+// import DoctorAdviceTemplate from "../../../../../rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
+// import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
 const TabPane = Tabs.TabPane;
 
 export default class Index extends Component {
@@ -1158,17 +1158,19 @@ export default class Index extends Component {
           </Footer>
         </List>
         <Modal>
-          <SpecTabs key='1' defaultActiveKey='1' animated={false}>
-            <TabPane tab="智能论治" key="1">
-              <IntelligentTreat actionManager= {this.actionManager} modelData={this.modelData}/>
-            </TabPane>
-            <TabPane tab="历史模板" key="2">
-              <MedicalHistoryTwo actionManager= {this.actionManager} getData={this.getData}/>
-            </TabPane>
-            <TabPane tab="医嘱模板" key="3">
-              <DoctorAdviceTemplate actionManager= {this.actionManager} getData={this.getData}/>
-            </TabPane>
-          </SpecTabs>
+          {
+            // <SpecTabs key='1' defaultActiveKey='1' animated={false}>
+            //   <TabPane tab="智能论治" key="1">
+            //     <IntelligentTreat type={1} actionManager= {this.actionManager} modelData={this.modelData}/>
+            //   </TabPane>
+            //   <TabPane tab="历史模板" key="2">
+            //     <MedicalHistoryTwo actionManager= {this.actionManager} getData={this.getData}/>
+            //   </TabPane>
+            //   <TabPane tab="医嘱模板" key="3">
+            //     <DoctorAdviceTemplate actionManager= {this.actionManager} getData={this.getData}/>
+            //   </TabPane>
+            // </SpecTabs>
+          }
         </Modal>
         <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </div>

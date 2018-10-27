@@ -4,20 +4,23 @@ import { Form, Radio, Button, Checkbox } from 'antd';
 import { Link } from 'react-router-dom';
 import buttonSty from 'components/antd/style/button';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
+import TipModal from 'components/dr/modal/tip';
 import CaseType from './caseType';
 import PrimarySymptom from './primarySymptom';
 import OtherSymptom from './illHistory';
 import IllHistory_allergy from './illHistory';
-import ObserveCure from './observeCure';
-import FeelCure from './feelCure';
+import ObserveCure from '../../../treatment/treatItem/writeMedicalRecords/formItem/observeCure';
+import FeelCure from '../../../treatment/treatItem/writeMedicalRecords/formItem/feelCure';
 import HabitusInspect from '../../../treatment/treatItem/writeMedicalRecords/formItem/habitusInspect';
 import CarefulItem from './carefulItem';
 import OtherInspect from '../../../treatment/treatItem/writeMedicalRecords/formItem/otherInspect';
+const FormItem = Form.Item;
 
-class Index extends Component {
+class CaseConfirm extends Component {
   constructor(props){
     super(props);
     this.state = {
+      isRequired: true,
       initData: {
         casetype: '1', // 就诊类型
         treatprinciple: '', // 主症
@@ -33,8 +36,13 @@ class Index extends Component {
         heightnum: '' , // 身高
         weightnum: '', // 体重
         psycheck: '', // 其它
+        isperiod: '', // 经期
+        ispregnancy: '', //孕期
+        gestationalWeeks: 1, // 怀孕月数
       },
     };
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.hidePopComponent = this.hidePopComponent.bind(this);
   };
   componentWillMount(){
     this.getSyndromeData(this.props.registerid);
@@ -66,6 +74,9 @@ class Index extends Component {
             heightnum: res.data.heightnum , // 身高
             weightnum: res.data.weightnum, // 体重
             psycheck: res.data.psycheck, // 其它
+            isperiod: res.data.isperiod, // 经期
+            ispregnancy: res.data.ispregnancy, //孕期
+            gestationalWeeks: res.data.gestationalWeeks, // 怀孕月数
           };
           self.setState({ initData });
         }else{
@@ -79,27 +90,48 @@ class Index extends Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        let isRequired = this.state.isRequired;
+        if( isRequired ){
+          if((typeof(values.pridepict) == 'object' && !values.pridepict.extractionData) || (typeof(values.pridepict) == 'string' && !values.pridepict)){
+            this.tipModal.showModal({
+              content: '主诉不能为空',
+            });
+            return;
+          }
 
-        // let self = this;
-        // let params = {
-        //   url: 'BuPatientCaseController/' + (initData.billid ? 'putData' : 'postData'),
-        //   data: {},
-        //   type: initData.billid ? 'put' : 'post',
-        // };
-        // function callBack(res){
-        //   if(res.result){
-        //
-        //   }else{
-        //     console.log('异常响应信息', res);
-        //   }
-        // };
-        // ajaxGetResource(params, callBack);
+          if(typeof(values.hpi) == 'object' && !values.hpi.extractionData || typeof(values.hpi) == 'string' && !values.hpi){
+            this.tipModal.showModal({
+              content: '现病史不能为空',
+            });
+            return;
+          }
+        }
+        this.props.onStep(2);
       }
     });
   }
+  /**
+   * [hidePopComponent 收起望诊、切诊弹框]
+   * @param  {[type]} e    [事件源]
+   * @param  {[type]} type [可以通过这个参数控制关闭哪一个]
+   * @return {[type]}      [undefined]
+   */
+  hidePopComponent(e, type){
+    if(type){
+      if(type == 'feelCure'){
+        this.fellCure.expand(e, false);
+      }else{
+        this.observeCure.expand(e, false);
+      }
+    }else{
+      this.observeCure.expand(e, false);
+      this.fellCure.expand(e, false);
+    }
+  };
   render() {
     const { getFieldDecorator, setFieldsValue, getFieldsValue } = this.props.form;
     const initData = this.state.initData;
+    const isRequired = this.state.isRequired;
     const formItemLayout = {
       labelCol: {
         xs: { span: 3 },
@@ -111,21 +143,21 @@ class Index extends Component {
       },
      };
      return (
-        <Container >
-          <FormSpec>
+        <Container onClick={this.hidePopComponent}>
+          <FormSpec onSubmit={this.handleSubmit}>
             <CaseType getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.casetype}></CaseType>
-            <PrimarySymptom setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: {}, extractionData: initData.treatprinciple}}/>
-            <OtherSymptom title='其它症状' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.otherSymptom}}/>
+            <PrimarySymptom setFieldsValue={setFieldsValue} isRequired={isRequired} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: {}, extractionData: initData.treatprinciple}}/>
+            <OtherSymptom title='现病史' isRequired={isRequired} getFieldDecorator={getFieldDecorator} isRequired={isRequired}  formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.otherSymptom}}/>
             <IllHistory_allergy title='过敏史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.allergyHis}}/>
-            <ObserveCure setFieldsValue={setFieldsValue} getFieldsValue={getFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: [], text: initData.inspection}}></ObserveCure>
-            <FeelCure setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
+            <ObserveCure camera={false} ref={ ref => { this.observeCure = ref }} hideFeelCure={this.hidePopComponent} setFieldsValue={setFieldsValue} getFieldsValue={getFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: [], text: initData.inspection}}></ObserveCure>
+            <FeelCure ref={ ref => { this.fellCure = ref }} hideObseverCure={this.hidePopComponent} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
             <HabitusInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{temperature: initData.temperature, breath: initData.breath, pulse: initData.pulse, systolicPressure: initData.systolicPressure, diastolicPressure: initData.diastolicPressure, heightnum: initData.heightnum, weightnum: initData.weightnum}}></HabitusInspect>
-            <CarefulItem getFieldDecorator={getFieldDecorator} initialValue={{originData: [], extractionData: initData.allergyHis}}/>
+            <CarefulItem getFieldDecorator={getFieldDecorator} initialValue={{ isperiod: initData.isperiod, ispregnancy: initData.ispregnancy, gestationalWeeks: initData.gestationalWeeks}}/>
             <OtherInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.psycheck}></OtherInspect>
           </FormSpec>
-          <SpecCheckbox readOnly={this.props.readOnly}>忽略病情病历确认</SpecCheckbox>
-          <SureButton type="primary" onClick={() => {this.props.onStep(2)}} readonly={this.props.readonly}>智能辩证</SureButton>
-          <BorderButton type="primary" onClick={() => {this.props.onStep(0)}} readonly={this.props.readonly}>返回上一步</BorderButton>
+          <SpecCheckbox readOnly={this.props.readOnly} onChange={() => { this.setState({ isRequired: !isRequired }) }}>忽略病情病历确认</SpecCheckbox>
+          <SureButton type="primary" onClick={this.handleSubmit} readonly={this.props.readonly}>智能辩证</SureButton>
+          <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
         </Container>
     )
   }
@@ -153,6 +185,8 @@ const FormSpec = styled(Form)`
 const Exsaple = styled.img``;
 const SpecCheckbox = styled(Checkbox)`
   &&& {
+    float: left;
+    margin: 10px 0px;
     display: ${props => props.readOnly ? 'none' : 'block'};
   }
 `;
@@ -164,6 +198,7 @@ const BorderButton = styled(Button)`
   border: 1px solid rgba(10, 110, 203, 1) !important;
 `;
 const SureButton = styled(Button)`
+  float: left;
   ${buttonSty.semicircle};
   &&& {
     display: ${props => props.readOnly ? 'none' : 'block'};
@@ -174,5 +209,5 @@ const SureButton = styled(Button)`
 @日期：2018-09-14
 @描述：辨证论治-病情病历确认组件
 */
-const CaseConfirm = Form.create()(Index);
-export default CaseConfirm;
+const CaseConfirmWrapper = Form.create()(CaseConfirm);
+export default CaseConfirmWrapper;

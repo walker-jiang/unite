@@ -13,7 +13,7 @@ export default class Index extends Component {
    */
   getFormItemProps(title){
     switch(title){
-      case '其它症状':
+      case '现病史':
         return 'hpi';
       break;
       case '过敏史':
@@ -22,7 +22,7 @@ export default class Index extends Component {
     };
   };
   render() {
-    const { getFieldDecorator, formItemLayout, initialValue ,title, disabled = false} = this.props;
+    const { getFieldDecorator, formItemLayout, initialValue ,title, disabled = false, isRequired = false} = this.props;
     let label_prop  = this.getFormItemProps(title);
     return (
       <Row>
@@ -33,6 +33,9 @@ export default class Index extends Component {
             label={title +' ：'}>
             {getFieldDecorator(label_prop, {
               initialValue: initialValue,
+              rules: [{
+                required: isRequired, message: '请输入现病史',
+              }],
             })(
               <IllHisEnterPop disabled={disabled} title={title} />
             )}

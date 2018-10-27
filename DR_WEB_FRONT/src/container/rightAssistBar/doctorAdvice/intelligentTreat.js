@@ -21,21 +21,28 @@ export default class IntelligentTreat extends Component {
       value: 1,
       bu:{},
       isQuery:false,
+      count:0,
+      cmdrugPage:"1",//处方页数
+      cpmPage:"1",//中成药页数
+      stPage:"1",//适宜技术页数
+      mcPage:"1",//名医医案页数
       dataSource:{
         clist:[],
         plist:[],
         slist:[],
         mlist:[],
+        total:0,
       }
     };
   };
-  componentWillMount(){
-    this.getPatientData();//获取诊疗信息------辩证论证入参
+  componentWillReceiveProps(){
+    //this.getPatientData();//获取诊疗信息------辩证论证入参
   }
   componentDidMount(){
     window.searchITList = () => this.getDiagnoseData();
+    this.getPatientData();//获取诊疗信息------辩证论证入参
   }
-  getPatientData(id){
+  getPatientData(){
     let self = this;
     let params = {
       url: 'BuRegisterController/getData',
@@ -47,7 +54,8 @@ export default class IntelligentTreat extends Component {
       console.log("挂号信息为",res);
       if(res && res.data){
         self.setState({
-          bu:res.data
+          bu:res.data,
+          count:self.state.count+1
         },()=>{
           self.getDiagnoseData();
         })
@@ -60,23 +68,41 @@ export default class IntelligentTreat extends Component {
   /** [getDiagnoseData 获取加载诊断数据] */
   getDiagnoseData(){
     let self = this;
-    let params = {
-      url: 'BuDiagnosisInfoController/getData',
-      data: {
-        registerid: window.registerID
-      },
-    };
+    console.log("window.registerID==============",window.registerID);
+    if(self.props.type == 1){
+      var params = {
+        url: 'BuDiagnosisInfoController/getData',
+        data: {
+          registerid: window.registerID
+        },
+      };
+    }else{
+      var params = {
+        url: 'BuDiagnosisInfoController/getData',
+        server_url: config_InteLigenTreat_url+'TCMAE/',
+        data: {
+          registerid: window.registerID
+        },
+      };
+    }
     function callBack(res){
       if(res && res.data){
         console.log('获取诊断信息成功',res.data);
         var params = self.state.bu;
         params['buDiagnosisInfo'] = res.data;
-        self.searchList(params);
+        self.setState({ bu:params },()=>{
+          self.searchList();
+        })
       }else{
         console.log("该人暂时没有诊断信息,右侧模板为空");
+        self.setState({ isQuery:true });
       }
     };
-    getResource(params, callBack);
+    function callBackError(res){
+      console.log("服务出错,右侧模板为空");
+      self.setState({ isQuery:true });
+    };
+    getResource(params, callBack, callBackError);
   };
   ages = (str) => {
     console.log("str===",str);
@@ -89,46 +115,19 @@ export default class IntelligentTreat extends Component {
     }
     return 0;//"输入的日期格式错误！"
   }
-  // queryBu = () =>{
-  //   let params = {
-  //     type: 'GET',
-  //     async : true,
-  //     url: 'BuPatientCaseController/getData',
-  //     contentType: '',
-  //     data:{
-  //       registerid:window.registerID
-  //     }
-  //   };
-  //   let self = this;
-  //   function success(res){
-  //     console.log('获取挂号信息成功',res);
-  //     if(res && res.data){
-  //       self.setState({
-  //         bu:res.data
-  //       },()=>{
-  //         self.searchList(res.data);
-  //       })
-  //     }else{
-  //       alert("获取挂号信息失败，请检查服务");
-  //     }
-  //   };
-  //   function error(res){
-  //       console.log('获取挂号信息失败');
-  //   };
-  //   getResource(params, success, error);
-  // }
-  searchList = (bu) =>{
+  searchList = () =>{
     var self = this;
-    console.log("bu=======",bu);
+    console.log("bu=======",self.state.bu);
+    console.log("window.birthday=======",window.birthday);
     let params = {
-      bu:JSON.stringify(bu),
+      bu:JSON.stringify(self.state.bu),
       sex:window.sex,
-      age:self.ages(window.birthday.substr(0,10)).toString(),
+      age:window.birthday?self.ages(window.birthday.substr(0,10)).toString():"",
       pageSize:"10",//分页长度
-      cmdrugPage:"1",//处方页数
-      cpmPage:"1",//中成药页数
-      stPage:"1",//适宜技术页数
-      mcPage:"1",//适宜技术页数
+      cmdrugPage:self.state.cmdrugPage,//处方页数
+      cpmPage:self.state.cpmPage,//中成药页数
+      stPage:self.state.stPage,//适宜技术页数
+      mcPage:self.state.mcPage,//医医案页数
     };
     function callBack(res){
       if(res.flag == 1){
@@ -152,57 +151,87 @@ export default class IntelligentTreat extends Component {
   changeInitData = (item,ordertype) =>{
     console.log("左右联动=============",item);
     var params;
-    //数据组装
-    if(ordertype == 3){
-
-    }else if(ordertype == 4){
-      var recipename = "";
-      if(item.buRecipe != null){
-        recipename = item.buRecipe.recipename;
-      }
-      params = {
-        medicineData:item.baMedicines,
-        recipename:recipename,
-        remark:"",
-        treatway:"",
-        countnum:"",
-        freq:"",
-        buDiagnosisList:item.buDiagnosisInfo,
-      }
-    }else if(ordertype == 5){
-
-    }else{
-
+    console.log("数据组装后=============",item);
+    //var test = this.chPatentMedicineSampleData();
+    this.props.actionManager('add', {orderid:'', ordertype: ordertype}, item);
+  }
+  // cmdrugPage:"1",//处方页数
+  // cpmPage:"1",//中成药页数
+  // stPage:"1",//适宜技术页数
+  // mcPage:"1",//医医案页数
+  updatePageSize = (pageSize,type) => {
+    switch (type) {
+      case 1:
+          this.setState({ cmdrugPage:pageSize },()=>{
+            this.searchList();
+          })
+          break;
+      case 2:
+          console.log("cpmPage=======",pageSize);
+          this.setState({ cpmPage:pageSize },()=>{
+            this.searchList();
+          })
+          break;
+      case 3:
+          this.setState({ stPage:pageSize },()=>{
+            this.searchList();
+          })
+          break;
+      default:
+          this.setState({ mcPage:pageSize },()=>{
+            this.searchList();
+          })
+          break;
     }
-    // var buDiagnosisInfo = item.buDiagnosisInfo;
-    // buDiagnosisInfo['buDiagnosisDismainfList'] = buDiagnosisInfo.buDiagnosisList;
-    // if(item.buRecipe != null){
-    //   var recipename = item.buRecipe.recipename;
-    // }
-    // var params = {
-    //   herbalData:item.baHerbalMedicines,
-    //   recipename:recipename,
-    //   remark:"",
-    //   treatway:"",
-    //   countnum:"",
-    //   freq:"",
-    //   buDiagnosisList:buDiagnosisInfo,
-    // }
-    //console.log("数据组装后=============",params);
-    this.props.actionManager('add', {orderid:'', ordertype: ordertype}, params);
   }
   render() {
-    var { dataSource, bu, isQuery } = this.state;
+    var { dataSource, bu, isQuery, cmdrugPage, cpmPage, stPage, mcPage } = this.state;
     console.log("dataSource========",typeof(dataSource) == "undefined");
     return (
       <div className="intelligentTreat">
       {
         <div className="intelligentTreat_Tabs">
           <Tabs onChange={this.callback} tabBarGutter={12} type="card" >
-            <TabPane tab="方剂" key="1"><Prescription isQuery={isQuery} dataSource={dataSource.clist} bu={JSON.stringify(bu)} changeInitData={this.changeInitData}/></TabPane>
-            <TabPane tab="中成药" key="2"><ChineseMedicine isQuery={isQuery} dataSource={dataSource.plist} bu={JSON.stringify(bu)} changeInitData={this.changeInitData}/></TabPane>
-            <TabPane tab="中医适宜技术" key="3"><AppropriateTechnology isQuery={isQuery} dataSource={dataSource.slist} bu={JSON.stringify(bu)} changeInitData={this.changeInitData}/></TabPane>
-            <TabPane tab="名医医案" key="4"><Consilia isQuery={isQuery} dataSource={dataSource.mlist} bu={JSON.stringify(bu)} changeInitData={this.changeInitData}/></TabPane>
+            <TabPane tab="方剂" key="1">
+              <Prescription
+                updatePageSize={this.updatePageSize}
+                pageSize={cmdrugPage}
+                isQuery={isQuery}
+                dataSource={dataSource.clist}
+                bu={JSON.stringify(bu)}
+                changeInitData={this.changeInitData}
+              />
+            </TabPane>
+            <TabPane tab="中成药" key="2">
+              <ChineseMedicine
+                updatePageSize={this.updatePageSize}
+                pageSize={cpmPage}
+                isQuery={isQuery}
+                dataSource={dataSource.plist}
+                bu={JSON.stringify(bu)}
+                changeInitData={this.changeInitData}
+              />
+            </TabPane>
+            <TabPane tab="中医适宜技术" key="3">
+              <AppropriateTechnology
+                updatePageSize={this.updatePageSize}
+                pageSize={stPage}
+                isQuery={isQuery}
+                dataSource={dataSource.slist}
+                bu={JSON.stringify(bu)}
+                changeInitData={this.changeInitData}
+              />
+            </TabPane>
+            <TabPane tab="名医医案" key="4">
+              <Consilia
+                updatePageSize={this.updatePageSize}
+                pageSize={mcPage}
+                isQuery={isQuery}
+                dataSource={dataSource.mlist}
+                bu={JSON.stringify(bu)}
+                changeInitData={this.changeInitData}
+              />
+            </TabPane>
           </Tabs>
         </div>
       }

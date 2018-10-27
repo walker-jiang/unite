@@ -14,11 +14,11 @@ const Home = Loadable({
   loader: () => import('./n-home'),
   loading: loadingComponent,
 });
-import TreatManage from './treatment';
-// const TreatManage = Loadable({
-//   loader: () => import('./treatment'),
-//   loading: loadingComponent,
-// });
+// import TreatManage from './treatment';
+const TreatManage = Loadable({
+  loader: () => import('./treatment'),
+  loading: loadingComponent,
+});
 const PatientRegister = Loadable({
   loader: () => import('./n-patientRegister'),
   loading: loadingComponent,
@@ -31,11 +31,11 @@ const Electronic = Loadable({
   loader: () => import('./n-electronicMedicalRecords'),
   loading: loadingComponent,
 });
-import SyndromeTreatment from './n-syndromeTreatment';
-// const SyndromeTreatment = Loadable({
-//   loader: () => import('./n-syndromeTreatment'),
-//   loading: loadingComponent,
-// });
+// import SyndromeTreatment from './n-syndromeTreatment';
+const SyndromeTreatment = Loadable({
+  loader: () => import('./n-syndromeTreatment'),
+  loading: loadingComponent,
+});
 const Cure = Loadable({
   loader: () => import('./n-cure'),
   loading: loadingComponent,
@@ -54,11 +54,11 @@ const layoutSub = Loadable({
   loader: () => import('./n-syndromeManage/component/layout/layout.jsx'),
   loading: loadingComponent,
 });
-import ModelManage from './n-modelManage';
-// const ModelManage= Loadable({
-//   loader: () => import('./n-modelManage'),
-//   loading: loadingComponent,
-// });
+// import ModelManage from './n-modelManage';
+const ModelManage= Loadable({
+  loader: () => import('./n-modelManage'),
+  loading: loadingComponent,
+});
 const PersonalSetting= Loadable({
   loader: () => import('./n-personalSettings'),
   loading: loadingComponent,

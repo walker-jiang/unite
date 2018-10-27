@@ -13,7 +13,7 @@ export default class Index extends Component {
       showResult: false, // 是否显示浮窗
       examineItemsData: [], // 适宜技术项目数据数组
       totalLines: 0, // 查询结果总行数
-      curLine: 0, // 当前行,从0开始，-1表示未选中任何行
+      curLine: -1, // 当前行,从0开始，-1表示未选中任何行
     };
     this.showResult = this.showResult.bind(this);
     this.hideResult = this.hideResult.bind(this);

@@ -8,7 +8,7 @@ import { getDiagnoseText } from 'commonFunc/transform';
 
 const FormItem = Form.Item;
 
-class Index extends Component {
+class DiagnoseModify extends Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -30,7 +30,9 @@ class Index extends Component {
     function callBack(res){
       if(res.result && res.data){ // 获取当前诊断明细数据
         let { buDiagnosisList, ...buDiagnosisInfo } = res.data;
-        window.searchITList();
+        if(window.searchITList){ // 和右侧栏智能论治联动
+          window.searchITList();
+        }
         self.setState({
           buDiagnosisList: buDiagnosisList,
           buDiagnosisInfo: buDiagnosisInfo
@@ -47,7 +49,12 @@ class Index extends Component {
   /** [handleSubmit 提交表单数据] */
   handleSubmit(formValue){
     let buDiagnosisInfo = this.state.buDiagnosisInfo;
+    if(JSON.stringify(buDiagnosisInfo) == '{}'){
+      this.tipModal.showModal({ stressContent: '保存失败，未找到该患者病历信息！！' });
+    }
     buDiagnosisInfo.buDiagnosisList = formValue.originData;
+    // buDiagnosisInfo.doctorname = window.sessionStorage.getItem('username');
+    // buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
     let params = {
       url: 'BuDiagnosisInfoController/postData',
       type: 'POST',
@@ -55,6 +62,9 @@ class Index extends Component {
     }
     let that = this;
     function success(res) {
+      if(window.searchITList){ // 和右侧栏智能论治联动
+        // window.searchITList();
+      }
       that.getDiagnoseData();
       that.props.diagnoseUpdate(formValue.extractionData)
     };
@@ -100,8 +110,8 @@ const SpecForm = styled(Form)`
     margin-left: -10px;
   }
 `;
-const ChPatentMedicineForm = Form.create()(Index);
-export default ChPatentMedicineForm;
+const DiagnoseModifyWrapper = Form.create()(DiagnoseModify);
+export default DiagnoseModifyWrapper;
 /*
 @作者：姜中希
 @日期：2018-08-28

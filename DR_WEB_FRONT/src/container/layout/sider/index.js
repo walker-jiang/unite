@@ -66,17 +66,17 @@ class SiderDemo extends React.Component {
   }
   //检测浏览器窗口大小变化
   handleHeight=()=>{
-  const screenHeight=document.documentElement.clientHeight;
-  var dom=document.getElementById("kk")
-  let  height="auto"
-  if (screenHeight<dom.offsetHeight) {
+    const screenHeight=document.documentElement.clientHeight;
+    var dom=document.getElementById("kk")
+    let  height="auto"
+    if (screenHeight<dom.offsetHeight) {
 
-     height =`${screenHeight-56*2}px`;
+       height =`${screenHeight-56*2}px`;
+    }
+    this.setState({
+      height,
+    })
   }
-  this.setState({
-    height,
-  })
-}
   down=()=>{
     var dom1=document.getElementById("kk")  //内容
     var domHeight1=dom1.offsetHeight
@@ -105,9 +105,23 @@ class SiderDemo extends React.Component {
     const MenuOption=[]
     if(leftModules.length !=0){
       leftModules.forEach(item=>{
-        var div
-        div=<MenuItems trigger={null} key={item.syModule.moddesc}><Link to={item.syModule.callurl}><StyleICon type={item.syModule.moddesc} value={collapsed}/><span>{item.syModule.modname}</span></Link></MenuItems>
-        MenuOption.push(div)
+        if(item.syModule.callurl.indexOf('http') == 0){
+          var div = <MenuItems trigger={null} key={item.syModule.moddesc}>
+                      <a href={item.syModule.callurl} target='_blank'>
+                        <StyleICon type={item.syModule.moddesc} value={collapsed}/>
+                        <span>{item.syModule.modname}</span>
+                      </a>
+                    </MenuItems>
+          MenuOption.push(div)
+        }else{
+          var div = <MenuItems trigger={null} key={item.syModule.moddesc}>
+            <Link to={item.syModule.callurl}>
+              <StyleICon type={item.syModule.moddesc} value={collapsed}/>
+              <span>{item.syModule.modname}</span>
+            </Link>
+          </MenuItems>
+          MenuOption.push(div)
+        }
       })
     }
     return (

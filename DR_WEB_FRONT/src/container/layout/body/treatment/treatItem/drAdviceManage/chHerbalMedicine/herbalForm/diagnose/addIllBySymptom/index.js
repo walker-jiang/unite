@@ -16,6 +16,7 @@ export default class AddIllBySymptom extends Component {
     };
     this.showResult = this.showResult.bind(this);
     this.hideResult = this.hideResult.bind(this);
+    this.clearInputValue = this.clearInputValue.bind(this);
   }
   /** [getTableCol 获取表格项] */
   getTableCol(){
@@ -50,7 +51,7 @@ export default class AddIllBySymptom extends Component {
           }
         });
         let totalLines = illData.length;
-        self.setState({illData, totalLines});
+        self.setState({illData, totalLines, showResult: true, curLine: 0});
       }else{
         console.log('异常响应信息', res);
       }
@@ -59,8 +60,6 @@ export default class AddIllBySymptom extends Component {
   };
   /** [showResult 展示查询结果] */
   showResult(value){
-
-    this.setState({showResult: true});
     this.getIllData(value);
   };
   /** [hideResult 隐藏查询结果] */
@@ -69,19 +68,12 @@ export default class AddIllBySymptom extends Component {
   };
   /** [getSelectedData 获取到选中行的数据] */
   getSelectedData(){
-    let selectedIllData = {};
     let { illData, showResult } = this.state;
-    if(showResult){ // 只有显示着查询结果浮框才能添加进诊断
-      illData.forEach((item, index)=>{ // 只返回选中的行
-        if(item.status == 2){
-          selectedIllData = item;
-        }
-      });
-    }
-    return selectedIllData;
+    let selectedIllData = illData.filter(item => item.status == 2);
+    return selectedIllData[0];
   };
   /**
-   * [SelectedLine 通过键盘那或者鼠标选择或者选中当前行，并通知病侯更新联动查询结果]
+   * [SelectedLine 通过键盘那或者鼠标选择当前行，并通知病侯更新联动查询结果]
    * @param {[type]} record [该行数据]
    * @param {[type]} state  [0代表取消选择， 1代表选择]
    */
@@ -92,10 +84,10 @@ export default class AddIllBySymptom extends Component {
         if(item.key == record.key){
           if(item.status == 1){
             item.status = 0;
-            this.props.notify('');
+            // this.props.notify('');
           }else{
             item.status = 1;
-            this.props.notify(record.diseaseid);
+            // this.props.notify(record.diseaseid);
           }
         }else{
           item.status = 0;
@@ -105,18 +97,29 @@ export default class AddIllBySymptom extends Component {
     });
     this.setState({ illData });
   };
-  /** [checkedLine 选中表格行触发的函数] */
+  /** [checkedLine 选中表格行或者enter键触发的函数] */
   checkedLine(record, status){
     let illData = this.state.illData;
     illData.map((item)=>{ // 改变当前行的选中状态
-      if(item.key == record.key){
+      if(item.key == record.key){ // 只将当前行设为选中状态其余的均为未选中
           item.status = status;
-          this.props.notify(record.diseaseid);
+          if(status == 2){ // 如果想要操作的选中行
+            this.props.notify(record.diseaseid);
+            this.semicircleInput.changeInputValue(record.disname);
+          }else{ // 想要操作的是取消，目前不存在这种情况
+            this.props.notify();
+            this.semicircleInput.changeInputValue('');
+          }
       }else{
         item.status = 0;
       }
       return item;
     });
+    if(!illData.length){// 没有查到对应的疾病信息
+      this.props.notify();
+      this.semicircleInput.changeInputValue('');
+    }
+    this.hideResult();
     this.setState({ illData });
   };
   /** [handleEnterPress 包括向上箭头选择上一行，下箭头选择下一行，enter后切换到病侯] */
@@ -124,42 +127,53 @@ export default class AddIllBySymptom extends Component {
     let illData = this.state.illData;
     let curLine = this.state.curLine;
     let totalLines = this.state.totalLines;
+    let showResult = this.state.showResult;
     switch(e.keyCode){
       case 40:         // 向下箭头, 选择下一行
-        if(totalLines == 1){
-          break;
+        if(showResult){ // 防止出现弹框还未出现用户已经按键导致展示的不是期望行
+          if(totalLines == 1){
+            break;
+          }
+          if(curLine >= totalLines-1){
+            curLine = 0;
+          }else{
+            curLine++;
+          }
+          this.SelectedLine(illData[curLine]);
         }
-        if(curLine >= totalLines-1){
-          curLine = 0;
-        }else{
-          curLine++;
-        }
-        this.SelectedLine(illData[curLine]);
         break;
       case 38:         // 向上箭头，选择上一行
-        if(totalLines == 1){
-          break;
+        if(showResult){ // 防止出现弹框还未出现用户已经按键导致展示的不是期望行
+          if(totalLines == 1){
+            break;
+          }
+          if(curLine <= 0){
+            curLine = totalLines-1;
+          }else{
+            curLine--;
+          }
+          this.SelectedLine(illData[curLine]);
         }
-        if(curLine <= 0){
-          curLine = totalLines-1;
-        }else{
-          curLine--;
-        }
-        this.SelectedLine(illData[curLine]);
         break;
       case 13:         // enter，切换到病侯
-        this.checkedLine(illData[curLine], 2);
-        document.getElementById('manifestation').focus();
-        break;
+        if(showResult){ // 弹框显示的时候enter键的执行步骤是收起弹框给输入框赋值通知父组件更新疾病ID
+          this.checkedLine(illData[curLine], 2); //
+        }else{ // 其余的enter事件包括 输入框为空并且当前已经添加了诊断数据,提交诊断的情况， 和输入框有值需要将焦点切换给病候的情况
+          this.props.enterEvent(this.semicircleInput.state.value, 'symptom');
+        }
+      break;
     };
     this.setState({ curLine });
   };
+  clearInputValue(){
+    this.semicircleInput.changeInputValue('');
+    this.setState({ illData: [] });
+  };
   render() {
-    let { formItemProps, placeholder, icon } = this.props;
     let { showResult, illData } = this.state;
     let columns = this.getTableCol();
     return (
-      <Semicircle id='symptom'  onKeyDown={this.handleEnterPress} icon={icon} autofocus='autofocus' displayed={this.showResult} placeholder={placeholder}>
+      <Semicircle onKeyDown={this.handleEnterPress} {...this.props} displayed={this.showResult} hideEmpty={this.hideResult} ref={ ref => { this.semicircleInput  = ref}}>
         {
           showResult?
           <Result>
@@ -176,6 +190,7 @@ export default class AddIllBySymptom extends Component {
               rowClassName={(record, index)=>{
                 return record.status ? (record.status == 1 ? 'Selected' : 'checked') : 'unSelected';
               }}
+              locale={{emptyText: '没有查到对应数据' }}
               showHeader={false}
               columns={columns}
               pagination={false}
@@ -196,7 +211,7 @@ const Result = styled.div`
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
   color: rgba(0,0,0,0.65);
   background: white;
-  padding: 0px 5px;
+  padding: 2px 5px;
 `;
 const SpecTable = styled(Table)`
   ${tableSty.selectedTable}

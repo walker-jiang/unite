@@ -5,7 +5,6 @@
 */
 import React, {Component} from 'react';
 import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, Alert, Modal } from 'antd';
-import doctorAdviceService from '../service/doctorAdviceService.js';
 
 class ContentDetailTwoItem extends Component {
   constructor(props){
@@ -117,23 +116,6 @@ export default class ContentDetail extends Component {
     console.log("pullDown====================",unfold);
     this.setState({unfold:!unfold});
   }
-  getSt = () =>{
-    var self = this;
-    let params = {
-      imtreatprelist:JSON.stringify(this.props.item),
-      bu:this.props.bu
-    };
-    function callBack(res){
-      if(res.flag == 1){
-        //alert("适宜技术转换成功==============");
-        //* 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
-        self.props.changeInitData(res.data,5);
-      }else{
-        console.log('适宜技术转换失败', res);
-      }
-    };
-    doctorAdviceService.getSt(params, callBack);
-  }
   render() {
     var { isCut, isUnfoldAll, one, treatname, attention, four, five, six, seven, item, unfold  } = this.state;
     return (
@@ -149,12 +131,12 @@ export default class ContentDetail extends Component {
           {
             item.priors == "1"
             ?
-            <ContentDetailTwoItem getSt ={this.getSt} item={item} bu={this.props.bu} content={item.buMatchingAcupoints}/>
+            <ContentDetailTwoItem getSt ={this.props.getSt} item={item} bu={this.props.bu} content={item.buMatchingAcupoints}/>
             :
             <div style={{fontSize:12}}>
               <p style={{color:'#333333',fontWeight:500}}>无</p>
               <div className="content-detail-two-Button">
-                <Button onClick={()=>{ this.getSt(item) }}>引入</Button>
+                <Button onClick={()=>{ this.props.getSt(item) }}>引入</Button>
               </div>
             </div>
           }

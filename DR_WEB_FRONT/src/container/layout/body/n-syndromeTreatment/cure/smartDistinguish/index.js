@@ -29,11 +29,11 @@ export default class SmartDistinguish extends Component {
       symptomId: '', // 病症ID
       initCaseData: {}, // 初始化病历信息
     };
-    this.changeInitDataTwo = this.changeInitDataTwo.bind(this);
     this.addChinaMedicineData = this.addChinaMedicineData.bind(this);
     this.getMessage = this.getMessage.bind(this);
     this.hideFloatLayer = this.hideFloatLayer.bind(this);
     this.submitCaseData = this.submitCaseData.bind(this);
+    this.enterEvent = this.enterEvent.bind(this);
   };
   componentWillMount(){
     this.initialData();
@@ -79,29 +79,23 @@ export default class SmartDistinguish extends Component {
   getMessage(symptomId){
     this.setState({symptomId});
   };
-  /** [addChinaMedicineData 添加中医病症病侯信息到诊断表中] */
-  addChinaMedicineData(e){
-    let diagnoseFinalInfo = this.state.diagnoseFinalInfo;
+  /** [getChinaMedicineData 获取诊断明细] */
+  getChinaMedicineData(){
     let symptom = this.addIllBySymptom.getSelectedData(); // 获取疾病信息
     let manifestation = this.addIllByManifestation.getSelectedData(); // 获取症候信息
-
-    if('diseaseid' in symptom){
-      let exist = diagnoseFinalInfo.some((item) => {
-        if(item.diagnosisCode == symptom.discode){ // 存在该疾病
-          // console.log('存在该疾病');
-          manifestation.forEach((itemManifest) => {
-            let exist = item.buDiagnosisDismainfList.some((itemChild) => itemChild.manifcode == itemManifest.manifcode);
-            // console.log('症候是否存在', exist);
-            if(exist){
-              this.tipModal.showModal({ stressContent: '该症候已存在' });
-              console.log('症候',itemManifest.manifname,'已存在');
-            }else{
-              item.buDiagnosisDismainfList.push(itemManifest);
-            }
-          });
-          return true;
-        }
-      });
+    console.log("symptom=============",symptom);
+    console.log("manifestation=============",manifestation);
+    this.addChinaMedicineData(symptom, manifestation);
+  };
+  /**
+   * [addChinaMedicineData 添加中医病症病侯信息到诊断表中]
+   * @param {Object} [symptom={}]       [疾病对象]
+   * @param {Array}  [manifestation=[]] [病候数组]
+   */
+  addChinaMedicineData(symptom = {}, manifestation = []){
+    let diagnoseFinalInfo = this.state.diagnoseFinalInfo;
+    if(symptom && 'diseaseid' in symptom){ // 校验疾病非空
+      let exist = diagnoseFinalInfo.some(item => item.diagnosisCode == symptom.discode);
       if(!exist){ // 最终诊断对象中不存在该疾病
         // console.log('不存在该疾病');
         let item = deepClone(symptom);
@@ -111,13 +105,38 @@ export default class SmartDistinguish extends Component {
         symptom.diaid = '';
         symptom.diagnosisWay = 1;
         diagnoseFinalInfo.push(symptom);
+      }else{ // 最终诊断对象中存在该疾病
+        if(manifestation.length){ // 选择病候则判断该疾病下的病候有没有重复
+          diagnoseFinalInfo.forEach(item => {
+            if(item.diagnosisCode == symptom.discode){ // 先遍历出该疾病
+              let existedManifestations = []; // 重复的病候们
+              manifestation.forEach(itemChild => { // 遍历档当前选择的病候们
+                let existedManifestation = []; // 存储重复的病候
+                if(item.buDiagnosisDismainfList){
+                  existedManifestation = item.buDiagnosisDismainfList.filter( itemChildChild => itemChildChild.manifcode == itemChild.manifcode); // 遍历出当前疾病下重复的病候
+                }
+                if(existedManifestation.length > 0){ // 存在重复病候
+                  existedManifestations = existedManifestations.concat(existedManifestation.map(itemObj => itemObj.manifname));
+                }else{ // 该病候和已有病候不重复则添加该病候
+                  item.buDiagnosisDismainfList.push(itemChild);
+                }
+              });
+              if(existedManifestations.length){
+                this.tipModal.showModal({ stressContent: '症候' + existedManifestations.join('、') + '已存在' });
+              }
+            }
+          });
+        }
+        else{ // 没有选择症候则提示该疾病已存在
+          this.tipModal.showModal({ stressContent: '该疾病已存在' });
+        }
+
       }
-    }else{ // 疾病不能为空
+    }
+    else{ // 疾病不能为空
       this.tipModal.showModal({ stressContent: '疾病不能为空' });
       return ;
     }
-    // this.addIllBySymptom.hideResult(); // 隐藏病症弹框
-    this.addIllByManifestation.hideResult(); // 隐藏病侯弹框
     this.setState({ diagnoseFinalInfo });
   };
   /**
@@ -188,14 +207,6 @@ export default class SmartDistinguish extends Component {
     }
     return columns;
   };
-  /** changeInitDataTwo
-   * [changeTabs 左右联动]
-   * @param  {[type]} initData
-   */
-  changeInitDataTwo = (buDiagnosisInfo) =>{
-    var initData = this.state.initData;
-    // initData['buDiagnosisInfo'] = buDiagnosisInfo;
-  }
   // 历史诊断双击选择
   SelectedLine(record){
       let {diagnoseHisOriginData, diagnoseFinalInfo} = this.state;
@@ -252,6 +263,7 @@ export default class SmartDistinguish extends Component {
     buDiagnosisInfo.deptid = window.sessionStorage.getItem('deptid');
     buDiagnosisInfo.diagnosisDesc = "诊断描述";
     buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
+    // buDiagnosisInfo.doctorname = window.sessionStorage.getItem('username');
     buDiagnosisInfo.orgid = window.sessionStorage.getItem('orgid');
     buDiagnosisInfo.patientid = this.props.baPatient.patientID;
     buDiagnosisInfo.patientname = this.props.baPatient.patientName;
@@ -259,32 +271,34 @@ export default class SmartDistinguish extends Component {
     buDiagnosisInfo.registerid = this.props.registerid,
     buDiagnosisInfo.registerno = "12312";
     Object.assign(diagnoseFinalInfoOrigin, buDiagnosisInfo);
-    let finalObj = {
-      casetype: values.casetype,
-      pridepict: this.getString(values.pridepict),
-      hpi: this.getString(values.hpi),
-      allergichistory: this.getString(values.allergichistory),
-      inspection: this.getString(values.inspection),
-      palpation: this.getString(values.palpation),
-      temperature: values.temperature,
-      breath: values.breath,
-      diastolicPressure: values.diastolicPressure,
-      systolicPressure: values.systolicPressure,
-      pulse: values.pulse,
-      heightnum: values.heightnum,
-      weightnum: values.weightnum,
-      isperiod: values.isperiod,
-      ispregnancy: values.ispregnancy,
-      gestationalWeeks: values.gestationalWeeks,
-      psycheck: values.psycheck,
-      buDiagnosisInfo: diagnoseFinalInfoOrigin,
-      deptid: window.sessionStorage.getItem('deptid'),
-      doctorid: window.sessionStorage.getItem('userid'),
-      doctorname: window.sessionStorage.getItem('username'),
-      orgid: window.sessionStorage.getItem('orgid'),
-      registerid: this.props.registerid,
-    };
-    Object.assign(initCaseData, finalObj);
+    if(values){
+      let finalObj = {
+        casetype: values.casetype,
+        pridepict: this.getString(values.pridepict),
+        hpi: this.getString(values.hpi),
+        allergichistory: this.getString(values.allergichistory),
+        inspection: this.getString(values.inspection),
+        palpation: this.getString(values.palpation),
+        temperature: values.temperature,
+        breath: values.breath,
+        diastolicPressure: values.diastolicPressure,
+        systolicPressure: values.systolicPressure,
+        pulse: values.pulse,
+        heightnum: values.heightnum,
+        weightnum: values.weightnum,
+        isperiod: values.isperiod,
+        ispregnancy: values.ispregnancy,
+        gestationalWeeks: values.gestationalWeeks,
+        psycheck: values.psycheck,
+        buDiagnosisInfo: diagnoseFinalInfoOrigin,
+        deptid: window.sessionStorage.getItem('deptid'),
+        doctorid: window.sessionStorage.getItem('userid'),
+        doctorname: window.sessionStorage.getItem('username'),
+        orgid: window.sessionStorage.getItem('orgid'),
+        registerid: this.props.registerid,
+      };
+      Object.assign(initCaseData, finalObj);
+    }
     let self = this;
     let params = {
       url: 'TCMAE/BuPatientCaseController/' + (initCaseData.billid ? 'putData' : 'postData'),
@@ -308,15 +322,19 @@ export default class SmartDistinguish extends Component {
       url: 'TCMAE/BuDiagnosisInfoController/getList',
       server_url: config_InteLigenTreat_url,
       data: {
-        cardno: this.props.cardno
+        cardno: window.cardno
       },
     };
     function callBack(res){
-      if(res.result && res.data.length > 0){
-        let diagnoseHisOriginData = res.data.records[0].buDiagnosisList;
-        // diagnoseHisOriginData.forEach((item) => {
-        //   item.doctorname = res.data.records[0].doctorname;
-        // });
+      if(res.result && res.data && res.data.records.length){
+        let diagnoseHisOriginData = [];
+        res.data.records.forEach((item) => {
+          if(item.buDiagnosisList){
+            item.buDiagnosisList.forEach((itemChild) => {
+              diagnoseHisOriginData.push(itemChild);
+            });
+          }
+        });
         self.setState({
           diagnoseHisOriginData: diagnoseHisOriginData
         });
@@ -333,6 +351,60 @@ export default class SmartDistinguish extends Component {
    */
   getString(obj = ''){
     return obj.extractionData || obj.extractionData == '' ? obj.extractionData : obj;
+  };
+  enterEvent(value, type){
+    if(value.trim() != ''){
+      if(type == 'symptom'){
+        document.getElementById('manifestations').focus(); // 焦点切换到病候
+      }else if(type == 'manifestations'){
+        document.getElementById('symptom').focus(); // 焦点切换到病候
+        this.getChinaMedicineData();
+        this.addIllBySymptom.clearInputValue();
+        this.addIllByManifestation.clearInputValue();
+      }else if(type == 'diagnose'){
+        this.addWestMedicineData();
+        this.addIllByDiagnose.clearInputValue();
+      }
+    }else{
+      if(type == 'symptom'){
+        if(this.state.diagnoseFinalInfo.length){
+          confirm({
+            title: '确定即将保存诊断数据?',
+            cancelText: '取消',
+            okText: '保存',
+            onOk() {
+              self.save();
+            },
+            onCancel() {
+
+            },
+          });
+        }else{
+          this.tipModal.showModal({ stressContent: '未添加诊断不能提交' });
+        }
+      }else if(type == 'manifestations'){
+        document.getElementById('symptom').focus(); // 焦点切换到疾病
+        this.getChinaMedicineData();
+        this.addIllBySymptom.clearInputValue();
+        this.addIllByManifestation.clearInputValue();
+      }else if(type == 'diagnose'){
+        if(this.state.diagnoseFinalInfo.length){
+          confirm({
+            title: '确定即将保存诊断数据?',
+            cancelText: '取消',
+            okText: '保存',
+            onOk() {
+              self.save();
+            },
+            onCancel() {
+
+            },
+          });
+        }else{
+          this.tipModal.showModal({ stressContent: '未添加诊断不能提交' });
+        }
+      }
+    }
   };
   render() {
     let columns = this.getTableCol();
@@ -359,10 +431,10 @@ export default class SmartDistinguish extends Component {
           <Middle>
             <AddContainer>
               <Name>疾病：</Name>
-              <AddIllBySymptom  icon='#0A6ECB' ref={ref => this.addIllBySymptom = ref} placeholder='请输入病症中文关键字活拼音简写搜索' notify={this.getMessage}/>
-              <Name>证候：</Name>
-              <AddIllByManifestations addChinaMedicineData={this.addChinaMedicineData} icon='#0A6ECB' ref={ref => this.addIllByManifestation = ref} placeholder='请输入病侯中文关键字货拼音简写搜索' symptomId={symptomId}/>
-              <AddAction type="primary" onClick={this.addChinaMedicineData}>添加诊断</AddAction>
+              <AddIllBySymptom enterEvent={this.enterEvent} autofocus='autofocus' id='symptom'  ref={ref => this.addIllBySymptom = ref} placeholder='请输入病症中文关键字活拼音简写搜索' notify={this.getMessage}/>
+              <Name>症候：</Name>
+              <AddIllByManifestations enterEvent={this.enterEvent} id='manifestations' ref={ref => this.addIllByManifestation = ref} placeholder='请输入病侯中文关键字货拼音简写搜索' symptomId={symptomId}/>
+              <AddAction type="primary" onClick={() => { this.enterEvent('', 'manifestations') }}>添加诊断</AddAction>
             </AddContainer>
             <SpecTable
               dataSource={diagnoseData}
@@ -406,7 +478,7 @@ export default class SmartDistinguish extends Component {
           <SpecTabs key='1' defaultActiveKey='1' animated={false}>
             <TabPane tab="智能辩证" key="1">
               {
-                <AuxiliaryDiagnosis changeInitDataTwo={this.changeInitDataTwo} listenFormData={{}}/>
+                <AuxiliaryDiagnosis type={"2"} addChinaMedicineData={this.addChinaMedicineData} changeInitDataTwo={this.addChinaMedicineData} listenFormData={{}}/>
               }
             </TabPane>
           </SpecTabs>
@@ -522,7 +594,7 @@ const AddAction = styled(Button)`
 const ActionButton = styled.div`
   border-top: 1px solid #CCCCCC;
   margin-top: 30px;
-  display: ${props => props.readOnly ? 'none' : 'block'}
+  display: ${props => props.readOnly ? 'none' : 'flex'}
 `;
 const BorderButton = styled(Button)`
   ${buttonSty.white}

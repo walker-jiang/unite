@@ -23,7 +23,7 @@ import paginationSty from 'components/antd/style/pagination';
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-class Index extends Component {
+class HerbalForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,11 +37,16 @@ class Index extends Component {
       // 初始化数据
       buDiagnosisList: [], // 当前患者的诊断数据
       recipename: '', // 处方名称
-      remark: 3, // 嘱托
+      remark: '', // 嘱托
       treatway: '', // 治疗方法
       countnum: 3, // 付数
       freq: null, // 频次
       herbalData: [], // 草药数据
+      illCaseId: '', // 病情ID
+      cureCaseId: '', // 治发ID
+      illCaseData: [], //病情数据
+      cureCaseData: [], // 治发数据
+      subHerbalData: [], // 临症加减草药数据
     };
     this.delHerbal = this.delHerbal.bind(this);
     this.dosageChange = this.dosageChange.bind(this);
@@ -228,6 +233,111 @@ class Index extends Component {
     })
     this.setState({ herbalData });
   }
+  herbalChange = (herbalID) => {
+    let subHerbalData = this.state.subHerbalData;
+    let herbalData = this.state.herbalData;
+    subHerbalData.forEach(item => {
+      if(item.id == herbalID){
+        let herbalObj = {};
+        herbalObj.count = 10;
+        herbalObj.baseUnitDic = item.drugUnit;
+        herbalObj.usageid = 9; // 从用法对象转换成字符串用法ID
+        herbalObj.usagename = '无'; // 从用法对象转换成字符串用法名称
+        // Item.freqid = values.frequency.key;
+        // Item.freqname = values.frequency.label;
+        herbalObj.itemcode = item.drugNum;
+        herbalObj.itemid = item.cmId;
+        herbalObj.itemname = item.drugName;
+        herbalObj.itemno = herbalData.length;
+        herbalObj.itemtype = 0; // 中药0
+        herbalData.push(herbalObj);
+      };
+    });
+  }
+  /** [getHerbalData 获取临症加减草药数据] */
+  getHerbalData(){
+    let cureCaseId = this.state.cureCaseId;
+    let self = this;
+    let params = {
+      url: 'api/treatdrug/getIdNameList',
+      server_url: config_InteLigenTreat_url+'TCMAE/',
+      data: {
+        treatmId: cureCaseId,
+        orgCode: window.sessionStorage.getItem('orgid')
+      },
+    };
+    function callBack(res){
+      if(res.result){ // 获取当前诊断明细数据
+        self.setState({ subHerbalData: res.data });
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
+  cureCaseChange = (value) => {
+    this.setState({ cureCaseId: value }, () => {
+      this.getHerbalData('');
+    });
+  }
+  /**
+   * [getCureCaseData 获取治发数据]
+   * @param  {[type]} keyword [治发关键词]
+   * @return {[type]}         [undefined]
+   */
+  getCureCaseData = (keyword) => {
+    let illCaseId = this.state.illCaseId;
+    let self = this;
+    let params = {
+      url: 'api/treatmethod/getIdNameList',
+      server_url: config_InteLigenTreat_url+'TCMAE/',
+      data: {
+        treatId: illCaseId,
+        keyword: keyword
+      },
+    };
+    function callBack(res){
+      if(res.result){ // 获取当前诊断明细数据
+        self.setState({ cureCaseData: res.data });
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
+  /**
+  * [handleChange 选择病情后]
+  * @param  {[type]} value [病情ID]
+  * @return {[type]}       [undefined]
+  */
+  IllCaseChange = (value) => {
+    this.setState({ illCaseId: value }, () => {
+      this.getCureCaseData('');
+    });
+  }
+  /**
+   * [getIllCaseData 获取病情数据]
+   * @param  {[type]} keyword [病情关键词]
+   * @return {[type]}         [undefined]
+   */
+  getIllCaseData = (keyword) => {
+    let self = this;
+    let params = {
+      url: 'api/treatdisease/getIdNameList',
+      server_url: config_InteLigenTreat_url+'TCMAE/',
+      data: {
+        keyword: keyword
+      },
+    };
+    function callBack(res){
+      if(res.result){ // 获取当前诊断明细数据
+        self.setState({ illCaseData: res.data });
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
   // 保存
   handleSubmit(e){
     e.preventDefault();
@@ -242,7 +352,7 @@ class Index extends Component {
     return { formData, herbalData }
   }
   render () {
-    let { recipename, usagename, remark, treatway, countnum, freq, herbalData, buDiagnosisList, frequencyData, showWay, current} = this.state;
+    let { recipename, usagename, remark, treatway, countnum, freq, herbalData, buDiagnosisList, frequencyData, showWay, current, illCaseData, cureCaseData, subHerbalData } = this.state;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
@@ -376,33 +486,58 @@ class Index extends Component {
             <FormItem
               {...separateFormItemLayout}
               label="临症加减：">
-            {getFieldDecorator('substract', {
-              initialValue: ''
-            })(
-              <TempAddSubtract ref={(input) => { this.textInput = input; }}/>
-            )}
+              {getFieldDecorator('substract')(
+                <SpecSelect
+                  showSearch
+                  placeholder='选择或者输入病情首字母'
+                  defaultActiveFirstOption={false}
+                  filterOption={false}
+                  onChange={this.IllCaseChange}
+                  onSearch={this.getIllCaseData}
+                  notFoundContent={null}
+                >
+                {
+                  illCaseData.map(item => <Option key={item.id}>{item.treatdiseaseName}</Option>)
+                }
+                </SpecSelect>
+              )}
+            </FormItem>
+          </Col>
+          <Col span={8}>
+            <FormItem
+              label=" "
+              {...separateFormItemLayout}>
+              {getFieldDecorator('cureCase')(
+                <SpecSelect
+                  showSearch
+                  placeholder='选择或输入治法'
+                  defaultActiveFirstOption={false}
+                  filterOption={false}
+                  onChange={this.cureCaseChange}
+                  onSearch={this.getCureCaseData}
+                  notFoundContent={null}
+                >
+                {
+                  cureCaseData.map(item => <Option key={item.id}>{item.therapyName}</Option>)
+                }
+                </SpecSelect>
+              )}
             </FormItem>
           </Col>
           <Col span={8}>
             <FormItem
               {...separateFormItemLayout}
               label=" ">
-              {getFieldDecorator('illSymbal')(
-                <SpecSelect placeholder='选择病侯'>
-                  <Option value="风热感冒">风热感冒</Option>
-                  <Option value="风寒感冒">风寒感冒</Option>
+              {getFieldDecorator('subHerbal', {
+                initialValue: ''
+              })(
+                <SpecSelect placeholder='选择草药' onChange={this.herbalChange} >
+                {
+                  subHerbalData.map((item, index) => <Option key={item.id} value={item.id}>{item.drugName}</Option>)
+                }
                 </SpecSelect>
               )}
             </FormItem>
-          </Col>
-          <Col span={8}>
-          <FormItem
-            {...separateFormItemLayout}
-            label=" ">
-            {getFieldDecorator('herbal')(
-              <SelectHerb ref={(input) => { this.selectHerb = input; }} />
-            )}
-          </FormItem>
           </Col>
         </Row>
         <Row>
@@ -470,6 +605,9 @@ const SpecSelect = styled(Select)`
   }
   &&&.ant-select.ant-select-open > .ant-select-selection > .ant-select-arrow {
     background: url(${up}) no-repeat top right;
+  }
+  .ant-select-open .ant-select-selection {
+    border: none;
   }
 `;
 const SpecCol = styled(Col)`
@@ -573,8 +711,8 @@ const SimplePagination = styled(Pagination)`
     color: rgb(178, 20, 20) !important;
   }
 `;
-const HerbalForm = Form.create()(Index);
-export default HerbalForm;
+const HerbalFormWrapper = Form.create()(HerbalForm);
+export default HerbalFormWrapper;
 
 /*
 @作者：马晓敏

@@ -9,9 +9,11 @@ const selectedTable = css`
   }
   /* 选中后对Selected类添加背景色 */
   .Selected.ant-table-row {
+    transform: scale(1.05);
     background-color: #eac7d8 !important;
   }
   .ant-table-tbody > .Selected:hover > td{
+    transform: scale(1.05);
     background-color: #eac7d8 !important;
   }
   .checked.ant-table-row {
@@ -19,6 +21,10 @@ const selectedTable = css`
   }
   .ant-table-tbody > .checked:hover > td{
     background-color: #308CFD !important;
+  }
+  .checked.Selected.ant-table-row{
+    background-color: #308CFD !important;
+    transform: scale(1.05);
   }
 `;
 

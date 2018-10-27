@@ -46,9 +46,9 @@ class Index extends Component {
     return (
       <Layout style={{minHeight: '100vh',width:"100%",background:'#fff !important'}}>
         <Sider style={{height:'100%',width:"10%",float:'left'}} ref="MenuItem"></Sider>
-        <SpecLayout style={{minHeight: '100vh'}} >
+        <SpecLayout>
           <Header {...this.props}/>
-          <Body style={{ background: '#FFFFFF'}} {...this.props}/>
+          <Body {...this.props}/>
         </SpecLayout>
      </Layout>
     );

@@ -4,37 +4,48 @@ import { Icon } from 'antd';
 import styled from 'styled-components';
 
 export default class Semicircle extends Component {
-  /** [showResult 触发显示结果弹框的函数] */
-  showResult(e){
-    this.props.displayed(e.target.value);
+  constructor(props){
+    super(props);
+    this.state = {
+      value: ''
+    };
+  };
+  /**
+   * [stopBubling 阻止事件冒泡的函数]
+   * @param  {[type]} e [事件源]
+   * @return {[type]}   [undefined]
+   */
+  stopBubling = (e) => {
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();
   };
-  stopBubling(e){
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation();
+  changeInputValue(_value, display){
+    this.setState({
+      value: _value
+    }, () => {
+      if(_value.trim() != '' && display){
+        this.props.displayed(_value) // 有值显示下拉框并根据当前值请求数据
+      }else{
+        this.props.hideEmpty(); // 空值的话隐藏下拉框
+      }
+    });
   };
-  // componentWillReceiveProps(props){
-  //   console.log('props.autofocus',props.autofocus);
-  //   if(props.autofocus){
-  //     this.input.focus();
-  //   }
-  // };
   render() {
-    let {placeholder, autofocus, icon, id = 'no'} = this.props;
+    let {placeholder, autofocus, icon, id } = this.props;
+    let value = this.state.value;
     return (
       <Container>
         <InputSearch onKeyDown={(e)=>this.props.onKeyDown(e)}>
           <Search>🔍</Search>
           <Input
             type='text'
+            value={value}
             id={id}
             autoFocus={autofocus}
-            className='not-draggable'
             placeholder={placeholder}
-            onFocus={(e) => {this.showResult(e)}}
-            onChange={(e)=>{this.showResult(e)}}
-            onClick={(e)=>{this.stopBubling(e)}}
+            onClick={this.stopBubling}
+            className='not-draggable'
+            onChange={(e) => {this.changeInputValue(e.target.value, true)}}
           />
           <Arrow icon={icon}><Icon type="down" /></Arrow>
         </InputSearch>

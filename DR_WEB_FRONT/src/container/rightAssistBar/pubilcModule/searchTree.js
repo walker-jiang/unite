@@ -8,6 +8,7 @@ import { Tree, Input } from 'antd';
 //import './style/rightAssistBar.less';
 const TreeNode = Tree.TreeNode;
 const Search = Input.Search;
+import zanwunerong from '../doctorAdvice/style/zanwunerong.png';
 
 export default class SearchTree extends Component {
   constructor(props){
@@ -35,35 +36,43 @@ export default class SearchTree extends Component {
 
   render() {
     var { dataSource, searchValue } = this.state;
-    console.log("searchValue===",searchValue);
+    console.log("dataSource===",typeof(dataSource) == "undefined");
     return (
-      <Tree
-        defaultExpandAll={true}
-        onSelect={this.onSelect}
-        onCheck={this.onCheck}
-      >
-        <TreeNode title="我的模板" key="0">
-          {
-            dataSource.map((item,index)=>{
-              return(
-                <TreeNode title={item.temname} key={item.temmanageid}>
-                  {
-                    item.buTempletManageList.length == 0
-                    ?
-                    null
-                    :
-                    item.buTempletManageList.map((j,k)=>{
-                      return(
-                        <TreeNode title={<p style={{color:searchValue == j.temname?"blue":"#333333"}}>{j.temname}</p>} key={j.temmanageid}/>
-                      )
-                    })
-                  }
-                </TreeNode>
-              )
-            })
-          }
-        </TreeNode>
-      </Tree>
+      <div>
+        {
+          typeof(dataSource) == "undefined"
+          ?
+          <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据，请重新搜索</center>
+          :
+          <Tree
+            defaultExpandAll={true}
+            onSelect={this.onSelect}
+            onCheck={this.onCheck}
+          >
+            <TreeNode title="我的模板" key="0">
+              {
+                dataSource.map((item,index)=>{
+                  return(
+                    <TreeNode title={item.temname} key={item.temmanageid}>
+                      {
+                        item.buTempletManageList.length == 0
+                        ?
+                        null
+                        :
+                        item.buTempletManageList.map((j,k)=>{
+                          return(
+                            <TreeNode title={<p style={{color:searchValue == j.temname?"blue":"#333333"}}>{j.temname}</p>} key={j.temmanageid}/>
+                          )
+                        })
+                      }
+                    </TreeNode>
+                  )
+                })
+              }
+            </TreeNode>
+          </Tree>
+        }
+      </div>
     );
   }
 }

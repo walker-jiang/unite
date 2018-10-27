@@ -22,7 +22,7 @@ class ContentDetailTwoItem extends Component {
     const { content } = this.props;
     console.log("临证加减为========",content);
     return (
-      <div style={{marginBottom:-25}}>
+      <div style={{marginBottom:-18}}>
         <div className="content-detail-two-Button">
           <Button onClick={()=>{ this.props.getcmdrugs(this.props.item) }}>引入</Button>
         </div>
@@ -37,9 +37,10 @@ class ContentDetailTwoItem extends Component {
             return(
               <div className="content-detail-two-div" key={index}>
                 <p>{index+1}.病情：</p>
-                <p>{item.severity}</p>
+                <p>{item.severity?item.severity:"无"}</p>
                 <p>加减药：</p>
-                <p>{item.drugNamesList}</p>
+                <p>{item.drugNamesList?item.drugNamesList:"无"}</p>
+                <Button onClick={()=>{ this.props.getcmdrugsOne(item) }}>引入</Button>
                 <hr className="hr2"/>
               </div>
             )
@@ -118,12 +119,40 @@ export default class ContentDetail extends Component {
     };
     doctorAdviceService.getcmdrugs(params, callBack);
   }
+  getcmdrugsOne = (getcmdrugsOne) => {
+    var self = this;
+    var item = self.props.item;
+    //数组组装
+    if(!!item){
+      var newArr = [];
+      item.forEach((item,index)=>{
+        if(item.id == getcmdrugsOne.id){
+          newArr.push(item);
+        }
+      })
+      item['buImlistEntities'] = newArr;
+      let params = {
+        imtreatprelist:JSON.stringify(item),
+        bu:self.props.bu
+      };
+      function callBack(res){
+        if(res.flag == 1){
+          //alert("草药转换成功==============");
+          //* 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
+          self.props.changeInitData(res.data,3);
+        }else{
+          console.log('草药转换失败', res);
+        }
+      };
+      doctorAdviceService.getcmdrugs(params, callBack);
+    }
+  }
   render() {
     var { isCut, isUnfoldAll, drugName, treatname, therapy, four, buImlistEntities, item, unfold  } = this.state;
     console.log("this.props.item====",item.therapy == "");
     return (
       <div>
-        <div className="content-detail-two" style={{paddingBottom:25}}>
+        <div className="content-detail-two" style={{paddingBottom:item.priors == "1"?10:25}}>
           <p onClick={()=>this.unfold("drugName",drugName)}><Icon type={drugName?"down":"right"}/>主方：</p>
           <p>{ drugName?(item.drugName == ""?"无":item.drugName):this.cutOut(item.drugName) }</p>
           <p onClick={()=>this.unfold("treatname",treatname)}><Icon type={treatname?"down":"right"}/>主治：</p>
@@ -144,6 +173,7 @@ export default class ContentDetail extends Component {
               content={item.buImlistEntities}
               changeInitData={this.props.changeInitData}
               getcmdrugs = {this.getcmdrugs}
+              getcmdrugsOne = {this.getcmdrugsOne}
             />
             :
             <div style={{fontSize:12}}>

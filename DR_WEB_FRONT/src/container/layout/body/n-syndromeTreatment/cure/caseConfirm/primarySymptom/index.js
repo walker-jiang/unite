@@ -7,16 +7,19 @@ const FormItem = Form.Item;
 
 export default class Index extends Component {
   render() {
-    const { getFieldDecorator, formItemLayout, initialValue} = this.props;
+    const { getFieldDecorator, formItemLayout, initialValue, isRequired} = this.props;
     return (
       <Row>
         <Col span={24}>
           <FormItem
             {...formItemLayout}
             colon={false}
-            label="主症："
+            label="主诉："
           >
           {getFieldDecorator('pridepict', {
+            rules: [{
+              required: isRequired, message: '请输入主症',
+            }],
             initialValue: initialValue,
           })(
             <PrimarySymptomPop />

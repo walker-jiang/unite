@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import styled from 'styled-components';
 import ReactDom from "react-dom"
 import { Button, Input, Radio, Progress, Row, Col } from 'antd'
-import TestResults from "./testResults.js"
 import "../css/startWork.css";
 import tp from "../images/tipPhoto.png";
 import bg from "../images/background.png";
@@ -168,7 +167,7 @@ export default class StartWork extends Component {
         <ScrollArea height={100}>
           <Row type="flex" justify="start">
             <Col lg={24} xl={24} xxl={24}>
-              <div>
+              <div style={styles.titleHeight}>
                 <img src={tp} style={styles.tipPhoto}/>
                 <p style={styles.tipTitle}>患者体质辨析测评</p>
                 <p style={styles.tipText}>请您通过问答形式协助患者完成“体质辨析测评”
@@ -204,6 +203,9 @@ const styles = {
   all: {
     marginLeft: '6%'
   },
+  titleHeight: {
+    height: '72px'
+  },
   tipPhoto: {
     marginTop: '1.7%',
     width: '4rem'
@@ -215,7 +217,8 @@ const styles = {
     fontSize: '18px',
     textAlign: 'left',
 	  marginLeft: '5rem',
-    marginTop: '-4.3rem'   
+    marginTop: '-4.3rem',
+    height: '36px' 
   },
   tipText: {
     color: 'black',
@@ -225,7 +228,8 @@ const styles = {
     fontSize: '14px',
     textAlign: 'left',
 	  marginLeft: '5rem',
-    marginTop: '-1.3rem'
+    marginTop: '-0.5rem',
+    height: '36px' 
   },
   bgDiv: {
     position: 'relative'
@@ -285,11 +289,6 @@ const styles = {
   },
   rember: {
     marginTop: '1.2%'
-  },
-  answerProgress: {
-    float: 'right',
-    marginRight: '5.8%',
-    marginTop: '-1.5%'
   },
   patientText:{
     fontWeight: '400',

@@ -29,7 +29,7 @@ export default class index extends Component {
       keyword: '', // 查询关键字
       totalRecords: 0, // 总记录数
       curPage: 1, // 当前页
-      pageSize: 5, // 每页记录数
+      pageSize: pageSize * 4, // 每页记录数
     };
     this.onStartChange = this.onStartChange.bind(this);
     this.handleStartOpenChange = this.handleStartOpenChange.bind(this);

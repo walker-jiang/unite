@@ -30,14 +30,20 @@ export default class ObserveCure extends Component {
   /**
    * [expand 点击左侧下标触发展开或者收缩按钮]
    * @param  {[type]} e      [事件源]
-   * @param  {[type]} type   [status类型]
    * @param  {[type]} status [状态]
    * @return {[type]}        [undefined]
    */
-  expand(e, type, status){
+  expand(e, status){
     this.setState({
-      [type]: status
+      expand: status
     });
+    if(!status && this.tongueShow){ // 同时收起左侧悬浮框
+      this.tongueShow.handleClose();
+    }else{
+      this.props.hideFeelCure(e, 'feelCure');
+    }
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
   };
   /**
    * [observeTagsClick 点击望诊小标签触发的选中函数]
@@ -73,8 +79,12 @@ export default class ObserveCure extends Component {
    * @return {[type]}   [undefined]
    */
   handleEnterPress = (e) => {
-    if(e.keyCode){ // tab键
-      this.expand(e, 'expand', false);
+    let expand = this.state.expand;
+    if(e.keyCode == 13){ // tab键
+      this.expand(e, !expand);
+    }
+    if(e.keyCode == 9){ // tab键
+      this.expand(e, false);
     }
   }
   /**
@@ -122,10 +132,10 @@ export default class ObserveCure extends Component {
     this.tongueShow.handleOpen();
   };
   render() {
-    const { getFieldDecorator, formItemLayout, initialValue, visiblePicture } = this.props;
+    const { getFieldDecorator, formItemLayout, initialValue, visiblePicture, camera = true } = this.props;
     let { expand, tonguePicture, standard } = this.state;
     return (
-      <Container>
+      <Container camera={camera}>
         <Row>
           <SpecCol span={3} onClick={(e)=>this.expand(e, 'expand', !expand)}>
             <Arrow type={expand ? 'up-circle' : 'down-circle'}/>
@@ -136,15 +146,20 @@ export default class ObserveCure extends Component {
               {getFieldDecorator('inspection', {
                 initialValue: initialValue.text
               })(
-                <Input onFocus={(e)=>this.expand(e, 'expand', !expand)} onKeyDown={this.handleEnterPress} innerRef={ref => {this.input = ref}}/>
+                <Input onClick={(e)=>this.expand(e, !expand)} onKeyDown={this.handleEnterPress} innerRef={ref => {this.input = ref}}/>
               )}
               <ObserveTags onClick={this.observeTagsClick} expand={expand} tagsOver={this.tagsOver} tagsOut={this.tagsOut}/>
             </SpecFormItem>
           </Col>
-          <ShowTongueAction src={tip} onClick={() => {this.tongueShow.handleOpen()}}></ShowTongueAction>
-          <Sign type='camera' width='18px' height='18px' fill='#33CC00' onClick={this.takePicture}/>
-          <Camera ref={ref => this.camera = ref} returPicture={this.returTonguePicture}></Camera>
-          <PicureEditor getUrl={this.getUrl} retakePicture={() => {this.camera.handleOpen()}} ref={ ref => { this.picureEditor = ref }}></PicureEditor>
+          {
+            camera ?
+              <div>
+                <ShowTongueAction src={tip} onClick={() => {this.tongueShow.handleOpen()}}></ShowTongueAction>
+                <Sign type='camera' width='18px' height='18px' fill='#33CC00' onClick={this.takePicture}/>
+                <Camera ref={ref => this.camera = ref} returPicture={this.returTonguePicture}></Camera>
+                <PicureEditor getUrl={this.getUrl} retakePicture={() => {this.camera.handleOpen()}} ref={ ref => { this.picureEditor = ref }}></PicureEditor>
+              </div> : null
+          }
         </Row>
         <HiddenFormItem>
           {getFieldDecorator('inspectionPicture', {
@@ -158,8 +173,8 @@ export default class ObserveCure extends Component {
   }
 }
 const Container = styled.div`
-  padding-left: 16px;
-  padding-right: 38px;
+  padding-left: ${props => props.camera ? '16px' : '0px'};
+  padding-right: ${props => props.camera ? '38px' : '0px'};
 `;
 const SpecCol = styled(Col)`
   &&& {

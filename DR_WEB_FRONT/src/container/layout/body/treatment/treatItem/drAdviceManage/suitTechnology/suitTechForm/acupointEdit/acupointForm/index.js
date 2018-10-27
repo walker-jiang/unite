@@ -17,7 +17,7 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const RadioGroup = Radio.Group;
 
-class Index extends Component {
+class AcupointForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -35,6 +35,7 @@ class Index extends Component {
     };
     this.delHerbal = this.delHerbal.bind(this);
     this.getAcupoints = this.getAcupoints.bind(this);
+    this.selectAcupoint = this.selectAcupoint.bind(this);
   }
   componentWillMount(){
     let { buImtreatprelistStAcupoints, ...acupointDetail } = this.props.buOrderDtlList;
@@ -163,7 +164,6 @@ class Index extends Component {
   };
   /** [getAcupoints 获取穴位数据] */
   getAcupoints(value){
-    console.log('this.state.substractID', this.state.substractID);
     let params = {
       url: 'tcmTreatacupoint/getIdNameList',
       server_url: config_InteLigenTreat_url+'TCMAE/',
@@ -179,6 +179,21 @@ class Index extends Component {
       }
     };
     ajaxGetResource(params, success);
+  };
+  selectAcupoint(e){
+    let acupointsData = this.state.acupointsData;
+    let acupointItem = {};
+    acupointsData.forEach(item => {
+      if(item.id === e){
+        acupointItem = {
+          acuname: item.acupointName,
+          acuid: item.id,
+        };
+      }
+    });
+    let herbalData = this.state.herbalData;
+    herbalData.push(acupointItem);
+    this.setState({ herbalData });
   };
   render () {
     let { freq, herbalData, frequencyData, current, deptData, operateData, substractData, acupointsData, acupointDetail } = this.state;
@@ -311,14 +326,14 @@ class Index extends Component {
             <FormItem
               {...formItemLayout}
               label="操作方法：">
-              {getFieldDecorator('usage', {
-                initialValue: operateData.length ? {key: operateData[0].valueid, label: operateData[0].vname} : { key:'', label: ''}
+              {getFieldDecorator('usagename', {
+                initialValue: acupointDetail.usagename
               })(
-                <SpecSelect labelInValue>
+                <SpecSelect>
                   {
                     operateData.map((item, index)=>{
                       return (
-                        <Option key={index} value={item.valueid}>{item.vname}</Option>
+                        <Option key={index} value={item.vname}>{item.vname}</Option>
                       )
                     })
                   }
@@ -354,11 +369,11 @@ class Index extends Component {
               {...separateFormItemLayout}
               label=" ">
               {getFieldDecorator('illSymbal', {
-                initialValue: acupointsData.length ? acupointsData[0].id : ''
+                initialValue: ''
               })(
-                <SpecSelect placeholder='选择穴位' onDropdownVisibleChange={() => {}}>
+                <SpecSelect placeholder='选择穴位' onChange={this.selectAcupoint} >
                 {
-                  acupointsData.map((item, index) => <Option key={index} value={item.id}>{item.acupointName}</Option>)
+                  acupointsData.map((item, index) => <Option key={item.id} value={item.id}>{item.acupointName}</Option>)
                 }
                 </SpecSelect>
               )}
@@ -444,6 +459,9 @@ const SpecSelect = styled(Select)`
   &&&.ant-select.ant-select-open > .ant-select-selection > .ant-select-arrow {
     background: url(${up}) no-repeat top right;
   }
+  .ant-select-open .ant-select-selection {
+    border: none;
+  }
 `;
 const SpecCol = styled(Col)`
   margin: 15px 0px 35px 0px;
@@ -519,8 +537,8 @@ const SimplePagination = styled(Pagination)`
     color: rgb(178, 20, 20) !important;
   }
 `;
-const HerbalForm = Form.create()(Index);
-export default HerbalForm;
+const AcupointFormWrapper = Form.create()(AcupointForm);
+export default AcupointFormWrapper;
 
 /*
 @作者：马晓敏

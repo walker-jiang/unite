@@ -353,8 +353,6 @@ class Home extends React.Component {
     //日期格式'2018-10-10'
     return(returnAge="输入的日期格式错误！");
   }
-
-
   render() {
     console.log('this.state.data1',this.state.data,this.state.allpatientnum);
     const this_=this;
@@ -375,92 +373,232 @@ class Home extends React.Component {
             width:"28%",float:"left",background:"",minWidth:"346px",borderLeft:"1px solid #CCCCCC",marginLeft:"20px",padding:"0 0 0 20px"
           }
 
-    const columns = [
-          {
-            title: '患者姓名',
-            dataIndex: 'patientname',
-            width:"8%",
-            render:(text,record)=>{
-              if(record.sexDic == '男'){
-                return(
-                  <span><i className="iconfont1" style={{color:'#4ACF2B'}} >&#xe6b5;</i>{text}</span>
-                )
-              }else{
-                return(
-                  <span><i className="iconfont1" style={{color:'#F0A52B'}} >&#xe6b6;</i>{text}</span>
-                )
-              }
+    // const columns = [
+    //       {
+    //         title: '患者姓名',
+    //         dataIndex: 'patientname',
+    //         width:"8%",
+    //         render:(text,record)=>{
+    //           if(record.sexDic == '男'){
+    //             return(
+    //               <span><i className="iconfont1" style={{color:'#4ACF2B'}} >&#xe6b5;</i>{text}</span>
+    //             )
+    //           }else{
+    //             return(
+    //               <span><i className="iconfont1" style={{color:'#F0A52B'}} >&#xe6b6;</i>{text}</span>
+    //             )
+    //           }
+    //
+    //         }
+    //       },
+    //       {
+    //         title: '患者编号',
+    //         dataIndex: 'patientid',
+    //           width:"11%"
+    //       },
+    //       {
+    //         title: '性别',
+    //         dataIndex: 'sexDic',
+    //           width:"6%"
+    //       },
+    //       {
+    //         title: '年龄',
+    //         dataIndex: 'birthday',
+    //           width:"6%",
+    //           render:(text,record)=>{
+    //             const bir=record.birthday.split(' ',1)
+    //             var age=this_.ages(bir[0]);
+    //             return  age
+    //           }
+    //       },
+    //       {
+    //         title: '手机号',
+    //         dataIndex: 'mobile',
+    //           width:"11%"
+    //       },
+    //       {
+    //         title: '身份证号',
+    //         dataIndex: 'cardno',
+    //           width:"12%"
+    //       },
+    //       {
+    //         title: '患者类型',
+    //         dataIndex: 'patienttypeDic',
+    //           width:"8%"
+    //       },
+    //       {
+    //         title: '就诊类型',
+    //         dataIndex: 'casetypeDic',
+    //           width:"7%"
+    //       },
+    //       {
+    //         title: '就诊科室',
+    //         dataIndex: 'deptid',
+    //           width:"7%"
+    //       },
+    //       {
+    //         title: '就诊医生',
+    //         dataIndex: 'recDoctorname',
+    //           width:"7%"
+    //       },
+    //       {
+    //         title: '登记时间',
+    //         dataIndex: 'regDate',
+    //         width:"11%"
+    //       },
+    //       {
+    //         title: '操作',
+    //         dataIndex: 's',
+    //           width:"6%",
+    //         render:(test,record)=>{
+    //           console.log('recordrecord',record);
+    //           return (
+    //             <div style={{color:"#3366ff",cursor:'pointer'}} onClick={this.jzAct.bind(this, record)}>接诊</div>
+    //           )
+    //         }
+    //       }
+    //     ];
+    //   const data = this.state.data;
 
-            }
-          },
-          {
-            title: '患者编号',
-            dataIndex: 'patientid',
-              width:"11%"
-          },
-          {
-            title: '性别',
-            dataIndex: 'sexDic',
-              width:"6%"
-          },
-          {
-            title: '年龄',
-            dataIndex: 'birthday',
-              width:"6%",
-              render:(text,record)=>{
-                const bir=record.birthday.split(' ',1)
-                var age=this_.ages(bir[0]);
-                return  age
-              }
-          },
-          {
-            title: '手机号',
-            dataIndex: 'mobile',
-              width:"11%"
-          },
-          {
-            title: '身份证号',
-            dataIndex: 'cardno',
-              width:"12%"
-          },
-          {
-            title: '患者类型',
-            dataIndex: 'patienttypeDic',
-              width:"8%"
-          },
-          {
-            title: '就诊类型',
-            dataIndex: 'casetypeDic',
-              width:"7%"
-          },
-          {
-            title: '就诊科室',
-            dataIndex: 'deptid',
-              width:"7%"
-          },
-          {
-            title: '就诊医生',
-            dataIndex: 'recDoctorname',
-              width:"7%"
-          },
-          {
-            title: '登记时间',
-            dataIndex: 'regDate',
-            width:"11%"
-          },
-          {
-            title: '操作',
-            dataIndex: 's',
-              width:"6%",
-            render:(test,record)=>{
-              console.log('recordrecord',record);
-              return (
-                <div style={{color:"#3366ff",cursor:'pointer'}} onClick={this.jzAct.bind(this, record)}>接诊</div>
-              )
-            }
-          }
-        ];
-      const data = this.state.data;
+    const data = [{
+      key: '1',
+      name: '胡彦斌',
+      age: 32,
+      address: '西湖区湖底公园1号'
+    }, {
+      key: '2',
+      name: '胡彦祖',
+      age: 42,
+      address: '西湖区湖底公园1号'
+      }, {
+        key: '1',
+        name: '胡彦斌',
+        age: 32,
+        address: '西湖区湖底公园1号'
+      }, {
+        key: '2',
+        name: '胡彦祖',
+        age: 42,
+        address: '西湖区湖底公园1号'
+      },{
+      key: '1',
+      name: '胡彦斌',
+      age: 32,
+      address: '西湖区湖底公园1号'
+    }, {
+      key: '2',
+      name: '胡彦祖',
+      age: 42,
+      address: '西湖区湖底公园1号'
+    },{
+      key: '1',
+      name: '胡彦斌',
+      age: 32,
+      address: '西湖区湖底公园1号'
+    }, {
+      key: '2',
+      name: '胡彦祖',
+      age: 42,
+      address: '西湖区湖底公园1号'
+    },{
+      key: '1',
+      name: '胡彦斌',
+      age: 32,
+      address: '西湖区湖底公园1号'
+    }, {
+      key: '2',
+      name: '胡彦祖',
+      age: 42,
+      address: '西湖区湖底公园1号'
+      }, {
+        key: '1',
+        name: '胡彦斌',
+        age: 32,
+        address: '西湖区湖底公园1号'
+      }, {
+        key: '2',
+        name: '胡彦祖',
+        age: 42,
+        address: '西湖区湖底公园1号'
+      },{
+        key: '1',
+        name: '胡彦斌',
+        age: 32,
+        address: '西湖区湖底公园1号'
+      }, {
+        key: '2',
+        name: '胡彦祖',
+        age: 42,
+        address: '西湖区湖底公园1号'
+      },{
+        key: '1',
+        name: '胡彦斌',
+        age: 32,
+        address: '西湖区湖底公园1号'
+      }, {
+        key: '2',
+        name: '2',
+        age: 42,
+        address: '西湖区湖底公园1号'
+      },{
+      key: '1',
+      name: '胡彦斌',
+      age: 32,
+      address: '西湖区湖底公园1号'
+    }, {
+      key: '2',
+      name: '胡彦祖',
+      age: 42,
+      address: '西湖区湖底公园1号'
+    },{
+      key: '1',
+      name: '5',
+      age: 32,
+      address: '西湖区湖底公园1号'
+    }, {
+      key: '2',
+      name: '胡彦祖',
+      age: 42,
+      address: '西湖区湖底公园1号'
+    },{
+      key: '1',
+      name: '胡彦斌',
+      age: 32,
+      address: '西湖区湖底公园1号'
+    }, {
+      key: '2',
+      name: '胡彦祖',
+      age: 42,
+      address: '西湖区湖底公园1号'
+      }, {
+        key: '1',
+        name: '胡彦斌',
+        age: 32,
+        address: '西湖区湖底公园1号'
+      }, {
+        key: '2',
+        name: '7',
+        age: 42,
+        address: '西湖区湖底公园1号'
+      }
+  ];
+
+    const columns = [{
+      title: '姓名',
+      dataIndex: 'name',
+      key: 'name',
+    }, {
+      title: '年龄',
+      dataIndex: 'age',
+      key: 'age',
+    }, {
+      title: '住址',
+      dataIndex: 'address',
+      key: 'address',
+    }
+  ];
+
+
     const columns2 = [
           {
             title: '患者姓名',
@@ -657,7 +795,6 @@ class Home extends React.Component {
         </div>
 
         <div style={style}>
-
               <Row style={{fontFamily: "'Microsoft Tai Le Negreta', 'Microsoft Tai Le Normal', 'Microsoft Tai Le'",
                   fontWeight: 700,
                   fontStyle: "normal",

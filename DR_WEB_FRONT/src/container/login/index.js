@@ -41,9 +41,9 @@ const Window = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: ${bundleMode == 'CS' ? 'white' : '#006699'};
-  width: ${bundleMode == 'CS' ? '750px' : '100%'};
-  height: ${bundleMode == 'CS' ? '480px' : '100vh'};
+  background-color: #006699;
+  width: 100%;
+  height: 100vh;
 `;
 /*
 @作者：姜中希

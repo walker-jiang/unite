@@ -71,11 +71,11 @@ export default class ContentDetail extends Component {
     };
     function callBack(res){
       if(res.flag == 1){
-        //alert("中药转换成功==============");
+        //alert("中成药转换成功==============");
         //* 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
         self.props.changeInitData(res.data,4);
       }else{
-        console.log('中药转换失败', res);
+        console.log('中成药转换失败', res);
       }
     };
     doctorAdviceService.getCpm(params, callBack);

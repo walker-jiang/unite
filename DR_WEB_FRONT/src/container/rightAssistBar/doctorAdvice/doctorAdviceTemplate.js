@@ -14,6 +14,7 @@ import pingpu1 from './style/pingpu1.png';
 import pingpu2 from './style/pingpu2.png';
 import shuzhuang1 from './style/shuzhuang1.png';
 import shuzhuang2 from './style/shuzhuang2.png';
+import zanwunerong from './style/zanwunerong.png';
 const Search = Input.Search;
 
 export default class template extends Component {
@@ -252,9 +253,8 @@ export default class template extends Component {
             isCut
             ?
             (
-              content.length == 0?
-              null
-              :
+              content && content.length != 0
+              ?
               content.map((item,index)=>{
                 return(
                   <div className="content" key={index} style={{marginBottom:20}}>
@@ -275,6 +275,8 @@ export default class template extends Component {
                   </div>
                 )
               })
+              :
+              <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据，请重新搜索</center>
             )
             :
             <div>

@@ -624,7 +624,8 @@ const styles = {
     listStyle: 'block !important'
   },
   ulLiFirst:{
-    color: 'black'
+    color: 'black',
+    width: '92%'
   },
   firstBorder:{
     width: '131px',

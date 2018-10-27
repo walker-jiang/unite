@@ -16,6 +16,8 @@ export default class CheckableTag extends Component {
     this.setState({
       checkable: !checkable
     });
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
     this.props.onClick(e.target.innerText, !checkable, id);
   };
   render() {

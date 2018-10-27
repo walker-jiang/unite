@@ -19,6 +19,7 @@ import HabitusInspect from './formItem/habitusInspect';
 import Diagnose from './formItem/diagnose';
 import CurePrinciple from './formItem/curePrinciple';
 import DocAdvice from './formItem/docAdvice';
+import TipModal from 'components/dr/modal/tip';
 import CaseIndicator from './leftModal/caseIndicator';
 import ScrollArea from 'components/scrollArea';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
@@ -79,6 +80,7 @@ class Index extends Component {
     };
     this.changeCaseItem = this.changeCaseItem.bind(this);
     this.changeTabs = this.changeTabs.bind(this);
+    this.hidePopComponent = this.hidePopComponent.bind(this);
   };
   /** [getIndicator 获取病历指标项目] */
   getIndicator(){
@@ -130,6 +132,13 @@ class Index extends Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         console.log('Received values of form: ', values);
+        console.log('diagnose', values.diagnose);
+        if((typeof(values.diagnose) == 'object' && !values.diagnose.extractionData) || (typeof(values.diagnose) == 'string' && !values.diagnose)){
+          this.tipModal.showModal({
+            content: '诊断不能为空',
+          });
+          return;
+        }
         let { caseItems, initData } = this.state;
         let selectedItems = new Array();
         caseItems.forEach((item) => {
@@ -272,6 +281,24 @@ class Index extends Component {
     initData['buDiagnosisInfo'] = buDiagnosisInfo;
     this.setState({initData});
   }
+  /**
+   * [hidePopComponent 收起望诊、切诊弹框]
+   * @param  {[type]} e    [事件源]
+   * @param  {[type]} type [可以通过这个参数控制关闭哪一个]
+   * @return {[type]}      [undefined]
+   */
+  hidePopComponent(e, type){
+    if(type){
+      if(type == 'feelCure'){
+        this.fellCure.expand(e, false);
+      }else{
+        this.observeCure.expand(e, false);
+      }
+    }else{
+      this.observeCure.expand(e, false);
+      this.fellCure.expand(e, false);
+    }
+  };
   render() {
     let { saved, caseItems, tabIndex, initData } = this.state;
     const { getFieldDecorator, setFieldsValue, getFieldsValue } = this.props.form;
@@ -302,8 +329,8 @@ class Index extends Component {
        tongueUrls.push(initData.sidephoto);
      }
     return (
-      <Container>
-        <SpecForm onSubmit={this.handleSubmit} >
+      <Container onClick={this.hidePopComponent}>
+        <SpecForm onSubmit={this.handleSubmit} onKeyDown={(e) => e.keyCode == 13 ? false : null}>
           <ScrollArea height={140}>
           {
             caseItems.map((item, index) => {
@@ -332,10 +359,10 @@ class Index extends Component {
                 return <IllHistory_familyhis key={index} title='家族史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.familyhistory}}/>
               }
               if(item.targetid == 9 && item.isChoose == '01'){
-                return <ObserveCure key={index} setFieldsValue={setFieldsValue} getFieldsValue={getFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: tongueUrls, text: initData.inspection}}></ObserveCure>
+                return <ObserveCure ref={ ref => { this.observeCure = ref }} hideFeelCure={this.hidePopComponent} key={index} setFieldsValue={setFieldsValue} getFieldsValue={getFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: tongueUrls, text: initData.inspection}}></ObserveCure>
               }
               if(item.targetid == 10 && item.isChoose == '01'){
-                return <FeelCure key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
+                return <FeelCure ref={ ref => { this.fellCure = ref }} hideObseverCure={this.hidePopComponent} key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
               }
               if(item.targetid == 11 && item.isChoose == '01'){ // 小儿脉象
               }
@@ -388,6 +415,7 @@ class Index extends Component {
               </Saving>
             </Row>
           }
+          <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
           </ScrollArea>
         </SpecForm>
         <Modal>
@@ -402,7 +430,7 @@ class Index extends Component {
                 <MedicalHistory changeInitData={this.changeInitData}/>
               </TabPane>
               <TabPane tab="辅助诊断" key="3">
-                <AuxiliaryDiagnosis changeInitDataTwo={this.changeInitDataTwo} listenFormData={listenFormData}/>
+                <AuxiliaryDiagnosis type={1} changeInitDataTwo={this.changeInitDataTwo} listenFormData={listenFormData}/>
               </TabPane>
               <TabPane tab="病历指标" key="4">
                 <CaseIndicator changeCaseItem={this.changeCaseItem} caseItems={caseItems}></CaseIndicator>

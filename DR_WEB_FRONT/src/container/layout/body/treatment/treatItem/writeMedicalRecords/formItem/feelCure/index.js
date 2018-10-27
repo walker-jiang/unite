@@ -18,14 +18,18 @@ export default class Index extends Component {
   /**
    * [expand 点击左侧下标触发展开或者收缩按钮]
    * @param  {[type]} e      [事件源]
-   * @param  {[type]} type   [status类型]
    * @param  {[type]} status [状态]
    * @return {[type]}        [undefined]
    */
-  expand(e, type, status){
+  expand(e, status){
     this.setState({
-      [type]: status
+      expand: status
     });
+    if(status){ // 同时收起左侧悬浮框
+      this.props.hideObseverCure(e, 'observeCure');
+    }
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
   };
   /**
    * [observeTagsClick 点击切诊小标签触发的选中函数]
@@ -57,8 +61,12 @@ export default class Index extends Component {
     this.props.setFieldsValue({ palpation: text});
   };
   handleEnterPress = (e) => {
-    if(e.keyCode){ // tab键
-      this.expand(e, 'expand', false);
+    let expand = this.state.expand;
+    if(e.keyCode == 13){ // tab键
+      this.expand(e, !expand);
+    }
+    if(e.keyCode == 9){ // tab键
+      this.expand(e, false);
     }
   }
   render() {
@@ -66,7 +74,7 @@ export default class Index extends Component {
     let expand = this.state.expand;
     return (
       <SpecRow>
-        <SpecCol span={3} onClick={(e)=>this.expand(e, 'expand', !expand)}>
+        <SpecCol span={3} onClick={(e)=>this.expand(e, !expand)}>
           <Arrow type={expand ? 'up-circle' : 'down-circle'}/>
           <span>切诊：</span>
         </SpecCol>
@@ -75,7 +83,7 @@ export default class Index extends Component {
           {getFieldDecorator('palpation', {
             initialValue: initialValue
           })(
-            <Input onFocus={(e)=>this.expand(e, 'expand', !expand)} onKeyDown={this.handleEnterPress} innerRef={ref => {this.input = ref}}/>
+            <Input onClick={(e)=>this.expand(e, !expand)} onKeyDown={this.handleEnterPress} innerRef={ref => {this.input = ref}}/>
           )}
           <FeelTags onClick={this.feelTagsClick} expand={expand}/>
           </SpecFormItem>

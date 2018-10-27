@@ -108,14 +108,7 @@ export default class ObserveCure extends Component {
                     <span>{curIndex+1}/{urlArr.length}</span>
                   </Page>
                 </Body>
-              </Container> :
-               <Container>
-                 <Header>
-                   <Title>患者舌苔</Title>
-                   <ClsoeIcon type='close'  onClick={this.handleClose}/>
-                 </Header>
-                 <div>暂无已拍摄图片</div>
-               </Container>
+              </Container> : null
             }
             {
               text ?

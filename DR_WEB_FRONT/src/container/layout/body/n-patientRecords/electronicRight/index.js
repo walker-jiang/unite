@@ -47,14 +47,15 @@ export default class Electronic extends Component {
       casetypeDic: '',
       heightnum: '',
       weightnum: '',
-      diagnosisDesc: '',
+      chOrderList: [],//中医处方
+      weOrderList: [],//西医处方
     };
   };
   componentDidMount(){
     
   }
   componentWillReceiveProps(nextProps){
-    // console.log('nextProps',nextProps)
+    console.log('nextProps',nextProps)
     let data = nextProps.data;
     let i = nextProps.i;
     let sexFont = null;
@@ -84,9 +85,8 @@ export default class Electronic extends Component {
       diastolicPressure: data[i].diastolicPressure,//舒张压
       heightnum: data[i].heightnum,//身高
       weightnum: data[i].weightnum,//体重
-      // diagnosisDesc: data[i].buDiagnosisInfo.diagnosisDesc,//中医诊断
-      // diagnosisDesc: data[i].buDiagnosisInfo.diagnosisDesc,//西医诊断
-      diagnosisDesc: '西医诊断',//西医诊断
+      chOrderList: data[i].chOrderList,//中医处方
+      weOrderList: data[i].weOrderList,//西医处方
       // syndrome: data[i].syndrome,//血常规
       // syndrome: data[i].syndrome,//尿检
       // syndrome: data[i].syndrome,//脑部CT
@@ -97,7 +97,7 @@ export default class Electronic extends Component {
 
   render() {
     let ss = null;
-    let {orgidDic,name, age, sex, type, upstamp, temperature, breath, pulse, systolicPressure, diastolicPressure, casetype} = this.state;
+    let {orgidDic,name, age, sex, type, upstamp, temperature, breath, pulse, systolicPressure, diastolicPressure, casetype,chOrderList,weOrderList} = this.state;
     if(casetype != ''){//判断初复诊：1为初诊，2为复诊；
       var ct = casetype;
       ss = <RadioGroup name="radiogroup" disabled defaultValue={ct}>
@@ -115,7 +115,6 @@ export default class Electronic extends Component {
     let palpationS = this.state.palpation ? this.state.palpation : '暂略；';
     let smellingS = this.state.smelling ? this.state.smelling : '暂略；';
     let syndromeS = this.state.syndrome ? this.state.syndrome : '暂略；';
-    let diadescS = this.state.diagnosisDesc ? this.state.diagnosisDesc : '暂略；';
     let suggessionS = this.state.suggession ? this.state.suggession : '暂略；';
     let heightnum = this.state.heightnum ? this.state.heightnum : '暂略；';
     let weightnum = this.state.weightnum ? this.state.weightnum : '暂略；';
@@ -191,11 +190,11 @@ export default class Electronic extends Component {
                 </Row>
                 <Row>
                   <Col style={styles.colLeftStyle} span={3}>中医诊断：</Col>
-                  <Col style={styles.colRightStyle} span={21}>风寒感冒；高血压；轻度脑震荡</Col>
+                  <Col style={styles.colRightStyle} span={21}>{chOrderList}</Col>
                 </Row>
                 <Row>
                   <Col style={styles.colLeftStyle} span={3}>西医诊断：</Col>
-                  <Col style={styles.colRightStyle} span={21}>{diadescS}</Col>
+                  <Col style={styles.colRightStyle} span={21}>{weOrderList}</Col>
                 </Row>
                 <Row>
                   <Col style={styles.colLeftStyle} span={3}>医生建议：</Col>
@@ -220,7 +219,7 @@ export default class Electronic extends Component {
                 </div>
               </div>
               <div>
-                <p style={styles.another}><img src={xinxi} style={styles.xinxi}/>处方信息</p>
+                <p style={styles.another}><img src={xinxi} style={styles.xinxi}/>医嘱信息</p>
                 <div>
                   <Row>
                     <Col style={styles.colLeftStyle} span={3}>中医处方：</Col>

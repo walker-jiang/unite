@@ -60,6 +60,7 @@ function getDiagnoseDataSource(originData = [], type = 'now'){
         itemChild.diagnosisCode = itemNext.manifcode;
         itemChild.manifCode = item.diagnosisCode;
         itemChild.diagnosisWay = item.diagnosisWay;
+        itemChild.diagnosisWayDic = item.diagnosisWayDic;
         itemChild.diagnosisType = '-';
         itemChild.doubtDiaTypeDic = '-';
         itemChild.mainDiaTypeDic = '-';

@@ -90,7 +90,9 @@ debugger
   }
 }
 const FatherDiv = styled.div`
-  
+  position: absolute;
+  height: 100%;
+  width: 100%;  
 `;
 /*
 @作者：王崇琨

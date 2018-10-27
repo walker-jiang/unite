@@ -328,10 +328,10 @@ class SuitTechForm extends Component {
                   Object.assign(itemChildChild, itemChildChild.baAcupoint); // 为了和穴位编辑处查询的穴位对象对应将内层嵌套的baAcupoint放在外层
                   acupointNameArray.push(itemChildChild.acupointName);
                 });
-                Object.assign(otherItem, serviceItem, { spbody: acupointNameArray.join('、')}); // 将穴位名称、穴位对应加入对应的医嘱明细中
+                Object.assign(otherItem, serviceItem, { spbody: acupointNameArray.join('、'), usagename: serviceItem.operation ? serviceItem.operation : '无'}); // 将穴位名称、穴位对应加入对应的医嘱明细中
               }else{
                 serviceItem.buImtreatprelistStAcupoints = [];
-                Object.assign(otherItem, serviceItem, { spbody: '无'});
+                Object.assign(otherItem, serviceItem, { spbody: '无', usagename: serviceItem.operation ? serviceItem.operation : '无'});
               }
             }
           });
@@ -390,7 +390,7 @@ class SuitTechForm extends Component {
         if(index%2 == 0){
           return '';
         }else{
-          return <EditContainer><InputPop value={record.operation ? record.operation : '无'}></InputPop><Edit type='edit' onClick={() => {this.handleAcupoint(record)}}/></EditContainer>
+          return <EditContainer><InputPop value={record.usagename ? record.usagename : '无'}></InputPop><Edit type='edit' onClick={() => {this.handleAcupoint(record)}}/></EditContainer>
         }
       }
     }, {
@@ -564,6 +564,7 @@ class SuitTechForm extends Component {
               itemChild.freqid = tectItemDetail.frequency.key;
               itemChild.freqname = tectItemDetail.frequency.label;
               itemChild.takedays = tectItemDetail.takedays;
+              itemChild.usagename = tectItemDetail.usagename;
               itemChild.buImtreatprelistStAcupoints = tectItemDetail.buImtreatprelistStAcupoints; // 穴位赋值
               if(itemChild.buImtreatprelistStAcupoints && itemChild.buImtreatprelistStAcupoints.length){ // 提取穴位名称
                 let acupointNameArray = [];
@@ -581,6 +582,12 @@ class SuitTechForm extends Component {
     }else{
       suitTechData.forEach(item => { // 遍历原始数据
         if(item.itemcode == tectItemDetail.itemcode){ // 非医嘱套ID匹配
+          item.deptid = tectItemDetail.execDept.key;
+          item.deptname = tectItemDetail.execDept.label;
+          item.freqid = tectItemDetail.frequency.key;
+          item.freqname = tectItemDetail.frequency.label;
+          item.takedays = tectItemDetail.takedays;
+          item.usagename = tectItemDetail.usagename;
           item.buImtreatprelistStAcupoints = tectItemDetail.buImtreatprelistStAcupoints; // 穴位赋值
           if(item.buImtreatprelistStAcupoints){ // 提取穴位名称
             let acupointNameArray = [];
@@ -711,7 +718,7 @@ class SuitTechForm extends Component {
                   })(
                     <div>
                       {
-                        suitTechData.map((item, index) => <SpecTag onClose={(e) => {e.preventDefault();this.delSuitTechData(item)}} closable key={index} id={item.buOrderDtlList ? item.orderSuitid : item.itemid}>{item.buOrderDtlList ? item.orderSuitname : item.itemid}</SpecTag>)
+                        suitTechData.map((item, index) => <SpecTag onClose={(e) => {e.preventDefault();this.delSuitTechData(item)}} closable key={index} id={item.buOrderDtlList ? item.orderSuitid : item.itemid}>{item.buOrderDtlList ? item.orderSuitname : item.itemname}</SpecTag>)
                       }
                     </div>
                   )}

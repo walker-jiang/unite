@@ -396,7 +396,7 @@ export default class TestResults extends Component {
                   </div>
                 </div>
                 <div style={styles.threeBorder}>
-                  <ScrollArea height={170}>
+                  <ScrollArea height={222}>
                     <div style={styles.allStyle}>
                       <div style={styles.allStyle1}>
                         <div style={styles.jielun}>
@@ -478,7 +478,7 @@ const styles = {
   names:{
     overflow: 'hidden',
     width: '100%',
-    height: 'cal(100% - 110px)'
+    height: 'cal(100% - 400px)'
   },
   testResult2:{
     float: 'right',
@@ -624,7 +624,8 @@ const styles = {
     listStyle: 'block !important'
   },
   ulLiFirst:{
-    color: 'black'
+    color: 'black',
+    width: '92%'
   },
   firstBorder:{
     width: '131px',

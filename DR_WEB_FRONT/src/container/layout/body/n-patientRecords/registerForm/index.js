@@ -21,8 +21,6 @@ class Index extends Component {
     };
   };
   componentWillMount(){
-    console.log('@@@@@2',this.props.patientid);
-    
     this.getPatientData(this.props.patientid);
   };
   getPatientData(id){
@@ -79,9 +77,9 @@ class Index extends Component {
       function callBack(res){
         if(res.result){
           self.saveTip.showModal(2);
-          // self.props.history.push('/Layout/patientArchives');
+          self.props.history.push('/Layout/patientArchives');
         }else{
-          self.saveTip.showModal(3);
+          self.saveTipsaveTip.showModal(3);
           console.log('异常响应信息', res);
         }
       };

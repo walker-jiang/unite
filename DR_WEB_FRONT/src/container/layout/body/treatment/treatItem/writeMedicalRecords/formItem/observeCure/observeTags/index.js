@@ -43,8 +43,8 @@ export default class ObserveCure extends Component {
     };
     ajaxGetResource(params, callBack);
   };
-  /** [coatedTagClick 获取舌质列表] */
-  getTongueNatureData(){
+  /** [getTongueNatureData 获取舌质列表] */
+  getTongueNatureData(e){
     let self = this;
     let params = {
       url: 'BuTongueNatureController/getList',

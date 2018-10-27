@@ -275,12 +275,13 @@ const Container = styled.div`
   background-color: white;
 `;
 const Title = styled.div`
-  border: 1px solid;
-  border-color: rgba(204, 204, 204, 1);
-  background-color: rgb(242, 242, 242);
-  width: 100%;
   height: 50px;
-  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  background-color: rgba(242, 242, 242, 1);
+  padding: 0px 10px;
+  box-shadow: rgba(0, 0, 0, 0.35) 1px 1px 5px;
 `;
 const FormBorder = styled.div`
   margin-top: 105px;
