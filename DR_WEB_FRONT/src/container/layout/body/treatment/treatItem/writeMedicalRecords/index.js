@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import { Form, Icon, Button, Row, Col, Tabs } from 'antd';
+import { Form, Icon, Button, Row, Col, Tabs ,Modal,Input} from 'antd';
 import Loading from 'components/dr/loading';
 import CaseType from './formItem/caseType';
 import MainSpeech from './formItem/mainSpeech';
@@ -19,6 +19,7 @@ import HabitusInspect from './formItem/habitusInspect';
 import Diagnose from './formItem/diagnose';
 import CurePrinciple from './formItem/curePrinciple';
 import DocAdvice from './formItem/docAdvice';
+import CarefulItem from './formItem/carefulItem';
 import TipModal from 'components/dr/modal/tip';
 import CaseIndicator from './leftModal/caseIndicator';
 import ScrollArea from 'components/scrollArea';
@@ -41,6 +42,7 @@ class Index extends Component {
       saved: 0, //是否点击保存按钮, 0未保存 1 保存中 2 保存成功
       tabIndex: 1, // 当前tab
       caseItems: [], // 病历指标项
+      temname:'',
       initData: {
         "allergichistory": '',//过敏史
         "billid": '',
@@ -76,7 +78,11 @@ class Index extends Component {
         "treatprinciple": '',//治疗原则
         "treatway": '',//治疗方法
         "weightnum": '',//体重
+        "isperiod": '', // 经期
+        "ispregnancy": '', //孕期
+        gestationalWeeks: 1, // 怀孕月数
       }, // 修改前的初始化数据
+      finalObj:'',
     };
     this.changeCaseItem = this.changeCaseItem.bind(this);
     this.changeTabs = this.changeTabs.bind(this);
@@ -110,7 +116,7 @@ class Index extends Component {
     let params = {
       url: 'BuPatientCaseController/getData',
       data: {
-        registerid: window.registerID
+        registerid: window.registerID,
       },
     };
     function callBack(res){
@@ -159,6 +165,7 @@ class Index extends Component {
         buDiagnosisInfo.cardno = window.cardno;
         buDiagnosisInfo.deptid = window.sessionStorage.getItem('deptid');
         buDiagnosisInfo.diagnosisDesc = "诊断描述";
+        buDiagnosisInfo.doctorname = window.sessionStorage.getItem('username');
         buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
         buDiagnosisInfo.orgid = window.sessionStorage.getItem('orgid');
         buDiagnosisInfo.patientid = window.patientID;
@@ -197,12 +204,16 @@ class Index extends Component {
           psycheck: values.psycheck,
           buTargetChooseList: selectedItems,
           facephoto: values.inspectionPicture[0],
-          sidephoto: values.inspectionPicture[1]
+          sidephoto: values.inspectionPicture[1],
+          isperiod: values.isperiod,
+          ispregnancy: values.ispregnancy,
+          gestationalWeeks: values.gestationalWeeks,
         };
         Object.assign(initData, finalObj);
         let self = this;
         this.setState({
-          saved: 1
+          saved: 1,
+          finalObj:finalObj
         });
         let params = {
           url: 'BuPatientCaseController/' + (initData.billid ? 'putData' : 'postData'),
@@ -299,6 +310,194 @@ class Index extends Component {
       this.fellCure.expand(e, false);
     }
   };
+  /** [showModal 展示对话框] */
+  showModal = () => {
+   // this.getbuTempletManageList();
+   this.setState({
+     visible: true,
+   });
+ }
+/** [handleOk 关闭对话框] */
+ handleOk = (e) => {
+   console.log(e);
+   this.setState({
+     visible: false,
+   });
+ }
+/** [handleCancel 关闭对话框] */
+ handleCancel = (e) => {
+   console.log(e);
+   this.setState({
+     visible: false,
+   });
+ }
+ /** [postModal 拿到模板列表的数据/拿到我的模板的详情] */
+ // getbuTempletManageList=()=>{
+ //   let params = {
+ //     url: 'BuTempletManageController/getList',
+ //     data: {
+ //          personid:window.sessionStorage.getItem('userid'),
+ //          orgid:window.sessionStorage.getItem('orgid'),
+ //          temtype:'0'
+ //     },
+ //     type: 'get',
+ //   };
+ //   function callBack(res){
+ //     if(res.result){
+ //       console.log('模板列表数据',res)
+ //     }else{
+ //       console.log('异常响应信息', res);
+ //     }
+ //   };
+ //   ajaxGetResource(params, callBack);
+ // }
+ /** [postModal 添加诊疗模板信息] */
+ postModal=()=>{
+  let data={
+    "allergichistory": "1",
+    "billid": 0,
+    "breath": 0,
+    "buDiagnosisInfoTemplet": {
+        "buDiagnosisTempletList": [
+            {
+                "buDiagnosisDismainfTempletList": [
+                    {
+                      "ctstamp": "2018-10-22T03:36:17.854Z",
+                      "diagnosisid": 0,
+                      "diseaseid": 0,
+                      "id": 0,
+                      "manifcode": "1",
+                      "manifdesc": "1",
+                      "manifid": 0,
+                      "manifname": "1",
+                      "registerid": window.registerID,
+                      "useflag": "1",
+                      "utstamp": "2018-10-22T03:36:17.854Z"
+                    }
+                ],
+                "cmDiagnosisType": 0,
+                "codetype": "1",
+                "ctstamp": "2018-10-22T03:36:17.854Z",
+                "diagnosisCode": 0,
+                "diagnosisName": "1",
+                "diagnosisNo": 0,
+                "diagnosisType": 0,
+                "diagnosisWay": 0,
+                "diagnosisid": 0,
+                "discode": "1",
+                "disdesc": "1",
+                "diseaseid": 0,
+                "disname": "1",
+                "doubtDiaType": "1",
+                "mainDiaType": "1",
+                "registerid":window.registerID,
+                "seqno": 0,
+                "temmanageid": 0,
+                "useflag": "1",
+                "utstamp": "2018-10-22T03:36:17.855Z"
+            }
+        ],
+        "cardno": "1",
+        "ctstamp": "2018-10-22T03:36:17.855Z",
+        "deptid": 0,
+        "diagnosisDesc": "1",
+        "doctorid": 0,
+        "doctorname": "1",
+        "id": 0,
+        "orgid": window.sessionStorage.getItem('orgid'),
+        "patientid":   window.sessionStorage.getItem('userid'),
+        "patientname":  window.sessionStorage.getItem('username'),
+        "patientno": "1",
+        "registerid": 0,
+        "registerno": "1",
+        "temmanageid": 0,
+        "useflag": "1",
+        "utstamp": "2018-10-22T03:36:17.855Z"
+    },
+    "buTempletManage": {
+        "buTempletManageList": [  {}   ],
+        "cityid": 0,
+        "createuserName": window.sessionStorage.getItem('username'),
+        "creatuserid":  window.sessionStorage.getItem('userid'),
+        "ctstamp": "2018-10-22T03:36:17.855Z",
+        "diseaseid": 0,
+        "distid": 0,
+        "isleaf": "1",
+        "isperson": "01",
+        "orgid":window.sessionStorage.getItem('orgid'),
+        "parentid": 7,
+        "parentids": "1",
+        "personid": 0,
+        "pinyin": "1",
+        "provid": 0,
+        "remarks": "1",
+        "temcode": "1",
+        "temdes": "1",
+        "temlevel": "1",
+        "temlevelDic": "1",
+        "temmanageid": 0,
+        "temname": this.state.temname,
+        "temtype": "0",
+        "useflag": "1",
+        "utstamp": "2018-10-22T03:36:17.855Z",
+        "weight": 0
+    },
+    "casetype": this.state.finalObj.casetype,
+    "chfingerprint": this.state.initData.chfingerprint,
+    "ctstamp": "2018-10-22T03:36:17.855Z",
+    "deptid": window.sessionStorage.getItem('deptid'),
+    "diastolicPressure": this.state.finalObj.diastolicPressure,
+    "doctorid":  window.sessionStorage.getItem('userid'),
+    "doctorname":  window.sessionStorage.getItem('username'),
+    "facephoto": "1",
+    "familyhistory":this.state.finalObj.familyhistory,
+    "gestationalWeeks": 0,
+    "heightnum":this.state.finalObj.heightnum,
+    "hpi":this.state.finalObj.hpi,
+    "inspection": "02",
+    "isperiod": "02",
+    "ispregnancy": this.state.finalObj.inspection,
+    "moHistory": this.state.finalObj.moHistory,
+    "orgid":window.sessionStorage.getItem('orgid'),
+    "palpation": this.state.finalObj.palpation,
+    "pasthistory": this.state.finalObj.pasthistory,
+    "personhistory": this.state.finalObj.personhistory,
+    "pridepict": this.state.finalObj.pridepict,
+    "psycheck":  this.state.finalObj.psycheck,
+    "pulse":  this.state.finalObj.pulse,
+    "registerid": window.registerID,
+    "sidephoto": this.state.finalObj.sidephoto,
+    "smelling":this.state.finalObj.smelling,
+    "suggession":this.state.finalObj.suggession,
+    "syndrome":this.state.finalObj.syndrome,
+    "systolicPressure": this.state.finalObj.systolicPressure,
+    "temperature": this.state.finalObj.temperature,
+    "treatprinciple":  this.state.finalObj.treatprinciple,
+    "treatway": this.state.initData.treatway,
+    "useflag": "1",
+    "utstamp": "2018-10-22T03:36:17.855Z",
+    "weightnum": this.state.finalObj.weightnum,
+  }
+  // console.log( JSON.stringify(data));
+   let params = {
+     url: "BuPatientCaseTempletController/postData",
+     data: JSON.stringify(data),
+     type: 'post' ,
+   };
+   function callBack(res){
+     if(res.result){
+      console.log('ok111111111111111');
+     }else{
+       console.log('异常响应信息', res);
+     }
+   };
+   ajaxGetResource(params, callBack);
+   this. handleCancel();
+ }
+ /** [onChange 获取弹出层中输入框的数据] */
+ onChange=(e)=>{
+   this.setState({temname:e.target.value})
+ }
   render() {
     let { saved, caseItems, tabIndex, initData } = this.state;
     const { getFieldDecorator, setFieldsValue, getFieldsValue } = this.props.form;
@@ -364,8 +563,6 @@ class Index extends Component {
               if(item.targetid == 10 && item.isChoose == '01'){
                 return <FeelCure ref={ ref => { this.fellCure = ref }} hideObseverCure={this.hidePopComponent} key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
               }
-              if(item.targetid == 11 && item.isChoose == '01'){ // 小儿脉象
-              }
               if(item.targetid == 12 && item.isChoose == '01'){
                 return <SmellCure key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.smelling}></SmellCure>
               }
@@ -388,6 +585,12 @@ class Index extends Component {
                 return <DocAdvice key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.suggession}></DocAdvice>
               }
             })
+          }{
+            caseItems.map((item, index) => {
+              if(item.targetid == 11 && item.isChoose == '01'){ // 小儿脉象
+                return <CarefulItem key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{ isperiod: initData.isperiod, ispregnancy: initData.ispregnancy, gestationalWeeks: initData.gestationalWeeks}}></CarefulItem>
+              }
+            })
           }
           {
             !caseItems.length ? null :
@@ -395,7 +598,7 @@ class Index extends Component {
               <Col span={14}>
                 <SureButton type="primary" htmlType="submit" disabled={!window.modifyPermission}>保存</SureButton>
                 <BorderButton type="primary" onClick={this.handleReset}>打印</BorderButton>
-                <BorderButton type="primary" onClick={this.handleReset}>另存成模板</BorderButton>
+                <BorderButton type="primary" onClick={this.showModal}>另存成模板</BorderButton>
               </Col>
               <Saving span={10}>
                 {
@@ -418,7 +621,7 @@ class Index extends Component {
           <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
           </ScrollArea>
         </SpecForm>
-        <Modal>
+        <Modals>
         {
           tabIndex == 1 ?
           (
@@ -454,7 +657,22 @@ class Index extends Component {
             </SpecTabs>
           )
         }
-        </Modal>
+        </Modals>
+        <SpeModal title="添加病例模板" visible={this.state.visible} onOk={this.handleOk} onCancel={this.handleCancel} footer={false}>
+           <FormItems>
+             <span style={{marginRight:"5px"}}>模板目录 :</span>
+           <Inputs value={"病例模板>我的模板"} disabled={true}/>
+           </FormItems>
+           <FormItems>
+             <span style={{marginRight:"5px"}}>模板名称 :</span>
+           <Inputs onChange={this.onChange}/>
+           </FormItems>
+           <FormItems>
+             <SureButton htmlType="submit" onClick={this.postModal}>保存</SureButton>
+            <CancelButton onClick={this.handleCancel}>取消</CancelButton>
+           </FormItems>
+
+        </SpeModal>
       </Container>
     );
   }
@@ -475,7 +693,7 @@ const SpecForm = styled(Form)`
     margin-bottom: 0px !important;
   }
 `;
-const Modal = styled.div`
+const Modals = styled.div`
   border: 1px solid rgba(204, 204, 204, 1);
   width: 426px;
 `;
@@ -528,6 +746,52 @@ const Saving = styled(Col)`
 const SureButton = styled(Button)`
   ${buttonSty.semicircle}
 `;
+const CancelButton = styled(Button)`
+  ${buttonSty.gray}
+`;
+const SpeModal =styled(Modal)`
+  width: 600px !important;
+   .ant-modal-content{
+     border-top-left-radius: 14px  ;
+     border-top-right-radius:14px ;
+     .ant-modal-header{
+       background-color: #0a6ecb !important;
+       font-size: 14px;
+       height: 36px; !important;
+       border-top-left-radius: 13px;
+       border-top-right-radius:13px;
+       border-bottom:none !important;
+       .ant-modal-title{
+         line-height:3px;
+         color: #fff !important;
+       }
+     }
+     .ant-modal-close{
+       .ant-modal-close-x{
+          width: 24px !important;
+          height: 24px !important;
+          line-height: 24px !important;
+          font-size: 16px;
+          border-radius: 50%;
+          background-color: #6ab5e4;
+          margin-top: 6px;
+          margin-right: 10px;
+          color: #fff;
+          text-align: center;
+       }
+       }
+   }
+`;
+const FormItems =styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 0px 20px;
+`
+const Inputs=styled(Input)`
+  width: 436px !important;
+`
 /*
 @作者：姜中希
 @日期：2018-06-25

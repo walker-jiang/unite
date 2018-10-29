@@ -7,32 +7,36 @@ const FormItem = Form.Item;
 
 export default class Index extends Component {
   render() {
-    const { getFieldDecorator, formItemLayout, initialValue, isRequired} = this.props;
+    const { getFieldDecorator, formItemLayout, initialValue, isRequired = false} = this.props;
     return (
       <Row>
         <Col span={24}>
-          <FormItem
+          <SpecFormItem
+            isRequired={isRequired}
             {...formItemLayout}
             colon={false}
             label="主诉："
           >
           {getFieldDecorator('pridepict', {
-            rules: [{
-              required: isRequired, message: '请输入主症',
-            }],
             initialValue: initialValue,
           })(
             <PrimarySymptomPop />
           )}
-          </FormItem>
+        </SpecFormItem>
         </Col>
       </Row>
     );
   }
 }
-const SpecRow = styled(Row)`
-  .ant-form-item {
-    margin-bottom: 10px;
+const SpecFormItem = styled(FormItem)`
+  &&& .ant-form-item-label > label:before {
+    display: ${props => props.isRequired ? 'inline-block' : 'none'};
+    margin-right: 4px;
+    content: "*";
+    font-family: SimSun;
+    line-height: 1;
+    font-size: 14px;
+    color: #f5222d;
   }
 `;
 /*

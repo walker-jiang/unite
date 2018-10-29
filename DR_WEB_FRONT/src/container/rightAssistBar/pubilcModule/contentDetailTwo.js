@@ -23,28 +23,45 @@ class ContentDetailTwoItem extends Component {
     console.log("临证加减为========",content);
     return (
       <div style={{marginBottom:-18}}>
-        <div className="content-detail-two-Button">
+        <div className="content-detail-two-Button" style={{marginRight:10}}>
           <Button onClick={()=>{ this.props.getcmdrugs(this.props.item) }}>引入</Button>
         </div>
-        <span className="content-detail-two-Button-p" onClick={()=>{ this.unfoldAll(isUnfoldAll) }}>
-          收起<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" />
+        <span className="content-detail-two-Button-p" onClick={()=>{ this.unfoldAll(isUnfoldAll) }} style={{marginRight:10}}>
+          {
+            isUnfoldAll
+            ?
+            <span>收起<Icon type={"down"} theme="outlined" /></span>
+            :
+            <span>展开<Icon type={"double-left"} theme="outlined" /></span>
+          }
         </span>
         <hr/>
         {
           isUnfoldAll
           ?
-          content.map((item,index)=>{
-            return(
-              <div className="content-detail-two-div" key={index}>
-                <p>{index+1}.病情：</p>
-                <p>{item.severity?item.severity:"无"}</p>
-                <p>加减药：</p>
-                <p>{item.drugNamesList?item.drugNamesList:"无"}</p>
-                <Button onClick={()=>{ this.props.getcmdrugsOne(item) }}>引入</Button>
-                <hr className="hr2"/>
-              </div>
-            )
-          })
+          <div>
+            <Row style={{fontSize:12,fontWeight:700,color:'#0A6ECB',marginLeft:4,marginBottom:2,marginTop:-5}}><Icon type={"right"}/>临证加减（+/-）：</Row>
+            <div>
+              {content.map((item,index)=>{
+                return(
+                  <div className="content-detail-two-div" key={index}>
+                    <p>{index+1}.病情：</p>
+                    <p>{item.severity?item.severity:"无"}</p>
+                    <Row>
+                      <Col span={20}>
+                        <p style={{marginLeft:10}}>加减药：</p>
+                        <p>{item.drugNamesList?item.drugNamesList:"无"}</p>
+                      </Col>
+                      <Col span={4}>
+                        <Button style={{marginTop:-5}} onClick={()=>{ this.props.getcmdrugsOne(item) }}>引入</Button>
+                      </Col>
+                    </Row>
+                    <hr className="hr2"/>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
           :
           null
         }
@@ -60,6 +77,7 @@ export default class ContentDetail extends Component {
     super(props);
     this.state = {
       drugName:false,
+      freqname:false,
       treatname:false,
       therapy:false,
       four:false,
@@ -77,6 +95,7 @@ export default class ContentDetail extends Component {
   unfold = (number,isUnfold) =>{
     switch (number) {
       case "drugName":this.setState({drugName:!isUnfold});break;
+      case "freqname":this.setState({freqname:!isUnfold});break;
       case "treatname":this.setState({treatname:!isUnfold});break;
       case "therapy":this.setState({therapy:!isUnfold});break;
       case "buImlistEntities":this.setState({buImlistEntities:!isUnfold});break;
@@ -91,8 +110,8 @@ export default class ContentDetail extends Component {
     if(value == "" || value == null || JSON.stringify(value) == "undefined" ){
       return "无";//空格占位
     }else{
-      if(value.length > 24){
-        return value.substr(0,24)+"...";
+      if(value.length > 35){
+        return value.substr(0,35)+"...";
       }else{
         return value;
       }
@@ -104,8 +123,10 @@ export default class ContentDetail extends Component {
   }
   getcmdrugs = () =>{
     var self = this;
+    var item = self.props.item;
+    item['buImlistEntities'] = [];
     let params = {
-      imtreatprelist:JSON.stringify(self.props.item),
+      imtreatprelist:JSON.stringify(item),
       bu:self.props.bu
     };
     function callBack(res){
@@ -122,14 +143,12 @@ export default class ContentDetail extends Component {
   getcmdrugsOne = (getcmdrugsOne) => {
     var self = this;
     var item = self.props.item;
+    console.log("self.props.item=========",self.props.item);
+    console.log("getcmdrugsOne=========",getcmdrugsOne);
     //数组组装
-    if(!!item){
+    if(item){
       var newArr = [];
-      item.forEach((item,index)=>{
-        if(item.id == getcmdrugsOne.id){
-          newArr.push(item);
-        }
-      })
+      newArr.push(getcmdrugsOne);
       item['buImlistEntities'] = newArr;
       let params = {
         imtreatprelist:JSON.stringify(item),
@@ -148,22 +167,27 @@ export default class ContentDetail extends Component {
     }
   }
   render() {
-    var { isCut, isUnfoldAll, drugName, treatname, therapy, four, buImlistEntities, item, unfold  } = this.state;
-    console.log("this.props.item====",item.therapy == "");
+    var { isCut, isUnfoldAll, drugName, treatname, therapy, freqname, buImlistEntities, item, unfold  } = this.state;
+    console.log("this.props.item====",item.baUsage);
     return (
       <div>
-        <div className="content-detail-two" style={{paddingBottom:item.priors == "1"?10:25}}>
-          <p onClick={()=>this.unfold("drugName",drugName)}><Icon type={drugName?"down":"right"}/>主方：</p>
+        <div className="content-detail-two" style={{paddingBottom:item.priors == "1"?10:5}}>
+          <p onClick={()=>this.unfold("drugName",drugName)}>
+            {item.drugName.length>35?<p><Icon type={drugName?"down":"right"}/>主方：</p>:<p style={{marginLeft:15}}>主方：</p>}
+          </p>
           <p>{ drugName?(item.drugName == ""?"无":item.drugName):this.cutOut(item.drugName) }</p>
-          <p onClick={()=>this.unfold("treatname",treatname)}><Icon type={treatname?"down":"right"}/>主治：</p>
+          <p onClick={()=>this.unfold("treatname",treatname)}>
+            {item.treatname.length>35?<p><Icon type={treatname?"down":"right"}/>主治：</p>:<p style={{marginLeft:15}}>主治：</p>}
+          </p>
           <p>{ treatname?(item.treatname == ""?"无":item.treatname):this.cutOut(item.treatname) }</p>
-          <p onClick={()=>this.unfold("therapy",therapy)}><Icon type={therapy?"down":"right"}/>治则治法：</p>
+          <p onClick={()=>this.unfold("therapy",therapy)}>
+            {item.therapy.length>25?<p><Icon type={therapy?"down":"right"}/>治则治法：</p>:<p style={{marginLeft:15}}>治则治法：</p>}
+          </p>
           <p>{ therapy?(item.therapy == ""?"无":item.therapy):this.cutOut(item.therapy) }</p>
-          {/*
-            <p onClick={()=>this.unfold("four",four)}><Icon type={four?"down":"right"}/>用法/频次：</p>
-            <p>{ four?item.four:this.cutOut(item.four) }</p>
-          */}
-          <p onClick={()=>this.unfold("buImlistEntities",buImlistEntities)}><Icon type={buImlistEntities?"down":"right"}/> 临证加减（+/-）：</p>
+          <p onClick={()=>this.unfold("freqname",freqname)}>
+            {item.freqname && item.freqname.length>25?<p><Icon type={freqname?"down":"right"}/>用法/频次：</p>:<p style={{marginLeft:15}}>用法/频次：</p>}
+          </p>
+          <p>{item.baUsage?item.baUsage.usagename:"无"}/{item.freqname?item.freqname:"无"}</p>
           {
             item.priors == "1"
             ?
@@ -177,8 +201,7 @@ export default class ContentDetail extends Component {
             />
             :
             <div style={{fontSize:12}}>
-              <p style={{color:'#333333',fontWeight:500}}>无</p>
-              <div className="content-detail-two-Button">
+              <div className="content-detail-two-Button" style={{marginTop:-24,marginRight:10}}>
                 <Button onClick={()=>{ this.getcmdrugs(item) }}>引入</Button>
               </div>
             </div>

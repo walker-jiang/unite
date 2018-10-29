@@ -42,7 +42,6 @@ class PersonalInformationSettings extends React.Component{
           console.log('postv,posti',postv,posti);
           console.log('data.post == postv.value111',data.post,postv.value);
           if(data.post == postv.value){
-            console.log('111111111111');
             this.props.form.setFieldsValue({
               "userName":data.orgUserno,
               "realName":data.realname,
@@ -122,7 +121,7 @@ class PersonalInformationSettings extends React.Component{
         url: 'BaOrguserController/putData',
         type: 'put',
         data: JSON.stringify(date),
-        server_url:'http://219.234.5.58:8086/'
+        server_url:config_service_url
       }
       let that = this;
       function success(res) {
@@ -151,7 +150,7 @@ class PersonalInformationSettings extends React.Component{
     let self = this;
     let params = {
       url: 'BaOrguserController/getData',
-      server_url:'http://219.234.5.58:8086/',
+      server_url:config_service_url,
       data: {
         orgUerid: id,
       },
@@ -181,7 +180,7 @@ class PersonalInformationSettings extends React.Component{
      },
    };
    const this_ =this;
-   let config_service_url='http://219.234.5.58:8086/';
+   // let config_service_url='http://219.234.5.58:8086/';
    const props = {
      action: config_service_url + 'BaUploadController/upload',
      data: {

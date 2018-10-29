@@ -14,12 +14,13 @@ import PieChart from "./Chart/pieChart.js";
 import LineChart from "./Chart/lineChart.js";
 import Ajax from '../../../../util/commonFunction/ajaxGetResource';
 import Post from '../../../rightAssistBar/service/xhr/index.js';
+import styled from 'styled-components';
 class Home extends React.Component {
 
   constructor(props) {
     super(props);
       this.state = {
-          show:false,//拉灯
+          show:true,//拉灯
           set:false,//定住
           daTa:'',//今日接诊总量
           daTa0:'',//今日首诊总量
@@ -49,7 +50,6 @@ class Home extends React.Component {
       doctorid:window.sessionStorage.getItem('userid'),
       casetype:'',
     }
-    // console.log('pathname',data);
     const params = {
       type:'get',
       dataType:'JSON',
@@ -64,7 +64,6 @@ class Home extends React.Component {
 
     var this_=this;
     function scallBack(res){
-      console.log('今日接诊总量:',res);
       this_.setState({
         daTa:res.data
       },()=>{
@@ -72,7 +71,6 @@ class Home extends React.Component {
       });
     }
     function ecallback(res){
-      console.log('errorres',res);
     }
     //今日首诊总量
     var data0 ={
@@ -92,15 +90,12 @@ class Home extends React.Component {
     }
     Ajax(params0,scallBack0,ecallback0);
     function scallBack0(res){
-      console.log('今日首诊总量:',res);
       this_.setState({
         daTa0:res.data
-      },()=>{
-          // this_.upData()
       });
     }
     function ecallback0(res){
-      console.log('errorres',res);
+      console.log('今日首诊总量:',res);
     }
     //今日复诊总量
     var data1 ={
@@ -120,15 +115,12 @@ class Home extends React.Component {
     }
     Ajax(params1,scallBack1,ecallback1);
     function scallBack1(res){
-      console.log('今日复诊总量:',res);
       this_.setState({
         daTa1:res.data
-      },()=>{
-          // this_.upData()
       });
     }
     function ecallback1(res){
-      console.log('errorres',res);
+      console.log('今日复诊总量:',res);
     }
     //首页接诊信息列表请求
     var jzdata = {
@@ -152,14 +144,13 @@ class Home extends React.Component {
     Ajax(jzparams,jzcsallBack,jzecallback);
     var data1 =[],this_=this;
     function jzcsallBack(res){
-      console.log('jzcsallBack',res);
       this_.setState({
         data2:res.data.records,
         allpatientnum:res.data.records.length
       },()=>{this_.render});
     }
     function jzecallback(res){
-      console.log('jzecallback',res);
+      console.log('首页接诊信息列表请求接诊中:',res);
     }
 
     //待接诊
@@ -184,13 +175,12 @@ class Home extends React.Component {
     Ajax(djzparams,djzcsallBack,djzecallback);
     var data =[],this_=this;
     function djzcsallBack(res){
-      console.log('djzcsallBack',res);
       this_.setState({
         data:res.data.records
       },()=>{this_.render});
     }
     function djzecallback(res){
-      console.log('djzecallback',res);
+      console.log('首页接诊信息列表请求待接诊',res);
     }
     //已完成
     var ywcdata = {
@@ -200,7 +190,7 @@ class Home extends React.Component {
       doctorid:window.sessionStorage.getItem('userid'),
       beginTime:st1,
       endTime:st,
-      rcStatus:2 //待接诊
+      rcStatus:2 //已完成
     }
     const ywcparams = {
       type:'get',
@@ -214,14 +204,13 @@ class Home extends React.Component {
     Ajax(ywcparams,ywccsallBack,ywcecallback);
     var data =[],this_=this;
     function ywccsallBack(res){
-      console.log('ywccsallBack',res);
       this_.setState({
         data3:res.data.records
       },()=>{this_.render});
 
     }
     function ywcecallback(res){
-      console.log('ywcecallback',res);
+      console.log('首页接诊信息列表请求已完成',res);
     }
   }
   changeMenuItem=(value)=>{
@@ -231,7 +220,22 @@ class Home extends React.Component {
   callback=(key)=> {
     console.log('121212121212',key);
   }
+  //把子组件this指向传过来
+  onRef=(ref)=>{
+    this.PieChart=ref;
+  }
+  ronRefs=(ref)=>{
+    this.LineChart=ref;
+  }
+  //LineChart 本日 月 年 就诊患者疾病占比分析数据
+  onChanges=(e)=>{
+    this.LineChart.linechartDate(e.target.value);
+    console.log(`linechartDate:${e.target.value}`);
+  }
+  //PieChart本日 月 年 就诊患者疾病占比分析
   onChange=(e)=>{
+    // this.setState({selectTime:e.target.value});
+    this.PieChart.piechartDate(e.target.value);
     console.log(`radio checked:${e.target.value}`);
   }
   deng=()=>{
@@ -263,8 +267,6 @@ class Home extends React.Component {
   };
   //接诊跳转
   jzAct=(rec)=>{
-    console.log('thisthisthisthis',rec);
-    console.log('this.state.data',this.state.data);
     if(rec.registerid){
       let path = {
         pathname: '/layout/treatment/' + rec.patientid,
@@ -274,7 +276,6 @@ class Home extends React.Component {
       window.patientID = rec.patientid;
       this.modifyRcState(1, rec.registerid);
       // 跳转到接诊界面
-      console.log('self.props',this.props);
       this.props.history.push(path);
     }else{
       console.log('异常响应信息', res);
@@ -291,7 +292,6 @@ class Home extends React.Component {
       window.patientID = rec.patientid;
       window.modifyPermission = 1;
       // 跳转到接诊界面
-      console.log('self.props',this.props);
       this.props.history.push(path);
     }else{
       console.log('异常响应信息', res);
@@ -308,7 +308,6 @@ class Home extends React.Component {
       window.patientID = rec.patientid;
       window.modifyPermission = 1;
       // 跳转到接诊界面
-      console.log('self.props',this.props);
       this.props.history.push(path);
     }else{
       console.log('异常响应信息', res);
@@ -358,7 +357,6 @@ class Home extends React.Component {
     const this_=this;
     var style=!this.state.set?{
           width:"30%",
-          minWidth:"346px",
           left:"70%",
           borderTop:"1px solid #ccc",
           borderLeft:"1px solid #ccc",
@@ -366,240 +364,101 @@ class Home extends React.Component {
           marginLeft:"25px",
           padding:"20px",
           position:"absolute",
-          top:`${this.state.show?"-20px":"-1000px"}`,
+          top:`${this.state.show?"0px":"-1000px"}`,
           background:"#fff",
           zIndex:"1",
           transition:"top .5s"}:{
             width:"28%",float:"left",background:"",minWidth:"346px",borderLeft:"1px solid #CCCCCC",marginLeft:"20px",padding:"0 0 0 20px"
           }
 
-    // const columns = [
-    //       {
-    //         title: '患者姓名',
-    //         dataIndex: 'patientname',
-    //         width:"8%",
-    //         render:(text,record)=>{
-    //           if(record.sexDic == '男'){
-    //             return(
-    //               <span><i className="iconfont1" style={{color:'#4ACF2B'}} >&#xe6b5;</i>{text}</span>
-    //             )
-    //           }else{
-    //             return(
-    //               <span><i className="iconfont1" style={{color:'#F0A52B'}} >&#xe6b6;</i>{text}</span>
-    //             )
-    //           }
-    //
-    //         }
-    //       },
-    //       {
-    //         title: '患者编号',
-    //         dataIndex: 'patientid',
-    //           width:"11%"
-    //       },
-    //       {
-    //         title: '性别',
-    //         dataIndex: 'sexDic',
-    //           width:"6%"
-    //       },
-    //       {
-    //         title: '年龄',
-    //         dataIndex: 'birthday',
-    //           width:"6%",
-    //           render:(text,record)=>{
-    //             const bir=record.birthday.split(' ',1)
-    //             var age=this_.ages(bir[0]);
-    //             return  age
-    //           }
-    //       },
-    //       {
-    //         title: '手机号',
-    //         dataIndex: 'mobile',
-    //           width:"11%"
-    //       },
-    //       {
-    //         title: '身份证号',
-    //         dataIndex: 'cardno',
-    //           width:"12%"
-    //       },
-    //       {
-    //         title: '患者类型',
-    //         dataIndex: 'patienttypeDic',
-    //           width:"8%"
-    //       },
-    //       {
-    //         title: '就诊类型',
-    //         dataIndex: 'casetypeDic',
-    //           width:"7%"
-    //       },
-    //       {
-    //         title: '就诊科室',
-    //         dataIndex: 'deptid',
-    //           width:"7%"
-    //       },
-    //       {
-    //         title: '就诊医生',
-    //         dataIndex: 'recDoctorname',
-    //           width:"7%"
-    //       },
-    //       {
-    //         title: '登记时间',
-    //         dataIndex: 'regDate',
-    //         width:"11%"
-    //       },
-    //       {
-    //         title: '操作',
-    //         dataIndex: 's',
-    //           width:"6%",
-    //         render:(test,record)=>{
-    //           console.log('recordrecord',record);
-    //           return (
-    //             <div style={{color:"#3366ff",cursor:'pointer'}} onClick={this.jzAct.bind(this, record)}>接诊</div>
-    //           )
-    //         }
-    //       }
-    //     ];
-    //   const data = this.state.data;
+    const columns = [
+        {
+          title: '患者姓名',
+          dataIndex: 'patientname',
+          width:"8%",
+          render:(text,record)=>{
+            if(record.sexDic == '男'){
+              return(
+                <span><i className="iconfont1" style={{color:'#4ACF2B'}} >&#xe6b5;</i>{text}</span>
+              )
+            }else{
+              return(
+                <span><i className="iconfont1" style={{color:'#F0A52B'}} >&#xe6b6;</i>{text}</span>
+              )
+            }
 
-    const data = [{
-      key: '1',
-      name: '胡彦斌',
-      age: 32,
-      address: '西湖区湖底公园1号'
-    }, {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号'
-      }, {
-        key: '1',
-        name: '胡彦斌',
-        age: 32,
-        address: '西湖区湖底公园1号'
-      }, {
-        key: '2',
-        name: '胡彦祖',
-        age: 42,
-        address: '西湖区湖底公园1号'
-      },{
-      key: '1',
-      name: '胡彦斌',
-      age: 32,
-      address: '西湖区湖底公园1号'
-    }, {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号'
-    },{
-      key: '1',
-      name: '胡彦斌',
-      age: 32,
-      address: '西湖区湖底公园1号'
-    }, {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号'
-    },{
-      key: '1',
-      name: '胡彦斌',
-      age: 32,
-      address: '西湖区湖底公园1号'
-    }, {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号'
-      }, {
-        key: '1',
-        name: '胡彦斌',
-        age: 32,
-        address: '西湖区湖底公园1号'
-      }, {
-        key: '2',
-        name: '胡彦祖',
-        age: 42,
-        address: '西湖区湖底公园1号'
-      },{
-        key: '1',
-        name: '胡彦斌',
-        age: 32,
-        address: '西湖区湖底公园1号'
-      }, {
-        key: '2',
-        name: '胡彦祖',
-        age: 42,
-        address: '西湖区湖底公园1号'
-      },{
-        key: '1',
-        name: '胡彦斌',
-        age: 32,
-        address: '西湖区湖底公园1号'
-      }, {
-        key: '2',
-        name: '2',
-        age: 42,
-        address: '西湖区湖底公园1号'
-      },{
-      key: '1',
-      name: '胡彦斌',
-      age: 32,
-      address: '西湖区湖底公园1号'
-    }, {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号'
-    },{
-      key: '1',
-      name: '5',
-      age: 32,
-      address: '西湖区湖底公园1号'
-    }, {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号'
-    },{
-      key: '1',
-      name: '胡彦斌',
-      age: 32,
-      address: '西湖区湖底公园1号'
-    }, {
-      key: '2',
-      name: '胡彦祖',
-      age: 42,
-      address: '西湖区湖底公园1号'
-      }, {
-        key: '1',
-        name: '胡彦斌',
-        age: 32,
-        address: '西湖区湖底公园1号'
-      }, {
-        key: '2',
-        name: '7',
-        age: 42,
-        address: '西湖区湖底公园1号'
-      }
-  ];
+          }
+        },
+        {
+          title: '患者编号',
+          dataIndex: 'patientid',
+            width:"11%"
+        },
+        {
+          title: '性别',
+          dataIndex: 'sexDic',
+            width:"6%"
+        },
+        {
+          title: '年龄',
+          dataIndex: 'birthday',
+            width:"6%",
+            render:(text,record)=>{
+              const bir=record.birthday.split(' ',1)
+              var age=this_.ages(bir[0]);
+              return  age
+            }
+        },
+        {
+          title: '手机号',
+          dataIndex: 'mobile',
+            width:"11%"
+        },
+        {
+          title: '身份证号',
+          dataIndex: 'cardno',
+            width:"12%"
+        },
+        {
+          title: '患者类型',
+          dataIndex: 'patienttypeDic',
+            width:"8%"
+        },
+        {
+          title: '就诊类型',
+          dataIndex: 'casetypeDic',
+            width:"7%"
+        },
+        {
+          title: '就诊科室',
+          dataIndex: 'deptid',
+            width:"7%"
+        },
+        {
+          title: '就诊医生',
+          dataIndex: 'recDoctorname',
+            width:"7%"
+        },
+        {
+          title: '登记时间',
+          dataIndex: 'regDate',
+          width:"11%"
+        },
+        {
+          title: '操作',
+          dataIndex: 's',
+            width:"6%",
+          render:(test,record)=>{
+            console.log('recordrecord',record);
+            return (
+              <div style={{color:"#3366ff",cursor:'pointer'}} onClick={this.jzAct.bind(this, record)}>接诊</div>
+            )
+          }
+        }
+    ];
+      const data = this.state.data;
 
-    const columns = [{
-      title: '姓名',
-      dataIndex: 'name',
-      key: 'name',
-    }, {
-      title: '年龄',
-      dataIndex: 'age',
-      key: 'age',
-    }, {
-      title: '住址',
-      dataIndex: 'address',
-      key: 'address',
-    }
-  ];
-
-
-    const columns2 = [
+      const columns2 = [
           {
             title: '患者姓名',
             dataIndex: 'patientname',
@@ -670,8 +529,8 @@ class Home extends React.Component {
         ];
       const data2 = this.state.data2;
 
-    //已完成
-    const columns3 = [
+      //已完成
+      const columns3 = [
           {
             title: '患者姓名',
             dataIndex: 'patientname',
@@ -741,91 +600,131 @@ class Home extends React.Component {
           }
         ];
       const data3 = this.state.data3;
-    return (
-    <div>
-      <div id="deng" style={{
-          zIndex:'111111',
-          position:"absolute",
-          display:`${this.state.set?"none":"block"}`,
-          width:"28px",
-          height:"28px",
-          background:"#fff",
-          border:"3px solid #1675CD",
-          borderRadius:"50%",
-          textAlign:"center",
-          lineHeight:"28px",
-          zIndex:100,
-          top:`${this.state.show?"-10px":"13px"}`,
-          transition: "top, .5s",
-          left:"93%",
-          lineHeight:'22px',
-          transition:"all .5s"}}
-          onClick={this.deng}>
-          <span style={{position:"absolute",height:`${this.state.show?'12px':"33px"}`,width:"2px",background:"#797979",top:`${this.state.show?'-12px':"-36px"}`,left:"10px",transition: "height,top, .5s"}}>
-          </span>析
-      </div>
+      return (
+      <div>
 
-      <div className="home" style={{overflow:"auto",height:"100%",position:"relative",width:"100%",margin:'20px'}}>
-        <div style={{width:`${!this.state.set?"100%":"70%"}`,float:"left",background:""}}>
-        <Row className="fontStyle">
-          <Col xs={{ span: 5, offset: 1 }} lg={{ span: 7, offset: 0 }}>
-            <Card >
-              <p style={{color:'#666666',fontSize:'16px'}}>今日接诊总量</p>
-              <p style={{color:'#0A6ECB',fontSize:'28px'}}>{this.state.daTa?this.state.daTa:'0'}人</p>
-            </Card></Col>
-          <Col xs={{ span: 11, offset: 1 }} lg={{ span:7, offset: 1 }} style={{marginLeft:"6%"}}>
-            <Card>
-              <p>今日首诊总量</p>
-              <p>{this.state.daTa0?this.state.daTa0:'0'}人</p>
-            </Card>
-          </Col>
-          <Col xs={{ span: 5, offset: 1 }} lg={{ span: 7, offset: 1 }} style={{marginLeft:"6%"}}>
-            <Card>
-              <p>今日复诊总量</p>
-              <p>{this.state.daTa1?this.state.daTa1:'0'}人</p>
-            </Card>
-          </Col>
-        </Row>
-        <Row style={{fontSize:"18px",color:"#0A6ECB",fontFamily: "'Arial Normal', 'Arial'",margin:"20px 0 10px 0"}}>
-          <div className='dian'>今日门诊</div>
-        </Row>
-        <Row>
-          <HomeTabs columns={columns} data={data} columns2={columns2} data2={data2} columns3={columns3} data3={data3} date={this.state.data3.length}></HomeTabs>
-        </Row>
-        </div>
 
-        <div style={style}>
-              <Row style={{fontFamily: "'Microsoft Tai Le Negreta', 'Microsoft Tai Le Normal', 'Microsoft Tai Le'",
-                  fontWeight: 700,
-                  fontStyle: "normal",
-                  fontSize: "16px",
-                  color: "rgba(0, 0, 0, 0.847058823529412)",
-                  lineHeight:" 24px",
-                  borderBottom:"1px solid rgba(204, 204, 204, 1)"
-                }}>
-                  患者疾病占比<button onClick={this.dingzhu} style={{float:"right",width:"22px",height:"27px",border:'0px',background:"#fff",cursor: "pointer",outline:'none'}}
-                  >
-                  {this.state.set?<Icon type='Ding'/>:<Icon type='disDing'/>}
-                </button>
-              </Row>
+        <div className="home">
+          <div id="deng" style={{
+            position:"absolute",
+            display:`${this.state.set?"none":"block"}`,
+            width:"28px",
+            height:"28px",
+            background:"#fff",
+            border:"3px solid #1675CD",
+            borderRadius:"50%",
+            textAlign:"center",
+            lineHeight:"28px",
+            zIndex:100,
+            top:`${this.state.show?"10px":"33px"}`,
+            transition: "top .5s",
+            left:"93%",
+            lineHeight:'22px',
+            transition:"all .5s"}}
+            onClick={this.deng}>
+            <span style={{position:"absolute",height:`${this.state.show?'12px':"33px"}`,width:"2px",background:"#797979",top:`${this.state.show?'-12px':"-36px"}`,left:"10px",transition: "height,top, .5s"}}>
+            </span>析
+          </div>
+          <div style={{width:`${!this.state.set?"100%":"70%"}`,padding:'20px',float:"left",background:""}}>
+            <Row className="fontStyle">
+              <Col xs={{ span: 5, offset: 1 }} lg={{ span: 7, offset: 0 }}>
+                <Card >
+                  <p style={{color:'#666666',fontSize:'16px'}}>今日接诊总量</p>
+                  <p style={{color:'#0A6ECB',fontSize:'28px'}}>{this.state.daTa?this.state.daTa:'0'}人</p>
+                </Card></Col>
+              <Col xs={{ span: 11, offset: 1 }} lg={{ span:7, offset: 1 }} style={{marginLeft:"6%"}}>
+                <Card>
+                  <p>今日首诊总量</p>
+                  <p>{this.state.daTa0?this.state.daTa0:'0'}人</p>
+                </Card>
+              </Col>
+              <Col xs={{ span: 5, offset: 1 }} lg={{ span: 7, offset: 1 }} style={{marginLeft:"6%"}}>
+                <Card>
+                  <p>今日复诊总量</p>
+                  <p>{this.state.daTa1?this.state.daTa1:'0'}人</p>
+                </Card>
+              </Col>
+            </Row>
+            <Row style={{fontSize:"18px",color:"#0A6ECB",fontFamily: "'Arial Normal', 'Arial'",margin:"20px 0 10px 0"}}>
+              <div className='dian'>今日门诊</div>
+            </Row>
+            <Row>
+              <HomeTabs columns={columns} data={data} columns2={columns2} data2={data2} columns3={columns3} data3={data3} date={this.state.data3.length}></HomeTabs>
+            </Row>
+          </div>
 
-              <div  style={{overflow:"hidden"}}>
-                <RadioGroup onChange={this.onChange} defaultValue="a" size="small">
-                  <RadioButton value="a">全部</RadioButton>
-                  <RadioButton value="b">内科</RadioButton>
-                  <RadioButton value="c">肿瘤科</RadioButton>
-                </RadioGroup>
-                <PieChart></PieChart>
-              </div>
-              <div style={{borderTop:"1px solid #CCCCCC",overflow:"hidden"}}>
-                <div style={{border:"1px solid #ccc",marginTop:"20px",borderRadius:"4px"}}>
-                  <LineChart></LineChart>
+          <div style={style}>
+            <Row style={{fontFamily: "'Microsoft Tai Le Negreta', 'Microsoft Tai Le Normal', 'Microsoft Tai Le'",
+                fontWeight: 700,
+                fontStyle: "normal",
+                fontSize: "16px",
+                color: "rgba(0, 0, 0, 0.847058823529412)",
+                lineHeight:" 24px",
+                borderBottom:"1px solid rgba(204, 204, 204, 1)"
+              }}>
+                患者疾病占比<button onClick={this.dingzhu} style={{float:"right",width:"22px",height:"27px",border:'0px',background:"#fff",cursor: "pointer",outline:'none'}}
+                >
+                {this.state.set?<Icon type='ding'/>:<Icon type='disDing'/>}
+              </button>
+            </Row>
+
+            <div  style={{overflow:"hidden"}}>
+              <span>分析方式：</span>
+              <RadioGroups onChange={this.onChange} defaultValue="day" size="small">
+                <RadioButton className='leftbo' value="day">日</RadioButton>
+                <RadioButton value="month">月</RadioButton>
+                <RadioButton value="year">年</RadioButton>
+              </RadioGroups>
+              <PieChart onRef={this.onRef}></PieChart>
+            </div>
+            <Divline>
+              <div className='divlinechild'>
+                <div className='linechildren'>
+                  <span>分析方式：</span>
+                  <RadioGroups onChange={this.onChanges} defaultValue="day" size="small">
+                    <RadioButton className='leftbo' value="day">日</RadioButton>
+                    <RadioButton value="month">月</RadioButton>
+                    <RadioButton value="year">年</RadioButton>
+                  </RadioGroups>
                 </div>
+                <LineChart ronRef={this.ronRefs}></LineChart>
               </div>
+            </Divline>
+          </div>
         </div>
       </div>
-    </div>
-    );
+      );
+    }
   }
-}
 export default Home
+const RadioGroups = styled(RadioGroup)`
+  height:35px;
+  line-height:60px !important;
+  .ant-radio-button-wrapper{
+    margin-right:13px;
+    height:21px !important;
+    line-height:20px !important;
+    width:47px;
+    text-align:center;
+  }
+  .leftbo{
+    border-radius: 4px 0 0 4px;
+    margin-left:13px;
+  }
+`;
+const Divline = styled.div`
+  border-top:1px solid #CCCCCC;
+  overflow:hidden
+  .divlinechild{
+    position:relative;
+    margin-top:20px;
+    .linechildren{
+      position: absolute;
+      top: 45px;
+      left: 5px;
+    }
+    canvas{
+      margin-left: -35px;
+    }
+  }
+`;

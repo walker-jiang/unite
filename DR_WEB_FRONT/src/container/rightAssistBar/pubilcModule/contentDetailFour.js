@@ -18,31 +18,58 @@ class ContentDetailTwoItem extends Component {
   }
   render() {
     var { isUnfoldAll } = this.state;
-    const { content } = this.props;
-    console.log("临证加减为========",content);
+    var { content } = this.props;
+    console.log("content=====!!",content);
+    console.log("临证加减为========",content instanceof Array);
+    if(content instanceof Array){}else{
+      var newArr = [];
+      newArr.push(content);
+      content = newArr;
+    }
+    console.log("content=====数组",content);
     return (
-      <div style={{paddingBottom:-25}}>
+      <div style={{paddingBottom:-20}}>
         <div className="content-detail-two-Button">
-          <Button onClick={()=>{ this.props.getSt(this.props.item) }}>引入</Button>
+          <Button style={{marginTop:isUnfoldAll?-58:-45}} onClick={()=>{ this.props.getSt(this.props.item) }}>引入</Button>
         </div>
-        <span className="content-detail-two-Button-p" onClick={()=>{ this.unfoldAll(isUnfoldAll) }}>
-          收起<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" />
+        <span className="content-detail-two-Button-p" style={{marginTop:isUnfoldAll?-28:-22,marginRight:5}} onClick={()=>{ this.unfoldAll(isUnfoldAll) }}>
+          {
+            isUnfoldAll
+            ?
+            <span>收起<Icon type={"down"} theme="outlined"/></span>
+            :
+            <span>展开<Icon type={"double-left"} theme="outlined" /></span>
+          }
         </span>
-        <hr/>
+        { isUnfoldAll?<hr/>:null }
         {
           isUnfoldAll
           ?
-          content.map((item,index)=>{
-            return(
-              <div className="content-detail-two-div" key={index}>
-                <p>{index+1}.病情：</p>
-                <p>{item.symptom}</p>
-                <p>加减药：</p>
-                <p>{item.info}</p>
-                <hr className="hr2"/>
-              </div>
-            )
-          })
+          <div>
+            <Row style={{fontSize:12,fontWeight:700,color:'#0A6ECB',marginLeft:4,marginBottom:2,marginTop:-5}}><Icon type={"right"}/>临证加减（+/-）：</Row>
+            <div>
+              {
+                content.map((item,index)=>{
+                  return(
+                    <div className="content-detail-two-div" key={index}>
+                      <p>{index+1}.病情：</p>
+                      <p>{item.symptom?item.symptom:"无"}</p>
+                      <Row>
+                        <Col span={20}>
+                          <p>加减药：</p>
+                          <p>{item.info?item.info:"无"}</p>
+                        </Col>
+                        <Col span={4}>
+                          <Button style={{marginTop:-5}} onClick={()=>{ this.props.getStOne(this.props.item,item) }}>引入</Button>
+                        </Col>
+                      </Row>
+                      <hr className="hr2"/>
+                    </div>
+                  )
+                })
+              }
+            </div>
+          </div>
           :
           null
         }
@@ -120,22 +147,26 @@ export default class ContentDetail extends Component {
     var { isCut, isUnfoldAll, one, treatname, attention, four, five, six, seven, item, unfold  } = this.state;
     return (
       <div>
-        <div className="content-detail-two" style={{paddingBottom:25}}>
-          <p onClick={()=>this.unfold("one",one)}><Icon type={one?"down":"right"}/>取穴/部位：</p>
+        <div className="content-detail-two" style={{paddingBottom:item.priors == "1"?5:5}}>
+          <p onClick={()=>this.unfold("one",one)}>
+            {item.one && item.one.length>18?<p style={{marginLeft:3}}><Icon type={one?"down":"right"}/>取穴/部位：</p>:<p style={{marginLeft:15}}>取穴/部位：</p>}
+          </p>
           <p>{ one?(item.one == ""?"无":item.one):this.cutOut(item.one) }</p>
-          <p onClick={()=>this.unfold("treatname",treatname)}><Icon type={treatname?"down":"right"}/>主治：</p>
+          <p onClick={()=>this.unfold("treatname",treatname)}>
+            {item.treatname && item.treatname.length>18?<p style={{marginLeft:3}}><Icon type={treatname?"down":"right"}/>主治：</p>:<p style={{marginLeft:15}}>主治：</p>}
+          </p>
           <p>{ treatname?(item.treatname == ""?"无":item.treatname):this.cutOut(item.treatname) }</p>
-          <p onClick={()=>this.unfold("attention",attention)}><Icon type={attention?"down":"right"}/>操作方法：</p>
-          <p>{ attention?(item.attention == ""?"无":item.attention):this.cutOutTwo(item.attention) }</p>
-          <p onClick={()=>this.unfold("five",five)}><Icon type={five?"down":"right"}/> 临证加减（+/-）：</p>
+          <p onClick={()=>this.unfold("attention",attention)}>
+            {item.attention && item.attention.length>18?<p style={{marginLeft:3}}><Icon type={attention?"down":"right"}/>操作方法：</p>:<p style={{marginLeft:15}}>操作方法：</p>}
+          </p>
+          <p style={{marginRight:64}}>{ attention?(item.attention == ""?"无":item.attention):this.cutOutTwo(item.attention) }</p>
           {
             item.priors == "1"
             ?
-            <ContentDetailTwoItem getSt ={this.props.getSt} item={item} bu={this.props.bu} content={item.buMatchingAcupoints}/>
+            <ContentDetailTwoItem getStOne={this.props.getStOne} getSt ={this.props.getSt} item={item} bu={this.props.bu} content={item.buMatchingAcupoints}/>
             :
             <div style={{fontSize:12}}>
-              <p style={{color:'#333333',fontWeight:500}}>无</p>
-              <div className="content-detail-two-Button">
+              <div className="content-detail-two-Button" style={{marginTop:-24,marginRight:10}}>
                 <Button onClick={()=>{ this.props.getSt(item) }}>引入</Button>
               </div>
             </div>

@@ -6,24 +6,32 @@ export default class Index extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      details: this.props.details
+      details: this.props.details,
+      pulsekey:this.props.pulsekey,
     }
   }
   componentWillReceiveProps(nextProps) {
     this.setState({
-      details: nextProps.details
+      details: nextProps.details,
+      pulsekey:nextProps.pulsekey,
     })
   }
   render() {
-    let { details } = this.state
+    let { details,pulsekey } = this.state
+          console.log('数据1',details)
     let pulseCondition = this.props.pulseCondition;
+    let obj = {
+          type:"9",
+          searchValue:pulsekey,
+          searchType:1,
+        }
     return (
       <Container pulseCondition={pulseCondition}>
         <Colsed onClick={this.props.onClose}>
           <Icon type="close" />
         </Colsed>
         <Box dangerouslySetInnerHTML={{ __html:details}}></Box>
-        <Spantext>• 查看详细介绍 &lt;&lt;</Spantext>
+        <a href={config_BaiduEncyclopedia+"index1.html#/SearchDetailPage/"+JSON.stringify(obj)} target="view_window">• 查看详细介绍 &lt;&lt;</a>
       </Container>
     )
   }
@@ -42,9 +50,6 @@ const Container = styled.div`
 `
 const Box = styled.div`
   margin-top: 10px;
-`
-const Spantext = styled.span`
-  color: skyblue;
 `
 const Colsed = styled.div`
   position: absolute;

@@ -442,8 +442,8 @@ export default class Diagnose extends Component {
           {
             (curTab == 0)?
             <ChinaMedicine >
-              <AddIllBySymptom enterEvent={this.enterEvent} autofocus='autofocus' id='symptom'  ref={ref => this.addIllBySymptom = ref} placeholder='请输入病症中文关键字活拼音简写搜索' notify={this.getMessage}/>
-              <AddIllByManifestations enterEvent={this.enterEvent} id='manifestations' ref={ref => this.addIllByManifestation = ref} placeholder='请输入病侯中文关键字货拼音简写搜索' symptomId={symptomId}/>
+              <AddIllBySymptom enterEvent={this.enterEvent} autofocus='autofocus' id='symptom'  ref={ref => this.addIllBySymptom = ref} placeholder='请输入病症中文关键字或拼音简写搜索' notify={this.getMessage}/>
+              <AddIllByManifestations enterEvent={this.enterEvent} id='manifestations' ref={ref => this.addIllByManifestation = ref} placeholder='请输入病侯中文关键字或拼音简写搜索' symptomId={symptomId}/>
               <span>
                 <Button type="primary" shape="circle" onClick={() => { this.enterEvent('', 'manifestations') }} icon="plus"></Button>
               </span>

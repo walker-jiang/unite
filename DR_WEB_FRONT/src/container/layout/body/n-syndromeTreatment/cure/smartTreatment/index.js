@@ -7,6 +7,7 @@ import Diagnose from '../../../treatment/treatItem/drAdviceManage/diagnose';
 import TableGrid from './tableGrid';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
+import MedicalHistoryTwo from "../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
 import ChHerbalMedicine from '../../../treatment/treatItem/drAdviceManage/chHerbalMedicine';
 import ChPatentMedicine from '../../../treatment/treatItem/drAdviceManage/chPatentMedicine';
 import SuitTechnology from '../../../treatment/treatItem/drAdviceManage/suitTechnology';
@@ -35,13 +36,12 @@ export default class SmartTreatment extends Component {
   };
   /** [getOrderData 获取医嘱数据] */
   getOrderData(){
-    let registerid = this.props.registerid;
     let self = this;
     let params = {
       url: 'BuOrderController/getBuOrderByRegisterId',
       server_url: config_InteLigenTreat_url+'TCMAE/',
       data: {
-        registerid: registerid,
+        registerid: window.registerID,
       },
     };
     function callBack(res){
@@ -61,7 +61,7 @@ export default class SmartTreatment extends Component {
       url: 'BuDiagnosisInfoController/getData',
       server_url: config_InteLigenTreat_url+'TCMAE/',
       data: {
-        registerid: this.props.registerid
+        registerid: window.registerID
       },
     };
     function callBack(res){
@@ -198,9 +198,10 @@ export default class SmartTreatment extends Component {
         <Right>
           <SpecTabs key='1' defaultActiveKey='1' animated={false}>
             <TabPane tab="智能论治" key="1">
-              {
-                <IntelligentTreat type={2} actionManager= {this.actionManager}/>
-              }
+              <IntelligentTreat type={2} actionManager= {this.actionManager}/>
+            </TabPane>
+            <TabPane tab="历史论治" key="2">
+              <MedicalHistoryTwo type={2} actionManager= {this.actionManager}/>
             </TabPane>
           </SpecTabs>
         </Right>

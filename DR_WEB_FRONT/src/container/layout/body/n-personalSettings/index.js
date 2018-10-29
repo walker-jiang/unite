@@ -29,12 +29,12 @@ class PersonalSettings extends React.Component{
 
   }
   // BaOrguserController/getData?orgUerid=1
-
+  //获取登陆者信息
   getPatientData(id){
     let self = this;
     let params = {
       url: 'BaOrguserController/getData',
-      server_url:'http://219.234.5.58:8086/',
+      server_url:config_service_url,
       data: {
         orgUerid: id,
       },
@@ -84,7 +84,7 @@ class PersonalSettings extends React.Component{
   getDept=()=> {
     let params = {
       url: 'BaDepartmentController/getList',
-      server_url: 'http://219.234.5.58:8086/',
+      server_url: config_service_url,
       data: {
         orgid: window.sessionStorage.getItem('orgid')
       }

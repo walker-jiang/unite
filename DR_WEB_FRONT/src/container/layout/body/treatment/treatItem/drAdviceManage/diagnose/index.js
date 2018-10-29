@@ -53,8 +53,8 @@ class DiagnoseModify extends Component {
       this.tipModal.showModal({ stressContent: '保存失败，未找到该患者病历信息！！' });
     }
     buDiagnosisInfo.buDiagnosisList = formValue.originData;
-    // buDiagnosisInfo.doctorname = window.sessionStorage.getItem('username');
-    // buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
+    buDiagnosisInfo.doctorname = window.sessionStorage.getItem('username');
+    buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
     let params = {
       url: 'BuDiagnosisInfoController/postData',
       type: 'POST',

@@ -6,12 +6,14 @@
 import React, {Component} from 'react';
 import { Icon, Row, Col, Button, Radio, Input, Rate, Tabs,   } from 'antd';
 import AppropriateTechnology from './content/appropriateTechnology.js';
+import Exception from '../exception/exceptionPage.js';
 import ChineseMedicine from './content/chineseMedicine.js';
 import Prescription from './content/prescription.js';
 import Consilia from './content/consilia.js';
 import getResource from 'commonFunc/ajaxGetResource';
 import './style/doctorAdvice.less';
 const TabPane = Tabs.TabPane;
+const Search = Input.Search;
 import doctorAdviceService from '../service/doctorAdviceService.js';
 
 export default class IntelligentTreat extends Component {
@@ -21,7 +23,8 @@ export default class IntelligentTreat extends Component {
       value: 1,
       bu:{},
       isQuery:false,
-      count:0,
+      seachValue:"",//搜索条件
+      isSuccess:true,//服务是否联通
       cmdrugPage:"1",//处方页数
       cpmPage:"1",//中成药页数
       stPage:"1",//适宜技术页数
@@ -42,7 +45,12 @@ export default class IntelligentTreat extends Component {
     window.searchITList = () => this.getDiagnoseData();
     this.getPatientData();//获取诊疗信息------辩证论证入参
   }
-  getPatientData(){
+  /**
+   * 获取到除了诊断信息之外的数据
+   * @method getPatientData
+   * @return {[type]}       [description]
+   */
+  getPatientData = () =>{
     let self = this;
     let params = {
       url: 'BuRegisterController/getData',
@@ -55,54 +63,65 @@ export default class IntelligentTreat extends Component {
       if(res && res.data){
         self.setState({
           bu:res.data,
-          count:self.state.count+1
         },()=>{
+          console.log("有执行了一次");
           self.getDiagnoseData();
         })
       }else{
         console.log("该人暂时没有挂号信息");
       }
     };
-    getResource(params, callBack);
-  };
-  /** [getDiagnoseData 获取加载诊断数据] */
-  getDiagnoseData(){
-    let self = this;
-    console.log("window.registerID==============",window.registerID);
-    if(self.props.type == 1){
-      var params = {
-        url: 'BuDiagnosisInfoController/getData',
-        data: {
-          registerid: window.registerID
-        },
-      };
-    }else{
-      var params = {
-        url: 'BuDiagnosisInfoController/getData',
-        server_url: config_InteLigenTreat_url+'TCMAE/',
-        data: {
-          registerid: window.registerID
-        },
-      };
-    }
-    function callBack(res){
-      if(res && res.data){
-        console.log('获取诊断信息成功',res.data);
-        var params = self.state.bu;
-        params['buDiagnosisInfo'] = res.data;
-        self.setState({ bu:params },()=>{
-          self.searchList();
-        })
-      }else{
-        console.log("该人暂时没有诊断信息,右侧模板为空");
-        self.setState({ isQuery:true });
-      }
-    };
     function callBackError(res){
-      console.log("服务出错,右侧模板为空");
-      self.setState({ isQuery:true });
-    };
+      self.setState({ isQuery:true,isSuccess:false });
+    }
     getResource(params, callBack, callBackError);
+  };
+  /**
+   * 获取加载诊断数据  ,并且将患者数据和诊疗数据拼接
+   * @method getDiagnoseData
+   * @return {[type]}        [description]
+   */
+  getDiagnoseData = () =>{
+    console.log("this.state.bu==========",this.state.bu);
+    if(JSON.stringify(this.state.bu) != "{}"){
+      let self = this;
+      console.log("window.registerID==============",window.registerID);
+      if(self.props.type == 1){
+        var params = {
+          url: 'BuDiagnosisInfoController/getData',
+          data: {
+            registerid: window.registerID
+          },
+        };
+      }else{
+        var params = {
+          url: 'BuDiagnosisInfoController/getData',
+          server_url: config_InteLigenTreat_url+'TCMAE/',
+          data: {
+            registerid: window.registerID
+          },
+        };
+      }
+      function callBack(res){
+        if(res && res.data){
+          console.log('获取诊断信息成功',res.data);
+          var params = self.state.bu;
+          params['buDiagnosisInfo'] = res.data;
+          self.setState({ bu:params },()=>{
+            self.searchList();
+          })
+        }else{
+          console.log("该人暂时没有诊断信息,右侧模板为空");
+          self.setState({ isQuery:true });
+        }
+      };
+      function callBackError(res){
+        self.setState({ isQuery:true,isSuccess:false });
+      };
+      getResource(params, callBack, callBackError);
+    }else{
+      console.log("此时暂未获取到患者信息");
+    }
   };
   ages = (str) => {
     console.log("str===",str);
@@ -128,6 +147,7 @@ export default class IntelligentTreat extends Component {
       cpmPage:self.state.cpmPage,//中成药页数
       stPage:self.state.stPage,//适宜技术页数
       mcPage:self.state.mcPage,//医医案页数
+      seachValue:self.state.seachValue,//搜索条件
     };
     function callBack(res){
       if(res.flag == 1){
@@ -137,7 +157,10 @@ export default class IntelligentTreat extends Component {
         console.log('获取辨证论治异常响应信息', res);
       }
     };
-    doctorAdviceService.ImtreatprelistGetList(params, callBack);
+    function callBackError(res){
+      self.setState({ isQuery:true,isSuccess:false });
+    }
+    doctorAdviceService.ImtreatprelistGetList(params, callBack, callBackError);
   }
   callback(key) {
     console.log(key);
@@ -185,13 +208,31 @@ export default class IntelligentTreat extends Component {
     }
   }
   render() {
-    var { dataSource, bu, isQuery, cmdrugPage, cpmPage, stPage, mcPage } = this.state;
-    console.log("dataSource========",typeof(dataSource) == "undefined");
+    var { dataSource, bu, isQuery, cmdrugPage, cpmPage, stPage, mcPage, isSuccess } = this.state;
+    console.log("type",this.props.type);
     return (
       <div className="intelligentTreat">
       {
+        this.props.type == "2"
+        ?
+        <div className="tab">
+          <Row>
+            <Col span={23} offset={1}>
+              <Search
+                placeholder={this.props.type == "1"?"请输入模板名称或症状快速查询":"请输入症候和症状快速查询"}
+                onSearch={value => { this.setState({ seachValue:value },()=>{ this.searchList() }) }}
+              />
+            </Col>
+          </Row>
+        </div>
+        :
+        null
+      }
+      {
+        isSuccess
+        ?
         <div className="intelligentTreat_Tabs">
-          <Tabs onChange={this.callback} tabBarGutter={12} type="card" >
+          <Tabs onChange={this.callback} tabBarGutter={8} type="card" >
             <TabPane tab="方剂" key="1">
               <Prescription
                 updatePageSize={this.updatePageSize}
@@ -234,6 +275,8 @@ export default class IntelligentTreat extends Component {
             </TabPane>
           </Tabs>
         </div>
+        :
+        <Exception params={"500"}/>
       }
       </div>
     );

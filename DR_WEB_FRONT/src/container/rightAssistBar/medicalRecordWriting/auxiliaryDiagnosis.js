@@ -7,6 +7,7 @@ import React, {Component} from 'react';
 import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, Alert, Modal } from 'antd';
 import './style/rightAssistBar.less';
 import TagGroup from '../pubilcModule/tag.js';
+import ADModal from './aDModal.js';
 import medicalRWService from '../service/medicalRWService.js';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import zanwunerong from './style/zanwunerong.png';
@@ -16,12 +17,8 @@ export default class template extends Component {
   constructor(props){
     super(props);
     this.state = {
-      content:[
-        { title:"感冒 / 风寒袭表症" },
-        { title:"感冒 / 风寒袭表症" },
-        { title:"感冒 / 风寒袭表症" },
-        { title:"感冒 / 风寒袭表症" },
-      ],
+      content:[],
+      visible:false,
       tagList:["头晕","恶心","流清鼻","浑身无力","发烧"],
       isCut:true,
       seachValue:"",//搜索条件
@@ -31,10 +28,6 @@ export default class template extends Component {
   componentWillMount(){
     var { listenFormData } = this.state;
     this.GetAuxiliaryList(listenFormData);
-  }
-  componentWillReceiveProps(nextProps){
-    console.log("nextProps.listenFormData",nextProps.listenFormData);
-    this.GetAuxiliaryList(nextProps.listenFormData);
   }
   /**
    * 替换html中的标签，得到html标签中的文字
@@ -56,7 +49,9 @@ export default class template extends Component {
     var self = this;
     console.log("item========",dName);
     if(dName == ""){
-      Modal.warning({title:"中医诊断为空",content:"请选择一个中医诊断"});
+      //Modal.warning({title:"中医诊断为空",content:"请选择一个中医诊断"});
+      console.log("手动选择一个中医诊断");
+      self.setState({ visible:true });
     }else if(syndromeName == ""){
       Modal.warning({title:"证候为空",content:"请选择一个证候"});
     }else{
@@ -145,53 +140,61 @@ export default class template extends Component {
     };
     medicalRWService.GetAuxiliaryList(params, callBack);
   }
-
+  closeModal =() => {
+    this.setState({ visible: false });
+  }
   render() {
-    var { content, isCut, listenFormData } = this.state;
+    var { content, isCut, listenFormData, visible } = this.state;
     console.log("content=======",content);
-    console.log("!!content=======",!!content);
+    console.log("!!visible=======",visible);
     return (
-      <div className="rightAssistBar_template">
-        <div className="tab">
-          <Row>
-            <Col span={23} offset={1}>
-              <Search
-                placeholder="请输入模板名称或症状快速查询"
-                onSearch={value => { this.setState({ seachValue:value },()=>{ this.GetAuxiliaryList(listenFormData) }) }}
-              />
-            </Col>
-          </Row>
-        </div>
-        <div className="data" style={{backgroundColor:'#F2F2F2'}}>
-          {
-            !!content
-            ?
-            content.map((item,index)=>{
-              console.log("item.signName",item.signName);
-              return(
-                <div className="content" key={index} style={{marginBottom:10}}>
-                  <div className="content-title">
-                    <Row>
-                      <Col span={12}>
-                        <p className="content-p">
-                          •
-                          <span dangerouslySetInnerHTML = {{ __html:item.dName }}></span>
-                          /
-                          <span dangerouslySetInnerHTML = {{ __html:item.syndromeName }}></span>
-                        </p>
-                      </Col>
-                      <Col span={12}><p className="content-p-three" onClick={()=>{ this.changeInitData(item.dName,item.syndromeName) }}>加入诊断</p></Col>
-                    </Row>
+      <div>
+        <ADModal
+          closeModal={this.closeModal}
+          visible={visible}
+        />
+        <div className="rightAssistBar_template">
+          <div className="tab">
+            <Row>
+              <Col span={23} offset={1}>
+                <Search
+                  placeholder={this.props.type == "1"?"请输入模板名称或症状快速查询":"请输入症候和症状快速查询"}
+                  onSearch={value => { this.setState({ seachValue:value },()=>{ this.GetAuxiliaryList(listenFormData) }) }}
+                />
+              </Col>
+            </Row>
+          </div>
+          <div className="data" style={{backgroundColor:'#F2F2F2'}}>
+            {
+              content && content.length !=0
+              ?
+              content.map((item,index)=>{
+                console.log("item.signName",item.signName);
+                return(
+                  <div className="content" key={index} style={{marginBottom:10}}>
+                    <div className="content-title">
+                      <Row>
+                        <Col span={12}>
+                          <p className="content-p">
+                            •
+                            <span dangerouslySetInnerHTML = {{ __html:item.dName }}></span>
+                            /
+                            <span dangerouslySetInnerHTML = {{ __html:item.syndromeName }}></span>
+                          </p>
+                        </Col>
+                        <Col span={12}><p className="content-p-three" style={{color:'#0A6ECB'}} onClick={()=>{ this.changeInitData(item.dName,item.syndromeName) }}>加入诊断</p></Col>
+                      </Row>
+                    </div>
+                    <div className="content-detail">
+                      <TagGroup tagList={item.signName}/>
+                    </div>
                   </div>
-                  <div className="content-detail">
-                    <TagGroup tagList={item.signName}/>
-                  </div>
-                </div>
-              )
-            })
-            :
-            <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据，请重新搜索</center>
-          }
+                )
+              })
+              :
+              <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据</center>
+            }
+          </div>
         </div>
       </div>
     );

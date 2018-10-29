@@ -1,3 +1,4 @@
+
 /*
 此文件为全局的配置文件
 */
@@ -19,14 +20,16 @@ const config_AssistBar_url = 'http://192.168.103.166:8088/'; // 测试病历书�
 const config_AssistBar_urlTwo = 'http://192.168.103.166:8088/'; // 测试病历书写-----尧尧
 const config_CureService_url = 'http://192.168.103.166:8098/'; // 治未病后台服务地址
 const config_InteLigenTreat_url = 'http://192.168.103.166:8765/'; // 辨证论治后台服务地址
+const config_taboo_url = 'http://192.168.103.166:8764/'; // 中药禁忌检验后台服务地址
 const config_login_url = 'http://192.168.103.166:8085/'; // 登录服务地址
 const config_InteLigenTreatManagement_url = 'http://10.192.1.115:8087/'; // 辨证论治后台服务地址
-const config_local_url = 'https://www.xiaotangren.com:8443'; // 前端服务地址提供给客户端
+const config_BaiduEncyclopedia ='http://192.168.103.166:8080/';   // 百度百科查询服务地址
+const config_local_url = 'http://192.168.103.166:8080'; // 前端服务地址提供给客户端
 const colorData = ['#33cc00', '#ff0000', '#6cc' ] // His系统背景颜色
 const pageSize = 5; // 分页时每页显示的记录数
 const questionTemplate = "1" //治疗反馈题目模板类型
 const systemName = '中医馆健康信息平台2.0'; // 系统名称
-const release_version = 'Sinosoft Co,.Ltd.10.26.v1'; // 发布版本号
+const release_version = 'Sinosoft Co,.Ltd.10.29.v1'; // 发布版本号
 const defaultSysModuleList = [
   {
     "ctstamp": "2018-10-09 10:46:33",

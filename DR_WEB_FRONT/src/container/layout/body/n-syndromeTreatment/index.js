@@ -10,31 +10,41 @@ export default class SyndromeTreatment extends Component {
   constructor(props){
     super(props);
     this.state = {
-      current: 1, //当前步
-      registerid: '', //选择的当前患者
+      current: 0, //当前步
     };
     this.stepFunc = this.stepFunc.bind(this);
+    window.getRegisterPatientFromHis = () => this.getRegisterPatientFromHis();
+  };
+  componentWillMount(){
+    this.getRegisterPatientFromHis();
+  };
+  /** [getRegisterPatientFromHis 调用his查询患者信息的服务] */
+  getRegisterPatientFromHis(){
+    alert('正在向his请求患者信息。。。');
+    // 成功得到患者信息后获取该患者的病历信息
+    // this.getSyndromeData();
+    // 失败的话再次请求
   };
   componentWillReceiveProps(){
     this.setState({ current: 0 })
   };
   getCaseData(){};
-  getSyndromeData(registerid){
+  getSyndromeData(){
     let self = this;
     let params = {
       url: 'BuPatientCaseController/getData',
       server_url: config_InteLigenTreat_url + 'TCMAE/',
       data: {
-        registerid: registerid
+        registerid: window.registerID
       },
     };
     function callBack(res){
       if(res.result){
-        window.registerID = registerid;
+        window.modifyPermission = 1; // 医嘱书写权限0只读 1 可写
         if(res.data){
-          self.setState({ current: 3, registerid })
+          self.setState({ current: 3 })
         }else{
-          self.setState({ current: 1, registerid })
+          self.setState({ current: 1 })
         }
       }else{
         console.log('异常响应信息', res);
@@ -42,22 +52,29 @@ export default class SyndromeTreatment extends Component {
     };
     ajaxGetResource(params, callBack);
   };
+  /**
+   * [stepFunc 组件跳转函数]
+   * @param  {[type]} step       [跳转到那一步]
+   * @param  {[type]} registerid [选择患者后需要返回挂号ID]
+   * @return {[type]}            [undefined]
+   */
   stepFunc(step, registerid){
-    if(registerid){
+    if(registerid){ // 选择患者后返回该患者的挂号ID
+      window.registerID = registerid;
       this.getSyndromeData(registerid);
     }else{
       this.setState({ current: step })
     }
   };
   render() {
-    let { current, registerid } = this.state;
+    let { current } = this.state;
     let compo = null;
     if(current == 0){
       compo = <SelectPatient onStep={this.stepFunc}/>;
     }else if(current == -1){ // 辨证论治详情
       compo = <SyndromeDetail registerid={registerid}/>
     }else{
-      compo = <Cure onStep={this.stepFunc} current={current} registerid={registerid}/>;
+      compo = <Cure onStep={this.stepFunc} current={current} />;
     }
     return (
       <Container>
@@ -70,7 +87,6 @@ const Container = styled.div`
   position: absolute;
   height: 100%;
   width: 100%;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
 `;

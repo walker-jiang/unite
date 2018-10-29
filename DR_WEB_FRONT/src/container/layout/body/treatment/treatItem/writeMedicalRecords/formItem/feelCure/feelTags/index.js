@@ -15,7 +15,8 @@ export default class FellCure extends Component {
       list: [], // 脉象列表
       curent: 0, // 0代表左，1代表右
       pulseCondition: false ,// 脉象开关
-      details:''  //脉象详情数据
+      details:'' , //脉象详情数据
+      pulsekey:'' , //脉象的名称
     };
     this.checkBoxClick = this.checkBoxClick.bind(this);
   };
@@ -36,8 +37,8 @@ export default class FellCure extends Component {
           list.push({
             key: item.conditionid,
             name: item.condTypename,
-            details: item.condTypedesc  // 详细信息
-            // color: item.
+            details: item.condTypedesc,  // 详细信息
+            pulsekey:item.condTypename+'脉', //脉象名称
           });
         });
         self.setState({ list });
@@ -85,12 +86,13 @@ export default class FellCure extends Component {
     e.nativeEvent.stopImmediatePropagation();
   };
   // 鼠标停留两秒后显示右侧脉象详情
-  handleMouseOver = (key) => {
+  handleMouseOver = (html,key) => {
     setTimeout(
       () => {
         this.setState({
           pulseCondition: true,
-          details: key
+          details: html,
+          pulsekey:key,
         })
       },
       1000
@@ -117,21 +119,22 @@ export default class FellCure extends Component {
     e.nativeEvent.stopImmediatePropagation();
   };
   render() {
-    let {curent, list, pulseCondition, details} = this.state;
+    let {curent, list,pulseCondition,details,pulsekey} = this.state;
     let expand = this.props.expand;
+              console.log('数据222',list)
     return (
       <Container expand={expand}>
-        <FloatTip  onClose={this.onClose} pulseCondition={pulseCondition} details={details}></FloatTip>
-        <div onClick={this.stopBubling}>
-          <RadioGroup value={curent} onChange={(e)=>{this.toggleRadio(e)}} >
-            <Radio value={0} >脉象左</Radio>
-            <Radio value={1} >脉象右</Radio>
+        <FloatTip  onClose={this.onClose} pulseCondition={pulseCondition} details={details} pulsekey={pulsekey}></FloatTip>
+        <div>
+          <RadioGroup value={curent} onChange={(e)=>{this.toggleRadio(e)}}>
+            <Radio value={0}>脉象左</Radio>
+            <Radio value={1}>脉象右</Radio>
           </RadioGroup>
         </div>
         <PulseLeft curent={curent}>
           {
             list.map((item, index) => {
-              return <CheckableTag key={index} id={item.key} color="blue" onClick={this.checkBoxClick} text={item.name} onMouseEnter={() => {this.handleMouseOver(item.details)}}></CheckableTag>
+              return <CheckableTag key={index} id={item.key} color="blue" onClick={this.checkBoxClick} text={item.name} onMouseEnter={() => {this.handleMouseOver(item.details,item.pulsekey)}}></CheckableTag>
             })
           }
         </PulseLeft>

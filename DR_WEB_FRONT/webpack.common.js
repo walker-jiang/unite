@@ -135,7 +135,7 @@ module.exports = {
     compress: true,
     hot: true,
     // https: true,
-    host: '127.0.0.1', // 配置可以让同一局域网的ip访问
+    host: '0.0.0.0', // 配置可以让同一局域网的ip访问
     historyApiFallback: true, // 当路由不匹配时自动找到dist/index.html， 如果使用其它服务器也需要配置404匹配dist/index.html
     port: 8989
   },

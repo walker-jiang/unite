@@ -5,7 +5,7 @@ import man from './man.png';
 import women from './women.png';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
-export default class Index extends Component {
+export default class GridItem extends Component {
   render() {
     const { gridType, dataSource } = this.props;
     console.log('dataSource',dataSource);
@@ -20,20 +20,20 @@ export default class Index extends Component {
             <SexIocn themeType={themeType}></SexIocn>
             <Info>
               <Name>{dataSource.patientname}</Name>
-              <div>{dataSource.sexDic} | {dataSource.casetype ? dataSource.casetype : '暂无'}｜{dataSource.mobile}</div>
-              <div>全天号 ｜ {dataSource.regDate.substr(5,2)}号</div>
+              <div>{dataSource.sexDic} ｜{dataSource.mobile}</div>
+              <div>全天号 ｜ {dataSource.upstamp.substr(5,2)}号</div>
             </Info>
           </Body>
           {
             gridType == 0 ?
             <Footer themeType={themeType}>
-              <ActionButton onClick={() => {this.props.onStep(2,cardno,cardtype)}}>
+              <ActionButton onClick={() => {this.props.onStep(2, dataSource.registerid, cardno, cardtype)}}>
                 选择
               </ActionButton>
             </Footer>
             : gridType == 1 ?
             <Footer themeType={themeType}>
-              <ActionButton onClick={() => {this.props.onStep(2,cardno,cardtype)}}>
+              <ActionButton onClick={() => {this.props.onStep(2, dataSource.registerid, cardno, cardtype)}}>
                 选择
               </ActionButton>
             </Footer> : null

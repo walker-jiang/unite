@@ -108,8 +108,9 @@ class Index extends Component {
     this.setState({ patientInfo });
   };
 
-  stepFunc(step,cardno,cardtype){
+  stepFunc(step,patientid,cardno,cardtype){
     console.log('step&&&&&&&&&',step);
+    console.log('cardno&&&&&&&&&',cardno);
     console.log('cardtype&&&&&&&&&',cardtype);
     this.setState({ 
       visible: step,

@@ -26,10 +26,11 @@ class SystemVersion extends React.Component{
       //   password:values.password
       // }
       let params = {
-        url: 'BaOrguserController/systemVersion',
+        url: 'SyVersionController/getVerNo',
         type: 'post',
         // data: JSON.stringify(date),
-        server_url:'http://219.234.5.58:8086/'
+        server_url:config_login_url,
+        data:verid
       }
       let that = this;
       function success(res) {

@@ -8,26 +8,31 @@ class hisLogin extends Component {
   constructor(props){
     super(props);
     window.hisLogining = (params) => this.hisLogining(params);
-    // this.hisLogining();
+    // console.log('测试', eval("(" + "{data:{orgCode:10000,userCode:2,moduleType:1}}" + ")"));
+    // this.hisLogining("{\"orgCode\":\"10000\",\"userCode\":\"2\",\"moduleType\":1}");
+
   };
   hisLogining(params){
-    console.log('进入局部方法', params);
-    params = "{\"data\":{\"orgCode\":\"10000\",\"userCode\":\"2\",\"moduleType\":1}}";
+    // alert('进入局部方法' + params);
+    // console.log('类型转化前' +  params);
+    // console.log('类型转化后' ,  JSON.parse(params));
+    // params = "{\"orgCode\":\"10000\",\"userCode\":\"2\",\"moduleType\":1}";
     this.loginAction(JSON.parse(params));
   };
   loginAction(param){
-    console.log('获取客户端传来的参数', param);
+    // console.log('获取客户端传来的参数', param);
     let params = {
       url: 'BaOrguserController/getDataByidAndToken',
       server_url: config_login_url,
       data: {
-        orgUerid: 2,
+        orgUerid: param.userCode,
         serviceToken: ''
       }
     };
     let that = this;
     function success(res) {
       if(res.result){
+        // alert('登录成功，开始初始化');
         // 将当前用户的信息保存供其它组件用
         window.sessionStorage.setItem('username', res.data.baOrguser.realname); // 用户名
         window.sessionStorage.setItem('deptid', res.data.baOrguser.deptid); // 科室ID
@@ -35,20 +40,24 @@ class hisLogin extends Component {
         window.sessionStorage.setItem('userid', res.data.baOrguser.orgUerid); // 用户ID
         window.sessionStorage.setItem('post', res.data.baOrguser.post); // 医生级别
         window.sessionStorage.setItem('token', res.data.serviceToken); // 医生级别
-
-        if(window.setMenu){ // 通知客户端当前登录用户的菜单
-          let rightSysModuleList = res.data.baOrguser.quickMenu.rightMenuList;
-          rightSysModuleList.forEach(item => {
-            if(item.syModule.modid  != 7){
-              item.syModule.callurl = config_local_url + item.syModule.callurl;
+        if(window.loginSystem){ // 客户端存在
+          that.setUserInfo(res.data.baOrguser.deptid, res.data.baOrguser.orgid, res.data.baOrguser.orgUerid, res.data.baOrguser.post, res.data.baOrguser.realname, res.data.baOrguser.photo);
+          if(window.setMenu){ // 通知客户端当前登录用户的菜单
+            let rightSysModuleList = res.data.baOrguser.quickMenu.rightMenuList;
+            rightSysModuleList.forEach(item => {
+              if(item.syModule.modid  != 7){
+                item.syModule.callurl = config_local_url + item.syModule.callurl;
+              }
+            });
+            // console.log('设置菜单' , JSON.stringify(rightSysModuleList));
+            if(res.data){
+              // alert('设置菜单' + JSON.stringify(rightSysModuleList));
             }
-          });
-          if(res.data){
-            alert('设置菜单');
+            window.setMenu(JSON.stringify(rightSysModuleList));
+            // alert('菜单设置成功');
+          }else{
+            console.log('未检测到菜单设置的全局函数！！！');
           }
-          window.setMenu(JSON.stringify(rightSysModuleList));
-        }else{
-          console.log('未检测到菜单设置的全局函数！！！');
         }
         that.props.history.push('/Layout/syndromeTreatment');
       }else{
@@ -68,6 +77,7 @@ class hisLogin extends Component {
       username: username,
       photo: photo
     };
+    // alert('即将调用客户端登录方法');
     window.loginSystem(JSON.stringify(obj));
   };
   render() {

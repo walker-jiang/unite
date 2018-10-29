@@ -33,16 +33,16 @@ export default class Index extends Component {
    */
   compoShow(status){
     switch (status) {
+      // case 1:
+      //   return {component: <BoundHis onToggle={() => this.handleClick(2)}  />, title: '绑定HIS'};
+      // break;
       case 1:
-        return {component: <BoundHis onToggle={() => this.handleClick(2)}  />, title: '绑定HIS'};
-      break;
-      case 2:
         return {component: <ConfirmInfo onToggle={() => this.handleClick(3)} />, title: '个人信息确认'};
       break;
-      case 3:
+      case 2:
         return {component: <ModifyPassword onToggle={() => this.handleClick(4)} />, title: '修改密码'};
       break;
-      case 4:
+      case 3:
         return {component: <Completed onToggle={() => this.handleClick(5)} />, title: '完成'};
       break;
       default:
@@ -78,10 +78,12 @@ export default class Index extends Component {
         </HeaderTitle>
         <Content>
           <Step>
-            <StepArrow text='1. 绑定HIS' {...(this.getStyle(status, 1))} ></StepArrow>
-            <StepArrow text='2. 个人信息确认' {...(this.getStyle(status, 2))}></StepArrow>
-            <StepArrow text='3. 修改密码' {...(this.getStyle(status, 3))}></StepArrow>
-            <StepArrow text='4. 完成' {...(this.getStyle(status, 4))}></StepArrow>
+            {
+              // <StepArrow text='1. 绑定HIS' {...(this.getStyle(status, 1))} ></StepArrow>
+            }
+            <StepArrow text='1. 个人信息确认' {...(this.getStyle(status, 2))}></StepArrow>
+            <StepArrow text='2. 修改密码' {...(this.getStyle(status, 3))}></StepArrow>
+            <StepArrow text='3. 完成' {...(this.getStyle(status, 4))}></StepArrow>
           </Step>
           {component}
         </Content>

@@ -53,7 +53,7 @@ class Index extends Component {
         code: 1,
         verificationCode: '',
       };
-      // this.loginAction(paramsData);
+      this.loginAction(paramsData);
     }
     if(rememberPass == 'true'){ // 记住密码，初始化输入框
       this.setState({
@@ -114,6 +114,7 @@ class Index extends Component {
         window.sessionStorage.setItem('orgid', res.data.baOrguser.orgid); // 机构ID
         window.sessionStorage.setItem('userid', res.data.baOrguser.orgUerid); // 用户ID
         window.sessionStorage.setItem('post', res.data.baOrguser.post); // 医生级别
+        window.sessionStorage.setItem('postDic', res.data.baOrguser.postDic); // 医生级别
         window.sessionStorage.setItem('token', res.data.serviceToken); // 医生级别
         if(res.data.baOrguser.initcomplete != '0'){ // 跳过初始化组件
           path = '/layout';
@@ -170,7 +171,6 @@ class Index extends Component {
       photo: photo
     };
     // console.log('1', obj);
-    // alert('登陆前', obj);
     window.loginSystem(JSON.stringify(obj));
   };
   /* 记住密码 */

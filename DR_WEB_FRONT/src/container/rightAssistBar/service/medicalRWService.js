@@ -13,11 +13,11 @@ class MedicalRWService {
      * 病历书写单----病历模板（和搜索）-----易超文
      */
     QueryTable(params,callBack){
-      //config_AssistBar_url
+      //config_service_url
         if(testData){
           return Simulation.GetList();
         }else{
-          Xhr.postAddUrl(config_AssistBar_url+'template/query/index/all', params, false, callBack);
+          Xhr.postAddUrl(config_service_url+'template/query/index/all', params, false, callBack);
         }
     }
     /**
@@ -59,7 +59,7 @@ class MedicalRWService {
         if(testData){
           return Simulation.GetList();
         }else{
-          Xhr.postAddUrl(config_AssistBar_urlTwo+'BuTreatfeedbackController/getList', params, false, callBack);
+          Xhr.postAddUrl(config_service_url+'BuTreatfeedbackController/getList', params, false, callBack);
         }
     }
 
@@ -70,7 +70,7 @@ class MedicalRWService {
         if(testData){
           return Simulation.GetList();
         }else{
-          Xhr.postAddUrl(config_AssistBar_urlTwo+'BuTreatfeedbackController/getChart', params, false, callBack);
+          Xhr.postAddUrl(config_service_url+'BuTreatfeedbackController/getChart', params, false, callBack);
         }
     }
 

@@ -67,6 +67,11 @@ const SystemManage= Loadable({
   loader: () => import('./n-systemManage'),
   loading: loadingComponent,
 });
+import UserManage from './n-userManage';
+// const UserManage = Loadable({
+//   loader: () => import('./n-userManage'),
+//   loading: loadingComponent,
+// });
 export default class Body extends Component {
   constructor(props){
     super(props);
@@ -93,15 +98,16 @@ export default class Body extends Component {
           <Route path="/Layout/personalSetting" component={PersonalSetting}></Route>
           <Route path='/Layout/modelManage' component={ModelManage}></Route>
           <Route path='/Layout/systemManage' component={SystemManage}></Route>
+          <Route path='/Layout/userManage' component={UserManage}></Route>
       </Container>
     );
   }
 }
+/** flex-grow: 1; 和 position: absolute; 保证本组件可充满剩余高度*/
 const Container = styled.div`
   width: 100%;
   position: relative;
   flex-grow: 1;
-  height: 100%;
 `;
 /*
 @作者：姜中希

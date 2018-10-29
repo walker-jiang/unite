@@ -39,7 +39,7 @@ export default class Popout extends Component {
           onStart={this.handleStart}
           onDrag={this.handleDrag}
           onStop={this.handleStop}>
-          <Pannel className="handle" onClick={this.cancelHandle}>
+          <Pannel className="handle">
             <Header hbgColor={hbgColor}>
               <span>{title}</span>
               <CloseBtn type='close' icon_type={icon_type} onClick={this.handleClose} />

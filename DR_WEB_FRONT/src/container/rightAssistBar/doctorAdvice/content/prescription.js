@@ -38,7 +38,7 @@ export default class IntelligentTreat extends Component {
       dataSource.dataList.forEach((item,index)=>{
         array.push({
          title:item.preName,
-         priors:item.priors == "1" ? "有临证加减":"无临证加减",
+         priors:item.priors,
          stars:item.stars,
          initData:item
         })
@@ -87,7 +87,7 @@ export default class IntelligentTreat extends Component {
                           <div className="medicalHistory_content-title">
                             <Row style={{height:26}}>
                               <Col span={24}>
-                                <span className="content-p">{item.title}<span>({item.priors})</span></span>
+                                <span className="content-p">{item.title}<span>{item.priors== "1" ? "(有临证加减)":""}</span></span>
                                 <span className="content-div">匹配指数:<Rate value={item.stars} disabled style={{fontSize:10,marginLeft:5}}/></span>
                               </Col>
                             </Row>

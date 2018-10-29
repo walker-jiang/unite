@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react'; // react核心
 import styled, { ThemeProvider } from 'styled-components';
 import { Form, Radio, Button, Checkbox } from 'antd';
-import { Link } from 'react-router-dom';
+import { Link, Prompt } from 'react-router-dom';
 import buttonSty from 'components/antd/style/button';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import TipModal from 'components/dr/modal/tip';
@@ -45,7 +45,8 @@ class CaseConfirm extends Component {
     this.hidePopComponent = this.hidePopComponent.bind(this);
   };
   componentWillMount(){
-    this.getSyndromeData(this.props.registerid);
+    this.getSyndromeData(window.registerID);
+    window.onbeforeunload = e => "Don't leave"
   };
   getSyndromeData(registerid){
     let self = this;
@@ -128,10 +129,15 @@ class CaseConfirm extends Component {
       this.fellCure.expand(e, false);
     }
   };
+  // Clear listener
+  componentWillUnmount() {
+    onbeforeunload = null
+  }
   render() {
-    const { getFieldDecorator, setFieldsValue, getFieldsValue } = this.props.form;
+    const { getFieldDecorator, setFieldsValue, getFieldsValue, isFieldsTouched } = this.props.form;
     const initData = this.state.initData;
     const isRequired = this.state.isRequired;
+    let isEdit = isFieldsTouched();
     const formItemLayout = {
       labelCol: {
         xs: { span: 3 },
@@ -152,12 +158,16 @@ class CaseConfirm extends Component {
             <ObserveCure camera={false} ref={ ref => { this.observeCure = ref }} hideFeelCure={this.hidePopComponent} setFieldsValue={setFieldsValue} getFieldsValue={getFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: [], text: initData.inspection}}></ObserveCure>
             <FeelCure ref={ ref => { this.fellCure = ref }} hideObseverCure={this.hidePopComponent} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
             <HabitusInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{temperature: initData.temperature, breath: initData.breath, pulse: initData.pulse, systolicPressure: initData.systolicPressure, diastolicPressure: initData.diastolicPressure, heightnum: initData.heightnum, weightnum: initData.weightnum}}></HabitusInspect>
-            <CarefulItem getFieldDecorator={getFieldDecorator} initialValue={{ isperiod: initData.isperiod, ispregnancy: initData.ispregnancy, gestationalWeeks: initData.gestationalWeeks}}/>
+            <CarefulItem getFieldDecorator={getFieldDecorator} getFieldsValue={getFieldsValue} initialValue={{ isperiod: initData.isperiod, ispregnancy: initData.ispregnancy, gestationalWeeks: initData.gestationalWeeks}}/>
             <OtherInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.psycheck}></OtherInspect>
           </FormSpec>
           <SpecCheckbox readOnly={this.props.readOnly} onChange={() => { this.setState({ isRequired: !isRequired }) }}>忽略病情病历确认</SpecCheckbox>
           <SureButton type="primary" onClick={this.handleSubmit} readonly={this.props.readonly}>智能辩证</SureButton>
           <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
+          <Prompt
+            when={isEdit}
+            message="离开会丢失未保存的数据，确定离开?"
+          />
         </Container>
     )
   }

@@ -339,7 +339,6 @@ const SpeModal =styled(Modal)`
        }
        }
    }
-   .
 `
 /*
 @作者：马奔

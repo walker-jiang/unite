@@ -328,9 +328,9 @@ const AppSet = styled.span`
   cursor: pointer
 `;
 const StyIcon = styled(Icon1)`
-  width: 14px;
-  height: 14px;
-  margin-top: -2px;
+  width: 19px;
+  height: 19px;
+  margin-top: -4px;
 `;
 const MoreIcon = styled(Icon1)`
   width: 20px;
@@ -374,13 +374,7 @@ const TabIcon = styled(Icon1)`
   width: 17px;
   height: 17px;
   &&&:hover{
-    color:#0088F7 !important;
-  }
-  .Select{
-    color:#0A6ECB !important;
-  }
-  .Unchecked{
-    color:#999 !important;
+    fill:#0088F7 !important;
   }
 `;
 const Label = styled.div`
@@ -432,8 +426,8 @@ const SpecCarousel = styled(Carousel)`
   }
 `;
 const SpecModal = styled(Modal)`
-  &&&.ant-modal-body{
-     padding-top: 18px !important;
+  .ant-modal-body{
+     padding-top: 8px !important;
   }
   .ant-checkbox-inner{
     border-color: #000;
@@ -457,6 +451,34 @@ const SpecModal = styled(Modal)`
     border-bottom: 1px dashed #D2D2D2;
     color:#000
   }
+  .ant-modal-content{
+       border-top-left-radius: 14px  ;
+       border-top-right-radius:14px ;
+       .ant-modal-header{
+         background-color: #0a6ecb !important;
+         font-size: 14px;
+         height: 36px;
+         border-top-left-radius: 14px;
+         border-top-right-radius:14px;
+         border-bottom:none !important;
+         .ant-modal-title{
+           line-height:3px;
+           color: #fff !important;
+         }
+       }
+   .ant-modal-close{
+         .ant-modal-close-x{
+            width: 24px !important;
+            height: 24px !important;
+            line-height: 24px !important;
+            font-size: 16px;
+            margin-top: 6px;
+            margin-right: 10px;
+            color: #fff;
+            text-align: center;
+         }
+         }
+     }
   .ant-table-thead>tr>th{
     background: #F2F2F2;
     border-right: 1px solid #fff

@@ -52,8 +52,8 @@ export default class ContentDetail extends Component {
     if(value == "" || value == null || JSON.stringify(value) == "undefined" ){
       return "无";//空格占位
     }else{
-      if(value.length > 24){
-        return value.substr(0,24)+"...";
+      if(value.length > 26){
+        return value.substr(0,26)+"...";
       }else{
         return value;
       }
@@ -85,11 +85,17 @@ export default class ContentDetail extends Component {
     return (
       <div>
         <div className="content-detail-two">
-          <p onClick={()=>this.unfold("drugName",drugName)}><Icon type={drugName?"down":"right"}/>成分：</p>
+          <p onClick={()=>this.unfold("drugName",drugName)}>
+            {item.drugName.length>26?<p style={{marginLeft:3}}><Icon type={drugName?"down":"right"}/>成分：</p>:<p style={{marginLeft:15}}>成分：</p>}
+          </p>
           <p>{ drugName?item.drugName:this.cutOut(item.drugName) }</p>
-          <p onClick={()=>this.unfold("treatname",treatname)}><Icon type={treatname?"down":"right"}/>主治：</p>
+          <p onClick={()=>this.unfold("treatname",treatname)}>
+            {item.treatname.length>26?<p style={{marginLeft:3}}><Icon type={treatname?"down":"right"}/>主治：</p>:<p style={{marginLeft:15}}>主治：</p>}
+          </p>
           <p>{ treatname?item.treatname:this.cutOut(item.treatname) }</p>
-          <p onClick={()=>this.unfold("therapy",therapy)}><Icon type={therapy?"down":"right"}/>治则治法：</p>
+          <p onClick={()=>this.unfold("therapy",therapy)}>
+            {item.therapy.length>26?<p style={{marginLeft:3}}><Icon type={therapy?"down":"right"}/>治则治法：</p>:<p style={{marginLeft:15}}>治则治法：</p>}
+          </p>
           <p>{ therapy?item.therapy:this.cutOut(item.therapy) }</p>
         </div>
         <div className="content-detail-two-Button">

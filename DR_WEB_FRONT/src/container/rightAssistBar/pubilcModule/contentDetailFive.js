@@ -43,11 +43,17 @@ class ContentDetailFiveItem extends Component {
   render() {
     var { isUnfoldAll } = this.state;
     const { content } = this.props;
-    console.log("@@@@@@@@@@@@",content);
+    console.log("@@@@@@@@@@@@",this.props.item);
     return (
       <div>
       <span className="content-detail-five-Button-p" onClick={()=>{ this.unfoldAll(isUnfoldAll) }}>
-        展开病案<Icon type={isUnfoldAll?"down":"double-left"} theme="outlined" />
+        {
+          isUnfoldAll
+          ?
+          <p style={{marginTop:-5,color:'#169BD5',fontWeight:400}}>收起病案<Icon type={"down"} theme="outlined" /></p>
+          :
+          <p style={{color:'#169BD5',fontWeight:400}}>展开病案<Icon type={"double-left"} theme="outlined" /></p>
+        }
       </span>
       {
         isUnfoldAll
@@ -61,14 +67,16 @@ class ContentDetailFiveItem extends Component {
                   <div key={index}>
                     <p><Icon type="right"/>病案信息{index+1}：</p>
                     <p>&nbsp;</p>
-                    <p>患者:</p>
-                    <p>{item.tzMedicalcaseDetail.patientname} / {item.tzMedicalcaseDetail.patientsex == 0?"男":"女"} / {item.tzMedicalcaseDetail.patientage}岁</p>
-                    <p>中医诊断：</p>
-                    <p>{item.tzMedicalcaseDetail.chinesediagnosis}
-                      <span style={{color: '#0066CC',fontWeight: 700}}>&nbsp;&nbsp;&nbsp;西医诊断：</span>
-                      {item.tzMedicalcaseDetail.westerndiagnosis == null ?"无":item.tzMedicalcaseDetail.westerndiagnosis}
-                    </p>
-                    <p>诊次信息（共{item.visitsnumList.length}次）：</p>
+                    <div style={{marginLeft:12}}>
+                      <p>患者:</p>
+                      <p>{item.tzMedicalcaseDetail.patientname} / {item.tzMedicalcaseDetail.patientsex == 0?"男":"女"} / {item.tzMedicalcaseDetail.patientage}岁</p>
+                      <p>中医诊断：</p>
+                      <p>{item.tzMedicalcaseDetail.chinesediagnosis}
+                        <span style={{color: '#0066CC',fontWeight: 700}}>&nbsp;&nbsp;&nbsp;西医诊断：</span>
+                        {item.tzMedicalcaseDetail.westerndiagnosis == null ?"无":item.tzMedicalcaseDetail.westerndiagnosis}
+                      </p>
+                      <p>诊次信息（共{item.visitsnumList.length}次）：</p>
+                    </div>
                     <p>&nbsp;</p>
                     {
                       item.visitsnumList.map((j,k)=>{
@@ -124,6 +132,9 @@ class ContentDetailFiveItem extends Component {
               )
             })
           }
+          <div className="content-detail-Five-p"><p>论述：</p><p style={{color:'#333333'}}>{this.props.item.tm_medicalcasediscuss == ""?"无":this.props.item.tm_medicalcasediscuss }</p><hr className="hr2"/></div>
+          <div className="content-detail-Five-p"><p>按语：</p><p style={{color:'#333333'}}>{this.props.item.tm_medicalcasenote == ""?"无":this.props.item.tm_medicalcasenote }</p><hr className="hr2"/></div>
+          <div className="content-detail-Five-p" style={{paddingBottom:5}}><p>附注文案来源：</p><p style={{color:'#333333'}}>{this.props.item.tm_publicationname == ""?"无":this.props.item.tm_publicationname }</p></div>
         </div>
         :
         null
@@ -193,7 +204,7 @@ export default class ContentDetail extends Component {
     var isauthor;
     var oldIsauthor = item.tm_DetailAndDoctor.doctorList[0].isauthor;
     console.log("oldIsauthor",oldIsauthor);
-    if(oldIsauthor != null && typeof(oldIsauthor) == "undefined"){
+    if(oldIsauthor){
       if(oldIsauthor == 0){
         isauthor = "是";
       }else{
@@ -206,11 +217,22 @@ export default class ContentDetail extends Component {
     return (
       <div>
         <div className="content-detail-two">
-          <p onClick={()=>this.unfold("one",one)}><Icon type={one?"down":"right"}/>名医信息</p>
+          <p onClick={()=>this.unfold("one",one)}><Icon type={"right"}/>名医信息</p>
           <p>&nbsp;</p>
-          <p onClick={()=>this.unfold("name",name)}><Icon type={name?"down":"right"}/>名医姓名：</p>
-          <p>{ name?item.tm_DetailAndDoctor.doctorList[0].name:this.cutOut(item.tm_DetailAndDoctor.doctorList[0].name) }   |   医生是否作者：{isauthor}</p>
-          <p onClick={()=>this.unfold("company",company)}><Icon type={company?"down":"right"}/>所在单位：</p>
+          <p style={{marginLeft:12}} onClick={()=>this.unfold("name",name)}>名医姓名：</p>
+          <p>
+            {
+              name
+              ?
+              item.tm_DetailAndDoctor.doctorList[0].name
+              :
+              this.cutOut(item.tm_DetailAndDoctor.doctorList[0].name)
+            }
+            <span style={{color:'#0A6ECB',fontWeight:600}}>
+              &nbsp;&nbsp;|   医生是否作者&nbsp;&nbsp;
+            </span>：&nbsp;{isauthor}
+          </p>
+          <p style={{marginLeft:12}} onClick={()=>this.unfold("company",company)}>所在单位：</p>
           <p>{ company?item.tm_DetailAndDoctor.doctorList[0].company:this.cutOut(item.tm_DetailAndDoctor.doctorList[0].company) }</p>
           <ContentDetailFiveItem
             bu={this.props.bu}

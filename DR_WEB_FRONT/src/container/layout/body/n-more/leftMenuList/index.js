@@ -168,6 +168,7 @@ const TipText = styled.span `
 const Key=styled.span `
   cursor:pointer;
   margin-right: 5px;
+  color:#0A6ECB;
 `
 const SpecTable = styled(Table)`
   .ant-table-body {

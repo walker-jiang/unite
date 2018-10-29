@@ -27,7 +27,7 @@ export default class Finish extends Component {
       url: 'BuDiagnosisInfoController/getData',
       server_url: config_InteLigenTreat_url+'TCMAE/',
       data: {
-        registerid: this.props.registerid
+        registerid: window.registerID
       },
     };
     function callBack(res){
@@ -44,13 +44,12 @@ export default class Finish extends Component {
   };
   /** [getOrderData 获取医嘱数据] */
   getOrderData(){
-    let registerid = this.props.registerid;
     let self = this;
     let params = {
       url: 'BuOrderController/getBuOrderByRegisterId',
       server_url: config_InteLigenTreat_url+'TCMAE/',
       data: {
-        registerid: registerid,
+        registerid: window.registerID,
       },
     };
     function callBack(res){

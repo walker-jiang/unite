@@ -10,121 +10,159 @@ class PieChart extends React.Component {
         daTa:[]
       };
   }
-upData=()=>{
+  upData=(timeDate,ook)=>{
+    // Ajax.post('post', 'application/json','http://localhost:8087/IndexController/getProportionAnalysis', data, 'async', callBack);
+    // var dataA = [{
+    //   type: '感冒',
+    //   color:"#f60",
+    //   value: 56
+    // }, {
+    //   type: '胃痛',
+    //   value: 18
+    // }, {
+    //   type: '痛经',
+    //   value: 32
+    // }, {
+    //   type: '中暑',
+    //   value: 15
+    // }, {
+    //   type: '痤疮',
+    //   value: 15
+    // }, {
+    //   type: '其他',
+    //   value: 15
+    // }];
 
-  // Ajax.post('post', 'application/json','http://localhost:8087/IndexController/getProportionAnalysis', data, 'async', callBack);
-  // var dataA = [{
-  //   type: '感冒',
-  //   color:"#f60",
-  //   value: 56
-  // }, {
-  //   type: '胃痛',
-  //   value: 18
-  // }, {
-  //   type: '痛经',
-  //   value: 32
-  // }, {
-  //   type: '中暑',
-  //   value: 15
-  // }, {
-  //   type: '痤疮',
-  //   value: 15
-  // }, {
-  //   type: '其他',
-  //   value: 15
-  // }];
 
+    // 可以通过调整这个数值控制分割空白处的间距，0-1 之间的数值
+    var sliceNumber = 0.01;
+    var self = this
+    // 自定义 other 的图形，增加两条线
+    G2.Shape.registerShape('interval', 'sliceShape', {
+      draw: function draw(cfg, container) {
+        // console.log("skjhda",cfg);
+        // console.log("s464",container);
+        var points = cfg.points;
+        var path = [];
+        path.push(['M', points[0].x, points[0].y]);
+        path.push(['L', points[1].x, points[1].y - sliceNumber]);
+        path.push(['L', points[2].x, points[2].y - sliceNumber]);
+        path.push(['L', points[3].x, points[3].y]);
+        path.push('Z');
+        path = this.parsePath(path);
+        return container.addShape('path', {
+              attrs: {
+                fill: cfg.color,
+                path: path
+              }
+            });
+      }
+    });
 
-  // 可以通过调整这个数值控制分割空白处的间距，0-1 之间的数值
-  var sliceNumber = 0.01;
-  var self = this
-  // 自定义 other 的图形，增加两条线
-  G2.Shape.registerShape('interval', 'sliceShape', {
-    draw: function draw(cfg, container) {
-      console.log("skjhda",cfg);
-      console.log("s464",container);
-      var points = cfg.points;
-      var path = [];
-      path.push(['M', points[0].x, points[0].y]);
-      path.push(['L', points[1].x, points[1].y - sliceNumber]);
-      path.push(['L', points[2].x, points[2].y - sliceNumber]);
-      path.push(['L', points[3].x, points[3].y]);
-      path.push('Z');
-      path = this.parsePath(path);
-      return container.addShape('path', {
-            attrs: {
-              fill: cfg.color,
-              path: path
-            }
-          });
-    }
-  });
-
-  var chart = new G2.Chart({
-    container: 'mountNode',
-    forceFit: true,
-    height:250,
-    width:250,
-    padding: { top: 10, right:150, bottom: 10, left: 0 }
-  });
-  var all=0;
-  this.state.daTa.forEach(item=>{
-    all += parseInt(item.value)
-  })
-  chart.guide().html({
-    position: ['50%', '50%'],
-    html: `<div style="color:##929292;font-size: 14px;text-align: center;width: 10em;">就诊总量<br><span style="color:#272727;font-size:20px">${all}</span></div>`,
-    alignX: 'middle',
-    alignY: 'middle'
-  });
-  chart.source(this.state.daTa);
-  chart.coord('theta', {
-    innerRadius: 0.75
-  });
-
-  chart.tooltip({
-    showTitle: false
-  });
-  var this_ =this;
-  chart.legend({
-    useHtml: true,
-    position: 'right',
-    offsetY:-50,
-    offsetX:"",
-    textStyle: {
-      textAlign: 'left', // 文本对齐方向，可取值为： start middle end
-      fill: '#404040', // 文本的颜色
-      fontSize: '14', // 文本大小
-      fontWeight: 'bold', // 文本粗细
-      rotate: 0, // 文本旋转角度，以角度为单位，仅当 autoRotate 为 false 时生效
-      textBaseline: 'middle' // 文本基准线，可取 top middle bottom，默认为middle
-    },
-
-    itemFormatter(val,g) {
-      console.log("jaksjdl",val,g);
-
-      var data=this_.state.daTa.find(item=>{
-        return item.type==val
-      })
+    window.piechartPaint=()=>{
       var all=0;
-      this_.state.daTa.forEach(item=>{
+      self.state.daTa.forEach(item=>{
+        if(item.value == '' || item.value == 'NaN'){
+          item.value = 0
+        }
         all += parseInt(item.value)
       })
-      console.log('this_.state.daTa.value',data,this_.state.daTa.value,);
-      var str= `<span>${data.type}</span><span>${Math.floor(parseInt(data.value)/all*100)}%</span><span>${data.value}人</span>`
-      return str; // val 为每个图例项的文本值
+      var divHtml;
+      if(all == 0){
+        divHtml=`<div style="color:##929292;font-size: 14px;text-align: center;width: 10em;">就诊总量<br><span style="color:#272727;font-size:20px"> 0 </span></div>`
+      }else{
+        divHtml=`<div style="color:##929292;font-size: 14px;text-align: center;width: 10em;">就诊总量<br><span style="color:#272727;font-size:20px"> ${all} </span></div>`
+      }
+      chart.guide().html({
+        html: divHtml,
+        alignX: 'middle',
+        alignY: 'middle',
+        position: ['50%', '50%']
+      });
     }
-  });
-  chart.intervalStack().position('value').color('type').shape('sliceShape');
+    if (ook=="first") {
+       window.chart = new G2.Chart({
+        container: 'mountNode',
+        forceFit: true,
+        height:250,
+        width:250,
+        padding: { top: 10, right:150, bottom: 10, left: 0 }
+      });
+      window.piechartPaint();
+      window.chart.source(this.state.daTa,{
+        percent: {
+          formatter: function formatter(val) {
+            val = val * 100 + '%';
+            return val;
+          }
+        }
+      });
+      // window.chart.changeData(this.state.daTa)
+      window.chart.coord('theta', {
+        innerRadius: 0.75
+      });
+      window.chart.tooltip({
+        showTitle: false
+      });
+      var this_ =this;
+      window.chart.legend({
+        useHtml: true,
+        position: 'right',
+        offsetY:-50,
+        offsetX:"",
+        textStyle: {
+          textAlign: 'left', // 文本对齐方向，可取值为： start middle end
+          fill: '#404040', // 文本的颜色
+          fontSize: '14', // 文本大小
+          fontWeight: 'bold', // 文本粗细
+          rotate: 0, // 文本旋转角度，以角度为单位，仅当 autoRotate 为 false 时生效
+          textBaseline: 'middle' // 文本基准线，可取 top middle bottom，默认为middle
+        },
+
+        itemFormatter(val,g) {
+
+          var data=this_.state.daTa.find(item=>{
+            return item.type==val
+          })
+          var all=0;
+          this_.state.daTa.forEach(item=>{
+            if(item.value == '' || item.value == 'NaN'){
+              item.value = 0
+            }
+            all += parseInt(item.value)
+          })
+          var str;
+          // console.log('Math.floor(parseInt(data.value)/all*100)',(parseInt(data.value)/all*100).toFixed(1)-(1/all).toFixed(1),Math.round(parseInt(data.value)/all*100),data.value);
+          if(all == 0){
+            str=`<span>${data.type}</span> <span> 0%</span>  <span>${data.value}人</span>`
+          }else{
+            str=`<span>${data.type}</span> <span> ${(parseInt(data.value)/all*100).toFixed(1)}%</span>  <span>${data.value}人</span>`
+          }
+
+          return str; // val 为每个图例项的文本值
+        }
+      });
+      window.chart.intervalStack().position('value').color('type').shape('sliceShape');
+      window.chart.render();
+    }else{
+      window.chart.guide().clear();// 清理guide
+      window.piechartPaint();
+      window.chart.source(self.state.daTa);
+      window.chart.repaint();
+    }
 
 
-  chart.render();
-  // var geom = chart.getGeoms()[0]; // 获取所有的图形
-  // var items = geom.getData(); // 获取图形对应的数据
-  //   console.log("items",items);
-}
+
+    // var geom = chart.getGeoms()[0]; // 获取所有的图形
+    // var items = geom.getData(); // 获取图形对应的数据
+    //   console.log("items",items);
+  }
   componentDidMount=()=>{
-    // var dateTime = new Date(new Date().toLocaleDateString()).getTime()
+    this.props.onRef(this);
+    this.piechartDate("day","first");
+  }
+  piechartDate=(timeDate,ook)=>{
+    console.log('timeDate,ook',timeDate,ook);
     var date = new Date(),
         year = date.getFullYear(),//年
         month = parseInt(date.getMonth())+parseInt(1),//月
@@ -133,13 +171,47 @@ upData=()=>{
         m = new Date().getMinutes(),//m
         s = new Date().getSeconds(),//s
         st1 = year+'-'+month+'-'+date+' '+'00:00:00',
-        st = year+'-'+month+'-'+date+' '+h+':'+m+':'+s;
+        st = year+'-'+month+'-'+date+' '+h+':'+m+':'+s,
+        monthStart = year+'-'+month+'-'+'1'+' '+'00:00:00',
+        yearStart = year+'-'+'1'+'-'+'1'+' '+'00:00:00';
+        console.log('today',date);
     console.log('dateTime',st,st1);
-    var data ={
-      beginTime:'2018-8-9 000000',
-      endTime:st,
-      doctorid:window.sessionStorage.getItem('userid')
+    var data={};
+    // var dateTime = new Date(new Date().toLocaleDateString()).getTime()
+    if(timeDate){
+      if(timeDate == 'day'){
+        data ={
+          beginTime:st1,
+          endTime:st,
+          doctorid:window.sessionStorage.getItem('userid')
+        }
+      }else if(timeDate == 'month'){
+        data ={
+          beginTime:monthStart,
+          endTime:st,
+          doctorid:window.sessionStorage.getItem('userid')
+        }
+      }else if (timeDate == 'year') {
+        data ={
+          beginTime:yearStart,
+          endTime:st,
+          doctorid:window.sessionStorage.getItem('userid')
+        }
+      }
+    }else{
+      data ={
+        beginTime:st1,
+        endTime:st,
+        doctorid:window.sessionStorage.getItem('userid')
+      }
     }
+
+    // var data ={
+    //   beginTime:'2018-8-9 000000',
+    //   endTime:st,
+    //   doctorid:window.sessionStorage.getItem('userid'),
+    //   month:month
+    // }
     // console.log('pathname',data);
     const params = {
       type:'get',
@@ -153,17 +225,33 @@ upData=()=>{
     Ajax(params,scallBack,ecallback);
     var this_=this,dataA = [];
     function scallBack(res){
-      // console.log('successres',res);
-
+      console.log('piechart',res);
+      var disval=0,parseval;
       res.data.map((val,i) => {
-        dataA.push({type:val.disname,value:val.disnamecount})
+        console.log('valvalval',val);
+        if( val.disname == ''){//把disname是空的对应的disnamecount值添加到'其他'里面
+          disval += parseInt(val.disnamecount)
+        }
+        if(val.disname){//
+          if(val.disname == '其他' && val.disnamecount=='' || val.disname == '其他' && val.disnamecount=='NaN'){
+            val.disnamecount=0;
+            val.disnamecount += disval
+          }else if (val.disname == '其他' && val.disnamecount !='' || val.disname == '其他' && val.disnamecount !='NaN') {
+            parseval=parseInt(val.disnamecount)
+            parseval += disval
+            val.disnamecount=parseval
+          }
+          dataA.push({type:val.disname,value:val.disnamecount})//value的值不能是0 否则chart图标交叉出错
+        }
       })
-      // console.log('dataA',dataA);
+      console.log('dataA',dataA);
+
       this_.setState({
         daTa:dataA
       },()=>{
-          this_.upData()
+          this_.upData(timeDate,ook)
       });
+
     }
     function ecallback(res){
       console.log('errorres',res);
@@ -172,11 +260,11 @@ upData=()=>{
     render(){
       return(
         <div id="mountNode">
+
           <h2 style={{
               fontFamily: "Microsoft Tai Le Negreta, Microsoft Tai Le Normal, Microsoft Tai Le",
               fontSize:"14px",
               fontWeight: 700,
-              marginLeft:"20px",
               fontStyle: "normal",
               height:"70px",
               lineHeight: "70px"}}>

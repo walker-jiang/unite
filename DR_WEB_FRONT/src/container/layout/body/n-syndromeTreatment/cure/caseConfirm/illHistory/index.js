@@ -27,24 +27,33 @@ export default class Index extends Component {
     return (
       <Row>
         <Col>
-          <FormItem
+          <SpecFormItem
             colon={false}
+            isRequired={isRequired}
             {...formItemLayout}
             label={title +' ：'}>
             {getFieldDecorator(label_prop, {
               initialValue: initialValue,
-              rules: [{
-                required: isRequired, message: '请输入现病史',
-              }],
             })(
               <IllHisEnterPop disabled={disabled} title={title} />
             )}
-          </FormItem>
+          </SpecFormItem>
         </Col>
       </Row>
     );
   }
 }
+const SpecFormItem = styled(FormItem)`
+  &&& .ant-form-item-label > label:before {
+    display: ${props => props.isRequired ? 'inline-block' : 'none'};
+    margin-right: 4px;
+    content: "*";
+    font-family: SimSun;
+    line-height: 1;
+    font-size: 14px;
+    color: #f5222d;
+  }
+`;
 /*
 @作者：姜中希
 @日期：2018-06-25

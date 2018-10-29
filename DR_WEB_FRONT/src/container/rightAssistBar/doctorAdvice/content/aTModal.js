@@ -140,7 +140,7 @@ class Index extends Component {
       key: 'islock',
       render: (text, record, index) => record.baMedicalDtlList ? '是' : '否'
     },  {
-      title: 'Action',
+      title: '操作',
       key: 'action',
       render: (text, record) => (
         <span>

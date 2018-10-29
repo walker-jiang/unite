@@ -22,7 +22,7 @@ class Cure extends Component {
     };
   };
   componentWillMount(){
-    this.getRegisterInfo(this.props.registerid);
+    this.getRegisterInfo(window.registerID);
   };
   /**
    * [getRegisterInfo getRegisterInfo]
@@ -71,16 +71,16 @@ class Cure extends Component {
     let current = this.props.current;
     let bodyComponent = null;
     if(current == 1){
-      bodyComponent = <CaseConfirm onStep={(step) => {this.props.onStep(step)}} ref={ ref => { this.caseConfirm = ref }} registerid={this.props.registerid}/>;
+      bodyComponent = <CaseConfirm onStep={(step) => {this.props.onStep(step)}} ref={ ref => { this.caseConfirm = ref }}/>;
     }
     if(current == 2){
-      bodyComponent = <SmartDistinguish onStep={(step) => {this.props.onStep(step)}} caseBasicInfo={caseBasicInfo} registerid={this.props.registerid} baPatient={ this.state.baPatient}/>;
+      bodyComponent = <SmartDistinguish onStep={(step) => {this.props.onStep(step)}} caseBasicInfo={caseBasicInfo} baPatient={ this.state.baPatient}/>;
     }
     if(current == 3){
-      bodyComponent = <SmartTreatment onStep={(step) => {this.props.onStep(step)}} registerid={this.props.registerid}/>;
+      bodyComponent = <SmartTreatment onStep={(step) => {this.props.onStep(step)}}/>;
     }
     if(current == 4){
-      bodyComponent = <Finish onStep={(step) => {this.props.onStep(step)}} registerid={this.props.registerid}/>;
+      bodyComponent = <Finish onStep={(step) => {this.props.onStep(step)}}/>;
     }
     return (
         <Container >
@@ -99,8 +99,8 @@ class Cure extends Component {
               <DocInfo>
                 <Img src={header} />
                 <TextInfo>
-                    <span>王琰龙</span>
-                    <span>副主任医师</span>
+                    <span>{window.sessionStorage.getItem('username') ? window.sessionStorage.getItem('username') : '未知'}</span>
+                    <span>{window.sessionStorage.getItem('postDic') ? window.sessionStorage.getItem('postDic') : '未知'}</span>
                 </TextInfo>
               </DocInfo>
               <Info>
@@ -265,6 +265,7 @@ const ActionButton = Info.extend`
 `;
 const Body = styled.div`
   width: calc(100% - 200px);
+  height: 100%;
   float: left;
 `;
 /*

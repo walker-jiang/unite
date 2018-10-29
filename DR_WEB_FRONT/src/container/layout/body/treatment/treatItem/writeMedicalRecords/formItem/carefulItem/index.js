@@ -8,7 +8,7 @@ const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
 
-export default class Index extends Component {
+export default class CarefulItem extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -60,6 +60,10 @@ export default class Index extends Component {
       },
      };
     const YESNO = this.state.YESNO;
+    if(window.sex == '01'){
+      initialValue.isperiod = '02';
+      initialValue.ispregnancy = '02';
+    }
     return (
       <Row>
         <Col span={8} offset={1}>
@@ -69,9 +73,9 @@ export default class Index extends Component {
             label="是否经期"
             >
             {getFieldDecorator('isperiod', {
-              initialValue: YESNO.length ? YESNO[0].value : ''
+              initialValue: YESNO.length ? ( initialValue.isperiod ? initialValue.isperiod : YESNO[0].value ) : ''
             })(
-              <SpecRadioGroup >
+              <SpecRadioGroup disabled={window.sex == '01'}>
               {
                 YESNO.map(item => <Radio value={item.value} key={item.value}>{item.vname}</Radio>)
               }
@@ -86,9 +90,9 @@ export default class Index extends Component {
             label="是否孕期"
             >
             {getFieldDecorator('ispregnancy', {
-              initialValue: YESNO.length ? YESNO[0].value : ''
+              initialValue: YESNO.length ? ( initialValue.ispregnancy ? initialValue.ispregnancy : YESNO[0].value ) : ''
             })(
-              <SpecRadioGroup onChange={this.ispregnancyHandler}>
+              <SpecRadioGroup onChange={this.ispregnancyHandler} disabled={window.sex == '01'}>
               {
                 YESNO.map(item => <Radio value={item.value} key={item.value}>{item.vname}</Radio>)
               }
@@ -97,13 +101,13 @@ export default class Index extends Component {
           </FormItem>
         </Col>
         {
-          ispregnancy == '01' ?
+          ispregnancy == '01' && window.sex != '01'?
           <Col span={5} offset={1}>
             <FormItem
               colon={false}
               >
                 {getFieldDecorator('gestationalWeeks', {
-                  initialValue: 1
+                  initialValue: initialValue.gestationalWeeks ? initialValue.gestationalWeeks : 1
                 })(
                   <Select>
                     <Option value={1}>1个月</Option>

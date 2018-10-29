@@ -99,6 +99,7 @@ class Index extends Component {
       let self = this;
       let params = {
         url: 'BuRegisterController/' + (operateType.indexOf('m') == 0 ? 'putRegister' : 'patRegister'),
+        server_url: 'http://10.192.4.28:8088/',
         data: JSON.stringify(paramData),
         type: (operateType.indexOf('m') == 0 ? 'put' : 'post'),
       };

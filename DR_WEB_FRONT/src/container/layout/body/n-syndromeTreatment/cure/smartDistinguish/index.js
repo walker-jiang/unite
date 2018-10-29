@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import { Table, Tabs, Checkbox, Button } from 'antd';
+import { Table, Tabs, Checkbox, Button, Modal } from 'antd';
 import Pagination_dia from 'components/antd/components/pagination';
 const Pagination_his = deepClone(Pagination_dia);
 import deepClone from 'commonFunc/deepClone';
@@ -14,6 +14,7 @@ import AddIllBySymptom from '../../../treatment/treatItem/drAdviceManage/chHerba
 import AddIllByManifestations from '../../../treatment/treatItem/drAdviceManage/chHerbalMedicine/herbalForm/diagnose/addIllByManifestations';
 import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
 const TabPane = Tabs.TabPane;
+const confirm = Modal.confirm;
 
 export default class SmartDistinguish extends Component {
   constructor(props){
@@ -37,7 +38,7 @@ export default class SmartDistinguish extends Component {
   };
   componentWillMount(){
     this.initialData();
-    this.getSyndromeData(this.props.registerid);
+    this.getSyndromeData(window.registerID);
   };
   getSyndromeData(registerid){
     let self = this;
@@ -258,6 +259,9 @@ export default class SmartDistinguish extends Component {
     let diagnoseFinalInfoOrigin = this.state.diagnoseFinalInfoOrigin;
     let values = this.props.caseBasicInfo;
     let buDiagnosisInfo = {};
+    if(!diagnoseFinalInfo.length){ // 校验诊断不能空
+      this.tipModal.showModal({ stressContent: '未添加诊断不能提交' });
+    }
     buDiagnosisInfo.buDiagnosisList = diagnoseFinalInfo;
     buDiagnosisInfo.cardno = this.props.baPatient.cardno;
     buDiagnosisInfo.deptid = window.sessionStorage.getItem('deptid');
@@ -268,7 +272,7 @@ export default class SmartDistinguish extends Component {
     buDiagnosisInfo.patientid = this.props.baPatient.patientID;
     buDiagnosisInfo.patientname = this.props.baPatient.patientName;
     buDiagnosisInfo.patientno = "test";
-    buDiagnosisInfo.registerid = this.props.registerid,
+    buDiagnosisInfo.registerid = window.registerID,
     buDiagnosisInfo.registerno = "12312";
     Object.assign(diagnoseFinalInfoOrigin, buDiagnosisInfo);
     if(values){
@@ -295,7 +299,7 @@ export default class SmartDistinguish extends Component {
         doctorid: window.sessionStorage.getItem('userid'),
         doctorname: window.sessionStorage.getItem('username'),
         orgid: window.sessionStorage.getItem('orgid'),
-        registerid: this.props.registerid,
+        registerid: window.registerID,
       };
       Object.assign(initCaseData, finalObj);
     }
@@ -353,6 +357,7 @@ export default class SmartDistinguish extends Component {
     return obj.extractionData || obj.extractionData == '' ? obj.extractionData : obj;
   };
   enterEvent(value, type){
+    let self = this;
     if(value.trim() != ''){
       if(type == 'symptom'){
         document.getElementById('manifestations').focus(); // 焦点切换到病候
@@ -373,7 +378,7 @@ export default class SmartDistinguish extends Component {
             cancelText: '取消',
             okText: '保存',
             onOk() {
-              self.save();
+              self.submitCaseData();
             },
             onCancel() {
 
@@ -394,7 +399,7 @@ export default class SmartDistinguish extends Component {
             cancelText: '取消',
             okText: '保存',
             onOk() {
-              self.save();
+              self.submitCaseData();
             },
             onCancel() {
 
@@ -431,9 +436,9 @@ export default class SmartDistinguish extends Component {
           <Middle>
             <AddContainer>
               <Name>疾病：</Name>
-              <AddIllBySymptom enterEvent={this.enterEvent} autofocus='autofocus' id='symptom'  ref={ref => this.addIllBySymptom = ref} placeholder='请输入病症中文关键字活拼音简写搜索' notify={this.getMessage}/>
+              <AddIllBySymptom enterEvent={this.enterEvent} autofocus='autofocus' id='symptom'  ref={ref => this.addIllBySymptom = ref} placeholder='请输入病症中文关键字或拼音简写搜索' notify={this.getMessage}/>
               <Name>症候：</Name>
-              <AddIllByManifestations enterEvent={this.enterEvent} id='manifestations' ref={ref => this.addIllByManifestation = ref} placeholder='请输入病侯中文关键字货拼音简写搜索' symptomId={symptomId}/>
+              <AddIllByManifestations enterEvent={this.enterEvent} id='manifestations' ref={ref => this.addIllByManifestation = ref} placeholder='请输入病侯中文关键字或拼音简写搜索' symptomId={symptomId}/>
               <AddAction type="primary" onClick={() => { this.enterEvent('', 'manifestations') }}>添加诊断</AddAction>
             </AddContainer>
             <SpecTable
@@ -562,9 +567,6 @@ const SpecTabs = styled(Tabs)`
   .ant-tabs-nav-container {
     font-size: 13px;
     background: #F2F2F2;
-  }
-  .ant-tabs-bar {
-    border-bottom: 2px solid #7f54d4;
   }
   .ant-tabs-nav-container-scrolling {
     padding: 0px;

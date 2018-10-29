@@ -119,7 +119,7 @@ Tool.put = function (pathname, data, success, error) {
  * @param {function} success  请求成功执行方法
  * @param {function} error    请求失败执行方法
  */
-Tool.post = function (type, contentType, pathname, data, async, callBack) {
+Tool.post = function (type, contentType, pathname, data, async, callBack, callBackError) {
     console.log("POST地址为:",pathname);
     console.log("POST数据为:",data);
     var returnResult = {}
@@ -136,8 +136,8 @@ Tool.post = function (type, contentType, pathname, data, async, callBack) {
         callBack(res);
       },
       error:(jqXHR, textStatus, errorThrown) => {
-        if(textStatus=="timeout"){
-          global.$publicMethod.Hint("提示",'info',"服务连接超时，检查网络后请重试");
+        if(typeof(callBackError) == "function"){
+          callBackError(res);
         }else{
           global.$publicMethod.Hint("提示",'info',"服务出错，请稍后重试");
         }

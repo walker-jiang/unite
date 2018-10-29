@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import ReactDom from "react-dom"
 import { Button, Input, Radio, Progress, Row, Col } from 'antd'
+import SaveTip from 'components/dr/modal/saveTip';
 import "../css/startWork.css";
 import tp from "../images/tipPhoto.png";
 import bg from "../images/background.png";
@@ -72,6 +73,8 @@ export default class StartWork extends Component {
     if(startQuestion == arr.length){//当前数量等于题目.length时，点击最后一题的选项，提交存储答案的json
       if('radio checked'){
         let paramsData = JSON.stringify(answerJson);
+        this.saveTip.showModal(1);
+        let self = this;
         let params = {
           type: 'GET',
           url: 'healthcabin/checkbody/getCheckResult',
@@ -80,7 +83,6 @@ export default class StartWork extends Component {
           xhrFields:{withCredentials:true},
           crossDoman:true,
           async: false,
-          //dataType: 'jsonp',
           data: {
             json: paramsData,
             userId: userId
@@ -88,18 +90,18 @@ export default class StartWork extends Component {
         };
 
         function success(res){
-
+            self.handClick();
         };
 
         function error(res){
+            self.saveTip.showModal(3, res.desc);
             console.log('提交答案失败');
         };
 
         getResource(params, success, error);
-        this.handClick();
       }
-    }
-    this.setState({ value:e.target.value },()=>{
+    } else {
+      this.setState({ value:e.target.value },()=>{
         setTimeout(() => {
           this.setState({
             value: null,
@@ -108,8 +110,10 @@ export default class StartWork extends Component {
             index: this.state.index + 1,
             percent: Math.round(((this.state.index+1)/this.state.length) * 100)
           });
-        }, 600);
-    })
+        }, 400);
+      })
+    }
+    
   }
 
   handClick(){//切换组件，跳转到结果页面testResults.js
@@ -195,6 +199,7 @@ export default class StartWork extends Component {
             </Col>
           </Row>
         </ScrollArea>
+        <SaveTip ref={ ref => {this.saveTip = ref}}></SaveTip>
       </div>
     );
   }

@@ -103,6 +103,7 @@ export default class Index extends Component {
               )}
               </FormItem>
             </Col>
+            <Unit>cm</Unit>
             <Col span={2}>
               <FormItem
                 labelCol={{span: 12}}
@@ -117,6 +118,7 @@ export default class Index extends Component {
               )}
               </FormItem>
             </Col>
+            <Unit>kg</Unit>
           </FormItem>
         </Col>
       </Row>

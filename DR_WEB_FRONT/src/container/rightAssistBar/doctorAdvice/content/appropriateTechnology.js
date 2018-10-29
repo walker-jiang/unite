@@ -41,7 +41,7 @@ export default class IntelligentTreat extends Component {
       dataSource.dataList.forEach((item,index)=>{
         array.push({
          title:item.stName,
-         priors:item.priors == "1" ? "有临证加减":"无临证加减",
+         priors:item.priors,
          stars:item.stars,
          initData:item
         })
@@ -52,12 +52,59 @@ export default class IntelligentTreat extends Component {
       this.setState({ isQuery:true });
     }
   }
+  getStOne = (AllItem,item) =>{
+    var self = this;
+    self.setState({ visible: true });
+    setTimeout(()=>{
+      if(item){
+        console.log("AllItem=========",AllItem);
+        console.log("item=========",item);
+        AllItem['buMatchingAcupoints'] = item;
+        let params = {
+          imtreatprelist:JSON.stringify(AllItem),
+          bu:self.props.bu
+        };
+        function callBack(res){
+          if(res.flag == 1){
+            console.log("适宜技术转换成功==============");
+            //* 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
+            //self.props.changeInitData(res.data,5);
+            if(res.data && res.data.buOrderDtlList.length>0){
+              self.setState({ AllData:res.data, queryTableIsQuery:true });
+              self.queryTable(res.data.buOrderDtlList[0].itemcode);
+            }else{
+              alert("该条数据格式有错误");
+            }
+          }else{
+            self.setState({ queryTableIsQuery:true });
+            console.log('适宜技术转换失败', res);
+          }
+        };
+        doctorAdviceService.getSt(params, callBack);
+      }
+    },100)
+  }
+  Copy = (aObject) => {
+    if (!aObject) {
+      return aObject;
+    }
+    var bObject, v, k;
+    bObject = Array.isArray(aObject) ? [] : {};
+    for (k in aObject) {
+      v = aObject[k];
+      bObject[k] = (typeof v === "object") ? this.Copy(v) : v;
+    }
+    return bObject;
+  }
   getSt = (item) =>{
     var self = this;
     self.setState({ visible: true });
     setTimeout(()=>{
+      console.log("%%%%%%%%%%%%",item);
+      var newItem = self.Copy(item);
+      newItem['buMatchingAcupoints'] = [];
       let params = {
-        imtreatprelist:JSON.stringify(item),
+        imtreatprelist:JSON.stringify(newItem),
         bu:this.props.bu
       };
       function callBack(res){
@@ -166,13 +213,13 @@ export default class IntelligentTreat extends Component {
                           <div className="medicalHistory_content-title">
                             <Row style={{height:26}}>
                               <Col span={24}>
-                                <span className="content-p">{item.title}<span>({item.priors})</span></span>
+                                <span className="content-p">{item.title}<span>{item.priors== "1" ? "(有临证加减)":""}</span></span>
                                 <span className="content-div">匹配指数:<Rate value={item.stars} disabled style={{fontSize:10,marginLeft:5}}/></span>
                               </Col>
                             </Row>
                           </div>
                         </div>
-                        <ContentDetailFour getSt={this.getSt} changeInitData={this.props.changeInitData} item={item.initData} bu={this.props.bu}/>
+                        <ContentDetailFour getStOne={this.getStOne} getSt={this.getSt} changeInitData={this.props.changeInitData} item={item.initData} bu={this.props.bu}/>
                       </div>
                     )
                   })

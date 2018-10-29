@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import BasicModal from 'components/dr/modal/basicModal';
 import HerbalForm from './herbalForm';
 import buttonSty from 'components/antd/style/button';
 import TipModal from 'components/dr/modal/tip';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
+import extractDataFromIdentityCard from 'commonFunc/extractDataFromIdentityCard';
+const confirm = Modal.confirm;
 
-export default class Index extends Component {
+export default class ChHerbalMedicine extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -52,6 +54,7 @@ export default class Index extends Component {
       });
       return;
     }
+    this.checkTaboo(herbalData); // 紧急项目监测
     if(this.props.actionType == 'add'){
       this.addHerbalData(formData, herbalData);
     }else{ // 修改保存
@@ -74,13 +77,13 @@ export default class Index extends Component {
 
     let freqname = values.frequency;
     let usagename = values.treatMethods;
-
     let buDiagnosisInfo = {
       buDiagnosisList: values.diagnose.originData,
       "cardno": window.cardno,
       "deptid": window.sessionStorage.getItem('deptid'),
       "diagnosisDesc": values.diagnosename,
       "doctorid": window.sessionStorage.getItem('userid'),
+      "doctorname": window.sessionStorage.getItem('username'),
       "orgid": window.sessionStorage.getItem('orgid'),
       "patientid": window.patientID,
       "patientname": window.patientName,
@@ -128,7 +131,83 @@ export default class Index extends Component {
       that.handlePopClose();
       that.props.reloadList();
     };
+    // ajaxGetResource(params, success);
+  };
+  checkTaboo(herbalData){
+    let caseData = this.getCaseData();
+    let paramsData = {
+      bu: caseData,
+      BaHerbalMedicines: herbalData,
+      age: extractDataFromIdentityCard.getAgeFromBirthday(window.birthday),
+      sex: window.sex,
+      orgCode: window.sessionStorage.getItem('orgid')
+    };
+    let params = {
+      url: 'Taboo/matchByDtl',
+      server_url: config_taboo_url,
+      type: 'post',
+      data: JSON.stringify(paramsData)
+    }
+    let that = this;
+    function success(res) {
+      if(res.result){
+        let carefulArr = []; // 慎用项
+        let tabooArr = []; // 禁忌项
+
+        res.data.forEach(item => {
+          if(item.careful){
+            carefulArr.push(item.careful);
+          }
+          if(item.taboo){
+            tabooArr.push(item.taboo);
+          }
+        });
+        if(carefulArr.length || tabooArr.length){ // 弹框提示
+          let title = [];
+          if(carefulArr.length){
+            title.push(<p>慎用项目：{carefulArr.join('、')}</p>);
+          }
+          if(tabooArr.length){
+            title.push(<p>禁忌项目：{tabooArr.join('、')}</p>);
+          }
+          confirm({
+            title: title.map(item => item),
+            iconType: 'exclamation-circle',
+            okText: '继续保存',
+            cancelText: '查看',
+            onOk() {
+              console.log('OK');
+            },
+            onCancel() {
+              console.log('Cancel');
+            },
+          });
+        }
+      }
+      console.log('保存成功')
+    };
     ajaxGetResource(params, success);
+  };
+  /** [getCaseData 初始化病历数据] */
+  getCaseData(){
+    let self = this;
+    let caseData = {};
+    let params = {
+      url: 'BuPatientCaseController/getData',
+      async: false,
+      data: {
+        registerid: window.registerID
+      },
+    };
+    function callBack(res){
+      if(res.result && res.data){
+        caseData = res.data
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+    return caseData;
   };
   mmodifyHerbalData(values, herbalData){
     let buRecipe = this.form.state.buRecipe;

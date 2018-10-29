@@ -9,44 +9,50 @@ class LineChart extends React.Component {
         daTa:[]
       };
   }
-  upData=()=>{
-    var chart = new G2.Chart({
-      container: 'id',
-      forceFit: true,
-      height:250,
-    });
-    chart.source(this.state.daTa, {
+  upData=(sel)=>{
+    if(sel){
+      window.linechart = new G2.Chart({
+        container: 'id',
+        forceFit: true,
+        height:250,
+      });
+    }
+    window.linechart.source(this.state.daTa, {
       month: {
         range: [0, 1]
       }
     });
-    chart.tooltip({
+    window.linechart.tooltip({
       crosshairs: {
         type: 'line'
       }
     });
-    chart.legend({
+    window.linechart.legend({
       position: 'top',
       offsetY:8,
       offsetX:60,
       marker:"circle",
     });
-    chart.axis('temperature', {
+    window.linechart.axis('temperature', {
       label: {
         formatter: function formatter(val) {
           return val
         }
       }
     });
-    chart.line().position('month*temperature').color('city');
-    chart.point().position('month*temperature').color('city').size(4).shape('circle').style({
+    window.linechart.line().position('month*temperature').color('city');
+    window.linechart.point().position('month*temperature').color('city').size(4).shape('circle').style({
       stroke: '#fff',
       lineWidth: 1
     });
-    chart.render();
+    window.linechart.render();
   }
   componentDidMount=()=>{
+    this.props.ronRef(this);
+    this.linechartDate('day',true);
+  }
 
+  linechartDate=(linechartDate,sel)=>{
     var date = new Date(),
         year = date.getFullYear(),//年
         month = parseInt(date.getMonth())+parseInt(1),//月
@@ -55,14 +61,44 @@ class LineChart extends React.Component {
         m = new Date().getMinutes(),//m
         s = new Date().getSeconds(),//s
         st1 = year+'-'+month+'-'+parseInt(dat-9)+' '+'00:00:00',
-        st = year+'-'+month+'-'+dat+' '+h+':'+m+':'+s;
+        st = year+'-'+month+'-'+dat+' '+h+':'+m+':'+s,
+        monthStart = year+'-'+month+'-'+'1'+' '+'00:00:00',
+        yearStart= year+'-'+'1'+'-'+'1'+' '+'00:00:00',
+        data;
     console.log('dateTime',st,st1);
-    var data ={
-      beginTime:st1,
-      endTime:st,
-      doctorid:window.sessionStorage.getItem('userid'),
-      groupBy:'day'
+    if(linechartDate){
+      if(linechartDate == 'day'){
+        data ={
+          beginTime:st1,
+          endTime:st,
+          doctorid:window.sessionStorage.getItem('userid'),
+          groupBy:'day'
+        }
+      }else if (linechartDate == 'month') {
+        data ={
+          beginTime:monthStart,
+          endTime:st,
+          doctorid:window.sessionStorage.getItem('userid'),
+          groupBy:'month'
+        }
+      }else if (linechartDate == 'year') {
+        data ={
+          beginTime:yearStart,
+          endTime:st,
+          doctorid:window.sessionStorage.getItem('userid'),
+          groupBy:'year'
+        }
+      }
+    }else{
+      data ={
+        beginTime:st1,
+        endTime:st,
+        doctorid:window.sessionStorage.getItem('userid'),
+        groupBy:'day'
+      }
     }
+
+
     // console.log('pathname',data);
     const params = {
       type:'get',
@@ -76,22 +112,21 @@ class LineChart extends React.Component {
     Ajax(params,scallBack,ecallback);
     var this_=this,dataA = [];
     function scallBack(res){
-      // console.log('successres',res);
+      console.log('successres',res);
 
       res.data.map((val,i) => {
-        dataA.push({month:val.times,temperature:val.firstcas,city:'日新增患者量'},{month:val.times,temperature:val.oldcas,city:'日就诊总量'})
+        dataA.push({month:val.times,temperature:val.firstcas,city:'日就诊总量'},{month:val.times,temperature:val.firstcas,city:'日初诊量'},{month:val.times,temperature:val.oldcas,city:'日复诊量'})
       })
       // console.log('dataA',dataA);
       this_.setState({
         daTa:dataA
       },()=>{
-          this_.upData()
+          this_.upData(sel)
       });
     }
     function ecallback(res){
       console.log('errorres',res);
     }
-
     // var data = [{
     //   "month": "Jan",
     //   "city": "日新增患者量",
@@ -189,8 +224,6 @@ class LineChart extends React.Component {
     //   "city": "日就诊总量",
     //   "temperature": 4.8
     // }];
-
-
   }
     render(){
       return(
@@ -201,9 +234,9 @@ class LineChart extends React.Component {
               fontWeight: 700,
               marginLeft:"20px",
               fontStyle: "normal",
-              height:"70px",
+              height:"100px",
               lineHeight: "70px"}}>
-              本日就诊患者疾病占比分析
+              患者就诊量趋势分析
           </h2>
         </div>
       )

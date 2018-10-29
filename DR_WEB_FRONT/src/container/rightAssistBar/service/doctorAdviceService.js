@@ -12,10 +12,11 @@ class DoctorAdviceService {
      * 医嘱模板-----历史病例-----金野
      */
     GetList(params,callBack){
+        //config_service_url
         if(testData){
           return Simulation.GetList();
         }else{
-          Xhr.post('GET','application/x-www-form-urlencoded;charset=utf-8',config_service_url+'BuOrderController/getBuOrderHistory', params, false, callBack);
+          Xhr.post('GET','application/x-www-form-urlencoded;charset=utf-8','http://10.192.4.28:8088/BuOrderController/getBuOrderHistory', params, false, callBack);
         }
     }
 
@@ -55,7 +56,7 @@ class DoctorAdviceService {
     /**
      * 辩证论证列表获取-----获取证侯对应治法列表-----孙磊
      */
-    ImtreatprelistGetList(params,callBack){
+    ImtreatprelistGetList(params,callBack,callBackError){
         //config_InteLigenTreat_url+
         if(testData){
           return Simulation.ImtreatprelistGetList(callBack);
@@ -66,7 +67,8 @@ class DoctorAdviceService {
             config_InteLigenTreat_url+'TCMAE/api/Imtreatprelist/GetImtreatList',
             params,
             false,
-            callBack
+            callBack,
+            callBackError
           );
         }
     }
@@ -128,14 +130,14 @@ class DoctorAdviceService {
      * 适宜技术引入-----选择中医适宜技术治疗项/治疗明细-----易超文
      */
     getStQueryTable(params,callBack){
-      //config_AssistBar_url
+      //config_service_url
         if(testData){
           return Simulation.GetList();
         }else{
           Xhr.post(
             'get',
             'application/json;charset=utf-8',
-            config_AssistBar_url+'BaMedicalDtlController/getDtlWithOrderSuit',
+            config_service_url+'BaMedicalDtlController/getDtlWithOrderSuit',
             params,
             false,
             callBack
@@ -150,11 +152,11 @@ class DoctorAdviceService {
         if(testData){
           return Simulation.getSt(callBack);
         }else{
-          //config_AssistBar_url
+          //config_service_url
           Xhr.post(
             'get',
             'application/x-www-form-urlencoded;charset=utf-8',
-            config_AssistBar_url+'/BuOrderController/importTem',
+            config_service_url+'/BuOrderController/importTem',
             params,
             false,
             callBack

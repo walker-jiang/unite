@@ -30,6 +30,7 @@ export default class IntelligentTreat extends Component {
     this.setState({isQuery:nextProps.isQuery,pageSize:nextProps.pageSize});
   }
   insertData = (dataSource) => {
+    console.log("dataSource=========",dataSource);
     if(dataSource.dataList){
       var array = [];
       dataSource.dataList.forEach((item,index)=>{//辩证论治套的一层
@@ -37,14 +38,16 @@ export default class IntelligentTreat extends Component {
           var objectList = JSON.parse(item).objectList;
           objectList.forEach((j,k)=>{//知识库套的一层
             console.log("名医医案json一条=============",j);
-            console.log("=========",j.tm_DetailAndDoctor.doctorList[0].name);
-            array.push({
-             title:j.tm_title_all,
-             // name:j.tm_DetailAndDoctor.doctorList[0].name,
-             // company:j.tm_DetailAndDoctor.doctorList[0].company,
-             // isauthor:j.tm_DetailAndDoctor.doctorList[0].isauthor,
-             initData:j
-            })
+            console.log("=========",j.tm_DetailAndDoctor.doctorList[0]);
+            if(j.tm_DetailAndDoctor.doctorList[0]){
+              array.push({
+               title:j.tm_title_all,
+               // name:j.tm_DetailAndDoctor.doctorList[0].name,
+               // company:j.tm_DetailAndDoctor.doctorList[0].company,
+               // isauthor:j.tm_DetailAndDoctor.doctorList[0].isauthor,
+               initData:j
+              })
+            }
           })
         }
       })
@@ -123,7 +126,7 @@ export default class IntelligentTreat extends Component {
                           <div className="medicalHistory_content-title">
                             <Row style={{height:26}}>
                               <Col span={24}>
-                                <span className="content-p">{item.title}</span>
+                                <span className="content-p" style={{color:'#333333'}}>{item.title}</span>
                                 <span className="content-div">匹配指数:<Rate value={5} disabled style={{fontSize:10,marginLeft:5}}/></span>
                               </Col>
                             </Row>

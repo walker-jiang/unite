@@ -63,8 +63,7 @@ const WindowModal = styled(ReactModal)`
 `;
 const SuccessTip = styled.div`
   background-color: #FFFFFF;
-  width: 277px;
-  height: 100px;
+  padding: 27px 17px;
   display: flex;
   justify-content: center;
   align-items: center;

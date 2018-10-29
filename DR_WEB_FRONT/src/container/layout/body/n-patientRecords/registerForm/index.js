@@ -42,6 +42,7 @@ class Index extends Component {
     ajaxGetResource(params, callBack);
   };
   submit = (e) =>{
+    debugger
     const { handSonsson } = this.props
       if(handSonsson){
         handSonsson(1)
@@ -79,7 +80,7 @@ class Index extends Component {
           self.saveTip.showModal(2);
           self.props.history.push('/Layout/patientArchives');
         }else{
-          self.saveTipsaveTip.showModal(3);
+          self.saveTip.showModal(3);
           console.log('异常响应信息', res);
         }
       };
@@ -87,14 +88,6 @@ class Index extends Component {
       
     }
   }
-  /**
-   * [getString 获取form表单项中对象中的文本]
-   * @param  {String} [obj=''] [表单对象]
-   * @return {[type]}          [最终文本]
-   */
-  getString(obj = ''){
-    return obj.extractionData || obj.extractionData == '' ? obj.extractionData : obj;
-  };
   render() {
     let basicOperation = this.props.basicOperation;
     let { baPatient } = this.state;

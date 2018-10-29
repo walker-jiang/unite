@@ -23,19 +23,18 @@ class Cure extends Component {
     };
   };
   componentWillMount(){
-    this.getRegisterInfo(this.props.registerid);
+    this.getRegisterInfo();
   };
   /**
    * [getRegisterInfo getRegisterInfo]
-   * @param  {[type]} registerid [挂号ID]
    * @return {[type]}            [undefined]
    */
-  getRegisterInfo(registerid){
+  getRegisterInfo(){
     let self = this;
     let params = {
       url: 'BuRegisterController/getData',
       data: {
-        registerid: registerid,
+        registerid: window.registerID,
       },
     };
     function callBack(res){
@@ -77,13 +76,13 @@ class Cure extends Component {
     let current = this.state.current;
     let bodyComponent = null;
     if(current == 1){
-      bodyComponent = <CaseConfirm onStep={(step) => {}} registerid={this.props.registerid}  readOnly={true}/>;
+      bodyComponent = <CaseConfirm onStep={(step) => {}} readOnly={true}/>;
     }
     if(current == 2){
-      bodyComponent = <SmartDistinguish onStep={(step) => {}} registerid={this.props.registerid}  readOnly={true}/>;
+      bodyComponent = <SmartDistinguish onStep={(step) => {}} readOnly={true}/>;
     }
     if(current == 3){
-      bodyComponent = <SmartTreatment onStep={(step) => {}} registerid={this.props.registerid}  readOnly={true}/>;
+      bodyComponent = <SmartTreatment onStep={(step) => {}} readOnly={true}/>;
     }
     return (
         <Container >

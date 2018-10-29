@@ -102,6 +102,9 @@ class HerbalForm extends Component {
         registerid: window.registerID
       },
     };
+    if(this.props.syndrome){ // 辨证论治添加处方
+      params.server_url = config_InteLigenTreat_url+'TCMAE/';
+    }
     function callBack(res){
       if(res.result && res.data){ // 获取当前诊断明细数据
         let { buDiagnosisList, ...buDiagnosisInfo } = res.data;

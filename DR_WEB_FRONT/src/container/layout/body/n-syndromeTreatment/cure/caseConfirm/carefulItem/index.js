@@ -20,6 +20,12 @@ export default class CarefulItem extends Component {
   componentWillMount(){
     this.getDictData('YESNO');
   }
+  componentWillReceiveProps(nextProps){
+    if(this.props.initialValue.ispregnancy != nextProps.initialValue.ispregnancy){
+      console.log('请求属性', nextProps.initialValue.ispregnancy);
+      this.setState({ ispregnancy: nextProps.initialValue.ispregnancy });
+    }
+  };
   /**
    * [getDictData 表单字典数据]
    * @param  {[type]} dictNo [字典类型]
@@ -36,7 +42,7 @@ export default class CarefulItem extends Component {
     function callBack(res){
       if(res.result){
         let arr = res.data.baDatadictDetailList;
-        self.setState({ [dictNo]: arr, ispregnancy: arr[0].value });
+        self.setState({ [dictNo]: arr });
       }else{
         console.log('异常响应信息', res);
       }
@@ -44,10 +50,11 @@ export default class CarefulItem extends Component {
     ajaxGetResource(params, callBack);
   };
   ispregnancyHandler(e){
+    console.log('改变', e.target.value);
     this.setState({ ispregnancy: e.target.value })
   };
   render() {
-    const { getFieldDecorator, initialValue} = this.props;
+    const { getFieldDecorator, initialValue, getFieldsValue} = this.props;
     const ispregnancy = this.state.ispregnancy;
     const formItemLayoutBehind = {
       labelCol: {
@@ -60,6 +67,11 @@ export default class CarefulItem extends Component {
       },
      };
     const YESNO = this.state.YESNO;
+    if(window.sex == '01'){
+      initialValue.isperiod = '02';
+      initialValue.ispregnancy = '02';
+    }
+    console.log('渲染',ispregnancy );
     return (
       <Row>
         <Col span={8} offset={1}>
@@ -71,7 +83,7 @@ export default class CarefulItem extends Component {
             {getFieldDecorator('isperiod', {
               initialValue: YESNO.length ? ( initialValue.isperiod ? initialValue.isperiod : YESNO[0].value ) : ''
             })(
-              <SpecRadioGroup >
+              <SpecRadioGroup disabled={window.sex == '01'}>
               {
                 YESNO.map(item => <Radio value={item.value} key={item.value}>{item.vname}</Radio>)
               }
@@ -88,7 +100,7 @@ export default class CarefulItem extends Component {
             {getFieldDecorator('ispregnancy', {
               initialValue: YESNO.length ? ( initialValue.ispregnancy ? initialValue.ispregnancy : YESNO[0].value ) : ''
             })(
-              <SpecRadioGroup onChange={this.ispregnancyHandler}>
+              <SpecRadioGroup onChange={this.ispregnancyHandler} disabled={window.sex == '01'}>
               {
                 YESNO.map(item => <Radio value={item.value} key={item.value}>{item.vname}</Radio>)
               }
@@ -97,29 +109,31 @@ export default class CarefulItem extends Component {
           </FormItem>
         </Col>
         {
-          ispregnancy == '01' ?
-          <Col span={5} offset={1}>
-            <FormItem
-              colon={false}
-              >
-                {getFieldDecorator('gestationalWeeks', {
-                  initialValue: initialValue.gestationalWeeks ? initialValue.gestationalWeeks : 1
-                })(
-                  <Select>
-                    <Option value={1}>1个月</Option>
-                    <Option value={2}>2个月</Option>
-                    <Option value={3}>3个月</Option>
-                    <Option value={4}>4个月</Option>
-                    <Option value={5}>5个月</Option>
-                    <Option value={6}>6个月</Option>
-                    <Option value={7}>7个月</Option>
-                    <Option value={8}>8个月</Option>
-                    <Option value={9}>9个月</Option>
-                    <Option value={10}>10个月</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col> : null
+          window.sex == '02' ? (
+            ispregnancy == '01' ?
+            <Col span={5} offset={1}>
+              <FormItem
+                colon={false}
+                >
+                  {getFieldDecorator('gestationalWeeks', {
+                    initialValue: initialValue.gestationalWeeks ? initialValue.gestationalWeeks : 1
+                  })(
+                    <Select>
+                      <Option value={1}>1个月</Option>
+                      <Option value={2}>2个月</Option>
+                      <Option value={3}>3个月</Option>
+                      <Option value={4}>4个月</Option>
+                      <Option value={5}>5个月</Option>
+                      <Option value={6}>6个月</Option>
+                      <Option value={7}>7个月</Option>
+                      <Option value={8}>8个月</Option>
+                      <Option value={9}>9个月</Option>
+                      <Option value={10}>10个月</Option>
+                    </Select>
+                  )}
+                </FormItem>
+              </Col> : null
+          ) : null
         }
       </Row>
     );

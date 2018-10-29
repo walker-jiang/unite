@@ -141,15 +141,15 @@ class SiderDemo extends React.Component {
                 theme="dark"
                 defaultSelectedKeys={['1']}
                 mode="inline"
-                onSelect={this.onSelect}
+                collaps={collapsed.toString()}
                >
                 {MenuOption}
                 {( window.sessionStorage.getItem('userid')!=undefined)?
                 <MenuItems id="height" trigger={null}>
-                  <Link to='/Layout/more' trigger={null}>
+                  <Links to='/Layout/more' trigger={null}>
                     <StyleICon type='more' value={collapsed}/>
                     <span>更多</span>
-                  </Link>
+                  </Links>
                 </MenuItems>:null}
               </SpecMenu>
           </div>
@@ -160,9 +160,7 @@ class SiderDemo extends React.Component {
 const SpecSider = styled(Sider)`
  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
  z-index: 99;
-
   &&& {
-    max-height: 100vh;
     overflow: scroll;
     ::-webkit-scrollbar {
       display: none;
@@ -196,20 +194,34 @@ const SpecSider = styled(Sider)`
    }
  }
 `;
+const Links=styled(Link)`
+ color:#91BEE2
+ &&&:hover{
+   color:#C0D6E2 !important;
+ }
+`
 const StyleICon = styled(Icon1)`
   width: ${ props => props.value ? '20px' : '16px'};
   height: ${ props => props.value ? '20px' : '16px'};
   margin-right: 14px;
   margin-left: ${ props => props.value ? '-20px' : '0px'};
+  ${'' /* .ant-menu-item-selected>li>a>span>svg{
+      fill:#C0D6E2 !important;
+  } */}
+
 `;
 const SpecMenu = styled(Menu)`
   &&&.ant-menu-dark, .ant-menu-dark .ant-menu-sub {
     background-color: rgba(31, 63, 105, 1);
   }
-
 `;
-const MenuItems =styled(SubMenu)`
+const Spans = styled.span`
 
+`
+const MenuItems =styled(SubMenu)`
+ .ant-menu-item-selected>a{
+    color:#FFF !important;
+ }
 `
 
 export default SiderDemo
