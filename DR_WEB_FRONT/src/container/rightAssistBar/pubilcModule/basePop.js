@@ -27,18 +27,10 @@ export default class Popout extends Component {
     let {visible, children, onOk, title = '精美弹框', hbgColor = '#0A6ECB', icon_type = 'lightBlue'} = this.props;
     return (
       <Modal
-         isOpen={visible}
-         style={modalStyle}
-         ariaHideApp={false}
-          >
-        <Draggable
-          cancel=".not-draggable"
-          position={null}
-          defaultPosition={{x: 0, y: 0}}
-          grid={[25, 25]}
-          onStart={this.handleStart}
-          onDrag={this.handleDrag}
-          onStop={this.handleStop}>
+       isOpen={visible}
+       style={modalStyle}
+       ariaHideApp={false}
+      >
           <Pannel className="handle">
             <Header hbgColor={hbgColor}>
               <span>{title}</span>
@@ -57,7 +49,6 @@ export default class Popout extends Component {
               )
             }
           </Pannel>
-        </Draggable>
       </Modal>
     );
   }

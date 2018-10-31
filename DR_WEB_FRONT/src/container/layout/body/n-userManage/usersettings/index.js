@@ -5,9 +5,10 @@
 
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import {Button, Input, Table, Divider, Tag,Pagination } from 'antd';
+import {Button, Input, Table, Divider, Tag,Pagination,LocaleProvider  } from 'antd';
 import buttonSty from 'components/antd/style/button';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
+import zh_CN  from 'antd/lib/locale-provider/zh_CN';
 
 const Search = Input.Search;
 export default class Index extends React.Component {
@@ -15,7 +16,11 @@ export default class Index extends React.Component {
     super(props);
     this.state = {
        length:0, //所有的用户数量
-       userList:'',  // 用户列表
+       userList:[],  // 用户列表
+       total:0  , // 总条数
+       page:1  ,//当前页
+       pagesize:10  ,  //每页的条数
+       roles:[], //角色的集合
     };
   }
   componentWillMount(){
@@ -28,20 +33,41 @@ export default class Index extends React.Component {
   */
  getuserlist(keyword){
    let self = this;
+   let{page,pagesize}=this.state;
    let params = {
      url: 'BaOrguserController/getList',
      server_url:config_login_url,
      data: {
        keyword:keyword,
-       page:1,
-       pagesize:10,
+       page:page,
+       pagesize:pagesize,
      }
    };
    function callBack(res){
      if(res.result){
-       console.log(res.data)
-       self.setState({ userList: res.data.records,length:res.data.records.length});
+       console.log("拿到的数据",res.data)
+       self.setState({ userList: res.data.records,length:res.data.records.length,total:Number(res.data.total)});
      }else{
+       console.log('异常响应信息', res);
+     }
+   };
+   ajaxGetResource(params, callBack);
+ }
+ /** [deleteuserinfo 删除用户] */
+ deleteuserinfo(userinfo) {
+   let self=this;
+   userinfo.useflag="0";
+  // console.log("当前用户的信息",userinfo)
+   let params = {
+     url: 'BaOrguserController/putData',
+     server_url: config_login_url,
+     data: JSON.stringify(userinfo),
+     type: 'put'
+   };
+   function callBack(res) {
+     if (res.result) {
+       self.getuserlist();
+     } else {
        console.log('异常响应信息', res);
      }
    };
@@ -53,6 +79,26 @@ export default class Index extends React.Component {
      this.getuserlist()
    }
  }
+  showTotal=(total)=> {
+  return `Total ${total} items`;
+}
+ /** [onShowSizeChange 页面数据多少改变] */
+  onShowSizeChange=(current, pageSize)=> {
+    this.setState({
+      pageSize:pageSize,
+    },()=>{
+       this.getuserlist();
+    })
+}
+ /** [onPageChange 页数改变] */
+  onPageChange=(page, pageSize)=>{
+    this.setState({
+      page:page,
+      pageSize:pageSize,
+    },()=>{
+    this.getuserlist();
+    })
+  }
   render() {
     const columns = [
       {
@@ -88,12 +134,12 @@ export default class Index extends React.Component {
       }, {
         title: '角色',
         key: 'kkk',
-        dataIndex: '空',
-      }, {
-        title: '创建人',
-        key: 'creatername',
-        dataIndex: 'creatername',
-      }, {
+        render: (text, record) => (<span>
+          {
+           // record.
+          }
+        </span>)
+       }, {
         title: '创建时间',
         key: 'ctstamp',
         dataIndex: 'ctstamp',
@@ -117,24 +163,24 @@ export default class Index extends React.Component {
       }, {
         title: '操作',
         key: 'action',
-        render: (text, record) => (<span>
-          <Action onClick={(e) => this.props.setuptype(3,2,2)}>查看</Action>
+        render: (text, record,index) => (<span>
+          <Action onClick={(e) => this.props.setuptype(3,2,2,record.orgUerid)}>查看</Action>
           <Divider type="vertical"/>
-          <Action onClick={(e) => this.props.setuptype(3,2,3,record.id)}>权限预览</Action>
+          <Action onClick={(e) => this.props.setuptype(3,2,3,record.orgUerid)}>权限预览</Action>
           <Divider type="vertical"/>
-          <Action onClick={(e) => this.props.setuptype(3,2,1,record.id)}>修改</Action>
+          <Action onClick={(e) => this.props.setuptype(3,2,1,record.orgUerid)}>修改</Action>
           <Divider type="vertical"/>
-          <Action>{
+          <Action >{
               record.enable
                 ? '停用'
                 : '启用'
             }</Action>
           <Divider type="vertical"/>
-          <Action>删除</Action>
+          <Action onClick={(e) => this.deleteuserinfo(record)}>删除</Action>
         </span>)
       }
     ];
-    let {length,userList} =this.state;
+    let {length,userList,total,page,pageSize} =this.state;
     return (<Container>
       <Header>
         <BorderButton onClick={(e) => this.props.setuptype(3,2,1)}>+新建用户</BorderButton>
@@ -146,15 +192,30 @@ export default class Index extends React.Component {
           <Search placeholder="请输入姓名/手机号/身份证号来查询" onSearch={value => this.getuserlist(value)} onChange={this.onChange} enterButton/>
         </LeftSeach>
       </Header>
-      <SpecTable columns={columns} dataSource={userList} />
-      <Length>• 共有<span style={{color:'#0a94df'}}>{length}</span>位已添用户记录</Length>
+      <Box>
+          <SpecTable columns={columns} dataSource={userList} pagination={false} rowKey="orguserid"/>
+      </Box>
+      <Footbox>
+          <Length>• 共有<span style={{color:'#0a94df'}}>{length}</span>位已添用户记录</Length>
+          <LocaleProvider locale={zh_CN}>
+              <SpecPagination
+                size="small"
+                total={total}
+                current={page}
+                defaultPageSize={pageSize}
+                showSizeChanger
+                onShowSizeChange={this.onShowSizeChange}
+                onChange={this.onPageChange}
+                showQuickJumper />
+          </LocaleProvider>
+      </Footbox>
     </Container>)
   }
 }
 const Container = styled.div `
   width:100%;
   overflow: hidden;
-  height: calc(100vh - 100px);
+  height: calc(100vh - 150px);
 `;
 const Header = styled.div `
   width: 100%;
@@ -173,16 +234,17 @@ const LeftSeach = styled.div `
   justify-content: space-around;
   align-items: center;
 `
-// const Box =styled.div`
-//     width: 100%;
-//     margin-top: 10px;
-//     overflow: scroll;
-//     ::-webkit-scrollbar{
-//       display: none;
-//     }
-//     height: calc(100vh - 200px);
-//     position: relative;
-// `
+const Box =styled.div`
+    width: 100%;
+    margin-top: 10px;
+    overflow: scroll;
+    ::-webkit-scrollbar{
+      display: none;
+    }
+    height: calc(100vh - 250px);
+    position: relative;
+    border-bottom:1px solid #ccc;
+`
 const SpecTable = styled(Table)`
   .ant-table-tbody{
    border-bottom: 1px solid #ccc !important;
@@ -204,8 +266,30 @@ const Action = styled.span `
    cursor:pointer;
 `
 const Length=styled.div`
-  margin-top:-50px;
   color:rgb(102, 102, 102);
   font-size: 12px;
-  padding-left:10px;
 `
+const Footbox =styled.div`
+   height:50px;
+   pading :0px 20px;
+   display:flex;
+  justify-content:space-between;
+  align-items:center;
+`
+const PageContainer = styled.div`
+  width: 100%;
+  float: left;
+  padding: 0px 20px;
+  margin: 5px;
+  display: flex;
+  justify-content: space-between;
+`;
+const SpecPagination = styled(Pagination)`
+  margin-bottom: 10px;
+  .ant-pagination-item-active {
+    background-color: #1890ff;
+  }
+  .ant-pagination-item-active > a{
+    color: #FFFFFF;
+  }
+`;

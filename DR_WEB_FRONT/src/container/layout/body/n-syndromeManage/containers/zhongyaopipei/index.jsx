@@ -1,340 +1,315 @@
 import React, { Component } from 'react'; // 引入了React和PropTypes
+import lodash from 'lodash';
 import './style/homeIndex.less';
-import styled from 'styled-components';
-import ColItem from '../../component/Form/ColItem';
-import { Row, Col, Button, Input, Select, Form, Radio, Tag  } from 'antd';
-import 'antd/dist/antd.css';  // or 'antd/dist/antd.less'
-// import tagsSty from 'components/antd/style/tags';
-import getResource from 'commonFunc/ajaxGetResource';
+import { Row, Col, Button, Tag, Icon, Modal, Table, Divider, message } from 'antd';
+import {
+  autoMatchHerbalMedicine, getOrgHerbalMedicineList, getCenterHerbalMedicineList,
+  matchHerbalMedicine, deleteMatchHerbalMedicine, updateHerbalMedicineOrg
+} from 'roots/layout/body/n-syndromeManage/services/zhongyaopipeiService';
+import YKItems from 'components/BZLZM/YKItems';
+import hTag from 'components/BZLZM/hTag';
 
-const Search = Input.Search;
-const FormItem = Form.Item;
-const Option = Select.Option;
-const RadioGroup = Radio.Group;
+const WrappedHTag = hTag(Tag);
+const SESSION_ORGId = sessionStorage.getItem('orgid');
+const DEFAULT_PARAM = { type: 0, orgCode: SESSION_ORGId, keyword: "" };
 
-class HomeIndex extends Component {
-  state = {
-    visible: false,
-    addVisible: false,
-    data: [
-      { key: '1',1: '1',2: 32 },
-      { key: '2',1: '2',2: 42 },
-      { key: '3',1: '3',2: 32 },
-      { key: '4',1: '4',2: 32 },
-      { key: '5',1: '5',2: 32 },
-      { key: '6',1: '6',2: 32 }
-    ],
-    value: 1,
-  }
-
-  componentWillMount () {
-    let params = {
-      url: 'tcmCmdrugsOrg/getCenterHerbalMedicineList',
-      server_url: config_InteLigenTreatManagement_url,
-      contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-      traditional: true, // 可以传递数组参数
-      data: {
-        orgCode: 10000
+class HomeIndexIndex extends Component {
+  constructor(props) {
+    super(props);
+    this.orgColumns = [{
+      title: '机构名称', dataIndex: 'medicinename',
+      render: (text, record) => {
+        const otherName = record['otherName'] ? "(" + record['otherName'] + ")" : "";
+        const _buCmdrugsOrgEntities = record['buCmdrugsOrgEntities'];
+        const len = _buCmdrugsOrgEntities.length;
+        const tags = _buCmdrugsOrgEntities.map((item) => {
+          return <WrappedHTag key={item['fieldid']} closable onClose={this.onHandleOnClose} data={item}>{item['orgCmdrugName']}</WrappedHTag>
+        })
+        if (len == 0) {
+          return (<div>{text}{otherName}</div>)
+        }
+        return (<div>{text}{otherName}{"(已匹配:"}{tags}{")"}</div>)
       }
-    };
-    //let that = this;
-    function callBack(res){
-      console.log('%%%%%',res)
-      //   if(res.result){
-      //       console.log('成功')
-      //       var data = that.state.data;
-      //       data.push(res.data[0]);
-      //       that.setState({
-      //           arr: res.data,
-      //           i: 0,
-      //           data,
-      //       })
-      // }else{
-      //   // that.setState({data: []});
-      // }
-    };
-    getResource(params, callBack);
+    }];
+
+    this.centerColumns = [
+      {
+        title: '中心名称', dataIndex: 'medicinename',
+        render: (text, record) => {
+          const otherName = record['otherName'] ? "(" + record['otherName'] + ")" : "";
+          const _buCmdrugsOrgEntities = record['buCmdrugsOrgEntities'];
+          const len = _buCmdrugsOrgEntities.length;
+          const tags = _buCmdrugsOrgEntities.map((item) => {
+            return <WrappedHTag key={item['fieldid']} closable onClose={this.onHandleOnClose} data={item}>{item['orgCmdrugName']}</WrappedHTag>
+          })
+          if (len == 0) {
+            return (<div>{text}{otherName}</div>)
+          }
+          return (<div>{text}{otherName}{"(已匹配:"}{tags}{")"}</div>)
+        }
+      },
+      { title: '设置权重', dataIndex: '', render: (text, record) => <a onClick={() => this.handleWeighthowModal(text, record)}>设置权重</a> },
+      {
+        title: '匹配', dataIndex: '', width: 100,
+        render: (text, record) => <a><Icon type="swap" theme="outlined" onClick={() => this.onCheckCenterItem(text, record)} /></a>
+      }
+    ];
+
+    this.weightColums = [
+      { title: '使用顺序', dataIndex: 'weight', render: (text, record, index) => index+1 },
+      { title: '药品名称', dataIndex: 'orgCmdrugName' },
+      {
+        title: '操作', dataIndex: '', render: (text, record) => {
+          return (
+            <span>
+              <a href="javascript:;" onClick={() => this.handleUp(record)}>上移</a>
+              <Divider type="vertical" />
+              <a href="javascript:;" onClick={() => this.handleDown(record)}>下移</a>
+              <Divider type="vertical" />
+              <a href="javascript:;" onClick={() => this.handleTop(record)}>置顶</a>
+              <Divider type="vertical" />
+              <a href="javascript:;" onClick={() => this.handleBottom(record)}>置底</a>
+            </span>
+          )
+        }
+      }
+    ]
+
+    this.state = {
+      visible: false,
+      addVisible: false,
+      value: 1,
+      checkedOrgItem: {},
+      orgData: [],
+      centerData: [],
+      weightModalVisiable: false, //设置权重是否显示
+      weightModalData: [], //设置权重时需要的数据 数组 这个数组中的数据不会变 但是数组中数据的顺序会变
+    }
   }
 
-  onChange = (e) => {
-    console.log('radio checked', e.target.value);
-    this.setState({
-      value: e.target.value,
+  componentDidMount = () => {
+    this.onOrgFreshList(DEFAULT_PARAM);
+    this.onCenterFreshList(DEFAULT_PARAM);
+  }
+
+  /**
+   * data 需要特殊格式{type: 0(1, 2), keyword: ""}
+   * type: 
+   */
+  onOrgFreshList = (data) => {
+    getOrgHerbalMedicineList({ type: data['type'], orgCode: SESSION_ORGId, keyword: data['keyword'] }).then((data) => {
+      this.setState({ orgData: data['success'] ? data.data.result : this.state.orgData })
+    }).catch();
+  }
+
+  onCenterFreshList = (data) => {
+    getCenterHerbalMedicineList({ type: data['type'], orgCode: SESSION_ORGId, keyword: data['keyword'] }).then((data) => {
+      this.setState({ centerData: data['success'] ? data.data.result : this.state.centerData })
+    }).catch();
+  }
+
+  //选中时触发
+  onCheckOrgItem = (selectedRowKeys, selectedRows) => {
+    this.setState({ checkedOrgItem: selectedRows[0] });
+  }
+
+  //匹配时触发
+  onCheckCenterItem = (text, record) => {
+    const { checkedOrgItem } = this.state;
+    if(lodash.isNull(checkedOrgItem)) { return }
+    //请求触发
+    matchHerbalMedicine({
+      org: checkedOrgItem,
+      center: record,
+      orgCode: SESSION_ORGId
+    }).then((data) => {
+      if(data['result'] == false) {
+        message.error(data['desc']);
+        return;
+      } else if(data['result'] == true) {
+        message.success(data['desc']);
+      } else {
+        return;
+      }
+      this.onOrgFreshList(DEFAULT_PARAM);
+      this.onCenterFreshList(DEFAULT_PARAM);
+    }).catch();
+  }
+
+  //解除关系
+  onHandleOnClose = (e, item) => {
+    deleteMatchHerbalMedicine({
+      orgCode: item['orgCode'],  //所删匹配关系的orgCode(默认10000)
+      code: item['orgCmdrugCode'],  //所删匹配关系的orgCmdrugCode
+      dId: item['dId']  //所删匹配关系的dId
+    }).then(() => {
+      this.onOrgFreshList(DEFAULT_PARAM);
+      this.onCenterFreshList(DEFAULT_PARAM);
     });
   }
 
-  log(e) {
-    console.log(e);
-  }
-  
-  preventDefault(e) {
-    e.preventDefault();
-    console.log('Clicked! But prevent default.');
+  //一键自动匹配
+  onHandleAutomatch = () => {
+    autoMatchHerbalMedicine({ orgCode: SESSION_ORGId }).then(() => {
+      this.onOrgFreshList(DEFAULT_PARAM);
+      this.onCenterFreshList(DEFAULT_PARAM);
+    });
   }
 
+/****************************设置权重 B****************************/
+  //打开权重模态框
+  handleWeighthowModal = (text, record) => {
+    this.setState({ weightModalVisiable: true, weightModalData: record['buCmdrugsOrgEntities'] });
+  }
+  /**
+   * param 最终要保存的数据,
+   */
+  handleweightOk = (param) => {
+    const { weightModalData } = this.state;
+    let _weightModalData = lodash.clone(weightModalData);
+    _weightModalData.map((item, index) => {
+      item['weight'] = index + 1;
+    })
+    updateHerbalMedicineOrg(_weightModalData).then((data) => {
+      if(data['result'] == false) {
+        message.error(data['desc']);
+        return;
+      } else if(data['result'] == true) {
+        message.success(data['desc']);
+      } else {
+        return;
+      }
+      this.setState({ weightModalVisiable: false });
+      this.onCenterFreshList(DEFAULT_PARAM);
+    });
+  }
+  //取消保存分类
+  handleweightCancel = (e) => {
+    this.setState({ weightModalVisiable: false });
+  }
+
+  generatorRowKey = (record) => {
+    return record['fieldid'];
+  }
+
+  //上移
+  handleUp = (record) => {
+    const fieldid = record['fieldid'];
+    const { weightModalData } = this.state;
+    const _len = weightModalData.length;
+    // 1 如果列表中只有一条数据 直接返回
+    if (_len < 2) { return }
+    // 2 获取需要移动元素的位置
+    let location = lodash.findIndex(weightModalData, function (o) { return o.fieldid == fieldid; });
+    // 3 如果选中元素的位置是0 第一个，直接返回
+    if (location == 0) { return }
+    let _weightModalData = lodash.clone(weightModalData);
+    // 4 选中元素与前一个元素交换位置
+    const _tempData = _weightModalData[location];
+    _weightModalData[location] = _weightModalData[location - 1];
+    _weightModalData[location - 1] = _tempData;
+    // 5 设置state 渲染数据 
+    this.setState({ weightModalData: _weightModalData });
+  }
+
+  handleDown = (record) => {
+    const fieldid = record['fieldid'];
+    const { weightModalData } = this.state;
+    const _len = weightModalData.length;
+    // 1 如果列表中只有一条数据 直接返回
+    if (_len < 2) { return }
+    // 2 获取需要移动元素的位置
+    let location = lodash.findIndex(weightModalData, function (o) { return o.fieldid == fieldid; });
+    // 3 如果选中元素的位置是_len-1 最后一个，直接返回
+    if (location == _len - 1) { return }
+    let _weightModalData = lodash.clone(weightModalData);
+    // 4 选中元素与后一个元素交换位置
+    const _tempData = _weightModalData[location];
+    _weightModalData[location] = _weightModalData[location + 1];
+    _weightModalData[location + 1] = _tempData;
+    // 5 设置state 渲染数据 
+    this.setState({ weightModalData: _weightModalData });
+  }
+
+  handleTop = (record) => {
+    const fieldid = record['fieldid'];
+    const { weightModalData } = this.state;
+    const _len = weightModalData.length;
+    // 1 如果列表中只有一条数据 直接返回
+    if (_len < 2) { return }
+    // 2 获取需要移动元素的位置
+    let location = lodash.findIndex(weightModalData, function (o) { return o.fieldid == fieldid; });
+    // 3 如果选中元素的位置是第一个，直接返回
+    if (location == 0) { return }
+    let _weightModalData = lodash.clone(weightModalData);
+    // 4 选中元素与第一个元素交换位置
+    const _tempData = _weightModalData[location];
+    _weightModalData[location] = _weightModalData[0];
+    _weightModalData[0] = _tempData;
+    // 5 设置state 渲染数据 
+    this.setState({ weightModalData: _weightModalData });
+  }
+
+  handleBottom = (record) => {
+    const fieldid = record['fieldid'];
+    const { weightModalData } = this.state;
+    const _len = weightModalData.length;
+    // 1 如果列表中只有一条数据 直接返回
+    if (_len < 2) { return }
+    // 2 获取需要移动元素的位置
+    let location = lodash.findIndex(weightModalData, function (o) { return o.fieldid == fieldid; });
+    // 3 如果选中元素的位置是最后一个，直接返回
+    if (location == _len - 1) { return }
+    let _weightModalData = lodash.clone(weightModalData);
+    // 4 选中元素与最后一个元素交换位置
+    const _tempData = _weightModalData[location];
+    _weightModalData[location] = _weightModalData[_len - 1];
+    _weightModalData[_len - 1] = _tempData;
+    // 5 设置state 渲染数据 
+    this.setState({ weightModalData: _weightModalData });
+  }
+  /****************************设置权重 E****************************/
+
   render() {
-    
+    const { orgData, centerData, weightModalVisiable, weightModalData } = this.state;
     return (
-      <HomeIndexL className='HomeIndex_home'>
-        <HomeIndex_div className='HomeIndex_home_div'>
-          <HomeIndex_divP>中药信息匹配</HomeIndex_divP><hr/><hr className='hr1' />
-        </HomeIndex_div>
-        <CenterContant>
-          <Row>
-            <Col span={12} className="HomeIndex_centerLine" >
-              <HomeIndex_contentLeftDiv>
-                <HomeIndex_contentLeft>
-                  <HomeIndex_h2FontSize>本院用药目录</HomeIndex_h2FontSize>
-                  <Button type="primary" size="large" style={{width:"117px",height:"24px", border: "none",borderRadius:"5px",fontSize: "14px",background:"rgba(102, 204, 0, 1)",color:"#FFFFFF"}} >一键自动匹配</Button>
-                  <Button type="primary" size="large" style={{width:"117px",height:"24px", border: "none",borderRadius:"5px",fontSize: "14px",background:"rgba(102, 204, 0, 1)",color:"#FFFFFF",marginLeft: "0.5rem"}} >更新本院药库</Button>
-                </HomeIndex_contentLeft>
-                <HomeIndex_radioGroup> 
-                  <HomeIndex_radioChoose>
-                    <RadioGroup onChange={this.onChange} value={this.state.value}>
-                      <Radio value={1}>全部</Radio>
-                      <Radio value={2}>已匹配</Radio>
-                      <Radio value={3}>未匹配</Radio>
-                    </RadioGroup> 
-                  </HomeIndex_radioChoose>
-                  <InputWidthDiv>
-                  <InputWidth
-                    placeholder="在本院用药目录中查找中药"
-                    onSearch={value => console.log(value)}
-                    enterButton
-                  />
-                  </InputWidthDiv>
-                </HomeIndex_radioGroup>
-                <HomeIndex_contentImport className="disableScoll" >
-                    <Div_p_row>
-                      <Div_content>A</Div_content>
-                      <Div_contentP>
-                        阿魏
-                        (已匹配<Tag closable onClose={this.log.bind(this)}>Tag 2</Tag>
-                        <Tag closable onClose={this.preventDefault.bind(this)}>Prevent Default</Tag>)
-                        {/* (已匹配<SpecTag closable onClose={this.log.bind(this)}>gssa</SpecTag>) */}
-                      </Div_contentP>
-                      <Div_contentP>艾叶</Div_contentP>
-                    </Div_p_row>
-                    <Div_p_row>
-                      <Div_content>B</Div_content>
-                      <Div_contentP>巴豆1</Div_contentP>
-                      <Div_contentP>巴豆2</Div_contentP>
-                      <Div_contentP>八角茴香</Div_contentP>
-                    </Div_p_row>
-                    <Div_p_row>
-                      <Div_content>C</Div_content>
-                      <Div_contentP>苍耳子</Div_contentP>
-                      <Div_contentP>苍术</Div_contentP>
-                      <Div_contentP>草果</Div_contentP>
-                      <Div_contentP>草乌</Div_contentP>
-                      <Div_contentP>草豆蔑</Div_contentP>
-                    </Div_p_row>
-                    <Div_p_row>
-                      <Div_content>D</Div_content>
-                      <Div_contentP>大腹皮</Div_contentP>
-                      <Div_contentP>大黄</Div_contentP>
-                      <Div_contentP>大蓟</Div_contentP>
-                      <Div_contentP>大莉炭</Div_contentP>
-                      <Div_contentP>大青</Div_contentP>
-                    </Div_p_row>
-                </HomeIndex_contentImport>
-              </HomeIndex_contentLeftDiv>  
-            </Col>
-            <Col span={12}>
-              <HomeIndex_contentRightDiv>
-                  <HomeIndex_contentRight>
-                    <HomeIndex_h2FontSizeRight>系统中药库</HomeIndex_h2FontSizeRight>
-                    <Button type="primary" size="large" style={{width:"117px",height:"24px", border: "none",borderRadius:"5px",fontSize: "14px",background:"rgba(102, 204, 0, 1)",color:"#FFFFFF"}} >一键自动匹配</Button>
-                    <Button type="primary" size="large" style={{width:"117px",height:"24px", border: "none",borderRadius:"5px",fontSize: "14px",background:"rgba(102, 204, 0, 1)",color:"#FFFFFF",marginLeft: "0.5rem"}} >更新本院药库</Button>
-                  </HomeIndex_contentRight>
-                  <HomeIndex_radioGroupRight> 
-                    <HomeIndex_radioChooseRight>
-                      <RadioGroup onChange={this.onChange} value={this.state.value}>
-                        <Radio value={1}>全部</Radio>
-                        <Radio value={2}>已匹配</Radio>
-                        <Radio value={3}>未匹配</Radio>
-                      </RadioGroup> 
-                    </HomeIndex_radioChooseRight>  
-                    <InputWidthDiv>
-                    <InputWidthRight
-                      placeholder="在本院用药目录中查找中药"
-                      onSearch={value => console.log(value)}
-                      enterButton
-                    />
-                    </InputWidthDiv>
-                  </HomeIndex_radioGroupRight>
-                  <HomeIndex_contentImportRight className="disableScoll">
-                      <Div_p_row>
-                        <Div_contentRight>A</Div_contentRight>
-                        <Div_contentPRight>
-                          阿魏
-                          (已匹配<Tag closable onClose={this.log.bind(this)}>Tag 2</Tag>
-                          <Tag closable onClose={this.preventDefault.bind(this)}>Prevent Default</Tag>)
-                        </Div_contentPRight>
-                        <Div_contentPRight>艾叶</Div_contentPRight>
-                      </Div_p_row>
-                      <Div_p_row>
-                        <Div_contentRight>B</Div_contentRight>
-                        <Div_contentPRight>巴豆1</Div_contentPRight>
-                        <Div_contentPRight>巴豆2</Div_contentPRight>
-                        <Div_contentPRight>八角茴香</Div_contentPRight>
-                      </Div_p_row>
-                      <Div_p_row>
-                        <Div_contentRight>C</Div_contentRight>
-                        <Div_contentPRight>苍耳子</Div_contentPRight>
-                        <Div_contentPRight>苍术</Div_contentPRight>
-                        <Div_contentPRight>草果</Div_contentPRight>
-                        <Div_contentPRight>草乌</Div_contentPRight>
-                        <Div_contentPRight>草豆蔑</Div_contentPRight>
-                      </Div_p_row>
-                      <Div_p_row>
-                        <Div_contentRight>D</Div_contentRight>
-                        <Div_contentPRight>大腹皮</Div_contentPRight>
-                        <Div_contentPRight>大黄</Div_contentPRight>
-                        <Div_contentPRight>大蓟</Div_contentPRight>
-                        <Div_contentPRight>大莉炭</Div_contentPRight>
-                        <Div_contentPRight>大青</Div_contentPRight>
-                      </Div_p_row>
-                  </HomeIndex_contentImportRight>
-                </HomeIndex_contentRightDiv>  
-            </Col>
-          </Row>
-        </CenterContant>
-      </HomeIndexL>
+      <div className='HomeIndex_home'>
+        <div className='HomeIndex_home_div'>
+          <p>中药信息匹配
+            <Button type="primary" onClick={this.onHandleAutomatch}>一键自动匹配</Button>
+          </p><hr /><hr className='hr1' />
+        </div>
+        <Row>
+          <Col span={12} className="HomeIndex_centerLine" >
+            <YKItems title="本院用药目录"
+              keyName={'medicineid'}
+              radioValue={0}
+              searchText="在本院用药目录中查找中药"
+              freshLists={this.onOrgFreshList}
+              tableData={{ columns: this.orgColumns, dataSource: orgData }}
+              isMatch={false}
+              check={this.onCheckOrgItem} />
+          </Col>
+          <Col span={12}>
+            <YKItems title="系统中药库"
+              keyName={'medicineid'}
+              radioValue={0}
+              searchText="在系统用药目录中查找中药"
+              freshLists={this.onCenterFreshList}
+              tableData={{ columns: this.centerColumns, dataSource: centerData }}
+              isMatch={true}
+              check={this.onCheckCenterItem} />
+          </Col>
+        </Row>
+        <Modal visible={weightModalVisiable} title='设置权重' onOk={this.handleweightOk} onCancel={this.handleweightCancel} footer={[
+          <Button key="back" onClick={this.handleweightCancel}>返回</Button>,
+          <Button key="submit" type="primary" onClick={this.handleOnClick}>保存</Button>,
+        ]}>
+          <Table rowKey={(record) => this.generatorRowKey(record)} dataSource={weightModalData} columns={this.weightColums} />
+        </Modal>
+      </div>
     );
   }
 }
 
-// const SpecTag = styled(Tag)`
-//   ${tagsSty.yelloGreen}
-// `;
-
-const HomeIndexL = styled.div`
-  
-`;
-
-const HomeIndex_div = styled.div`
-  
-`;
-
-const HomeIndex_divP = styled.p`
-  
-`;
-
-const CenterContant = styled.div`
-  
-`;
-
-const HomeIndex_contentLeftDiv = styled.div`
-  margin-left: 1rem;
-`;
-
-const HomeIndex_contentLeft = styled.div`
-
-`;
-
-const HomeIndex_radioGroup = styled.div`
-  margin-top: 0.5rem;
-`;
-
-const HomeIndex_radioChoose = styled.div`
-  width: 50%;
-  float: left;
-`;
-
-const InputWidthDiv = styled.div`
-  width: 49%;
-  float: left;
-  margin-bottom: 1rem;
-`;
-
-const InputWidth = styled(Search)`
-  
-`;
-
-const HomeIndex_contentImport = styled.div`
-  border: 1px solid rgba(121, 121, 121, 1);
-  overflow-x: hidden;
-  overflow-y: visible;
-  width: 498px;
-  height: 38rem;
-  margin-top: 1rem;
-`;
-
-const Div_p_row = styled.div`
-
-`;
-
-const Div_content = styled.div`
-  width: 100%;
-  height: 21px;
-  border: 1px solid;
-  border: none;
-  background-color: #f2f2f2;
-`;
-
-const Div_contentP = styled.div`
-  width: 100%;
-  height: 30px;
-  border-bottom: 1px solid #f2f2f2;
-  background-color: #ffffff;
-`;
-
-const HomeIndex_contentRightDiv = styled.div`
-  margin-left: 1rem;
-`;
-
-const HomeIndex_contentRight = styled.div`
-
-`;
-
-const HomeIndex_radioGroupRight = styled.div`
-  margin-top: 0.5rem;
-`;
-
-const HomeIndex_radioChooseRight = styled.div`
-  width: 50%;
-  float: left;
-`;
-
-const InputWidthRight = styled(Search)`
-  
-`;
-
-const HomeIndex_contentImportRight = styled.div`
-  border: 1px solid rgba(121, 121, 121, 1);
-  overflow-x: hidden;
-  overflow-y: visible;
-  width: 498px;
-  height: 38rem;
-  margin-top: 1rem;
-`;
-
-const Div_contentRight = styled.div`
-  width: 100%;
-  height: 21px;
-  border: 1px solid;
-  border: none;
-  background-color: #f2f2f2;
-`;
-
-const Div_contentPRight = styled.div`
-  width: 100%;
-  height: 30px;
-  borderBottom: 1px solid #f2f2f2;
-  background-color: #ffffff;
-`;
-
-const HomeIndex_h2FontSize = styled.h2`
-  font-size: 16px;
-  margin-top: 0.5rem;
-`;
-
-const HomeIndex_h2FontSizeRight = styled.h2`
-  font-size: 16px;
-  margin-top: 0.5rem;
-`;
-
-
-const HomeIndexIndex = Form.create()(HomeIndex);
 export default HomeIndexIndex;

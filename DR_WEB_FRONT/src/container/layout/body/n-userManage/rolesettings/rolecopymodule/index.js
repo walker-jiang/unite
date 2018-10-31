@@ -6,6 +6,7 @@ import React, {Component} from 'react';
 import styled from 'styled-components';
 import { Form, Input,Select, Button,Switch  } from 'antd';
 import StyButton from 'components/antd/style/button';
+import Icon from 'components/dr/icon';
 
 const FormItem = Form.Item;
  class Index extends React.Component{
@@ -39,8 +40,8 @@ const FormItem = Form.Item;
       <Container>
       <Header>
           <span style={{color:'#000',margin:'0px 5px'}}>▶</span>
-          <span style={{color:'#5d6ecb',cursor:'pointer'}} onClick={(e) => this.props.setuptype(1)}>角色设置</span>
-          <span style={{color:'#000',margin:'0px 5px'}}> ＞ </span>
+          <span style={{color:'#0a6ecb',cursor:'pointer'}} onClick={(e) => this.props.setuptype(1)}>角色设置</span>
+          <StyleIconC type='next'/>
           <span>复制角色</span>
       </Header>
       <Body>
@@ -105,6 +106,7 @@ const Header = styled.div `
   width: 100%;
   background-color: rgb(242,242,242);
   box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.349019607843137);
+  padding-left:15px;
 `;
 const Body =styled.div`
   width: 100%;
@@ -141,6 +143,12 @@ const Line = styled.div`
   background-color: #666;
   margin-bottom: 20px;
 `
+const StyleIconC = styled(Icon)`
+  margin:0px 5px;
+  height:16px;
+  width:16px;
+  margin-top:6px;
+`;
 const SureButton = styled(Button)`
   ${StyButton.semicircle}
 `;

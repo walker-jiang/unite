@@ -47,10 +47,10 @@ class ContentOne extends Component {
           {
             value.map((item,index)=>{
               return(
-                  <p key={index} style={{marginLeft:12}} className="odd" onClick={()=>this.unfold("isUnfold",isUnfold)}>
+                  <div key={index} style={{marginLeft:12}} className="odd" onClick={()=>this.unfold("isUnfold",isUnfold)}>
                     <p style={{fontWeight:700,float:'left'}} onClick={()=>{ this.props.changeInitData(item) }}>{name}{index+1}：</p>
                     <p className="even">{ isUnfold?item.ordercontent:this.cutOut(item.ordercontent) }</p>
-                  </p>
+                  </div>
               )
             })
           }

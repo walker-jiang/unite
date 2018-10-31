@@ -15,7 +15,6 @@ class TagGroup extends React.Component {
     tags: this.props.tagList,
   };
   componentWillReceiveProps(nextProps){
-    console.log("nextProps=============",nextProps.tagList);
     this.setState({tags:nextProps.tagList})
   }
   randomColor = () =>{
@@ -32,7 +31,6 @@ class TagGroup extends React.Component {
         <Row>
         {
           tags.map((tag, index) => {
-            console.log("tag@@@@@@@@@@@@",tag);
             return (
               <Col span={4} key={index} style={{textAlign:'center'}}>
                 <div dangerouslySetInnerHTML = {{ __html:tag }}></div>

@@ -148,12 +148,17 @@ const Content = styled.div`
 `;
 const ActionButton = styled.div`
   width: 1097px;
+  margin-top: 10px;
 `;
 const SureButton = styled(Button)`
   ${buttonSty.semicircle}
+  width: 100px !important;
+  height: 30px !important;
 `;
 const CancelButton = styled(Button)`
   ${buttonSty.gray}
+  width: 100px !important;
+  height: 30px !important;
 `;
 /*
 @作者：姜中希

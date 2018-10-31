@@ -54,12 +54,18 @@ export default class ChHerbalMedicine extends Component {
       });
       return;
     }
-    this.checkTaboo(herbalData); // 紧急项目监测
-    if(this.props.actionType == 'add'){
-      this.addHerbalData(formData, herbalData);
-    }else{ // 修改保存
-      this.mmodifyHerbalData(formData, herbalData);
-    }
+    let promise = this.checkTaboo(herbalData); // 紧急项目监测
+    promise.then((res) => {
+      console.log('继续保存', res);
+      if(this.props.actionType == 'add'){
+        this.addHerbalData(formData, herbalData);
+      }else{ // 修改保存
+        this.mmodifyHerbalData(formData, herbalData);
+      }
+    }, (res) => {
+      console.log('点击查看', res);
+      this.form.refreshHerbalData(res);
+    });
     // console.log('表单数据', formData);
     // console.log('草药数据', herbalData);
   };
@@ -116,7 +122,6 @@ export default class ChHerbalMedicine extends Component {
       },
       buOrderDtlList: herbalData,   // 药品信息
     }
-    // console.log('paramsData', paramsData);
     let params = {
       url: 'BuOrderController/postData',
       type: 'post',
@@ -131,7 +136,7 @@ export default class ChHerbalMedicine extends Component {
       that.handlePopClose();
       that.props.reloadList();
     };
-    // ajaxGetResource(params, success);
+    ajaxGetResource(params, success);
   };
   checkTaboo(herbalData){
     let caseData = this.getCaseData();
@@ -145,15 +150,16 @@ export default class ChHerbalMedicine extends Component {
     let params = {
       url: 'Taboo/matchByDtl',
       server_url: config_taboo_url,
+      async: false,
       type: 'post',
       data: JSON.stringify(paramsData)
     }
     let that = this;
+    let promise = null;
     function success(res) {
       if(res.result){
         let carefulArr = []; // 慎用项
         let tabooArr = []; // 禁忌项
-
         res.data.forEach(item => {
           if(item.careful){
             carefulArr.push(item.careful);
@@ -170,23 +176,34 @@ export default class ChHerbalMedicine extends Component {
           if(tabooArr.length){
             title.push(<p>禁忌项目：{tabooArr.join('、')}</p>);
           }
-          confirm({
-            title: title.map(item => item),
-            iconType: 'exclamation-circle',
-            okText: '继续保存',
-            cancelText: '查看',
-            onOk() {
-              console.log('OK');
-            },
-            onCancel() {
-              console.log('Cancel');
-            },
+          promise = new Promise((resolve, reject) => {
+            confirm({
+              title: title.map(item => item),
+              iconType: 'exclamation-circle',
+              okText: '继续保存',
+              cancelText: '查看',
+              onOk() { // 继续保存
+                resolve(herbalData);
+              },
+              onCancel() { // 查看禁忌
+                herbalData.map(herbalItem => {
+                  res.data.forEach(itemcTaboo => {
+                    if(itemcTaboo.itemid == herbalItem.itemid){
+                      herbalItem.careful = itemcTaboo.careful;
+                      herbalItem.taboo = itemcTaboo.taboo;
+                    }
+                  })
+                  return herbalItem;
+                });
+                reject(herbalData);
+              },
+            });
           });
         }
       }
-      console.log('保存成功')
     };
     ajaxGetResource(params, success);
+    return promise;
   };
   /** [getCaseData 初始化病历数据] */
   getCaseData(){

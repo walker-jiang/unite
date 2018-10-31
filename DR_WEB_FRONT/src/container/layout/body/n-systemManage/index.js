@@ -12,7 +12,7 @@ export default class Index extends Component {
     return (<Container>
       <Header>
         <LeftBox>
-          <StyleIconA type='m_system_manage'/>
+          <StyleIconA type='s_system_manage'/>
           系统管理
         </LeftBox>
         <RightBox to='/Layout/more'>
@@ -23,7 +23,7 @@ export default class Index extends Component {
       <Body>
         <RowLine>
           <Linkx to='/Layout/systemManage'>
-            <StyleIcon type='m_system_manage'/>
+            <StyleIcon type='m_system_setup'/>
           <Pan>系统设置</Pan>
           </Linkx>
           <Linkx to='/Layout/'>
@@ -70,9 +70,9 @@ const Header = styled.div `
 const LeftBox = styled.div `
   display: flex;
   height: 33px;
-  width: 115px;
+  width: 102px;
   border-bottom: 1px solid #3190b0;
-  font-size: 20px;
+  font-size: 18px;
   font-style: normal;
   font-weight: 400;
   line-height: 26px;
@@ -86,6 +86,7 @@ const LeftBox = styled.div `
 const StyleIconA = styled(Icon)`
  width: 19px;
  height: 19px;
+ margin-top: 6px;
 `
 const StyleIconB =styled(Icon)`
   width: 30px;

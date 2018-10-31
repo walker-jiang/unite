@@ -68,12 +68,16 @@ changeTime () {
   let that = this;
   function callBack(res){
       if(res.result){
-        let patienList = res.data.records.map((item, index)=>{
-          item.key = index; // 加唯一key值
-          return item
-        });
-        let totalRecords = res.data.total;
-        that.setState({patienList: patienList, totalRecords});
+        if(res.data != null){
+          let patienList = res.data.records.map((item, index)=>{
+            item.key = index; // 加唯一key值
+            return item
+          });
+          let totalRecords = res.data.total;
+          that.setState({patienList: patienList, totalRecords});
+        } else {
+          that.setState({patienList: [], totalRecords: 0});
+        }
     }else{
       that.setState({patienList: []});
         console.log('异常响应信息', res);
@@ -217,7 +221,7 @@ disabledStartDate = (startValue) => {
    * @return {[type]}         [undefined]
    */
   onShowSizeChange = (current, size) => {
-    this.setState({ pageSize: size }, () => {
+    this.setState({ pageSize: size, curPage: 1 }, () => {
       this.getPatientData();
     });
   };
@@ -256,7 +260,7 @@ disabledStartDate = (startValue) => {
                   onChange={this.onStartChange}
                   onOpenChange={this.handleStartOpenChange}
               />
-              至
+              <DateCenter>至</DateCenter>
               <DatePicker
                   disabledDate={this.disabledEndDate}
                   defaultValue={moment(today, 'YYYY-MM-DD')}
@@ -271,7 +275,9 @@ disabledStartDate = (startValue) => {
             <KeywordsSreach>
                 查询关键词：
             </KeywordsSreach>
-            <SpecInput placeholder='请输入姓名/手机号/患者编号快速查询' onChange={(e) => {this.setState({ keyword: e.target.value },function(){console.log('this.at',this.state.keyword)})}}></SpecInput>
+            <SpecInput placeholder='请输入姓名/手机号/患者编号快速查询' 
+            onChange={(e) => {this.setState({ keyword: e.target.value })}} 
+            onKeyDown={ e => { e.keyCode == 13 ? this.changeTime() : null }}></SpecInput>
             <SearchIcon type='search-thin' fill='#FFFFFF' onClick={this.getPatientData}></SearchIcon>
           </SreachKeywords>
         </Title>
@@ -309,6 +315,9 @@ const SpecTable = styled(Table)`
   tr {
     height: 40px;
   }
+  .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+    padding: 10px !important;
+  }
 `;
 const Title = styled.div`
   height: 50px;
@@ -322,36 +331,42 @@ const Title = styled.div`
 const ImgBingLi = styled.img`
   width: 2rem;
   position: absolute;
-  margin-top: 0.8rem;
-  margin-left: 2.7rem;
+  margin-top: 1rem;
+  margin-left: 0.5rem;
 `;
 const Ele = styled.span`
   color: rgb(51, 51, 51);
   font-family: 'Microsoft YaHei Regular', 'Microsoft YaHei';
   font-weight: 400;
   font-style: normal;
-  font-size: 20px;
+  font-size: 16px;
   position: absolute;
-  margin-top: 0.5rem;
-  margin-left: 5rem;
+  margin-top: 0.9rem;
+  margin-left: 3.1rem;
 `;
 const DateDiv = styled.div`
   width: 38rem;
-  margin-left: 30rem;
+  margin-left: 25rem;
   margin-top: 0.7rem;
   position: absolute;
 `;
+const DateCenter = styled.span`
+  font-size: 14px;
+  margin-left: 10px;
+  margin-right: 10px;
+`;
 const MedicalCenter = styled.span`
-
+  font-size: 14px;
 `;
 const SreachKeywords = styled.div`
   width: 27rem;
-  margin-left: 72.4rem;
+  margin-left: 72.7rem;
   margin-top: 0.7rem;
   position: absolute;
 `;
 const KeywordsSreach = styled.span`
   margin-left: -7rem;
+  font-size: 14px;
 `;
 const SpecInput = styled(Input)`
   ${inputSty.direct}

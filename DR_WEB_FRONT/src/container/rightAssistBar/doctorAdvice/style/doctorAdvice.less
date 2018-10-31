@@ -5,6 +5,9 @@ p {
  * 右侧辅助栏-----医嘱-----智能论治
  */
 .intelligentTreat {
+  .ant-pagination-item {
+    min-width: 25px;
+  }
   background-color: #f2f2f2;
   .ant-tabs-bar {
     border-bottom: 0px;
@@ -61,7 +64,7 @@ p {
       border-color: #e8e8e8;
       height:28px;
       line-height:28px;
-      width:95px;
+      width:98px;
       text-align: center;
       border-top-left-radius:7px;
       border-top-right-radius:7px;
@@ -76,7 +79,7 @@ p {
       opacity: 0;
     }
     .ant-tabs-content {
-      width:390px;
+      width:400px;
       margin-left:10px;
       margin-right:10px;
     }
@@ -86,7 +89,7 @@ p {
 .data {
   overflow-x: hidden;
   overflow-y: scroll;
-  height:68vh;
+  height:71.4vh;
 }
 .data::-webkit-scrollbar {
       display: none;
@@ -165,7 +168,7 @@ p {
     }
   }
   .content-detail-two {
-    width:390px;
+    width:400px;
     border: 1px #E4E4E4 solid;
     background-color: #EBF5FF;
     padding-top:8px;
@@ -338,5 +341,103 @@ p {
     float:left;
     padding-top: 5px;
     cursor: pointer;
+  }
+}
+.doctorAdvice_template {
+  height: 78.2vh;
+  top: 44px;
+  right:0px;
+  z-index: 1;
+  background-color: #ffffff;
+  .tab {
+    height:48px;
+    background-color: #F2F2F2;
+    .ant-input-search-icon {
+      font-size: 18px;
+    }
+    .ant-input-affix-wrapper {
+      width: 97%;
+      height: 30px;
+      margin-top: 8px;
+    }
+    .ant-input{
+      border-radius: 50px;
+    }
+    .anticon-bars {
+      cursor: pointer;
+      width:25px;
+      margin-top:12px;
+      margin-left:8px;
+      margin-right:8px
+    }
+  }
+  .content {
+    font-size: 13px;
+    color: #333333;
+    font-family: 'Arial Negreta', 'Arial Normal', 'Arial';
+    font-style: normal;
+    line-height: 22px;
+    .content-title{
+      height:32px;
+      background-color: #ffffff;
+      padding-top:5px;
+      padding-left:8px;
+      .ant-btn {
+        height: 22px;
+        color: rgb(10, 110, 203);
+        font-size: 12px;
+        border-width: 1px;
+        border-style: solid;
+        border-color: rgb(10, 110, 203);
+        border-radius: 150px;
+        padding-top: 2px;
+      }
+      .anticon-up {
+        font-size: 20px;
+        color: #0066CC;
+        cursor: pointer;
+      }
+      .anticon-down {
+        font-size: 20px;
+        color: #0066CC;
+        cursor: pointer;
+      }
+      .ant-divider{
+        background:#999999;
+      }
+      .content-p {
+        font-weight: 700;
+        text-align: left;
+      }
+      .content-p-two {
+        font-weight: 700;
+        text-align: left;
+        color: #008000;
+        margin-left: -10px;
+      }
+      .content-p-three {
+        text-align: right;
+        color: #0066CC;
+        margin-right: 25px;
+        cursor: pointer;
+      }
+    }
+  }
+  .data {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height:73.4vh;
+  }
+  .data::-webkit-scrollbar {
+        display: none;
+  }
+  .content-icon{
+    position:relative;
+    font-size: 20px;
+    color:#0066CC;
+    right:0px;
+    float:right;
+    margin-right:20px;
+    margin-top:-25px;
   }
 }

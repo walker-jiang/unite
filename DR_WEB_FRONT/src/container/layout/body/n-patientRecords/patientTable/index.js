@@ -66,9 +66,13 @@ export default class Index extends Component {
     };
     function callBack(res){
       if(res.result){
-        let patienList = res.data.records.map(item => Object.assign(item, { key: item.patientid }))
-        let totalRecords = res.data.total;
-        self.setState({patienList: patienList, totalRecords});
+        if(res.data != null){
+          let patienList = res.data.records.map(item => Object.assign(item, { key: item.patientid }))
+          let totalRecords = res.data.total;
+          self.setState({patienList: patienList, totalRecords});
+        }else{
+          self.setState({patienList: [],totalRecords:0});
+        }
       }else{
         self.setState({patienList: []});
         console.log('异常响应信息', res);
@@ -188,7 +192,9 @@ export default class Index extends Component {
    * @return {[type]}         [undefined]
    */
   onShowSizeChange = (current, size) => {
-    this.setState({ pageSize: size }, () => {
+    console.log('size',size);
+    console.log('current',current);
+    this.setState({ pageSize: size, curPage: 1 }, () => {
       this.getPatientData();
     });
   };
@@ -216,7 +222,10 @@ export default class Index extends Component {
           <Right>
             <RegisterButton onClick={this.quickReceive}>患者建档</RegisterButton>
             <ArrowPicker ref={ref => {this.arrowPicker = ref}}></ArrowPicker>
-            <SpecInput placeholder='请输入患者姓名/患者编号/身份证号/拼音' onChange={(e) => {this.setState({ keyword: e.target.value })}}></SpecInput>
+            <SpecInput placeholder='请输入患者姓名/患者编号/身份证号/拼音' 
+             onChange={(e) => {this.setState({ keyword: e.target.value })}} 
+             onKeyDown={ e => { e.keyCode == 13 ? this.getPatientData() : null }}>
+            </SpecInput>
             <SearchIcon type='search-thin' fill='#FFFFFF' onClick={this.getPatientData}></SearchIcon>
           </Right>
         </Header>

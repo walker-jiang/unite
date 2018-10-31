@@ -102,14 +102,15 @@ class SiderDemo extends React.Component {
   }
   render() {
     let { collapsed ,leftModules} = this.state;
+    let userName = window.sessionStorage.getItem('username');
     const MenuOption=[]
     if(leftModules.length !=0){
       leftModules.forEach(item=>{
         if(item.syModule.callurl.indexOf('http') == 0){
           var div = <MenuItems trigger={null} key={item.syModule.moddesc}>
-                      <a href={item.syModule.callurl} target='_blank'>
+                      <a href={item.syModule.callurl + '&username=' + userName} target='_blank'>
                         <StyleICon type={item.syModule.moddesc} value={collapsed}/>
-                        <span>{item.syModule.modname}</span>
+                        <span style={{color:'#90bee2'}}>{item.syModule.modname}</span>
                       </a>
                     </MenuItems>
           MenuOption.push(div)
@@ -117,7 +118,7 @@ class SiderDemo extends React.Component {
           var div = <MenuItems trigger={null} key={item.syModule.moddesc}>
             <Link to={item.syModule.callurl}>
               <StyleICon type={item.syModule.moddesc} value={collapsed}/>
-              <span>{item.syModule.modname}</span>
+              <span style={{color:'#90bee2'}}>{item.syModule.modname}</span>
             </Link>
           </MenuItems>
           MenuOption.push(div)
@@ -133,7 +134,7 @@ class SiderDemo extends React.Component {
           trigger={null}
           width="140px"
         >
-        <div className="switch" style={{  height: "32px",margin: "16px",textAline:"center"}} onClick={this.onCollapse} >
+        <div className="switch" style={{  height: "32px",margin: "16px 16px 4px 17px",textAline:"center"}} onClick={this.onCollapse} >
            {this.state.collapsed?<i className="anticon iconfont">&#xe78b;</i>:<i className="anticon iconfont">&#xe788;</i>}
          </div>
             <div style={{width:"140px",position:"relative",overflow:"hidden",paddingRight:"-20px",height:this.state.height}}>
@@ -148,10 +149,10 @@ class SiderDemo extends React.Component {
                 <MenuItems id="height" trigger={null}>
                   <Links to='/Layout/more' trigger={null}>
                     <StyleICon type='more' value={collapsed}/>
-                    <span>更多</span>
+                    <span style={{color:'#90bee2'}}>更多</span>
                   </Links>
                 </MenuItems>:null}
-              </SpecMenu>
+              </SpecMenu>;
           </div>
         </SpecSider>
     );
@@ -170,19 +171,31 @@ const SpecSider = styled(Sider)`
     color :#91BEE2
   }
   .switch:hover{
-    color:#fff
+    color:#C0D6E2
+  }
+  .switch:active{
+    color:#FFFFFF
   }
   .ant-menu-item {
     color: #91BEE2  !important;
     padding-left: 16px !important;
     width: 50px;
+    a{
+      color: #91BEE2  !important;
+    }
   }
   .ant-menu-item-selected {
     color:#fff !important;
     background:rgba(10, 110, 203, 1) !important;
+    a{
+      color: #fff  !important;
+    }
   }
   .ant-menu-item-active {
     color: #C0D6E2 !important;
+    a{
+      color: #C0D6E2  !important;
+    }
   }
   .ant-menu-inline-collapsed{
     width: 50px;

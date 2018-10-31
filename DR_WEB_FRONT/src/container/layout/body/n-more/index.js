@@ -329,8 +329,8 @@ const AppSet = styled.span`
 `;
 const StyIcon = styled(Icon1)`
   width: 19px;
-  height: 19px;
-  margin-top: -4px;
+  height: 16px;
+  margin-top: -2px;
 `;
 const MoreIcon = styled(Icon1)`
   width: 20px;

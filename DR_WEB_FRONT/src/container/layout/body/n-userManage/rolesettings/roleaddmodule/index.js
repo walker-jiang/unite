@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import { Form, Input,Select, Button,Switch  } from 'antd';
 import StyButton from 'components/antd/style/button';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
+import Icon from 'components/dr/icon';
 
 const FormItem = Form.Item;
  class Index extends React.Component{
@@ -145,7 +146,7 @@ const FormItem = Form.Item;
       }
     };
     console.log('添加角色',data)
-    // ajaxGetResource(params, callBack);
+    ajaxGetResource(params, callBack);
   }
   /**
    * [putroleinfo 修改角色信息]
@@ -182,7 +183,7 @@ const FormItem = Form.Item;
         console.log('异常响应信息', res);
       }
     };
-    console.log('修改角色',data)
+    // console.log('修改角色',data)
     // ajaxGetResource(params, callBack);
   }
   /** [handleSubmit 表单提交事件] */
@@ -194,7 +195,7 @@ const FormItem = Form.Item;
           if(self.props.id){
               self.putroleinfo(values);
           }else{
-            self.postroleinfo(values);
+             self.postroleinfo(values);
           }
 
         }
@@ -218,8 +219,8 @@ const FormItem = Form.Item;
       <Container>
       <Header>
           <span style={{color:'#000',margin:'0px 5px'}}>▶</span>
-          <span style={{color:'#5d6ecb',cursor:'pointer'}} onClick={(e) => this.props.setuptype(1)}>角色设置</span>
-          <span style={{color:'#000',margin:'0px 5px'}}> ＞ </span>
+          <span style={{color:'#0a6ecb',cursor:'pointer'}} onClick={(e) => this.props.setuptype(1)}>角色设置</span>
+          <StyleIconC type='next'/>
           <span>{id?'修改角色':'添加角色'}</span>
       </Header>
       <Body>
@@ -283,6 +284,7 @@ const Header = styled.div `
   width: 100%;
   background-color: rgb(242,242,242);
   box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.349019607843137);
+  padding-left:15px;
 `;
 const Body =styled.div`
   width: 100%;
@@ -324,6 +326,12 @@ const SureButton = styled(Button)`
 `;
 const CancelButton = styled(Button)`
   ${StyButton.gray}
+`;
+const StyleIconC = styled(Icon)`
+  margin:0px 5px;
+  height:16px;
+  width:16px;
+  margin-top:6px;
 `;
 const WrappedRegistrationForm = Form.create()(Index);
 

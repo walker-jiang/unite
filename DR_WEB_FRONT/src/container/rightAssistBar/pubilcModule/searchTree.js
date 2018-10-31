@@ -42,7 +42,7 @@ export default class SearchTree extends Component {
         {
           typeof(dataSource) == "undefined"
           ?
-          <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据，请重新搜索</center>
+          <center style={{marginTop:50}}><img src={zanwunerong} style={{width:160}}/><br/><br/>暂无数据，请重新搜索</center>
           :
           <Tree
             defaultExpandAll={true}

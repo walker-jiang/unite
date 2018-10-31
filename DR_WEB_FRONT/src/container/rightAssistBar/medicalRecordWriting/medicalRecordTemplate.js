@@ -55,7 +55,7 @@ export default class MedicalRecordTemplate extends Component {
   queryTable = (content, page, size, listenFormData) =>{
     var self = this;
     console.log("开始获取table列表==========");
-    let params = {
+    var params = {
       page:page,
       size:size,
       personid:window.sessionStorage.getItem('userid'),//window.patientID
@@ -68,6 +68,7 @@ export default class MedicalRecordTemplate extends Component {
       smelling:listenFormData.smelling, //闻诊
       hpi:listenFormData.hpi,  //现病史
     }
+    console.log("开始获取table列表==========",params);
     function callBack(res){
       if(res.result && res.data){
         console.log("获取table列表成功==============",res);
@@ -267,7 +268,7 @@ export default class MedicalRecordTemplate extends Component {
               (
                 isQuery
                 ?
-                <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据，请输入诊断信息后方可查询</center>
+                <center style={{marginTop:50}}><img src={zanwunerong} style={{width:160}}/><br/><br/>暂无数据，请输入诊断信息后方可查询</center>
                 :
                 <center style={{marginTop:50}}><div className="example"><Spin/>正在加载中,请稍后...</div></center>
               )

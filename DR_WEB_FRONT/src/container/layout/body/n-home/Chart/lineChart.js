@@ -51,21 +51,27 @@ class LineChart extends React.Component {
     this.props.ronRef(this);
     this.linechartDate('day',true);
   }
-
   linechartDate=(linechartDate,sel)=>{
     var date = new Date(),
         year = date.getFullYear(),//年
         month = parseInt(date.getMonth())+parseInt(1),//月
-        dat = parseInt(date.getDate()),//日
+        month =(month<10 ? "0"+month : month),
+        dat = date.getDate(),//日
         h = new Date().getHours(),//h
         m = new Date().getMinutes(),//m
         s = new Date().getSeconds(),//s
-        st1 = year+'-'+month+'-'+parseInt(dat-9)+' '+'00:00:00',
         st = year+'-'+month+'-'+dat+' '+h+':'+m+':'+s,
-        monthStart = year+'-'+month+'-'+'1'+' '+'00:00:00',
-        yearStart= year+'-'+'1'+'-'+'1'+' '+'00:00:00',
+        yearStart= (year-5)+'-'+'01'+'-'+'01'+' '+'00:00:00',
         data;
-    console.log('dateTime',st,st1);
+        date.setMonth(date.getMonth()-5);//之前的5个月
+        date.setDate(date.getDate()-10);//之前的10个工作日
+    var month1 = date.getMonth()+1,
+        month1 =(month1<10 ? "0"+month1 : month1),
+        dat1 = date.getDate(),
+        dat1 =(dat1<10 ? "0"+dat1 : dat1),
+        st1 = year+'-'+month+'-'+dat1+' '+'00:00:00',
+        monthStart = year+'-'+month1+'-'+'01'+' '+'00:00:00';
+    // console.log('dateTime',month,month1,dat1);
     if(linechartDate){
       if(linechartDate == 'day'){
         data ={
@@ -74,6 +80,7 @@ class LineChart extends React.Component {
           doctorid:window.sessionStorage.getItem('userid'),
           groupBy:'day'
         }
+        getryndata(data,'日就诊总量','日初诊量','日复诊量')
       }else if (linechartDate == 'month') {
         data ={
           beginTime:monthStart,
@@ -81,6 +88,7 @@ class LineChart extends React.Component {
           doctorid:window.sessionStorage.getItem('userid'),
           groupBy:'month'
         }
+        getryndata(data,'月就诊总量','月初诊量','月复诊量')
       }else if (linechartDate == 'year') {
         data ={
           beginTime:yearStart,
@@ -88,6 +96,7 @@ class LineChart extends React.Component {
           doctorid:window.sessionStorage.getItem('userid'),
           groupBy:'year'
         }
+        getryndata(data,'年就诊总量','年初诊量','年复诊量')
       }
     }else{
       data ={
@@ -96,134 +105,35 @@ class LineChart extends React.Component {
         doctorid:window.sessionStorage.getItem('userid'),
         groupBy:'day'
       }
+      getryndata(data,'日就诊总量','日初诊量','日复诊量')
     }
-
-
-    // console.log('pathname',data);
-    const params = {
-      type:'get',
-      dataType:'JSON',
-      contentType:'application/json;charset=UTF-8',
-      async:true,
-      server_url:config_service_url,
-      url:'IndexController/getStatAnalysis',
-      data:data
-    }
-    Ajax(params,scallBack,ecallback);
     var this_=this,dataA = [];
-    function scallBack(res){
-      console.log('successres',res);
-
-      res.data.map((val,i) => {
-        dataA.push({month:val.times,temperature:val.firstcas,city:'日就诊总量'},{month:val.times,temperature:val.firstcas,city:'日初诊量'},{month:val.times,temperature:val.oldcas,city:'日复诊量'})
-      })
-      // console.log('dataA',dataA);
-      this_.setState({
-        daTa:dataA
-      },()=>{
-          this_.upData(sel)
-      });
+    function getryndata(data,jz,cz,fz){
+      const params = {
+        type:'get',
+        dataType:'JSON',
+        contentType:'application/json;charset=UTF-8',
+        async:true,
+        server_url:config_service_url,
+        url:'IndexController/getStatAnalysis',
+        data:data
+      }
+      Ajax(params,scallBack,ecallback);
+      function scallBack(res){
+        res.data.map((val,i) => {
+          dataA.push({month:val.times,temperature:val.firstcas,city:jz},{month:val.times,temperature:val.firstcas,city:cz},{month:val.times,temperature:val.oldcas,city:fz})
+        })
+        // console.log('dataA',dataA);
+        this_.setState({
+          daTa:dataA
+        },()=>{
+            this_.upData(sel)
+        });
+      }
+      function ecallback(res){
+        console.log('errorres',res);
+      }
     }
-    function ecallback(res){
-      console.log('errorres',res);
-    }
-    // var data = [{
-    //   "month": "Jan",
-    //   "city": "日新增患者量",
-    //   "temperature": 7
-    // }, {
-    //   "month": "Jan",
-    //   "city": "日就诊总量",
-    //   "temperature": 3.9
-    // }, {
-    //   "month": "Feb",
-    //   "city": "日新增患者量",
-    //   "temperature": 6.9
-    // }, {
-    //   "month": "Feb",
-    //   "city": "日就诊总量",
-    //   "temperature": 4.2
-    // }, {
-    //   "month": "Mar",
-    //   "city": "日新增患者量",
-    //   "temperature": 9.5
-    // }, {
-    //   "month": "Mar",
-    //   "city": "日就诊总量",
-    //   "temperature": 5.7
-    // }, {
-    //   "month": "Apr",
-    //   "city": "日新增患者量",
-    //   "temperature": 14.5
-    // }, {
-    //   "month": "Apr",
-    //   "city": "日就诊总量",
-    //   "temperature": 8.5
-    // }, {
-    //   "month": "May",
-    //   "city": "日新增患者量",
-    //   "temperature": 18.4
-    // }, {
-    //   "month": "May",
-    //   "city": "日就诊总量",
-    //   "temperature": 11.9
-    // }, {
-    //   "month": "Jun",
-    //   "city": "日新增患者量",
-    //   "temperature": 21.5
-    // }, {
-    //   "month": "Jun",
-    //   "city": "日就诊总量",
-    //   "temperature": 15.2
-    // }, {
-    //   "month": "Jul",
-    //   "city": "日新增患者量",
-    //   "temperature": 25.2
-    // }, {
-    //   "month": "Jul",
-    //   "city": "日就诊总量",
-    //   "temperature": 17
-    // }, {
-    //   "month": "Aug",
-    //   "city": "日新增患者量",
-    //   "temperature": 26.5
-    // }, {
-    //   "month": "Aug",
-    //   "city": "日就诊总量",
-    //   "temperature": 16.6
-    // }, {
-    //   "month": "Sep",
-    //   "city": "日新增患者量",
-    //   "temperature": 23.3
-    // }, {
-    //   "month": "Sep",
-    //   "city": "日就诊总量",
-    //   "temperature": 14.2
-    // }, {
-    //   "month": "Oct",
-    //   "city": "日新增患者量",
-    //   "temperature": 18.3
-    // }, {
-    //   "month": "Oct",
-    //   "city": "日就诊总量",
-    //   "temperature": 10.3
-    // }, {
-    //   "month": "Nov",
-    //   "city": "日新增患者量",
-    //   "temperature": 13.9
-    // }, {
-    //   "month": "Nov",
-    //   "city": "日就诊总量",
-    //   "temperature": 6.6
-    // }, {
-    //   "month": "Dec",
-    //   "city": "日新增患者量",
-    //   "temperature": 9.6
-    // }, {
-    //   "month": "Dec",
-    //   "city": "日就诊总量",
-    //   "temperature": 4.8
-    // }];
   }
     render(){
       return(

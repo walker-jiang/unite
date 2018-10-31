@@ -45,6 +45,10 @@ class Index extends Component {
     }
   }
  
+  componentWillReceiveProps(){
+    this.setState({ visible: 1 })
+  };
+
   handleSubmit = (e) => {
     e.preventDefault();
     const { getFieldsValue, validateFieldsAndScroll } = this.props.form;
@@ -252,7 +256,7 @@ class Index extends Component {
         <Title>
             <ImgBingLi src={cureIcon}/>
             <Cure>治未病</Cure>
-            <Line></Line>
+            {/* <Line></Line> */}
         </Title>
         {c}
       </Container>
@@ -302,17 +306,17 @@ const Cure = styled.span`
   margin-top: 0.5rem;
   margin-left: 5rem;
 `;
-const Line = styled.div`
-  background-color: rgba(242, 242, 242, 1);
-  box-sizing: border-box;
-  border-width: 1px;
-  border-style: solid;
-  border-color: rgba(49, 144, 176, 1);
-  width: 96px;
-  height: 2px;
-  margin-top: 3rem;
-  margin-left: 2rem;
-`;
+// const Line = styled.div`
+//   background-color: rgba(242, 242, 242, 1);
+//   box-sizing: border-box;
+//   border-width: 1px;
+//   border-style: solid;
+//   border-color: rgba(49, 144, 176, 1);
+//   width: 96px;
+//   height: 2px;
+//   margin-top: 3rem;
+//   margin-left: 2rem;
+// `;
 const SpecForm= styled(Form)`
   width: 600px;
   &&& > div > div > .ant-form-item {

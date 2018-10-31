@@ -658,7 +658,7 @@ class PatientBasicInfo extends Component {
             </Col>
           </Row>
           <Row>
-            <Col span={7} >
+            <Col span={7} offset={1}>
               <SpecFormItem
                 labelCol={{span: 8}}
                 wrapperCol={{span: 14}}
@@ -717,7 +717,7 @@ class PatientBasicInfo extends Component {
                   )}
               </SpecFormItem>
             </Col>
-            <Col span={6}>
+            <Col span={5}>
               <SpecFormItem
                 labelCol={{span: 1}}
                 wrapperCol={{span: 23}}

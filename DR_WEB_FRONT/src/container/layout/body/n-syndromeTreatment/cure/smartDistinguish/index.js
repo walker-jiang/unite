@@ -482,9 +482,11 @@ export default class SmartDistinguish extends Component {
         <Right>
           <SpecTabs key='1' defaultActiveKey='1' animated={false}>
             <TabPane tab="智能辩证" key="1">
-              {
-                <AuxiliaryDiagnosis type={"2"} addChinaMedicineData={this.addChinaMedicineData} changeInitDataTwo={this.addChinaMedicineData} listenFormData={{}}/>
-              }
+              <AuxiliaryDiagnosis
+                type={"2"}
+                addChinaMedicineData={this.addChinaMedicineData}
+                changeInitDataTwo={this.addChinaMedicineData} 
+              />
             </TabPane>
           </SpecTabs>
         </Right>

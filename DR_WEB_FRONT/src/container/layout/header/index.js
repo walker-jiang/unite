@@ -21,7 +21,8 @@ const Container = styled.div`
   color: #0A6ECB;
   display: flex;
   flex-direction: row;
-  justify-content: space-between
+  justify-content: space-between;
+  box-shadow:2px 1px 3px #CCCCCC;
 `;
 /*
 @作者：姜中希

@@ -19,6 +19,10 @@ export default class index extends Component {
     this.handleClick = this.handleClick.bind(this)
   }
 
+  componentWillReceiveProps(){
+    this.setState({ visible: 1 })
+  };
+
   handleClick(pram,patientid,patientname,sex,birthday,patienttypeDic,examDate,casetype){
     console.log('patientid',patientid)
     this.setState({

@@ -200,15 +200,18 @@ export default class TestResults extends Component {
 
   printClick(){
     let printDataSource = this.state.printDataSource;
+    delete(printDataSource["status"]);
+    delete(printDataSource["msg"]);
+    delete(printDataSource["result"]);
     let time = this.state.time || this.state.yearEight[0];
-    let { sexDesc, name, age } = this.props;
-    let patientYear = age.substr(0,4);
-    var date=new Date;
-    var year=date.getFullYear(); 
-    let patientAge = year - patientYear;
-    let newData={ name, time, sexDesc, patientAge, ...printDataSource }
-    console.log('newData',JSON.stringify(newData));
-    window.reportPrint(1,JSON.stringify(newData))
+    let { sexDesc, name, patientAge } = this.props;
+    printDataSource.data.name = name;
+    printDataSource.data.time = time;
+    printDataSource.data.sexDesc = sexDesc;
+    printDataSource.data.age = patientAge;
+    // let newData={ name, time, sexDesc, patientAge, ...printDataSource }
+    console.log('printDataSource',JSON.stringify(printDataSource));
+    window.reportPrint(1,JSON.stringify(printDataSource))
   }
 
   pdfClick(){

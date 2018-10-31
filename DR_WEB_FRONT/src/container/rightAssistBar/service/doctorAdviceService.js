@@ -16,7 +16,7 @@ class DoctorAdviceService {
         if(testData){
           return Simulation.GetList();
         }else{
-          Xhr.post('GET','application/x-www-form-urlencoded;charset=utf-8','http://10.192.4.28:8088/BuOrderController/getBuOrderHistory', params, false, callBack);
+          Xhr.post('GET','application/x-www-form-urlencoded;charset=utf-8',config_service_url+'BuOrderController/getBuOrderHistory', params, false, callBack);
         }
     }
 
@@ -101,7 +101,7 @@ class DoctorAdviceService {
           Xhr.post(
             'get',
             'application/x-www-form-urlencoded;charset=utf-8',
-            config_InteLigenTreat_url+'/TCMAE/api/scheme/getCpm',
+            config_InteLigenTreat_url+'TCMAE/api/scheme/getCpm',
             params,
             false,
             callBack
@@ -156,7 +156,7 @@ class DoctorAdviceService {
           Xhr.post(
             'get',
             'application/x-www-form-urlencoded;charset=utf-8',
-            config_service_url+'/BuOrderController/importTem',
+            config_service_url+'BuOrderController/importTem',
             params,
             false,
             callBack

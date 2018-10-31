@@ -1,97 +1,149 @@
-/*
-@作者：马奔
+/* @作者：马奔
 @日期：2018-10-25
-@描述：处方授权模块
-*/
+@描述：处方授权模块 */
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import { Input,Checkbox,Button, Row, Col} from 'antd';
+import {Input, Checkbox, Button, Row, Col} from 'antd';
 import StyButton from 'components/antd/style/button';
+import Icon from 'components/dr/icon';
 
 const Search = Input.Search;
 const CheckboxGroup = Checkbox.Group;
-export default class Index extends React.Component{
+export default class Index extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       checkedList: ['保健品'],
       indeterminate: true,
       checkAll: false,
-      plainOptions:['基本药品 ', '保健品', '处方药品','精神类药品二类','皮试药品','注射类药品'],
-      islook:this.props.islook, //控制操作还是展示
-      id:this.props.id,//展示或者操作时候当前角色或用户的id
+      plainOptions: [
+        '基本药品 ',
+        '保健品',
+        '处方药品',
+        '精神类药品二类',
+        '皮试药品',
+        '注射类药品'
+      ],
+      islook: this.props.islook, //控制操作还是展示
+      id: this.props.id, //展示或者操作时候当前角色或用户的id
     };
   };
-  componentWillMount(){
-  };
-  onChange=(checkedValues)=>{
-  console.log('选中的值为', checkedValues);
+  componentWillMount() {};
+  onChange = (checkedValues) => {
+    console.log('选中的值为', checkedValues);
   }
   render() {
-    let{ plainOptions ,islook}  =this.state;
-    let {defaultCheckedList} =this.state.checkedList;
-    return(
-      <Container>
-        {islook==''?
-          <Header>
-            <span style={{color:'#000',margin:'0px 5px'}}>▶</span>
-            <span style={{color:'#5d6ecb',cursor:'pointer'}} onClick={(e) => this.props.setuptype(1)}>角色设置</span>
-            <span style={{color:'#000',margin:'0px 5px'}}> ＞ </span>
-            <span>处方授权</span>
-            <span style={{color:'#000',margin:'0px 10px'}}>(当前角色:<span style={{color:'#ff0000',margin:'0px 5px'}}>机构管理员</span>)</span>
-            <Right>
-             <span style={{width:'116px'}}>查询关键词：</span>
-             <Search  placeholder="请输入角色编码或角色名称快速查询"  onSearch={value => console.log(value)}  enterButton/>
-            </Right>
-          </Header>
-          :null}
+    let {plainOptions, islook} = this.state;
+    let {defaultCheckedList} = this.state.checkedList;
+    return (<Container>
+      {
+        this.props.islook
+          ? null
+          : <Header>
+              <span style={{
+                  color: '#000',
+                  margin: '0px 5px'
+                }}>▶</span>
+              <span style={{
+                  color: '#0a6ecb',
+                  cursor: 'pointer'
+                }} onClick={(e) => this.props.setuptype(1)}>角色设置</span>
+              <StyleIconC type='next'/>
+              <span>处方授权</span>
+              <span style={{
+                  color: '#000',
+                  margin: '0px 10px'
+                }}>(当前角色:<span style={{
+                color: '#ff0000',
+                margin: '0px 5px'
+              }}>机构管理员</span>)</span>
+              <Right>
+                <span style={{
+                    width: '116px'
+                  }}>查询关键词：</span>
+                <Search placeholder="请输入角色编码或角色名称快速查询" onSearch={value => console.log(value)} enterButton/>
+              </Right>
+            </Header>
+      }
+
       <Body>
         <LeftBox>
           <Top>• 药品限制权限（处方中禁止出现以下选中的药品品类）</Top>
           <Box>
-              <CheckboxGroup style={{ width: '100%', }} onChange={this.onChange} >
-               <Rows>
-                 <Cols span={10}><Checkbox value="基本药品">基本药品</Checkbox></Cols>
-                 <Cols span={10}><Checkbox value="保健品">保健品</Checkbox></Cols>
-                 <Cols span={10}><Checkbox value="处方药品">处方药品</Checkbox></Cols>
-               </Rows>
-               <Rows>
-                 <Cols span={10}><Checkbox value="毒麻药品">毒麻药品</Checkbox></Cols>
-                 <Cols span={10}><Checkbox value="抗菌药">抗菌药 </Checkbox></Cols>
-                 <Cols span={10}><Checkbox value="精神类药品一类">精神类药品一类</Checkbox></Cols>
-                 <Cols span={10}><Checkbox value="精神类药品二类">精神类药品二类</Checkbox></Cols>
-               </Rows>
-               <Rows>
-                 <Cols span={10}><Checkbox value="皮试药品">皮试药品</Checkbox></Cols>
-                 <Cols span={10}><Checkbox value="注射类药品">注射类药品</Checkbox></Cols>
-                 <Cols span={10}><Checkbox value="大输液药品">大输液药品</Checkbox></Cols>
-               </Rows>
-               <Rows className='lastlist'>
-                 <Cols span={10}><Checkbox value="新药">新药</Checkbox></Cols>
-                 <Cols span={10}><Checkbox value="贵重药品">贵重药品</Checkbox></Cols>
-               </Rows>
-             </CheckboxGroup>,
+            <CheckboxGroup style={{
+                width: '100%'
+              }} onChange={this.onChange}>
+              <Rows>
+                <Cols span={10}>
+                  <Checkbox value="基本药品">基本药品</Checkbox>
+                </Cols>
+                <Cols span={10}>
+                  <Checkbox value="保健品">保健品</Checkbox>
+                </Cols>
+                <Cols span={10}>
+                  <Checkbox value="处方药品">处方药品</Checkbox>
+                </Cols>
+              </Rows>
+              <Rows>
+                <Cols span={10}>
+                  <Checkbox value="毒麻药品">毒麻药品</Checkbox>
+                </Cols>
+                <Cols span={10}>
+                  <Checkbox value="抗菌药">抗菌药
+                  </Checkbox>
+                </Cols>
+                <Cols span={10}>
+                  <Checkbox value="精神类药品一类">精神类药品一类</Checkbox>
+                </Cols>
+                <Cols span={10}>
+                  <Checkbox value="精神类药品二类">精神类药品二类</Checkbox>
+                </Cols>
+              </Rows>
+              <Rows>
+                <Cols span={10}>
+                  <Checkbox value="皮试药品">皮试药品</Checkbox>
+                </Cols>
+                <Cols span={10}>
+                  <Checkbox value="注射类药品">注射类药品</Checkbox>
+                </Cols>
+                <Cols span={10}>
+                  <Checkbox value="大输液药品">大输液药品</Checkbox>
+                </Cols>
+              </Rows>
+              <Rows className='lastlist'>
+                <Cols span={10}>
+                  <Checkbox value="新药">新药</Checkbox>
+                </Cols>
+                <Cols span={10}>
+                  <Checkbox value="贵重药品">贵重药品</Checkbox>
+                </Cols>
+              </Rows>
+            </CheckboxGroup>,
           </Box>
         </LeftBox>
         <RightBox>
-        {islook==''?
-          <Top>• 限制药品分类
-            <Inputs/>
-            <SureButton>+添加</SureButton>
-        </Top>
-        :<Top>• 限制药品分类</Top>}
+          {
+            this.props.islook
+              ? <Top>• 限制药品分类</Top>
+              : <Top>• 限制药品分类
+                  <Inputs/>
+                  <SureButton>+添加</SureButton>
+                </Top>
+          }
         </RightBox>
       </Body>
-      {islook==''?
-        <Foot>
-          <Total>全选</Total>
-          <Total>全不选</Total>
-          <BorderButton>保存授权</BorderButton>
-          <CancelButton>返回</CancelButton>
-        </Foot>
-        :null}
-      </Container>
-    )
+      {
+        this.props.islook
+          ?null
+          :<Foot>
+              <Total>全选</Total>
+              <Total>全不选</Total>
+              <BorderButton>保存授权</BorderButton>
+              <CancelButton>返回</CancelButton>
+            </Foot>
+
+      }
+    </Container>)
   }
 }
 
@@ -107,8 +159,9 @@ const Header = styled.div `
   width: 100%;
   background-color: rgb(242,242,242);
   box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.349019607843137);
+  padding-left:15px;
 `;
-const Right=styled.div`
+const Right = styled.div `
   width: 460px;
   height: 50px;
   position: absolute;
@@ -117,22 +170,22 @@ const Right=styled.div`
   display: flex;
   align-items: center;
 `
-const Body =styled.div`
+const Body = styled.div `
   padding:20px;
   display:flex;
 `
-const LeftBox=styled.div`
+const LeftBox = styled.div `
  border:1px solid #ccc;
  width:49%;
  height:452px;
  margin-right:14px;
 `
-const RightBox =styled.div`
+const RightBox = styled.div `
   border:1px solid #ccc;
   width:49%;
   height:452px;
 `
-const Top=styled.div`
+const Top = styled.div `
   height:40px;
   border-bottom:1px solid #ccc;
   display:flex;
@@ -141,25 +194,25 @@ const Top=styled.div`
   color: rgb(101, 101, 101);
   padding-left:20px;
 `
-const Box =styled.div`
+const Box = styled.div `
    width:100%;
    height:100%;
    padding:10px 30px 0px;
 `
-const Rows=styled(Row)`
+const Rows = styled(Row)`
    border-bottom:1px dashed #ccc;
    height:110px !important;
    &&&.lastlist{
      border:none !important;
    }
 `
-const Cols=styled(Col)`
+const Cols = styled(Col)`
   height:50% !important;
   display:flex !important;
   justify-content:flex-start;
   align-items:center;
 `
-const Inputs=styled(Input)`
+const Inputs = styled(Input)`
   border:0 !important;
   border-bottom:1px solid #0a6ecb !important;
   width: 400px !important;
@@ -175,7 +228,7 @@ const SureButton = styled(Button)`
   padding:0 !important;
   ${StyButton.semicircle}
 `;
-const Foot =styled.div`
+const Foot = styled.div `
   height:70px;
   border-top:1px solid #0a6ecb;
   display:flex;
@@ -183,7 +236,7 @@ const Foot =styled.div`
   align-items:center;
   padding: 0px 20px;
 `
-const Total  =styled.span`
+const Total = styled.span `
   width:42px;
   color: rgb(10, 110, 203);
   font-size: 12px;s
@@ -201,3 +254,9 @@ const CancelButton = styled(Button)`
   height: 28px !important;
   border:1px solid #0a6ecb !important;
 `;
+const StyleIconC = styled(Icon)`
+  margin:0px 5px;
+  height:16px;
+  width:16px;
+  margin-top:6px;
+`

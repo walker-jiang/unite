@@ -5,6 +5,7 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
+import Icon from 'components/dr/icon';
 
 export default class Index extends React.Component{
   constructor(props) {
@@ -47,10 +48,12 @@ export default class Index extends React.Component{
       <Container>
         <Header>
             <span style={{color:'#000',margin:'0px 5px'}}>▶</span>
-          <span style={{color:'#5d6ecb',cursor:'pointer'}} onClick={(e) => this.props.setuptype(1,2)}>用户设置</span>
-            <span style={{color:'#000',margin:'0px 5px'}}> ＞ </span>
+            <span style={{color:'#0a6ecb',cursor:'pointer'}} onClick={(e) => this.props.setuptype(1,2)}>角色设置</span>
+            <StyleIconC type='next'/>
             <span>角色信息</span>
+
             <Rightback>
+              <StyleIcon type='go_back'/>
               <span style={{color:'#5d6ecb',cursor:'pointer'}} onClick={(e) => this.props.setuptype(1,2)}>返回</span>
             </Rightback>
         </Header>
@@ -90,9 +93,10 @@ const Header = styled.div `
   background-color: rgb(242,242,242);
   box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.349019607843137);
   position: relative;
+  padding-left:15px;
 `;
 const Rightback=styled.div`
-  width: 50px;
+  width: 80px;
   height: 100%;
   position: absolute;
   right: 0;
@@ -141,3 +145,18 @@ const Line = styled.div`
  background-color: #ccc;
  margin-top: 70px;
 `
+const StyleIcon = styled(Icon)`
+  width: 30px;
+  height: 30px;
+  margin-top:8px;
+  font-size:30px;
+  font-style:normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+`;
+const StyleIconC = styled(Icon)`
+  margin:0px 5px;
+  height:16px;
+  width:16px;
+  margin-top:6px;
+`;

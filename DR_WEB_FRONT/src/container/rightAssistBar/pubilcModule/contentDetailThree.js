@@ -86,15 +86,15 @@ export default class ContentDetail extends Component {
       <div>
         <div className="content-detail-two">
           <p onClick={()=>this.unfold("drugName",drugName)}>
-            {item.drugName.length>26?<p style={{marginLeft:3}}><Icon type={drugName?"down":"right"}/>成分：</p>:<p style={{marginLeft:15}}>成分：</p>}
+            {item.drugName && item.drugName.length>26?<p style={{marginLeft:3}}><Icon type={drugName?"down":"right"}/>成分：</p>:<p style={{marginLeft:15}}>成分：</p>}
           </p>
           <p>{ drugName?item.drugName:this.cutOut(item.drugName) }</p>
           <p onClick={()=>this.unfold("treatname",treatname)}>
-            {item.treatname.length>26?<p style={{marginLeft:3}}><Icon type={treatname?"down":"right"}/>主治：</p>:<p style={{marginLeft:15}}>主治：</p>}
+            {item.treatname && item.treatname.length>26?<p style={{marginLeft:3}}><Icon type={treatname?"down":"right"}/>主治：</p>:<p style={{marginLeft:15}}>主治：</p>}
           </p>
           <p>{ treatname?item.treatname:this.cutOut(item.treatname) }</p>
           <p onClick={()=>this.unfold("therapy",therapy)}>
-            {item.therapy.length>26?<p style={{marginLeft:3}}><Icon type={therapy?"down":"right"}/>治则治法：</p>:<p style={{marginLeft:15}}>治则治法：</p>}
+            {item.therapy && item.therapy.length>26?<p style={{marginLeft:3}}><Icon type={therapy?"down":"right"}/>治则治法：</p>:<p style={{marginLeft:15}}>治则治法：</p>}
           </p>
           <p>{ therapy?item.therapy:this.cutOut(item.therapy) }</p>
         </div>

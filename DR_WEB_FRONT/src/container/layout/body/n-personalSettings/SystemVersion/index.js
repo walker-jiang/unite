@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
-import { Form,Collapse,Input,Button,Select  } from 'antd';
+import { Form,Collapse,Input,Modal,Button,Select  } from 'antd';
 import "./style.less"
 const FormItem = Form.Item;
 const Panel = Collapse.Panel;
+const confirm = Modal.confirm;
+
 import Ajax from 'commonFunc/ajaxGetResource';
 class SystemVersion extends React.Component{
   constructor(props) {
@@ -11,49 +13,53 @@ class SystemVersion extends React.Component{
         checked:true
       };
   }
-  componentWillMount(){
-    console.log('windowwwwww',window.sessionStorage,window.localStorage);
+  componentDidMount(){
+    if(this.props.vername.split('ZYG')[1] == this.props.cusVerson){
+      var btnverson = document.getElementById('btnverson');
+      btnverson.style.cssText='disabled:true';
+    };
+    // console.log('windowwwwww',window.sessionStorage,window.localStorage);
+    this.props.form.setFieldsValue({
+      "vername":this.props.vername,//服务器端版本号
+      "localverName":this.props.cusVerson,//本地客户端版本号
+    })
+  }
+  //弹框
+  showConfirm=(confirm) => {
+    confirm
   }
   handleSubmit=(e,values)=>{
-    console.log("e",e);
-    console.log('formsds',this.props.form.validateFields);
-    this.props.form.validateFields((ee,val)=>{
-      console.log('valvalval',val,e);
-      //系统版本请求传参
-      // var date = {
-      //   newPassword:values.password,
-      //   orgUerid:window.sessionStorage.getItem('userid'),
-      //   password:values.password
-      // }
-      let params = {
-        url: 'SyVersionController/getVerNo',
-        type: 'post',
-        // data: JSON.stringify(date),
-        server_url:config_login_url,
-        data:verid
+    e.stopPropagation;
+    e.preventDefault;
+    //检测当前版本跟本地客户端版本 是否一致
+    console.log('split(3)',this.props.vername.split('ZYG'));
+    if(this.props.cusVerson !== ''){
+      if(this.props.vername.split('ZYG')[1] !== this.props.cusVerson){
+        //彈框
+        confirm({
+          title: '您想要更新系统版本吗',
+          cancelText:'取消',
+          okText:'确定',
+          onOk() {
+            window.updateClient();//更新版本
+          },
+          onCancel() {},
+        });
+        this.showConfirm(confirm)
       }
-      let that = this;
-      function success(res) {
-        console.log('更新版本resres11111',res);
-        if(res.desc == '成功' && res.code == 200){
-          window.modal = Modal.success({
-            title: '版本更新成功！',
-            onOk: ()=>{
-              window.modal = null
-            }
-          });
-        }else{
-          window.modal = Modal.error({
-            title: '请求失败，版本更新不成功！',
-            onOk: ()=>{
-              window.modal = null
-            }
-          });
+    }else{
+      confirm({
+        title: '获取版本失败',
+        okText:'确定',
+        // content: 'When clicked the OK button, this dialog will be closed after 1 second',
+        onOk() {
+          return new Promise((resolve, reject) => {
+            setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
+          }).catch(() => console.log('Oops errors!'));
         }
-      };
-      Ajax(params, success);
-
-    })
+      });
+      this.showConfirm(confirm)
+    }
   }
   isModify=()=>{
     this.setState({checked:false})
@@ -72,38 +78,36 @@ class SystemVersion extends React.Component{
          };
     return (
       <div className="PersonalInformationSettings">
-         <Form onSubmit={this.handleSubmit} className="login-form">
+         <Form className="login-form">
             <div style={{overflow:"hidden"}}>
                  <div style={{width:"55%",float:"left",paddingRight:"2%"}}>
                     <FormItem
                     {...formItemLayout}
                       label="服务器端版本号 ："
                     >
-                       {getFieldDecorator('userName', {
+                       {getFieldDecorator('vername' , {
                          rules: [{ required: false, message: 'Please input your username!' }],
                        })(
-                         <Input disabled={this.state.checked}  placeholder="请输入" />
+                         <Input disabled={this.state.checked}  placeholder='版本号未获取'/>
                        )}
                      </FormItem>
                      <FormItem
                      {...formItemLayout}
                        label="本地客户端版本 ："
                      >
-                        {getFieldDecorator('userName', {
+                        {getFieldDecorator('localverName', {
                           rules: [{ required: false, message: 'Please input your username!' }],
                         })(
-                          <Input disabled={this.state.checked}  placeholder="请输入" />
+                          <Input disabled={this.state.checked}  placeholder="版本号未获取" />
                         )}
-                        <Button style={{position:"absolute",left:"101%",marginTop:"5px",height:"32px",borderRadius:"16px",background:"#0A6ECB",color:"#fff"}} htmlType="submit">更新版本</Button>
-
+                        <Button
+                          id='btnverson'
+                          onClick={this.handleSubmit} style={{position:"absolute",left:"101%",marginTop:"5px",marginLeft:"5px",height:"32px",borderRadius:"16px",background:"#0A6ECB",color:"#fff"}} htmlType="submit">更新版本</Button>
                       </FormItem>
-
                   </div>
-
               </div>
          </Form>
       </div>
-
     )
   }
 }

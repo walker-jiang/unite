@@ -6,6 +6,7 @@ import obj_prototype from 'commonFunc/prototype'; // 引入自定义的原型方
 // import Mobile from './container/layout/body/center/content/treatManage/tabButton/mobile/index';
 // import Layout from './container/layout';
 import './global.css'; // 全局样式文件
+import 'antd/dist/antd.less';
 const loadingComponent = () => (<div>Loading...</div>);
 const Layout = Loadable({
   loader: () => import('./container/layout'),
@@ -20,10 +21,6 @@ const HisLogin = Loadable({
   loader: () => import('./container/login/hisLogin'),
   loading: loadingComponent,
 });
-const SystemOption = Loadable({
-  loader: () => import('./container/systemOption'),
-  loading: loadingComponent,
-});
 const Mobile = Loadable({
   loader: () => import('./container/layout/body/treatment/treatItem/diseasePreventTreat/mobile'),
   loading: loadingComponent,
@@ -35,7 +32,6 @@ const App = () => (
 	    	<Route path='/login' component={Login}></Route>
       	<Route path='/hisLogin' component={HisLogin}></Route>
         <Route path='/layout' component={Layout} ></Route>
-        <Route path='/systemOption' component={SystemOption} exact></Route>
         <Route path='/Mobile' component={Mobile} exact></Route>
 	    </Switch>
   	</BrowserRouter>

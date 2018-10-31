@@ -35,6 +35,7 @@ class PersonalInformationSettings extends React.Component{
     let deptidDic = this.state.data[2];//科室
     // this.getDocData(data,postDic,deptidDic);
     deptidDic.forEach((val,ind)=>{
+      console.log('可是数据回显：',);
       console.log('val,ind',val,ind);
       if(data.deptid == val.deptid){
         console.log('data.deptid == val.deptid',data.deptid ,val.deptid);

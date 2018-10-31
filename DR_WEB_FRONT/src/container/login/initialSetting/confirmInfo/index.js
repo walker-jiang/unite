@@ -71,7 +71,9 @@ class Index extends Component {
         }
         let that = this;
         function success(res) {
-          that.props.onToggle();
+          if(res.result){
+            that.props.onToggle();
+          }
         };
         ajaxGetResource(params, success);
       }

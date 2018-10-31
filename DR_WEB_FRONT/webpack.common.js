@@ -166,6 +166,7 @@ module.exports = {
       components: path.resolve(__dirname, 'src/component/'),
       commonFunc: path.resolve(__dirname, 'src/util/commonFunction/'),
       roots: path.resolve(__dirname, 'src/container/'),
+      utils: path.resolve(__dirname, 'src/util/'),
     }
   }
 };

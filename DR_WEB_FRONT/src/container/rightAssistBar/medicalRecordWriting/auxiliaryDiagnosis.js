@@ -16,13 +16,25 @@ const Search = Input.Search;
 export default class template extends Component {
   constructor(props){
     super(props);
+    console.log("this.props.listenFormData===",this.props.listenFormData);
     this.state = {
       content:[],
       visible:false,
+      syndromeName:"",//当前西医疾病数据
       tagList:["头晕","恶心","流清鼻","浑身无力","发烧"],
       isCut:true,
       seachValue:"",//搜索条件
-      listenFormData:this.props.listenFormData,
+      listenFormData:
+        this.props.type == "1"
+        ?
+        this.props.listenFormData:
+        {
+          pridepict:"",
+          inspection:"",
+          palpation:"",
+          smelling:"",
+          hpi:"",
+        },
     };
   };
   componentWillMount(){
@@ -55,19 +67,40 @@ export default class template extends Component {
     }else if(syndromeName == ""){
       Modal.warning({title:"证候为空",content:"请选择一个证候"});
     }else{
-      var params = {
-        keyword:this.repalceHtml(dName)
-      }
-      function callBack(res){
-        if(res.result && res.data){
+      self.setState({ syndromeName:syndromeName },()=>{
+        self.QueryDiseaseList(dName);
+      });
+    }
+  }
+  changeDate = (item) => {
+    this.setState({ syndromeName:item.disname },()=>{
+      this.QueryDiseaseList(item.disname);
+    });
+    this.closeModal();
+  }
+  /**
+   * 获取中医疾病对象
+   * @method QueryDiseaseList
+   */
+  QueryDiseaseList = (dName) => {
+    var self = this;
+    var syndromeName = this.state.syndromeName;
+    var params = {
+      keyword:this.repalceHtml(dName)
+    }
+    function callBack(res){
+      if(res.result && res.data){
+        if(res.data.length !=0){
           console.log("获取中医疾病对象成功==============",res.data[0]);
           self.getIllData(syndromeName,res.data[0].diseaseid,res.data[0]);
         }else{
-          console.log('获取中医疾病对象失败', res);
+          alert('获取中医疾病对象为空', res);
         }
-      };
-      medicalRWService.QueryDiseaseList(params, callBack);
-    }
+      }else{
+        console.log('获取中医疾病对象失败', res);
+      }
+    };
+    medicalRWService.QueryDiseaseList(params, callBack);
   }
   /** [getIllData 获取疾病数据] */
   getIllData(keyword, symptomId, item){
@@ -81,7 +114,7 @@ export default class template extends Component {
     };
     function callBack(res){
       if(res.result){
-        console.log("获取西医疾病对象成功==============",res);
+        console.log("获取症候对象成功==============",res);
         var newArray = [];
         if(res.data.length != 0 ){
           res.data[0]['key'] = res.data[0].diseaseid;
@@ -108,10 +141,10 @@ export default class template extends Component {
             self.props.changeInitDataTwo( symptom, manifestation );
           }
         }else{
-          alert("中医疾病对象获取成功，获取西医疾病对象为空");
+          alert("获取症候对象为空，该条数据错误，请联系管理员检查数据");
         }
       }else{
-        console.log('获取西医疾病对象失败', res);
+        console.log('获取症候对象对象失败', res);
       }
     };
     ajaxGetResource(params, callBack);
@@ -125,15 +158,17 @@ export default class template extends Component {
       smelling:listenFormData.smelling, //闻诊
       hpi:listenFormData.hpi,  //现病史
       content:self.state.seachValue,
-      page:1,
-      size:10
+      current:1,
+      pageSize:10
     }
     function callBack(res){
       if(res.flag == 1 && res.data){
-        console.log("获取辅助诊断列表成功==============",res);
-        self.setState({
-          content:res.data
-        })
+        if(res.data instanceof Array){
+          console.log("获取辅助诊断列表成功==============",res);
+          self.setState({
+            content:res.data
+          })
+        }
       }else{
         console.log('获取辅助诊断列表失败', res);
       }
@@ -150,17 +185,21 @@ export default class template extends Component {
     return (
       <div>
         <ADModal
+          changeDate ={this.changeDate}
           closeModal={this.closeModal}
           visible={visible}
         />
-        <div className="rightAssistBar_template">
+        <div className="rightAssistBar_template" style={this.props.type == "1"?{}:{width:408,height:'100%'}}>
           <div className="tab">
             <Row>
-              <Col span={23} offset={1}>
-                <Search
-                  placeholder={this.props.type == "1"?"请输入模板名称或症状快速查询":"请输入症候和症状快速查询"}
-                  onSearch={value => { this.setState({ seachValue:value },()=>{ this.GetAuxiliaryList(listenFormData) }) }}
-                />
+              <Col span={24}>
+                <center>
+                  <Search
+                    style={this.props.type == "1"?{}:{width:"90%"}}
+                    placeholder={this.props.type == "1"?"请输入模板名称或症状快速查询":"请输入症候和症状快速查询"}
+                    onSearch={value => { this.setState({ seachValue:value },()=>{ this.GetAuxiliaryList(listenFormData) }) }}
+                  />
+                </center>
               </Col>
             </Row>
           </div>
@@ -169,7 +208,6 @@ export default class template extends Component {
               content && content.length !=0
               ?
               content.map((item,index)=>{
-                console.log("item.signName",item.signName);
                 return(
                   <div className="content" key={index} style={{marginBottom:10}}>
                     <div className="content-title">
@@ -182,7 +220,15 @@ export default class template extends Component {
                             <span dangerouslySetInnerHTML = {{ __html:item.syndromeName }}></span>
                           </p>
                         </Col>
-                        <Col span={12}><p className="content-p-three" style={{color:'#0A6ECB'}} onClick={()=>{ this.changeInitData(item.dName,item.syndromeName) }}>加入诊断</p></Col>
+                        <Col span={12}>
+                          <p
+                            className="content-p-three"
+                            style={this.props.type == "1"?{color:'#0A6ECB'}:{color:'#0A6ECB',marginRight:20}}
+                            onClick={()=>{ this.changeInitData(item.dName,item.syndromeName) }}
+                          >
+                            加入诊断
+                          </p>
+                        </Col>
                       </Row>
                     </div>
                     <div className="content-detail">
@@ -192,7 +238,7 @@ export default class template extends Component {
                 )
               })
               :
-              <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据</center>
+              <center style={{marginTop:50}}><img src={zanwunerong} style={{width:160}}/><br/><br/>暂无数据</center>
             }
           </div>
         </div>

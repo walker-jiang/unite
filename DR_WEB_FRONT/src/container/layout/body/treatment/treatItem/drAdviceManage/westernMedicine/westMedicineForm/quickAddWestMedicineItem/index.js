@@ -24,7 +24,7 @@ export default class Index extends Component {
       url: 'BaOrderSuitController/getList',
       data: {
         keyword: value,
-        ordertype: 6
+        ordertype: 4
       }
     };
     let that = this;

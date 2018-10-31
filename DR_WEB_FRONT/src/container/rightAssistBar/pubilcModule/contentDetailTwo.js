@@ -177,7 +177,13 @@ export default class ContentDetail extends Component {
           </p>
           <p>{ drugName?(item.drugName == ""?"无":item.drugName):this.cutOut(item.drugName) }</p>
           <p onClick={()=>this.unfold("treatname",treatname)}>
-            {item.treatname.length>35?<p><Icon type={treatname?"down":"right"}/>主治：</p>:<p style={{marginLeft:15}}>主治：</p>}
+            {
+              item.treatname.length>35
+              ?
+              <p><Icon type={treatname?"down":"right"}/>主治：</p>
+              :
+              <p style={{marginLeft:15}}>主治：</p>
+            }
           </p>
           <p>{ treatname?(item.treatname == ""?"无":item.treatname):this.cutOut(item.treatname) }</p>
           <p onClick={()=>this.unfold("therapy",therapy)}>

@@ -1,23 +1,19 @@
 import React, {Component} from 'react'; // react核心
 import styled from 'styled-components';
-import { Button, Form, Col, Row, Modal, Select, DatePicker, Radio } from 'antd';
+import { Button, Form, Col, Row, Modal, Select } from 'antd';
 import Input from 'components/dr/input/basicInput';
-import { today } from 'commonFunc/defaultData';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
-import zhCN from 'antd/lib/locale-provider/zh_CN';
-import moment from 'moment';
-import 'moment/locale/zh-cn';
-import extractDataFromIdentityCard from 'commonFunc/extractDataFromIdentityCard';
 import QuickAddName from '../../../n-todayPatient/quickReception/quickAddName';
 import selectSty from 'components/antd/style/select';
 import buttonSty from 'components/antd/style/button';
-import radioSty from 'components/antd/style/radio';
-import datePickerSty from 'components/antd/style/datePicker';
 import deepClone from 'commonFunc/deepClone';
+import PatientName from './interconnectedItems/patientName';
+import Cardno from './interconnectedItems/cardnoSexBirthday/cardno';
+import Sex from './interconnectedItems/cardnoSexBirthday/sex';
+import Birthday from './interconnectedItems/cardnoSexBirthday/birthday';
 
 const Option = Select.Option;
 const FormItem = Form.Item;
-const RadioGroup = Radio.Group;
 
 class PatientBasicInfo extends Component {
   constructor(props){
@@ -38,7 +34,7 @@ class PatientBasicInfo extends Component {
       deptData: [], //科室数据
       docData: [], // 就诊医生数据
       patientInfo: {
-        patientname: '',
+        patientname: '姜中希',
         patientno: '',
         mobile: '',
         countryCode: '',
@@ -46,7 +42,7 @@ class PatientBasicInfo extends Component {
         cardtype: '',
         miCardno: '',
         cardno: '',
-        sex: '',
+        sex: '01',
         birthday: '1992-08-21',
         patienttype: '',
         maritalStatus: '',
@@ -60,7 +56,6 @@ class PatientBasicInfo extends Component {
       }
     };
     this.addPatientData = this.addPatientData.bind(this);
-    this.changeDate = this.changeDate.bind(this);
     this.changeProvinceSelector = this.changeProvinceSelector.bind(this);
     this.changeCitySelector = this.changeCitySelector.bind(this);
     this.changeDtepSelector = this.changeDtepSelector.bind(this);
@@ -285,19 +280,8 @@ class PatientBasicInfo extends Component {
     return district;
   };
   addPatientData(patientInfo){
-    this.props.form.setFieldsValue({'patientname': patientInfo.patientname});
-    this.refreshAreaData(patientInfo);
-  };
-  /**
-   * [changeDate 日期选择器日期改变的监听函数]
-   * @param  {[type]} moment     [带格式的日期对象]
-   * @param  {[type]} dateString [日期字符串]
-   * @return {[type]}            [undefined]
-   */
-  changeDate(moment, dateString){
-    let patientInfo = this.state.patientInfo;
-    patientInfo['birthday'] = moment.format('YYYY-MM-DD');
-    this.setState({ patientInfo });
+
+    // this.refreshAreaData(patientInfo);
   };
   /**
    * [changeProvinceSelector 改变省级行政区划的监听函数]
@@ -358,42 +342,12 @@ class PatientBasicInfo extends Component {
       this.props.form.setFieldsValue({ doctor: { key: '', label: ''} }); // 给县级表单选择框赋值
     });
   };
-  /**
-   * [validateCardno 身份证校验]
-   * @param  {[type]}   rule     [校验规则]
-   * @param  {[type]}   value    [当前值]
-   * @param  {Function} callback [回调]
-   * @return {[type]}            [undefined]
-   */
-  validateCardno = (rule, value, callback) => {
-    const { getFieldValue, setFieldsInitialValue } = this.props.form
-    var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
-    let validateResult = true;
-    if(value.trim() == ''){ // 非空校验
-      validateResult = false;
-      callback('请输入证件号码！');
-    }
-    if(reg.test(value) === false) // 格式校验
-    {
-      validateResult = false;
-      callback('请输入有效证件号！');
-    }
-    if(validateResult){
-      let birthday = extractDataFromIdentityCard.getBirthdayFromIdCard(value);
-      let sex = extractDataFromIdentityCard.getSexFromIdCard(value);
-      let patientInfo = this.state.patientInfo;
-      patientInfo.birthday = birthday;
-      patientInfo.sex = sex;
-      this.setState({ patientInfo });
-    }
-    // Note: 必须总是返回一个 callback，否则 validateFieldsAndScroll 无法响应
-    callback()
-  }
+
   render() {
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator, setFieldsValue } = this.props.form;
     let disabled = this.props.disabled;
     let { country, nation, sex, marry, occupation, pationtype, cardtype, pationrel, blood, province, city, district, patientInfo, deptData, docData } = this.state;
-    let age = extractDataFromIdentityCard.getAgeFromBirthday(patientInfo.birthday);
+
     const formItemLayout = {
       labelCol: {
         xs: { span: 8 },
@@ -414,23 +368,13 @@ class PatientBasicInfo extends Component {
          sm: { span: 14 },
        },
      }
+     let commontProps = { formItemLayout, getFieldDecorator, setFieldsValue, disabled };
     return (
-      <SpecForm onSubmit={this.handleSubmit} className='not-draggable' onClick={() => {this.quickAddName.hideResult()}}>
+      <SpecForm onSubmit={this.handleSubmit} className='not-draggable' onClick={() => { this.patientName.hidePopTable() }}>
         <Container>
           <Row>
             <Col span={7} offset={1}>
-              <SpecFormItem
-                {...formItemLayout}
-                colon={false}
-                label="患者姓名："
-                >
-                  {getFieldDecorator('patientname', {
-                    rules: [{ required: true, message: '请填写患者姓名!' }],
-                    initialValue: patientInfo.patientname
-                  })(
-                    <QuickAddName ref={ref => {this.quickAddName = ref}} disabled={disabled} placeholder='请选择患者信息' getQuickData = {this.addPatientData}/>
-                  )}
-              </SpecFormItem>
+              <PatientName commontProps={commontProps} ref={ ref => { this.patientName = ref }} initialValue={patientInfo.patientname}/>
             </Col>
             <Col span={7}>
               <SpecFormItem
@@ -452,10 +396,9 @@ class PatientBasicInfo extends Component {
                 label="患者编号："
                 >
                   {getFieldDecorator('patientno', {
-                    rules: [{ required: true, message: '请填写患者编号!' }],
                     initialValue: patientInfo.patientno
                   })(
-                    <SpecInput disabled={disabled}/>
+                    <SpecInput disabled placeholder='患者编号由系统自动生成'/>
                   )}
               </SpecFormItem>
             </Col>
@@ -468,7 +411,7 @@ class PatientBasicInfo extends Component {
                 label="移动电话："
                 >
                   {getFieldDecorator('mobile', {
-                    rules: [{ required: true, message: '请输入正确格式的移动电话!', pattern: /^1(3|4|5|7|8)\d{9}$/ }],
+                    rules: [{ required: true, message: '请输入正确的移动电话!', pattern: /^1(3|4|5|7|8)\d{9}$/ }],
                     initialValue: patientInfo.mobile
                   })(
                     <SpecInput disabled={disabled}/>
@@ -484,7 +427,7 @@ class PatientBasicInfo extends Component {
                   {getFieldDecorator('countryCode', {
                     initialValue: patientInfo.countryCode ? patientInfo.countryCode : ( country.length ? country[0].value : '')
                   })(
-                    <SpecSelect disabled={disabled}>
+                    <SpecSelect disabled={disabled} onFocus={() => {this.patientName.hidePopTable()}}>
                     {
                       country.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -503,7 +446,7 @@ class PatientBasicInfo extends Component {
                   {getFieldDecorator('nationCode', {
                     initialValue: patientInfo.nationCode ? patientInfo.nationCode : ( nation.length ? nation[0].value : '')
                   })(
-                    <SpecSelect disabled={disabled}>
+                    <SpecSelect disabled={disabled}  onFocus={() => {this.patientName.hidePopTable()}}>
                     {
                       nation.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -525,7 +468,7 @@ class PatientBasicInfo extends Component {
                     rules: [{ required: true, message: '请填写患者证件类型!' }],
                     initialValue: patientInfo.cardtype ? patientInfo.cardtype : ( cardtype.length ? cardtype[0].value : '')
                   })(
-                    <SpecSelect disabled={disabled}>
+                    <SpecSelect disabled={disabled}  onFocus={() => {this.patientName.hidePopTable()}}>
                       {
                         cardtype.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -536,53 +479,15 @@ class PatientBasicInfo extends Component {
               </SpecFormItem>
             </Col>
             <Col span={7}>
-              <SpecFormItem
-                {...formItemLayout}
-                colon={false}
-                label="证件号码："
-                >
-                  {getFieldDecorator('cardno', {
-                    rules: [{ validator: this.validateCardno }],
-                    initialValue: patientInfo.cardno })
-                    (
-                      <SpecInput placeholder='请输入患者证件号码' />
-                    )
-                  }
-                </SpecFormItem>
+              <Cardno commontProps={commontProps} initialValue={patientInfo.cardno}/>
               </Col>
               <Col span={7} offset={1}>
-                <FormItem
-                  {...formItemLayout}
-                  colon={false}
-                  label="性别："
-                  >
-                  {getFieldDecorator('sex', {
-                    rules: [{ required: true, message: '请输入患者性别!' }],
-                    initialValue: patientInfo.sex
-                  })(
-                    <SpecRadioGroup disabled>
-                    {
-                      sex.map(item => <Radio value={item.value} key={item.value}>{item.vname}</Radio>)
-                    }
-                    </SpecRadioGroup>
-                  )}
-                </FormItem>
+                <Sex commontProps={commontProps} sex={sex} initialValue={patientInfo.sex}/>
               </Col>
           </Row>
           <Row>
             <Col span={7} offset={1}>
-              <SpecSpecFormItem
-                {...formItemLayout}
-                colon={false}
-                label="生日/年龄："
-                >
-                {getFieldDecorator('birthday', {
-                  initialValue: moment(patientInfo.birthday, 'YYYY-MM-DD')
-                })(
-                  <SpecDatePicker disabled onChange={this.changeDate} disabled={disabled} allowClear={false}/>
-                )}
-                <SpecSpecInput placeholder='年龄' disabled value={age} onChange={() => {}}/>
-              </SpecSpecFormItem>
+              <Birthday commontProps={commontProps} initialValue={patientInfo.birthday}/>
             </Col>
             <Col span={7}>
               <SpecFormItem
@@ -593,7 +498,7 @@ class PatientBasicInfo extends Component {
                   {getFieldDecorator('patienttype', {
                     initialValue: patientInfo.patienttype ? patientInfo.patienttype : ( pationtype.length ? pationtype[0].value : '')
                   })(
-                    <SpecSelect disabled={disabled}>
+                    <SpecSelect disabled={disabled}  onFocus={() => {this.patientName.hidePopTable()}}>
                     {
                       pationtype.map((item, index)=>
                         <Option key={index} value={item.value} >{item.vname}</Option>
@@ -612,7 +517,7 @@ class PatientBasicInfo extends Component {
                   {getFieldDecorator('maritalStatus', {
                     initialValue: patientInfo.maritalStatus ? patientInfo.maritalStatus : ( marry.length ? marry[0].value : '')
                   })(
-                    <SpecSelect disabled={disabled}>
+                    <SpecSelect disabled={disabled}  onFocus={() => {this.patientName.hidePopTable()}}>
                     {
                       marry.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -633,7 +538,7 @@ class PatientBasicInfo extends Component {
                   {getFieldDecorator('position', {
                     initialValue: patientInfo.position ? patientInfo.position : ( occupation.length ? occupation[0].value : '')
                   })(
-                    <SpecSelect disabled={disabled}>
+                    <SpecSelect disabled={disabled}  onFocus={() => {this.patientName.hidePopTable()}}>
                     {
                       occupation.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -652,7 +557,7 @@ class PatientBasicInfo extends Component {
                   {getFieldDecorator('bloodGroup', {
                     initialValue: patientInfo.bloodGroup ? patientInfo.bloodGroup : ( blood.length ? blood[0].value : '')
                   })(
-                    <SpecSelect disabled={disabled}>
+                    <SpecSelect disabled={disabled}  onFocus={() => {this.patientName.hidePopTable()}}>
                     {
                       blood.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -687,7 +592,7 @@ class PatientBasicInfo extends Component {
                   {getFieldDecorator('province', {
                     initialValue: province.length ? ( patientInfo.province ? patientInfo.province : { key: province[0].provid, label: province[0].provname }) : {key: '', label: ''}
                   })(
-                    <SpecSelect labelInValue onChange={this.changeProvinceSelector} disabled={disabled}>
+                    <SpecSelect labelInValue onChange={this.changeProvinceSelector} disabled={disabled}  onFocus={() => {this.patientName.hidePopTable()}}>
                     {
                       province.map((item, index)=>
                         <Option key={index} value={item.provid}>{item.provname}</Option>
@@ -706,7 +611,7 @@ class PatientBasicInfo extends Component {
                   {getFieldDecorator('city', {
                     initialValue: city.length ? ( patientInfo.city ? patientInfo.city : { key: city[0].cityid, label: city[0].cityname }) : {key: '', label: ''}
                   })(
-                    <SpecSelect labelInValue onChange={this.changeCitySelector} disabled={disabled}>
+                    <SpecSelect labelInValue onChange={this.changeCitySelector} disabled={disabled}  onFocus={() => {this.patientName.hidePopTable()}}>
                     {
                       city.map((item, index)=>
                         <Option key={index} value={item.cityid}>{item.cityname}</Option>
@@ -726,7 +631,7 @@ class PatientBasicInfo extends Component {
                   {getFieldDecorator('district', {
                     initialValue: district.length ? ( patientInfo.district ? patientInfo.district : { key: district[0].distid, label: district[0].distname }) : {key: '', label: ''}
                   })(
-                    <SpecSelect labelInValue disabled={disabled}>
+                    <SpecSelect labelInValue disabled={disabled}  onFocus={() => {this.patientName.hidePopTable()}}>
                     {
                       district.map((item, index)=>
                         <Option key={index} value={item.distid}>{item.distname}</Option>
@@ -774,7 +679,7 @@ class PatientBasicInfo extends Component {
                   {getFieldDecorator('ctRole', {
                     initialValue: patientInfo.ctRole ? patientInfo.ctRole : ( pationrel.length ? pationrel[0].value : '' )
                   })(
-                    <SpecSelect disabled={disabled}>
+                    <SpecSelect disabled={disabled}  onFocus={() => {this.patientName.hidePopTable()}}>
                     {
                       pationrel.map((item, index)=>
                         <Option key={index} value={item.value}>{item.vname}</Option>
@@ -809,7 +714,7 @@ class PatientBasicInfo extends Component {
                   rules: [{ required: true, message: '请选择就诊科室!' }],
                   initialValue: deptData.length ? ( patientInfo.dept ? patientInfo.dept : { key: deptData[0].deptid, label: deptData[0].deptname }) : {key: '', label: ''}
                 })(
-                  <SpecSelect disabled={disabled} onChange={this.changeDtepSelector} labelInValue>
+                  <SpecSelect disabled={disabled} onChange={this.changeDtepSelector} labelInValue  onFocus={() => {this.patientName.hidePopTable()}}>
                   {
                     deptData.map(item => <Option key={item.deptid} value={item.deptid}>{item.deptname}</Option>)
                   }
@@ -826,7 +731,7 @@ class PatientBasicInfo extends Component {
                 {getFieldDecorator('doctor', {
                   initialValue: docData.length ? (patientInfo.doctor ? patientInfo.doctor : { key: docData[0].orgUerid, label: docData[0].realname } ) : {key: '', label: ''}
                 })(
-                  <SpecSelect disabled={disabled} labelInValue>
+                  <SpecSelect disabled={disabled} labelInValue  onFocus={() => {this.patientName.hidePopTable()}}>
                   {
                     docData.map(item => <Option key={item.orgUerid} value={item.orgUerid}>{item.realname}</Option>)
                   }
@@ -842,6 +747,8 @@ class PatientBasicInfo extends Component {
 }
 const SpecForm = styled(Form)`
   width: 1097px;
+  max-height: 450px;
+  overflow-y: scroll;
   border: 1px solid rgba(10, 110, 203, 1);
 `;
 const Container = styled.div`
@@ -858,23 +765,7 @@ const SpecFormItem = styled(FormItem)`
     margin-bottom: 8px;
   }
 `;
-const SpecSpecFormItem = styled(FormItem)`
-  .ant-form-item-children{
-    display: flex;
-    align-items: flex-start;
-  }
-`;
-const SpecSpecInput = styled(Input)`
-  width: 50px;
-  margin-left: 20px;
-  margin-top: -4px;
-`;
-const SpecRadioGroup = styled(RadioGroup)`
-  ${radioSty.borderRadioGroup}
-`;
-const SpecDatePicker = styled(DatePicker)`
-  ${datePickerSty.bottomBorder}
-`;
+
 /*
 @作者：姜中希
 @日期：2018-07-23

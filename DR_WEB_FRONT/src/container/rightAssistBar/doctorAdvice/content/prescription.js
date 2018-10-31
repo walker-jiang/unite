@@ -46,6 +46,7 @@ export default class IntelligentTreat extends Component {
       this.setState({ content:array,total:dataSource.total });//dataSource.total
     }else{
       console.log("方剂暂无数据");
+      this.setState({ content:[],total:0,isQuery:true });//dataSource.total
     }
   }
   callback(key) {
@@ -69,9 +70,11 @@ export default class IntelligentTreat extends Component {
   }
   render() {
     var { content, isQuery, pageSize, total } = this.state;
+    console.log("prescription bu",JSON.parse(this.props.bu));
+    console.log("isQuery============",isQuery);
     return (
       <div className="prescription">
-        <div className="data">
+        <div className="data" style={this.props.type == "1"?{height:'74vh'}:{}}>
           {
             content.length != 0
             ?
@@ -101,9 +104,9 @@ export default class IntelligentTreat extends Component {
                 {
                   total<=10
                   ?
-                  <center style={{marginBottom:10}}>-------已经到底了-------</center>
+                  <center style={{marginBottom:50}}>-------已经到底了-------</center>
                   :
-                  <center style={content.length<5?{position:'absolute',bottom:10,marginLeft:'30%'}:{marginBottom:10}}>
+                  <center style={content.length<5?{position:'absolute',bottom:50,marginLeft:'30%'}:{marginBottom:50}}>
                       <Pagination current={parseInt(pageSize)} total={total} onChange={this.onChange} itemRender={this.itemRender} />
                   </center>
                 }
@@ -115,7 +118,7 @@ export default class IntelligentTreat extends Component {
             (
               isQuery
               ?
-              <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据，请输入诊断信息后方可查询</center>
+              <center style={{marginTop:50}}><img src={zanwunerong} style={{width:160}}/><br/>暂无数据，请输入诊断信息后方可查询</center>
               :
               <center style={{marginTop:50}}><div className="example"><Spin/>&nbsp;&nbsp;&nbsp;正在加载中,请稍后...</div></center>
             )

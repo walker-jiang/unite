@@ -129,8 +129,8 @@ export default class index extends Component {
     var lodeData = data.map((item, i)=>{
         return (
             <ListData key={i} className= {this.state.valueColor[i]} onClick={()=>this.handClickList(i)}>
-                <First>{item.ctstamp.substr(0,10)}|{item.orgidDic}|医师：{item.doctorname}|{item.casetype}</First>
-                <Second>诊断：{item.ctstamp.substr(0,10)}</Second>
+                <First>{item.ctstamp.substr(0,10)}|{item.orgidDic}|医师：{item.doctorname}|{item.casetype == 1? '初诊':'复诊'}</First>
+                <Second>诊断：{item.buDiagnosisInfo.diagnosisDesc}</Second>
             </ListData>
         )
     });
@@ -142,15 +142,15 @@ export default class index extends Component {
             <Col span={6}>
                 <ImgBingLi src={bingLi}/>
                 <Ele>
-                    <BingCenter>病例中心</BingCenter>>电子病历详情
+                    <BingCenter>病例中心</BingCenter><BingCenterIcon>></BingCenterIcon><DianXiang>电子病历详情</DianXiang>
                 </Ele>
             </Col>
             <Col span={4}>
                 <ImgStyle>
-                    <img src={printImages} id="snapshotButton"
+                    <ImgOne src={printImages} id="snapshotButton"
                     onClick={this.printClick.bind(this)}/>&nbsp;&nbsp;&nbsp;&nbsp;
-                    <img src={xian}/>&nbsp;&nbsp;&nbsp;&nbsp;
-                    <img src={exportFile}
+                    <ImgTwo src={xian}/>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <ImgThree src={exportFile}
                     onClick={this.pdfClick.bind(this)}/>&nbsp;&nbsp;&nbsp;&nbsp;
                 </ImgStyle>    
             </Col>
@@ -187,8 +187,8 @@ export default class index extends Component {
 const ImgBingLi = styled.img`
     width: 2rem;
     position: absolute;
-    margin-top: 0.8rem;
-    margin-left: 2.7rem;
+    margin-top: 1rem;
+    margin-left: 0.5rem;
 `;
 const Container = styled.div`
   
@@ -211,13 +211,31 @@ const Ele = styled.span`
     font-size: 20px;
     position: absolute;
     margin-top: 0.5rem;
-    margin-left: 5rem;
+    margin-left: 3.1rem;
 `;
 const BingCenter = styled.span`
     color: #0a6ecb;
+    font-size: 16px;
+    cursor:pointer;
+`;
+const BingCenterIcon = styled.span`
+    margin-left: 13px;
+`;
+const DianXiang = styled.span`
+    margin-left: 13px;
+    font-size: 16px;
 `;
 const ImgStyle = styled.div`
     margin-top: 0.5rem;
+`;
+const ImgOne = styled.img`
+    cursor:pointer;
+`;
+const ImgTwo = styled.img`
+    
+`;
+const ImgThree = styled.img`
+    cursor:pointer;
 `;
 const ImageWidth = styled.img`
     width: 3rem;
@@ -226,6 +244,7 @@ const RuturnBack = styled.div`
     color: #0a6ecb;
     font-size: 15px;
     margin-top: 0.5rem;
+    cursor:pointer;
 `;
 const CenterArea = styled.div`
     width: 100%;
@@ -254,6 +273,7 @@ const ListData = styled.div`
     border-top:none;
     border-left:none;
     border-right:none; 
+    cursor:pointer;
 `;
 const First = styled.p`
     
@@ -262,7 +282,9 @@ const Second = styled.p`
     
 `;
 const ShowHidden = styled.div`
-    
+    margin-left: 0.3rem;
+    margin-top: 15px;
+    cursor:pointer;
 `;
 /*
 @作者：王崇琨

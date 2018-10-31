@@ -177,7 +177,7 @@ export default class Index extends Component {
           </Right>
         </Header>
         <Content>
-          <SpecTable dataSource={patienList} columns={columns} pagination={false}/>
+          <SpecTable dataSource={patienList} columns={columns} pagination={false} scroll={{ y: 40 }}/>
         </Content>
         <LocaleProvider locale={zh_CN}>
           <PageContainer>
@@ -200,6 +200,7 @@ export default class Index extends Component {
 const Container = styled.div`
   height: 100%;
   width: 100%;
+  position: absolute;
 `;
 const Header = styled.div`
   height: 50px;
@@ -252,14 +253,27 @@ const SearchIcon = styled(Icon)`
 `;
 const Content = styled.div`
   width: 100%;
-  overflow: scroll;
   ::-webkit-scrollbar {
     display: none;
   }
-  height: calc(100% - 110px);
+  height: calc(100% - 120px);
   position: relative;
 `;
 const SpecTable = styled(Table)`
+  &&&.ant-table-wrapper, .ant-spin-nested-loading, .ant-spin-container, .ant-table, .ant-table-content, .ant-table-scroll {
+    height: 100%  !important;
+  }
+  .ant-table-scroll {
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  .ant-table-body {
+    max-height: calc(100% - 40px) !important;
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  }
   margin: 16px;
   th {
     background: #E4E4E4 !important;
@@ -280,7 +294,7 @@ const State_done =styled.span`
 const PageContainer = styled.div`
   width: 100%;
   float: left;
-  padding: 0px 20px;
+  padding: 10px 20px;
   display: flex;
   justify-content: space-between;
 `;

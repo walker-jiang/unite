@@ -135,8 +135,8 @@ Tool.post = function (type, contentType, pathname, data, async, callBack, callBa
         console.log("POST返回数据:",res);
         callBack(res);
       },
-      error:(jqXHR, textStatus, errorThrown) => {
-        if(typeof(callBackError) == "function"){
+      error:(res) => {
+        if(typeof(res) == "function"){
           callBackError(res);
         }else{
           global.$publicMethod.Hint("提示",'info',"服务出错，请稍后重试");

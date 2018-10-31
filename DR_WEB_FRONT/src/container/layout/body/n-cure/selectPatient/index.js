@@ -315,7 +315,7 @@ const TabPane = styled.div`
   padding: 5px 5px;
   margin: 0px 10px;
   cursor: pointer;
-  border-bottom: ${props => props.activeTab == props._key ? '2px solid #5959e0': 'none'} ;
+  border-bottom: ${props => props.activeTab == props._key ? '2px solid #0A6ECB': 'none'} ;
 `;
 const Right = styled.div`
   height: 100%;

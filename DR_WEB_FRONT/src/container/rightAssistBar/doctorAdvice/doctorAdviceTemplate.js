@@ -27,6 +27,8 @@ export default class template extends Component {
       shuzhuang:false,
       unfold:false,
       searchValue:"",
+      total:0,
+      isQuery:false,
     };
   };
   componentWillMount(){
@@ -131,6 +133,8 @@ export default class template extends Component {
   importTem = (item) => {
     var self = this;
     var orderidList = [];
+    console.log("111item==============",item.initData);
+    //self.props.actionManager("add",item.initData.recipeList,item.initData);
     item.initData.recipeList.forEach((item,index)=>{
       orderidList.push(item.orderid);
     })
@@ -156,6 +160,7 @@ export default class template extends Component {
    * @param  {[type]}       item [表单内容]
    */
   changeInitData = (item) =>{
+    console.log("医嘱模板引入===============",item);
     var self = this;
     let params = {
       orderidList:item.orderid,//医嘱id集合  //201837501200516147
@@ -227,7 +232,7 @@ export default class template extends Component {
   render() {
     var { content, isCut, unfold, pingpu, shuzhuang, dataSource, searchValue } = this.state;
     return (
-      <div className="rightAssistBar_template">
+      <div className="doctorAdvice_template">
         <div className="tab">
           <Row>
             <Col span={4}>
@@ -276,7 +281,7 @@ export default class template extends Component {
                 )
               })
               :
-              <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据，请重新搜索</center>
+              <center style={{marginTop:50}}><img src={zanwunerong} style={{width:160}}/><br/>暂无数据，请重新搜索</center>
             )
             :
             <div>

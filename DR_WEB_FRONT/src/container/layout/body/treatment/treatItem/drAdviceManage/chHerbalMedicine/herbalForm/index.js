@@ -47,10 +47,13 @@ class HerbalForm extends Component {
       illCaseData: [], //病情数据
       cureCaseData: [], // 治发数据
       subHerbalData: [], // 临症加减草药数据
+      tipVisible: false, // 禁忌、慎用提示是否可见
+      careful_tip: '', // 禁忌提示信息文本
     };
     this.delHerbal = this.delHerbal.bind(this);
     this.dosageChange = this.dosageChange.bind(this);
     this.usageChange = this.usageChange.bind(this);
+    this.carefulTip = this.carefulTip.bind(this);
   }
   /** [componentWillReceiveProps 当从知识库添加处方时会需要改函数] */
   componentWillReceiveProps(nextProps){
@@ -238,22 +241,10 @@ class HerbalForm extends Component {
   }
   herbalChange = (herbalID) => {
     let subHerbalData = this.state.subHerbalData;
-    let herbalData = this.state.herbalData;
+    let self = this;
     subHerbalData.forEach(item => {
-      if(item.id == herbalID){
-        let herbalObj = {};
-        herbalObj.count = 10;
-        herbalObj.baseUnitDic = item.drugUnit;
-        herbalObj.usageid = 9; // 从用法对象转换成字符串用法ID
-        herbalObj.usagename = '无'; // 从用法对象转换成字符串用法名称
-        // Item.freqid = values.frequency.key;
-        // Item.freqname = values.frequency.label;
-        herbalObj.itemcode = item.drugNum;
-        herbalObj.itemid = item.cmId;
-        herbalObj.itemname = item.drugName;
-        herbalObj.itemno = herbalData.length;
-        herbalObj.itemtype = 0; // 中药0
-        herbalData.push(herbalObj);
+      if(item.medicineid == herbalID){
+        self.addHerbalData(JSON.parse(JSON.stringify(item)));
       };
     });
   }
@@ -271,7 +262,13 @@ class HerbalForm extends Component {
     };
     function callBack(res){
       if(res.result){ // 获取当前诊断明细数据
-        self.setState({ subHerbalData: res.data });
+        let subHerbalData = [];
+        res.data.forEach((item) => {
+          let herbalItem = JSON.parse(item.baHerbalMedicineString)[0];
+          herbalItem.count = item.count;
+          subHerbalData.push(herbalItem);
+        });
+        self.setState({ subHerbalData });
       }else{
         console.log('异常响应信息', res);
       }
@@ -354,8 +351,23 @@ class HerbalForm extends Component {
     });
     return { formData, herbalData }
   }
+  /**
+   * [refreshHerbalData 禁忌监测后会更新当前草药数据]
+   * @param  {[type]} herbalData [description]
+   * @return {[type]}            [description]
+   */
+  refreshHerbalData(herbalData){
+    this.setState({ herbalData });
+  };
+  carefulTip(display, value){
+    if(display){
+      this.setState({ tipVisible: false })
+    }else{
+      this.setState({ tipVisible: true, careful_tip:  value})
+    }
+  };
   render () {
-    let { recipename, usagename, remark, treatway, countnum, freq, herbalData, buDiagnosisList, frequencyData, showWay, current, illCaseData, cureCaseData, subHerbalData } = this.state;
+    let { recipename, usagename, remark, treatway, countnum, freq, herbalData, buDiagnosisList, frequencyData, showWay, current, illCaseData, cureCaseData, subHerbalData, tipVisible, careful_tip } = this.state;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
@@ -531,12 +543,10 @@ class HerbalForm extends Component {
             <FormItem
               {...separateFormItemLayout}
               label=" ">
-              {getFieldDecorator('subHerbal', {
-                initialValue: ''
-              })(
+              {getFieldDecorator('subHerbal')(
                 <SpecSelect placeholder='选择草药' onChange={this.herbalChange} >
                 {
-                  subHerbalData.map((item, index) => <Option key={item.id} value={item.id}>{item.drugName}</Option>)
+                  subHerbalData.map((item, index) => <Option key={item.medicineid} value={item.medicineid}>{item.medicinename}</Option>)
                 }
                 </SpecSelect>
               )}
@@ -552,6 +562,11 @@ class HerbalForm extends Component {
           </SpecCol>
           <Col span={16}>
             <QuickAddHerb placeholder='请输入中药首字母快速添加' icon='true' ref={ref => this.quickAddHerb = ref} getQuickData = {this.addHerbalData.bind(this)}/>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={8}>
+            <SpecialTip visible={tipVisible}>特殊提示：{careful_tip}</SpecialTip>
           </Col>
         </Row>
         <Footer>
@@ -570,6 +585,7 @@ class HerbalForm extends Component {
               delHerbal={this.delHerbal}
               dosageChange={this.dosageChange}
               usageChange={this.usageChange}
+              mouse_event={this.carefulTip}
               addHerbal={ () => { this.addHerbalForm.handleAddClick() }}
               ref={ref => this.addTableData = ref} />
           }
@@ -609,12 +625,9 @@ const SpecSelect = styled(Select)`
   &&&.ant-select.ant-select-open > .ant-select-selection > .ant-select-arrow {
     background: url(${up}) no-repeat top right;
   }
-  .ant-select-open .ant-select-selection {
-    border: none;
-  }
 `;
 const SpecCol = styled(Col)`
-  margin: 15px 0px 35px 0px;
+  margin: 15px 0px 5px 0px;
 `;
 const TableIcon = styled(Table)`
   background: ${props => props.showWay == 'table' ? 'rgb(178, 20, 20)' : '#999999'};
@@ -641,6 +654,10 @@ const QuickAdd = styled.span`
 `;
 const Footer = styled.div`
   position: relative;
+`;
+const SpecialTip = styled.span`
+  color: ${props => props.visible ? 'red' : 'white'};
+  padding: 5px;
 `;
 const Bottom = styled.div`
   position: absolute;

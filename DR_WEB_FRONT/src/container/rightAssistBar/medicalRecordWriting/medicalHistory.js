@@ -4,7 +4,7 @@
 @描述：右侧辅助栏-----历史模板
 */
 import React, {Component} from 'react';
-import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, Alert, Modal } from 'antd';
+import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, Alert, Modal, Spin, Pagination } from 'antd';
 import './style/rightAssistBar.less';
 import ContentDetail from '../pubilcModule/contentDetail.js';
 import medicalRWService from '../service/medicalRWService.js';
@@ -16,13 +16,16 @@ export default class template extends Component {
     super(props);
     this.state = {
       content:[],
+      total:0,
+      isQuery:false,
+      pageSize:10,
       unfold:false
     };
   };
   componentDidMount(){
-    this.searchList();
+    this.searchList(1);
   }
-  searchList = (content) =>{
+  searchList = (current) =>{
     var self = this;
     let params = {
       patientid:window.patientID,//"201837451711775113",
@@ -71,8 +74,9 @@ export default class template extends Component {
           });
         })
         console.log("==================",content);
-        self.setState({ content });
+        self.setState({ content:content,total:res.data.total,isQuery:true });
       }else{
+        self.setState({ isQuery:true });
         console.log('获取历史病历异常响应信息', res);
       }
     };
@@ -115,8 +119,24 @@ export default class template extends Component {
     console.log("newItem=",newItem);
     this.props.changeInitData(newItem);
   }
+  itemRender = (current, type, originalElement) => {
+    if (type === 'prev') {
+      return <a>上一页</a>;
+    } if (type === 'next') {
+      return <a>下一页</a>;
+    }
+    return originalElement;
+  }
+  onChange = (current, pageSize) => {
+    console.log(current, pageSize);
+    this.setState({ isQuery:false },()=>{
+      setTimeout(()=>{
+        this.searchList(current);
+      },100);
+    });
+  }
   render() {
-    var { content, unfold } = this.state;
+    var { content, unfold, total, isQuery, pageSize } = this.state;
     return (
       <div className="rightAssistBar_medicalHistory">
         <div className="medicalHistory_data">
@@ -124,29 +144,54 @@ export default class template extends Component {
           {
             content.length != 0
             ?
-            content.map((item,index)=>{
-              return(
-                <div className="medicalHistory_content" key={index}>
-                  <div className="medicalHistory_content-title">
-                    <Row>
-                      <Col span={16}>
-                        <p className="content-p">
-                          {item.ctstamp.substr(0,11)} | {item.orgid} | 医师：{item.doctorname} | <span>{item.casetype == 0?"初诊":"复诊"}</span>
-                        </p>
-                      </Col>
-                      <Col span={8}>
-                        <Button  onClick={()=>{ this.changeInitData(item.initData) }}>引入病历</Button>
-                        <Divider type="vertical" />
-                      </Col>
-                    </Row>
-                    <Row><Col span={24}><p>诊断：{item.diagnosisDesc}</p></Col></Row>
-                  </div>
-                  <ContentDetail item={item.data} changeInitData={this.changeInitData}/>
-                </div>
-              )
-            })
+            (
+              isQuery
+              ?
+              <div>
+                {
+                  content.map((item,index)=>{
+                    return(
+                      <div className="medicalHistory_content" key={index}>
+                        <div className="medicalHistory_content-title">
+                          <Row>
+                            <Col span={16}>
+                              <p className="content-p">
+                                {item.ctstamp.substr(0,11)} | {item.orgid} | 医师：{item.doctorname} | <span>{item.casetype == 0?"初诊":"复诊"}</span>
+                              </p>
+                            </Col>
+                            <Col span={8}>
+                              <Button  onClick={()=>{ this.changeInitData(item.initData) }}>引入病历</Button>
+                              <Divider type="vertical" />
+                            </Col>
+                          </Row>
+                          <Row><Col span={24}><p>诊断：{item.diagnosisDesc}</p></Col></Row>
+                        </div>
+                        <ContentDetail item={item.data} changeInitData={this.changeInitData}/>
+                      </div>  
+                    )
+                  })
+                }
+                {
+                  total<=10
+                  ?
+                  <center style={{marginBottom:10}}>-------已经到底了-------</center>
+                  :
+                  <center style={content.length<5?{position:'absolute',bottom:10,marginLeft:'30%'}:{marginBottom:10}}>
+                      <Pagination current={parseInt(pageSize)} total={total} onChange={this.onChange} itemRender={this.itemRender} />
+                  </center>
+                }
+              </div>
+              :
+              <center style={{marginTop:50}}><div className="example"><Spin/>&nbsp;&nbsp;&nbsp;正在加载中,请稍后...</div></center>
+            )
             :
-            <center style={{marginTop:50}}><img src={zanwunerong}/><br/>暂无数据，该病人没有历史病历</center>
+            (
+              isQuery
+              ?
+              <center style={{marginTop:50}}><img src={zanwunerong} style={{width:160}}/><br/>暂无数据</center>
+              :
+              <center style={{marginTop:50}}><div className="example"><Spin/>&nbsp;&nbsp;&nbsp;正在加载中,请稍后...</div></center>
+            )
           }
         </div>
       </div>

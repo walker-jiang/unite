@@ -7,10 +7,12 @@ import up_arrow from './up.png';
 import getResource from 'commonFunc/ajaxGetResource';
 import down from './down.png';
 import up from './up.png';
+import red_lang from './red_lang.png';
+import green_lang from './green_lang.png';
 
 const Option = Select.Option;
 
-export default class Index extends Component {
+export default class TableItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -91,10 +93,19 @@ export default class Index extends Component {
   };
   render() {
     let { selectData, openstatus } = this.state;
-    let { value , autofocus } = this.props;
+    let { value , autofocus, mouse_event } = this.props;
     let { usageid, usagename } = value;
     return (
       <Container>
+        <TipIcon>
+          {
+            value.careful ? <CarefulTip src={red_lang} onMouseEnter={() => {mouse_event(0, value.careful)}} onMouseLeave={() => {mouse_event(1)}}/> : null
+          }
+          {
+            value.taboo ? <TabooTip src={green_lang} onMouseEnter={() => {mouse_event(0, value.taboo)}} onMouseLeave={() => {mouse_event(1)}}/> : null
+          }
+
+        </TipIcon>
         <CloseIcon type="close" onClick={()=>{this.props.onDelete(value)}} />
         <DataWrapper exist={value.exist}>
           <CenterWrapper>
@@ -154,6 +165,19 @@ const Container = styled.li`
   &:nth-child(4n): {
     margin-right: 0;
   }
+`;
+const TipIcon = styled.div`
+  position: absolute;
+`;
+const CarefulTip = styled.img`
+  float: left;
+  cursor: pointer;
+  margin: 5px;
+`;
+const TabooTip = styled.img`
+  float: left;
+  cursor: pointer;
+  margin: 5px;
 `;
 const CloseIcon = styled(Icon)`
   font-size: 14px;

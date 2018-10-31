@@ -11,37 +11,12 @@ class PieChart extends React.Component {
       };
   }
   upData=(timeDate,ook)=>{
-    // Ajax.post('post', 'application/json','http://localhost:8087/IndexController/getProportionAnalysis', data, 'async', callBack);
-    // var dataA = [{
-    //   type: '感冒',
-    //   color:"#f60",
-    //   value: 56
-    // }, {
-    //   type: '胃痛',
-    //   value: 18
-    // }, {
-    //   type: '痛经',
-    //   value: 32
-    // }, {
-    //   type: '中暑',
-    //   value: 15
-    // }, {
-    //   type: '痤疮',
-    //   value: 15
-    // }, {
-    //   type: '其他',
-    //   value: 15
-    // }];
-
-
     // 可以通过调整这个数值控制分割空白处的间距，0-1 之间的数值
     var sliceNumber = 0.01;
     var self = this
     // 自定义 other 的图形，增加两条线
     G2.Shape.registerShape('interval', 'sliceShape', {
       draw: function draw(cfg, container) {
-        // console.log("skjhda",cfg);
-        // console.log("s464",container);
         var points = cfg.points;
         var path = [];
         path.push(['M', points[0].x, points[0].y]);
@@ -51,11 +26,11 @@ class PieChart extends React.Component {
         path.push('Z');
         path = this.parsePath(path);
         return container.addShape('path', {
-              attrs: {
-                fill: cfg.color,
-                path: path
-              }
-            });
+          attrs: {
+            fill: cfg.color,
+            path: path
+          }
+        });
       }
     });
 
@@ -136,7 +111,7 @@ class PieChart extends React.Component {
           if(all == 0){
             str=`<span>${data.type}</span> <span> 0%</span>  <span>${data.value}人</span>`
           }else{
-            str=`<span>${data.type}</span> <span> ${(parseInt(data.value)/all*100).toFixed(1)}%</span>  <span>${data.value}人</span>`
+            str=`<span>${data.type}</span> <span> ${Math.round(parseInt(data.value)/all*100)}%</span>  <span>${data.value}人</span>`
           }
 
           return str; // val 为每个图例项的文本值
@@ -155,14 +130,12 @@ class PieChart extends React.Component {
 
     // var geom = chart.getGeoms()[0]; // 获取所有的图形
     // var items = geom.getData(); // 获取图形对应的数据
-    //   console.log("items",items);
   }
   componentDidMount=()=>{
     this.props.onRef(this);
     this.piechartDate("day","first");
   }
   piechartDate=(timeDate,ook)=>{
-    console.log('timeDate,ook',timeDate,ook);
     var date = new Date(),
         year = date.getFullYear(),//年
         month = parseInt(date.getMonth())+parseInt(1),//月
@@ -174,8 +147,6 @@ class PieChart extends React.Component {
         st = year+'-'+month+'-'+date+' '+h+':'+m+':'+s,
         monthStart = year+'-'+month+'-'+'1'+' '+'00:00:00',
         yearStart = year+'-'+'1'+'-'+'1'+' '+'00:00:00';
-        console.log('today',date);
-    console.log('dateTime',st,st1);
     var data={};
     // var dateTime = new Date(new Date().toLocaleDateString()).getTime()
     if(timeDate){
@@ -205,14 +176,6 @@ class PieChart extends React.Component {
         doctorid:window.sessionStorage.getItem('userid')
       }
     }
-
-    // var data ={
-    //   beginTime:'2018-8-9 000000',
-    //   endTime:st,
-    //   doctorid:window.sessionStorage.getItem('userid'),
-    //   month:month
-    // }
-    // console.log('pathname',data);
     const params = {
       type:'get',
       dataType:'JSON',
@@ -225,27 +188,20 @@ class PieChart extends React.Component {
     Ajax(params,scallBack,ecallback);
     var this_=this,dataA = [];
     function scallBack(res){
-      console.log('piechart',res);
-      var disval=0,parseval;
+      var disval=0;
       res.data.map((val,i) => {
-        console.log('valvalval',val);
         if( val.disname == ''){//把disname是空的对应的disnamecount值添加到'其他'里面
           disval += parseInt(val.disnamecount)
         }
-        if(val.disname){//
+        if(val.disname){//disname不是空时
           if(val.disname == '其他' && val.disnamecount=='' || val.disname == '其他' && val.disnamecount=='NaN'){
-            val.disnamecount=0;
-            val.disnamecount += disval
+            val.disnamecount = disval;
           }else if (val.disname == '其他' && val.disnamecount !='' || val.disname == '其他' && val.disnamecount !='NaN') {
-            parseval=parseInt(val.disnamecount)
-            parseval += disval
-            val.disnamecount=parseval
+            val.disnamecount = parseInt(val.disnamecount) + disval;
           }
-          dataA.push({type:val.disname,value:val.disnamecount})//value的值不能是0 否则chart图标交叉出错
+          dataA.push({type:val.disname,value:parseInt(val.disnamecount)})
         }
       })
-      console.log('dataA',dataA);
-
       this_.setState({
         daTa:dataA
       },()=>{
@@ -257,21 +213,21 @@ class PieChart extends React.Component {
       console.log('errorres',res);
     }
   }
-    render(){
-      return(
-        <div id="mountNode">
+  render(){
+    return(
+      <div id="mountNode">
 
-          <h2 style={{
-              fontFamily: "Microsoft Tai Le Negreta, Microsoft Tai Le Normal, Microsoft Tai Le",
-              fontSize:"14px",
-              fontWeight: 700,
-              fontStyle: "normal",
-              height:"70px",
-              lineHeight: "70px"}}>
-              本日就诊患者疾病占比分析
-          </h2>
-        </div>
-      )
-    }
+        <h2 style={{
+            fontFamily: "Microsoft Tai Le Negreta, Microsoft Tai Le Normal, Microsoft Tai Le",
+            fontSize:"14px",
+            fontWeight: 700,
+            fontStyle: "normal",
+            height:"70px",
+            lineHeight: "70px"}}>
+            本日就诊患者疾病占比分析
+        </h2>
+      </div>
+    )
+  }
 }
 export default PieChart

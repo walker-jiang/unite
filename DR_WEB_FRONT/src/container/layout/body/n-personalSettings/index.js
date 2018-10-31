@@ -22,25 +22,50 @@ class PersonalSettings extends React.Component{
       };
   }
   componentWillMount(){
-    console.log('patientid',window.sessionStorage,window.sessionStorage.getItem('userid'));
-      this.getPatientData(window.sessionStorage.getItem('userid'));
-      this.getDictList(['post']);
-      this.getDept();
+
+    // const cusVerson = window.getClientVersion();//本地客户端版本第一次获取
+    // this.setState({cusVerson})
+    this.getVerson('1');//1,7,8
+    this.getPatientData(window.sessionStorage.getItem('userid'));//
+    this.getDictList(['post']);
+    this.getDept();
+
+
 
   }
+  //获取服务器版本
+  getVerson=(id)=>{
+    const this_=this;
+    let params = {
+      url: 'SyVersionController/getVerNo',
+      server_url:config_login_url,
+      data: {
+        verid: id,
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        var vername=res.data.vername
+        this_.setState({
+          vername
+        })
+      }
+    }
+    Ajax(params, callBack);
+  }
   // BaOrguserController/getData?orgUerid=1
-  //获取登陆者信息
+  //获取登陆者信息===================================================================================== 地址403
   getPatientData(id){
     let self = this;
     let params = {
       url: 'BaOrguserController/getData',
-      server_url:config_service_url,
+      // server_url:config_service_url,
       data: {
-        orgUerid: id,
+        'userId': id,
       },
     };
     function callBack(res){
-      console.log('resres22222',res);
+      console.log('个人设置用户信息：',res);
       if(res.result){
         self.setState({ baPatient: res.data });
       }else{
@@ -63,7 +88,6 @@ class PersonalSettings extends React.Component{
       },
     };
     function callBack(res){
-      console.log('获取字典列表11111',res);
       if(res.result){
         // let dictListObj = {};
         let dictListObj = [];
@@ -84,14 +108,12 @@ class PersonalSettings extends React.Component{
   getDept=()=> {
     let params = {
       url: 'BaDepartmentController/getList',
-      server_url: config_service_url,
       data: {
         orgid: window.sessionStorage.getItem('orgid')
       }
     };
     let that = this;
     function success(res) {
-      console.log('科室数据:',res);
       if(res.result){
         let deptData = res.data;
         // deptData.forEach((val,i)=>{
@@ -131,7 +153,7 @@ class PersonalSettings extends React.Component{
     }else
     if (value=="系统版本") {
       console.log('isModifyisModify',this.SystemVersion);
-      this.SystemVersion.isModify()
+      // this.SystemVersion.isModify()
     }else if(value=="User"){
         this.setState({UserModify:true})
     }
@@ -249,7 +271,7 @@ class PersonalSettings extends React.Component{
     return (
       <div className="PersonalSettings">
           <div className="title" style={{borderBottom:"1px solid #E4E4E4"}}>
-              <h2 style={this.state.show?{fontSize:"13px"}:{fontSize:"13px"}}>个人设置</h2>
+              <h2 style={this.state.show?{fontSize:"13px"}:{fontSize:"16px"}}>个人设置</h2>
           </div>
           <div style={{marginTop:"20px",marginLeft: "3%"}}>
             <div style={{width:"70%",marginLeft:"10px",float:"left"}}>
@@ -257,7 +279,7 @@ class PersonalSettings extends React.Component{
                 <Panel   showArrow={false} header={
                     <div style={{overflow:"hidden",height:"44px",position:"absolute",top:0,width:"100%",lineHeight:"44px"}}>
                       <p style={{width:"50%",float:"left"}}>
-                        <span>个人信息设置</span>
+                        <span style={{fontWeight:'bold'}}>个人信息设置</span>
                         <sapn style={{color:"#999",fontSize:"12px",marginLeft:"20px"}}>修改和完善个人登录信息</sapn>
                       </p>
                       <p style={{width:"50%",float:"right",textAlign:"right"}}>
@@ -270,8 +292,8 @@ class PersonalSettings extends React.Component{
                 <Panel showArrow={false} header={
                     <div style={{overflow:"hidden",height:"40px",position:"absolute",top:0,width:"100%",lineHeight:"40px"}}>
                       <p style={{width:"50%",float:"left"}}>
-                        <span>修改密码</span>
-                        <sapn style={{color:"#999",fontSize:"12px",marginLeft:"20px"}}>定期修改登录密码，减小密码泄露风险</sapn>
+                        <span style={{fontWeight:'bold'}}>修改密码</span>
+                        <sapn style={{color:"#999",fontSize:"12px",marginLeft:" 43px"}}>定期修改登录密码，减小密码泄露风险</sapn>
                       </p>
                       <p style={{width:"50%",float:"right",textAlign:"right"}}>
                         <span style={{marginRight:"6%"}}><img onClick={(e)=>{this.Modify("修改密码",e)}} src={require("./images/10.png")}></img></span>
@@ -284,8 +306,8 @@ class PersonalSettings extends React.Component{
                 <Panel showArrow={false} header={
                   <div style={{overflow:"hidden",height:"40px",position:"absolute",top:0,width:"100%",lineHeight:"40px"}}>
                     <p style={{width:"50%",float:"left"}}>
-                      <span>系统选项</span>
-                      <sapn style={{color:"#999",fontSize:"12px",marginLeft:"20px"}}>定义系统运行的的各种参数信息</sapn>
+                      <span style={{fontWeight:'bold'}}>系统选项</span>
+                      <sapn style={{color:"#999",fontSize:"12px",marginLeft:" 43px"}}>定义系统运行的的各种参数信息</sapn>
                     </p>
                     <p style={{width:"50%",float:"right",textAlign:"right"}}>
                       <span style={{marginRight:"6%"}}><img onClick={(e)=>{this.Modify("系统选项",e)}} src={require("./images/10.png")}></img></span>
@@ -298,8 +320,8 @@ class PersonalSettings extends React.Component{
                 <Panel showArrow={false} header={
                   <div style={{overflow:"hidden",height:"40px",position:"absolute",top:0,width:"100%",lineHeight:"40px"}}>
                     <p style={{width:"50%",float:"left"}}>
-                      <span>系统版本</span>
-                      <sapn style={{color:"#999",fontSize:"12px",marginLeft:"20px"}}>查看版本号，手动更新版本</sapn>
+                      <span style={{fontWeight:'bold'}}>系统版本</span>
+                      <sapn style={{color:"#999",fontSize:"12px",marginLeft:" 43px"}}>查看版本号，手动更新版本</sapn>
                     </p>
                     <p style={{width:"50%",float:"right",textAlign:"right"}}>
                       <span style={{marginRight:"6%"}}><img onClick={(e)=>{this.Modify("系统版本",e)}} src={require("./images/10.png")}></img></span>
@@ -307,7 +329,7 @@ class PersonalSettings extends React.Component{
                     </p>
                   </div>
                   } key="4">
-                  <SystemVersion wrappedComponentRef={(inst)=>this.SystemVersion=inst}></SystemVersion>
+                  <SystemVersion vername={this.state.vername} cusVerson={this.state.cusVerson} wrappedComponentRef={(inst)=>this.SystemVersion=inst}></SystemVersion>
                 </Panel>
               </Collapse>
             </div>

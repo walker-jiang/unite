@@ -136,31 +136,36 @@ export default class IntelligentTreat extends Component {
   }
   searchList = () =>{
     var self = this;
-    console.log("bu=======",self.state.bu);
-    console.log("window.birthday=======",window.birthday);
-    let params = {
-      bu:JSON.stringify(self.state.bu),
-      sex:window.sex,
-      age:window.birthday?self.ages(window.birthday.substr(0,10)).toString():"",
-      pageSize:"10",//分页长度
-      cmdrugPage:self.state.cmdrugPage,//处方页数
-      cpmPage:self.state.cpmPage,//中成药页数
-      stPage:self.state.stPage,//适宜技术页数
-      mcPage:self.state.mcPage,//医医案页数
-      seachValue:self.state.seachValue,//搜索条件
-    };
-    function callBack(res){
-      if(res.flag == 1){
-        console.log("获取辨证论治成功==============",res);
-        self.setState({ dataSource:res.data,isQuery:true });
-      }else{
-        console.log('获取辨证论治异常响应信息', res);
-      }
-    };
-    function callBackError(res){
-      self.setState({ isQuery:true,isSuccess:false });
-    }
-    doctorAdviceService.ImtreatprelistGetList(params, callBack, callBackError);
+    self.setState({ isQuery:false },()=> {
+      window.setTimeout(()=>{
+        console.log("bu=======",self.state.bu);
+        console.log("isQuery",self.state.isQuery);
+        console.log("window.birthday=======",window.birthday);
+        let params = {
+          bu:JSON.stringify(self.state.bu),
+          sex:window.sex,
+          age:window.birthday?self.ages(window.birthday.substr(0,10)).toString():"",
+          pageSize:"10",//分页长度
+          cmdrugPage:self.state.cmdrugPage,//处方页数
+          cpmPage:self.state.cpmPage,//中成药页数
+          stPage:self.state.stPage,//适宜技术页数
+          mcPage:self.state.mcPage,//医医案页数
+          seachValue:self.state.seachValue,//搜索条件
+        };
+        function callBack(res){
+          if(res.flag == 1){
+            console.log("获取辨证论治成功==============",res);
+            self.setState({ dataSource:res.data,isQuery:true });
+          }else{
+            console.log('获取辨证论治异常响应信息', res);
+          }
+        };
+        function callBackError(res){
+          self.setState({ isQuery:true,isSuccess:false });
+        }
+        doctorAdviceService.ImtreatprelistGetList(params, callBack, callBackError);
+      })
+    },100);
   }
   callback(key) {
     console.log(key);
@@ -209,19 +214,22 @@ export default class IntelligentTreat extends Component {
   }
   render() {
     var { dataSource, bu, isQuery, cmdrugPage, cpmPage, stPage, mcPage, isSuccess } = this.state;
-    console.log("type",this.props.type);
+    console.log("bu@@@@@@@@@@@@@@@@@@@@",bu);
     return (
-      <div className="intelligentTreat">
+      <div className="intelligentTreat" style={this.props.type == "1"?{height:'77.2vh'}:{}}>
       {
         this.props.type == "2"
         ?
         <div className="tab">
           <Row>
-            <Col span={23} offset={1}>
-              <Search
-                placeholder={this.props.type == "1"?"请输入模板名称或症状快速查询":"请输入症候和症状快速查询"}
-                onSearch={value => { this.setState({ seachValue:value },()=>{ this.searchList() }) }}
-              />
+            <Col span={24}>
+              <center>
+                <Search
+                  style={{width:'90%'}}
+                  placeholder={this.props.type == "1"?"请输入模板名称或症状快速查询":"请输入症候和症状快速查询"}
+                  onSearch={value => { this.setState({ seachValue:value },()=>{ this.searchList() }) }}
+                />
+              </center>
             </Col>
           </Row>
         </div>
@@ -232,10 +240,11 @@ export default class IntelligentTreat extends Component {
         isSuccess
         ?
         <div className="intelligentTreat_Tabs">
-          <Tabs onChange={this.callback} tabBarGutter={8} type="card" >
+          <Tabs onChange={this.callback} tabBarGutter={10} type="card" >
             <TabPane tab="方剂" key="1">
               <Prescription
                 updatePageSize={this.updatePageSize}
+                type={this.props.type}
                 pageSize={cmdrugPage}
                 isQuery={isQuery}
                 dataSource={dataSource.clist}
@@ -246,6 +255,7 @@ export default class IntelligentTreat extends Component {
             <TabPane tab="中成药" key="2">
               <ChineseMedicine
                 updatePageSize={this.updatePageSize}
+                type={this.props.type}
                 pageSize={cpmPage}
                 isQuery={isQuery}
                 dataSource={dataSource.plist}
@@ -256,6 +266,7 @@ export default class IntelligentTreat extends Component {
             <TabPane tab="中医适宜技术" key="3">
               <AppropriateTechnology
                 updatePageSize={this.updatePageSize}
+                type={this.props.type}
                 pageSize={stPage}
                 isQuery={isQuery}
                 dataSource={dataSource.slist}
@@ -266,6 +277,7 @@ export default class IntelligentTreat extends Component {
             <TabPane tab="名医医案" key="4">
               <Consilia
                 updatePageSize={this.updatePageSize}
+                type={this.props.type}
                 pageSize={mcPage}
                 isQuery={isQuery}
                 dataSource={dataSource.mlist}

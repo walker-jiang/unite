@@ -51,7 +51,7 @@ class Index extends Component {
         username: username,
         password: password,
         code: 1,
-        verificationCode: '',
+        verificationCode:'',
       };
       this.loginAction(paramsData);
     }
@@ -76,6 +76,8 @@ class Index extends Component {
         verificationCode: res.data.verificationCode,
         code: res.data.code
       })
+      // window.localStorage.setItem('verificationCode',  res.data.verificationCode);
+      // window.localStorage.setItem('code',  res.data.code);
     };
     getResource(params, success);
   }
@@ -119,26 +121,19 @@ class Index extends Component {
         if(res.data.baOrguser.initcomplete != '0'){ // 跳过初始化组件
           path = '/layout';
           // console.log('res.data.baOrguser.quickMenu.leftMenuList', JSON.stringify(res.data.baOrguser.quickMenu.leftMenuList));
-          if(window.loginSystem){ // 客户端存在
-            // alert('window.loginSystem');
-            console.log('监测到客户端loginSystem方法');
-            if(window.setMenu){ // 通知客户端当前登录用户的菜单
-              // alert('window.setMenu');
-              // console.log('JSON.stringify(res.data.rightMenuList)', JSON.stringify(res.data.rightMenuList));
-              let rightSysModuleList = res.data.baOrguser.quickMenu.rightMenuList;
-              rightSysModuleList.forEach(item => {
-                if(item.syModule.modid  != 7){
-                  item.syModule.callurl = config_local_url + item.syModule.callurl;
-                }
-              });
-              window.setMenu(JSON.stringify(rightSysModuleList));
-            }
-            that.setUserInfo(res.data.baOrguser.deptid, res.data.baOrguser.orgid, res.data.baOrguser.orgUerid, res.data.baOrguser.post, res.data.baOrguser.realname, res.data.baOrguser.photo);
-          }else{
-            // console.log('res', JSON.stringify(res.data.baOrguser));
+          if(window.setMenu){ // 通知客户端当前登录用户的菜单
+            // console.log('JSON.stringify(res.data.rightMenuList)', JSON.stringify(res.data.rightMenuList));
+            let rightSysModuleList = res.data.baOrguser.quickMenu.rightMenuList;
+            rightSysModuleList.forEach(item => {
+              if(item.syModule.modid  != 7){
+                item.syModule.callurl = config_local_url + item.syModule.callurl;
+              }
+            });
+            window.setMenu(JSON.stringify(rightSysModuleList));
+            // console.log('res', res.data);
           }
+          that.setUserInfo(res.data.baOrguser.deptid, res.data.baOrguser.orgid, res.data.baOrguser.orgUerid, res.data.baOrguser.post, res.data.baOrguser.realname, res.data.baOrguser.photo);
         }
-        // console.log('res', res.data);
         that.props.history.push(path); // 跳转到初始化设置组件
       }else{
         that.tipModal.showModal({
@@ -146,18 +141,15 @@ class Index extends Component {
           stressContent: res.desc
         });
       }
-      // if (res.data != null) {
-      //   window.orgUserid = res.data.baOrguserUnion[0].orgUserid; // 保存为全局变量
-      //   let { rememberPass, autoLogin } = that.state;
-      //   if(rememberPass || autoLogin){ // 记住密码和自动登陆都需要保存用户名、密码
-      //     window.localStorage.setItem('username', paramsData.username);
-      //     window.localStorage.setItem('password', paramsData.password);
-      //   }
-      //   window.localStorage.setItem('rememberPass', rememberPass);
-      //   window.localStorage.setItem('autoLogin', autoLogin);
-      //   let id = res.data.baOrguserUnion[0].orgUserid;
-      // } else {
-      // }
+      if (res.data) {
+        let { rememberPass, autoLogin } = that.state;
+        if(rememberPass || autoLogin){ // 记住密码和自动登陆都需要保存用户名、密码
+          window.localStorage.setItem('username', paramsData.username);
+          window.localStorage.setItem('password', paramsData.password);
+        }
+        window.localStorage.setItem('rememberPass', rememberPass);
+        window.localStorage.setItem('autoLogin', autoLogin);
+      }
     };
     getResource(params, success);
   };
@@ -170,8 +162,12 @@ class Index extends Component {
       username: username,
       photo: photo
     };
-    // console.log('1', obj);
-    window.loginSystem(JSON.stringify(obj));
+    if(window.loginSystem){ // 客户端存在
+      console.log('监测到客户端loginSystem方法');
+      window.loginSystem(JSON.stringify(obj));
+    }
+    // parent.postMessage(JSON.stringify(obj), '*');
+
   };
   /* 记住密码 */
   rememberPass(checked) {
@@ -186,7 +182,11 @@ class Index extends Component {
     if(window.skipLogin){
       window.skipLogin();
     }else{
-      this.props.history.push('/layout'); // 跳转到初始化设置组件
+      if(parent){
+        parent.postMessage(false, '*')
+      }else{
+        this.props.history.push('/layout'); // 跳转到初始化设置组件
+      }
     }
   };
   render() {

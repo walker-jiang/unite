@@ -38,7 +38,7 @@ export default class Index extends Component {
       let len = herbalData.length - (i + 1) * 4;
       len = (len > 0) ? 4 : (4 + len);
       for(let j = i * 4; j < i * 4 + len; j++){
-        row.push(<TableItem value={herbalData[j]} onDelete={()=>{this.props.delHerbal(herbalData[j])}} onUsageChange = {this.usageChange} dosageChange={this.dosageChange} autofocus={(herbalData.length == j + 1) ? 'autofocus' : 'none'} key={j}></TableItem>);
+        row.push(<TableItem value={herbalData[j]} onDelete={()=>{this.props.delHerbal(herbalData[j])}} onUsageChange = {this.usageChange} dosageChange={this.dosageChange} autofocus={(herbalData.length == j + 1) ? 'autofocus' : 'none'} mouse_event={(visible, text) => { this.props.mouse_event(visible, text) }} key={j}></TableItem>);
         if(j == (herbalData.length - 1) && herbalData.length % 4 != 0){
           row.push(<Add onClick = { () => { this.props.addHerbal() }} key={'j'}>+</Add>);
         }
@@ -72,7 +72,6 @@ const TableWrap = styled.ul`
   border:10px solid transparent;
   border-image: url(${border}) 12 14 12 14 stretch;
   position: relative;
-  top: -18px;
   width: 857px;
   height: 310px;
   overflow-y: scroll;

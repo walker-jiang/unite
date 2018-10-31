@@ -151,18 +151,18 @@ export default class StartWork extends Component {
           <Col lg={24} xl={24} xxl={24}>
             <div style={styles.borderGround}>
               <RadioGroup onChange={this.onChange.bind(this)} value={this.state.value} style={styles.radioG}>
-                <Radio key="a" value={1}>A:{this.state.arr[this.state.index].options_text.substring(0,7)}</Radio>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <Radio key="b" value={2}>B:{this.state.arr[this.state.index].options_text.substring(8,15)}</Radio>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <Radio key="c" value={3}>C:{this.state.arr[this.state.index].options_text.substring(16,22)}</Radio>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <Radio key="d" value={4}>D:{this.state.arr[this.state.index].options_text.substring(23,29)}</Radio>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <Radio key="e" value={5}>E:{this.state.arr[this.state.index].options_text.substring(30,37)}</Radio>
+                <Radio key="a" value={1} style={styles.radioD}>A:{this.state.arr[this.state.index].options_text.substring(0,7)}</Radio>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <Radio key="b" value={2} style={styles.radioD}>B:{this.state.arr[this.state.index].options_text.substring(8,15)}</Radio>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <Radio key="c" value={3} style={styles.radioD}>C:{this.state.arr[this.state.index].options_text.substring(16,22)}</Radio>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <Radio key="d" value={4} style={styles.radioD}>D:{this.state.arr[this.state.index].options_text.substring(23,29)}</Radio>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <Radio key="e" value={5} style={styles.radioD}>E:{this.state.arr[this.state.index].options_text.substring(30,37)}</Radio>
               </RadioGroup>
             </div>
           </Col>
         </Row>
-        <Row type="flex" justify="start">
+        <Row type="flex" justify="start" style={styles.footer}>
           <Col lg={24} xl={24} xxl={24}>
-            <span style={styles.rember}>测试进度：本次测试问题共{this.state.arr.length}个，已经回答{this.state.index}个，目前还剩下{this.state.end} 个问题未回答，选择答案后自动转到下一题~</span>
+            <span style={styles.rember}>测试进度：本次测试问题共<span style={styles.numberColor}>{this.state.arr.length}</span>个，已经回答<span style={styles.numberColor}>{this.state.index}</span>个，目前还剩下<span style={styles.numberColor}>{this.state.end}</span> 个问题未回答，选择答案后自动转到下一题~</span>
           </Col>
         </Row>
       </div>
@@ -217,25 +217,23 @@ const styles = {
     width: '4rem'
   },
   tipTitle: {
-    color: 'black',
+    color: '#333333',
 	  fontWeight: '400',
     fontStyle: 'normal',
     fontSize: '18px',
     textAlign: 'left',
 	  marginLeft: '5rem',
     marginTop: '-4.3rem',
-    height: '36px' 
   },
   tipText: {
-    color: 'black',
+    color: '#999999',
     fontWeight: '400',
     fontStyle: 'normal',
     color: '#999999',
     fontSize: '14px',
     textAlign: 'left',
 	  marginLeft: '5rem',
-    marginTop: '-0.5rem',
-    height: '36px' 
+    marginTop: '-1.5rem',
   },
   bgDiv: {
     position: 'relative'
@@ -258,7 +256,7 @@ const styles = {
   },
   iC: {
     zIndex: '1',
-	  marginTop: '2.5%'
+	  marginTop: '1.5%'
   },
   questionTip: {
     zIndex: '2',
@@ -268,7 +266,7 @@ const styles = {
     fontSize: '14px',
     textDecoration: 'none',
     color: '#FFFFFF',
-    marginTop: '3.35rem',
+    marginTop: '2.35rem',
     marginLeft: '-5rem',
     position: 'absolute'
   },
@@ -295,8 +293,14 @@ const styles = {
     marginTop: '10rem',
     position: 'absolute'
   },
+  radioD: {
+    color: '#333333',
+    fontWeight: 'bold'
+  },
   rember: {
-    marginTop: '1.2%'
+    marginTop: '1.2%',
+    fontSize: '14px',
+    color: '#333333'
   },
   patientText:{
     fontFamily: 'MicrosoftYaHei, Microsoft YaHei',
@@ -312,6 +316,12 @@ const styles = {
     fontSize: '12px',
     color: '#0A6ECB',
     marginLeft: '1rem'
+  },
+  footer: {
+    marginTop: '18px'
+  },
+  numberColor: {
+    color: '#0a6ecb'
   }
 }
 

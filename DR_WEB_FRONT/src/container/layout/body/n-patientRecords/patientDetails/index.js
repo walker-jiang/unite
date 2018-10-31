@@ -191,12 +191,13 @@ const SpecTabs = styled.div`
   width: fit-content;
 `;
 const TabPane = styled.div`
+  color: #333333;
   word-wrap: normal;
   white-space: nowrap;
   padding: 5px 5px;
   margin: 0px 10px;
   cursor: pointer;
-  border-bottom: ${props => props.activeTab == props._key ? '2px solid #5959e0': 'none'} ;
+  border-bottom: ${props => props.activeTab == props._key ? '2px solid #0a6ecb': 'none'} ;
 `;
 const Content = styled.div`
   width: 100%;

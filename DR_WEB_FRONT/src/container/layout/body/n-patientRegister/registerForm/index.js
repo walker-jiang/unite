@@ -6,7 +6,6 @@ import ReactModal from 'react-modal';
 import Icon from 'components/dr/icon';
 import buttonSty from 'components/antd/style/button';
 import BasicInfoForm from './basicInfoForm';
-import PreTreatForm from './preTreatForm';
 import SaveTip from 'components/dr/modal/saveTip';
 import Tip from 'components/dr/modal/tip';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
@@ -99,7 +98,7 @@ class Index extends Component {
       let self = this;
       let params = {
         url: 'BuRegisterController/' + (operateType.indexOf('m') == 0 ? 'putRegister' : 'patRegister'),
-        server_url: 'http://10.192.4.28:8088/',
+        // server_url: 'http://10.192.4.28:8088/',
         data: JSON.stringify(paramData),
         type: (operateType.indexOf('m') == 0 ? 'put' : 'post'),
       };
@@ -141,7 +140,6 @@ class Index extends Component {
     );
   }
 }
-
 const Container = styled.div`
   position: absolute;
   height: 100%;
@@ -158,6 +156,7 @@ const Header = styled.div`
 `;
 const Left = styled.div`
   height: 100%;
+  width: 100%;
   display: flex;
   align-items: center;
 `;
@@ -174,6 +173,7 @@ const ArrowIcon = styled(Icon)`
 const Content = styled.div`
   width: 100%;
   height: calc(100% - 50px);
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: center;

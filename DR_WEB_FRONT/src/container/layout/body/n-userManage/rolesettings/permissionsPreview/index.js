@@ -5,8 +5,9 @@
 */
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import Prescriptionauthorization from '../prescriptionauthorization'
-import Roleauthoritymodule from '../roleauthoritymodule'
+import Prescriptionauthorization from '../prescriptionauthorization';
+import Roleauthoritymodule from '../roleauthoritymodule';
+import Icon from 'components/dr/icon';
 
 export default class Index extends React.Component{
   constructor(props) {
@@ -32,8 +33,8 @@ export default class Index extends React.Component{
       <Container>
         <Header>
             <span style={{color:'#000',margin:'0px 5px'}}>▶</span>
-            <span style={{color:'#5d6ecb',cursor:'pointer'}} onClick={(e) => this.props.setuptype(1)}>角色设置</span>
-            <span style={{color:'#000',margin:'0px 5px'}}> ＞ </span>
+            <span style={{color:'#0a6ecb',cursor:'pointer'}} onClick={(e) => this.props.setuptype(1)}>角色设置</span>
+            <StyleIconC type='next'/>
             <span>权限预览</span>
         </Header>
         <Body>
@@ -64,6 +65,7 @@ const Header = styled.div `
   width: 100%;
   background-color: rgb(242,242,242);
   box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.349019607843137);
+  padding-left:15px;
 `;
 const Body =styled.div`
   width:100%;
@@ -91,3 +93,9 @@ const TabPanes =styled.div`
   color: ${props => props.activeTabs == props._key ? '#fff': '#0a6ecb'} ;
   cursor: pointer;
 `
+const StyleIconC = styled(Icon)`
+  margin:0px 5px;
+  height:16px;
+  width:16px;
+  margin-top:6px;
+`;

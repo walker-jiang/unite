@@ -30,7 +30,10 @@ export default class QuickAdd extends PureComponent {
           onClick={(e)=>{
             e.stopPropagation();
             e.nativeEvent.stopImmediatePropagation();
-             this.showResult(e.target.value)}
+              if(e.target.value.trim()){
+                this.showResult(e.target.value)
+              }
+            }
            }
           {...inputProps}
           onChange={e => {this.showResult(e.target.value)}}

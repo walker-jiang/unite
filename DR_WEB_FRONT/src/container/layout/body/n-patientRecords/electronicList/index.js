@@ -77,7 +77,7 @@ export default class index extends Component {
     var lodeData = data.map((item, i)=>{
         return (
             <ListData key={i} className= {this.state.valueColor[i]} onClick={()=>this.handClickList(i)}>
-                <First>{upstamp.substr(0,10)}|{item.orgidDic}|医师：{item.doctorname}|{item.casetype}</First>
+                <First>{upstamp.substr(0,10)}|{item.orgidDic}|医师：{item.doctorname}|{item.casetype == 1? '初诊':'复诊'}</First>
                 <Second>诊断：{item.buDiagnosisInfo.diagnosisDesc}</Second>
             </ListData>
         )

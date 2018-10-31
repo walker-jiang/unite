@@ -9,7 +9,7 @@ import ConfirmInfo from './confirmInfo';
 import ModifyPassword from './modifyPassword';
 import Completed from './completed';
 
-export default class Index extends Component {
+export default class InitialSetting extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,13 +37,13 @@ export default class Index extends Component {
       //   return {component: <BoundHis onToggle={() => this.handleClick(2)}  />, title: '绑定HIS'};
       // break;
       case 1:
-        return {component: <ConfirmInfo onToggle={() => this.handleClick(3)} />, title: '个人信息确认'};
+        return {component: <ConfirmInfo onToggle={() => this.handleClick(2)} />, title: '个人信息确认'};
       break;
       case 2:
-        return {component: <ModifyPassword onToggle={() => this.handleClick(4)} />, title: '修改密码'};
+        return {component: <ModifyPassword onToggle={() => this.handleClick(3)} />, title: '修改密码'};
       break;
       case 3:
-        return {component: <Completed onToggle={() => this.handleClick(5)} />, title: '完成'};
+        return {component: <Completed onToggle={() => this.handleClick(4)} />, title: '完成'};
       break;
       default:
         console.log('找回密码组件替换失败，请检查分支条件');

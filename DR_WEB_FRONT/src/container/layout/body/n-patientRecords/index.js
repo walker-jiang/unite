@@ -28,8 +28,11 @@ export default class index extends Component {
     this.handSonsson = this.handSonsson.bind(this)
   }
 
+  componentWillReceiveProps(){
+    this.setState({ visible: 1 })
+  };
+
   handSonsson(visible) {
-debugger
     this.setState({
       visible,
     })

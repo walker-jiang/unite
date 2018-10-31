@@ -115,7 +115,7 @@ export default class Index extends React.Component{
         }
       };
       console.log('停用角色',data)
-      // ajaxGetResource(params, callBack);
+      ajaxGetResource(params, callBack);
   }
   /** [onChange 输入框清零时刷新页面] */
   onChange=(e)=>{
@@ -201,7 +201,7 @@ export default class Index extends React.Component{
           <Search  placeholder="请输入角色编码或角色名称快速查询"  onSearch={value => this.getrolelist(value)} onChange={this.onChange} enterButton/>
          </LeftSeach>
         </Header>
-        <SpecTable columns={columns} dataSource={roleList} pagination={false} rowKey={roleList.orgRoleid} />
+        <SpecTable columns={columns} dataSource={roleList} pagination={false} rowKey="orgRoleid" />
          <Length>• 共有<span style={{color:'#0a94df'}}>{length}</span>位已添用户记录</Length>
      </Container>
     )

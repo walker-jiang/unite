@@ -251,8 +251,14 @@ function converItemToNeededCN(Item, ItemArray, type){
   Item.count = Item.defQty;
   Item.dosage = Item.defQty;
   Item.miType = '';
-  Item.usageid = Item.baUsage ? Item.baUsage.usageid : 9; // 从用法对象转换成字符串用法ID
-  Item.usagename = Item.baUsage ? Item.baUsage.usagename : '无'; // 从用法对象转换成字符串用法名称
+  if(Item.baUsage){
+    Item.usageid = Item.baUsage.usageid;
+    Item.usagename = Item.baUsage.usagename;
+    delete Item.baUsage;
+  }else{
+    Item.usageid = 9; // 从用法对象转换成字符串用法ID
+    Item.usagename = '无'; // 从用法对象转换成字符串用法名称
+  }
   // Item.freqid = values.frequency.key;
   // Item.freqname = values.frequency.label;
   Item.itemcode = Item.medicinecode;

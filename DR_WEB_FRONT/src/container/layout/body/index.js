@@ -99,6 +99,9 @@ export default class Body extends Component {
           <Route path='/Layout/modelManage' component={ModelManage}></Route>
           <Route path='/Layout/systemManage' component={SystemManage}></Route>
           <Route path='/Layout/userManage' component={UserManage}></Route>
+          {
+            // <div style={{position:'absolute',color:'#666666',left:0,bottom:0,height:'30px',background:'#F2F2F2',textAlign:"center",width:'100%',lineHeight:'30px',fontSize:'12px'}}>Copyright © 2018   中科软科技股份有限公司</div>
+          }
       </Container>
     );
   }
