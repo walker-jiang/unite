@@ -724,12 +724,17 @@ class Index extends React.Component {
               })(<Inputs placeholder="请输入联系人邮箱"/>)
             }
           </FormItems>
-          <FormItems {...formItemLayout} label="初始密码">
-            {getFieldDecorator('password',{
-              initialValue:userinfo.password||'',
-            })(<Inputs placeholder="666666"/>)}
-            <Initialspan onClick={this.initialpassword}>使用默认密码</Initialspan>
-          </FormItems>
+          {
+              this.props.id
+                ?null
+                :<FormItems {...formItemLayout} label="初始密码">
+                    {getFieldDecorator('password',{
+                      initialValue:userinfo.password||'',
+                    })(<Inputs placeholder="666666"/>)}
+                    <Initialspan onClick={this.initialpassword}>使用默认密码</Initialspan>
+                  </FormItems>
+            }
+
           <FormItems {...formItemLayout} label="首次登录需要修改密码">
             {getFieldDecorator('ismodify')(<Switch checkedChildren="是" unCheckedChildren="否" defaultChecked="defaultChecked"/>)}
           </FormItems>

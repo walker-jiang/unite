@@ -27,12 +27,12 @@ export default class AddIllByManifestations extends Component {
   getTableCol(){
     const columns = [{
       title: '诊断码',
-      dataIndex: 'manifcode',
-      key: 'manifcode'
+      dataIndex: 'syncode',
+      key: 'syncode'
     }, {
       title: '名称',
-      dataIndex: 'manifname',
-      key: 'manifname',
+      dataIndex: 'synname',
+      key: 'synname',
     }];
     return columns;
   };
@@ -40,7 +40,7 @@ export default class AddIllByManifestations extends Component {
   getIllData(keyword){
     let self = this;
     let params = {
-      url: 'BaDiseaseManifController/getList',
+      url: 'BaSyndromeController/getList',
       data: {
         keyword: keyword,
         diseaseid: this.props.symptomId,
@@ -55,7 +55,7 @@ export default class AddIllByManifestations extends Component {
           return item
         });
         let totalLines = illData.length;
-        self.setState({illData, totalLines, showResult: true});
+        self.setState({illData, totalLines, curLine: -1, showResult: true});
       }else{
         console.log('异常响应信息', res);
       }
@@ -149,7 +149,7 @@ export default class AddIllByManifestations extends Component {
           let selectedManifnames = [];
           illData.forEach(item => {
             if(item.checkedStatus == 2){
-              selectedManifnames.push(item.manifname);
+              selectedManifnames.push(item.synname);
             }
           });
           this.semicircleInput.changeInputValue(selectedManifnames.join('、'));

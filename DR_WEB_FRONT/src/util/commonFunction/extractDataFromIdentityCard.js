@@ -1,3 +1,4 @@
+import moment from 'moment';
 /**
  * [getBirthdayFromIdCard 从身份证号中提取本人生日]
  * @param  {[type]} idCard [description]
@@ -31,26 +32,41 @@ function getSexFromIdCard(idCard){
   return sex;
 };
 /**
- * [getAgeFromBirthday 从生日中获取年龄]
- * @param  {[type]} birthday [生日， YYYYY-MM-DD]
- * @return {[type]}          [年龄]
+ * [getAgeFromBirthday 拿到初始到现在的日期]
+ * @param  {[type]} birthday [生日 'YYYY-MM-DD']
+ * @return {[type]}          [年龄 年/X月X日]
  */
-function getAgeFromBirthday(birthday){
-  let date = new Date();
-  let age = 0;
-  if(birthday){
-    age = date.getFullYear() - parseInt(birthday.substr(0,4)); // 通过年份获取生日
-    if((date.getMonth() + 1) <= parseInt(birthday.substr(5,2))){ // 已经过了生日长一岁
-      if((date.getMonth() + 1) == parseInt(birthday.substr(5,2))){ // 同一个月份比较日期
-        if(date.getDate() <= parseInt(birthday.substr(8,2))){ // 同一个月份比较日期
-          age++;
-        }
-      }else if((date.getMonth() + 1) < parseInt(birthday.substr(5,2))){ // 出生月份已过
-        age++;
-      }
+function getAgeFromBirthday(birthday) {
+  if(moment(birthday).isValid('YYYY-MM-DD')){
+    let m1 = moment(moment().format('YYYY-MM-DD')),
+        m2 = moment(moment(birthday, 'YYYY-MM-DD')),
+        du = m1.diff(m2);
+    if (du < 0) {
+      console.log('生日格式错误');
+      return '0岁';
     }
+    let year = moment.duration(du).years(),
+      months = moment.duration(du).months(),
+      days = moment.duration(du).days();
+    let bird;
+    if (year == 0) {
+      if (months == 0) {
+        bird = days + '天'
+      } else if (days == 0) {
+        bird = months + '月'
+      } else if (months == 11 && days == 30) {
+        bird = '1岁'
+      } else {
+        bird = months + '月' + days + '天'
+      }
+    } else {
+      bird = year + '岁'
+    }
+    return bird
+  }else{
+    console.log('生日格式错误');
+    return '0';
   }
-  return age;
-};
+}
 
 export default { getBirthdayFromIdCard, getAgeFromBirthday, getSexFromIdCard };

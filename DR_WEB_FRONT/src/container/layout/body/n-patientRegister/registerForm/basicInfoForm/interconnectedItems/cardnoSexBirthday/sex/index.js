@@ -9,7 +9,7 @@ const RadioGroup = Radio.Group;
 
 export default class Sex extends Component {
   render() {
-    let { formItemLayout, getFieldDecorator, disabled } = this.props.commontProps;
+    let { formItemLayout, getFieldDecorator, disabled, getFieldValue } = this.props.commontProps;
     const sex = this.props.sex;
     const initialValue = this.props.initialValue;
     return (
@@ -19,10 +19,10 @@ export default class Sex extends Component {
         label="性别："
         >
         {getFieldDecorator('sex', {
-          rules: [{ required: true, message: '证件号码不正确，获取性别异常!' }],
+          rules: [{ required: true, message: '请选择患者性别!' }],
           initialValue: initialValue
         })(
-          <SpecRadioGroup disabled>
+          <SpecRadioGroup disabled={getFieldValue('cardtype') == '01'}>
           {
             sex.map(item => <Radio value={item.value} key={item.value}>{item.vname}</Radio>)
           }

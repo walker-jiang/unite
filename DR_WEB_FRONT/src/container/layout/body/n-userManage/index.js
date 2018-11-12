@@ -26,7 +26,8 @@ export default class Index extends React.Component {
       // roleName:''  //角色的名称
     };
   }
-  componentWillMount() {};
+  componentWillMount() {
+  };
   /** [toggleTabs 点击样式切换/控制用户和角色的显示] */
   toggleTabs = (curTab) => {
     this.setState({rcStatus: curTab});

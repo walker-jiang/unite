@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { Tag, Input } from 'antd';
 import InputEnterPop from 'components/dr/input/enterPopInput';
 import Loading from 'components/dr/loading';
+import Icon from 'components/dr/icon';
+import TipModal from 'components/dr/modal/tip';
 import inputSty from 'components/antd/style/input';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
@@ -54,10 +56,37 @@ export default class SyndromePop extends Component {
   selectText = (text) => {
     this.input.focus(); // 返回焦点
     let pre_value = typeof(this.props.value) == 'string' ? this.props.value + '；' : this.props.value.extractionData;
-    pre_value += text + '；';
-    if(!!pre_value && (pre_value.substr(pre_value.length-1) != '；')){
+    // 去重校验
+    let repeat_item_text = this.validateRepeat(pre_value, text);
+    if(repeat_item_text){
+      this.tipModal.showModal({
+        content: '已存在，请勿重复添加！',
+        stressContent: repeat_item_text
+      });
+    }else{
+      pre_value += text + '；';
+      this.props.onChange({originData: [], extractionData: pre_value}); // 改变辩证要点表单项的值
     }
-    this.props.onChange({originData: [], extractionData: pre_value}); // 改变治疗原则表单项的值
+  };
+  /**
+   * [validateRepeat 重复性校验]
+   * @param  {[type]} pre_text [之前的文本]
+   * @param  {[type]} e        [当前文本]
+   * @return {[type]} string         [重复的文本]
+   */
+  validateRepeat(pre_text, e){
+    let pre_text_arr = pre_text.replace(/、/, '；').split('；');
+    let repeat_item_text = '';
+    let cur_text_arr = e.split('、');
+    cur_text_arr.forEach(cur_item => {
+      pre_text_arr.forEach(pre_item => {
+        if(cur_item === pre_item){
+          repeat_item_text = cur_item;
+          return;
+        }
+      });
+    });
+    return repeat_item_text;
   };
   /** [handleTagInput 选择标签，接下来应该将标签赋值给输入框] */
   handleTagInput(e){
@@ -129,8 +158,12 @@ export default class SyndromePop extends Component {
             :
             <Loading loading={true}/>
           }
+          {
+            loaded ? (curePrincipleData.length ? null : <NoData type='empty'></NoData>) : null
+          }
           </Result>
         </Container>
+        <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </SpecInputEnterPop>
     );
   }
@@ -183,6 +216,15 @@ const Line = styled.div`
   &:hover {
     background-color: rgba(10, 110, 203, 1);
   }
+`;
+const NoData = styled(Icon)`
+  width: 35px;
+  height: 35px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -30px;
+  text-align: center;
 `;
 /*
 @作者：姜中希

@@ -81,9 +81,9 @@ export default class InitialSetting extends Component {
             {
               // <StepArrow text='1. 绑定HIS' {...(this.getStyle(status, 1))} ></StepArrow>
             }
-            <StepArrow text='1. 个人信息确认' {...(this.getStyle(status, 2))}></StepArrow>
-            <StepArrow text='2. 修改密码' {...(this.getStyle(status, 3))}></StepArrow>
-            <StepArrow text='3. 完成' {...(this.getStyle(status, 4))}></StepArrow>
+            <StepArrow text='1. 个人信息确认' {...(this.getStyle(status, 1))}></StepArrow>
+          <StepArrow text='2. 修改密码' {...(this.getStyle(status, 2))}></StepArrow>
+        <StepArrow text='3. 完成' {...(this.getStyle(status, 3))}></StepArrow>
           </Step>
           {component}
         </Content>

@@ -8,6 +8,7 @@ import DatePicker from 'components/dr/datePicker/semicirclePicker';
 import Pagination from 'components/antd/components/pagination';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import buttonSty from 'components/antd/style/button';
+import extractDataFromIdentityCard from 'commonFunc/extractDataFromIdentityCard';
 import inputSty from 'components/antd/style/input';
 import paginationSty from 'components/antd/style/pagination';
 
@@ -25,7 +26,6 @@ class Index extends Component {
       pageSize: pageSize * 2, // 每页记录数
     };
     this.getPatienList = this.getPatienList.bind(this);
-    this.reception = this.reception.bind(this);
     this.doing = this.doing.bind(this);
     this.redo = this.redo.bind(this);
     this.done = this.done.bind(this);
@@ -122,7 +122,7 @@ class Index extends Component {
       url: 'BuRegisterController/getListByMap',
       data: {
         orgid: window.sessionStorage.getItem('orgid'), // 机构ID
-        deptid: window.sessionStorage.getItem('deptid'), // 科室ID
+        deptcode: window.sessionStorage.getItem('deptid'), // 科室ID
         rcStatus: rcStatus, // 接诊状态
         keyword: keyword, // 患者姓名，姓名拼音简拼手机号
         beginTime: date + ' ' + '00:00:01', // date
@@ -171,7 +171,7 @@ class Index extends Component {
       dataIndex: 'birthday',
       key: 'birthday',
       align: 'center',
-      render: (text, record) => date.getFullYear() - parseInt(text.substr(0,4))
+      render: (text, record) => extractDataFromIdentityCard.getAgeFromBirthday(text.substr(0,4))
     }, {
       title: '操作',
       dataIndex: 'operation',
@@ -189,11 +189,13 @@ class Index extends Component {
         record.rcStatus == 1 ?
           <span>
             <StyledLink
+              replace={true}
               onClick={() => this.keepDoing(record.registerid, record.patientid)}
               to={'/Layout/treatment'}>
               续诊
             </StyledLink>|
             <StyledLink
+              replace={true}
               onClick={() => this.done(record.registerid)}
               to='/Layout/todayPatient'>
               完成
@@ -201,11 +203,13 @@ class Index extends Component {
           </span>
         : <span>
             <StyledLink
+              replace={true}
               onClick={() => this.redo(record.registerid, record.patientid)}
               to={'/Layout/treatment'}>
               重诊
             </StyledLink>|
             <StyledLink
+              replace={true}
               onClick={() => this.view(record.registerid, record.patientid)}
               to={'/Layout/treatment'}>
               查看
@@ -220,23 +224,6 @@ class Index extends Component {
     this.setState({ rcStatus: e.target.value },function(){
       this.getPatienList();
     });
-  };
-  /**
-   * [reception 点击表格中的接诊操作触发的函数]
-   * @param  {Number} [id=1]      [患者ID]
-   * @param  {[type]} registerid  [接诊ID]
-   * @param  {[type]} patientname [患者姓名]
-   * @return {[type]}             [undefined]
-   */
-  reception(id=1, registerid, patientname){
-    window.patientID = id;
-    window.registerID = registerid;
-    window.patientName = patientname;
-    let path = {
-      pathname: '/layout/treatManage/' + id,
-    }
-    // 跳转到诊疗界面
-    this.props.history.push(path);
   };
   render() {
     let { patienList, rcStatus, totalRecords, curPage,  pageSize} = this.state;
@@ -282,7 +269,6 @@ class Index extends Component {
 }
 const Container = styled.div`
   width: 13px;
-  height: 100%;
   display: flex;
   align-items: center
 `;

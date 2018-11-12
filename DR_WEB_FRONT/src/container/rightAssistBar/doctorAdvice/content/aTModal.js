@@ -102,9 +102,9 @@ class Index extends Component {
   getColumns = () => {
     const columns = [{
       title: '检查项目',
-      dataIndex: 'spbody',
-      key: 'spbody',
-      //render: (text, record) => record.medicalname ? record.medicalname : record.orderSuitname
+      dataIndex: 'orderSuitname', 
+      key: 'orderSuitname',
+      render: (text, record) => record.medicalname ? record.medicalname : record.orderSuitname
     }, {
       title: '医保等级',
       dataIndex: 'medinslevel',

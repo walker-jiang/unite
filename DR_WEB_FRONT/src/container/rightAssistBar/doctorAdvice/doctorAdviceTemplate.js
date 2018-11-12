@@ -15,6 +15,7 @@ import pingpu2 from './style/pingpu2.png';
 import shuzhuang1 from './style/shuzhuang1.png';
 import shuzhuang2 from './style/shuzhuang2.png';
 import zanwunerong from './style/zanwunerong.png';
+import TipModal from 'components/dr/modal/tip';
 const Search = Input.Search;
 
 export default class template extends Component {
@@ -66,7 +67,7 @@ export default class template extends Component {
         case 4: chinesePatentMedicine.push(item);break;
         case 5: appropriateTechnology.push(item);break;
         case 6: westernMedicine.push(item);break;
-        default: materials.push(item);break;
+        case 7: westernMedicine.push(item);break;
       }
     });
     var newItem = [
@@ -133,26 +134,33 @@ export default class template extends Component {
   importTem = (item) => {
     var self = this;
     var orderidList = [];
-    console.log("111item==============",item.initData);
+    console.log("111item==============",item);
     //self.props.actionManager("add",item.initData.recipeList,item.initData);
-    item.initData.recipeList.forEach((item,index)=>{
-      orderidList.push(item.orderid);
-    })
-    console.log("orderidList=",orderidList);
-    console.log("window.registerID=",window.registerID);
-    let params = {
-      orderidList:orderidList,//医嘱id集合  //201837501200516147
-      registerid:window.registerID,//当前挂号id 201837501200516148
-    };
-    function callBack(res){
-      if(res.result){
-        console.log("引入医嘱模板成功==============",res);
-        self.props.getData();
-      }else{
-        console.log('引入医嘱模板失败', res);
-      }
-    };
-    doctorAdviceService.importTem(params, callBack);
+    if(item.initData.recipeList && item.initData.recipeList[0].orderid && item.initData.recipeList[0].ordertype){
+      item.initData.recipeList.forEach((item,index)=>{
+        orderidList.push(item.orderid);
+      })
+      console.log("orderidList=",orderidList);
+      console.log("window.registerID=",window.registerID);
+      let params = {
+        orderidList:orderidList,//医嘱id集合  //201837501200516147
+        registerid:window.registerID,//当前挂号id 201837501200516148
+      };
+      function callBack(res){
+        if(res.result){
+          console.log("引入医嘱模板成功==============",res);
+          self.props.getData();
+        }else{
+          console.log('引入医嘱模板失败', res);
+        }
+      };
+      doctorAdviceService.importTem(params, callBack);
+    }else{
+      self.tipModal.showModal({
+        content: '该条数据内容为空，不能引入',
+        stressContent: ""
+      });
+    }
   }
   /**
    * 左右联动（和书写诊疗单）
@@ -160,26 +168,20 @@ export default class template extends Component {
    * @param  {[type]}       item [表单内容]
    */
   changeInitData = (item) =>{
-    console.log("医嘱模板引入===============",item);
     var self = this;
+    console.log("item=============",item);
     let params = {
-      orderidList:item.orderid,//医嘱id集合  //201837501200516147
-      registerid:window.registerID,//当前挂号id 201837501200516148
+      orderid :item.orderid,
     };
     function callBack(res){
+      console.log("获取历史病历详情",res);
       if(res.result){
-        console.log("获取历史病历详情成功==============",res.data);
-        var record = {
-          ordertype:parseInt(item.ordertype),
-          orderid:item.orderid,
-        }
-        console.log("record===",record);
-        self.props.actionManager("modify",record);
+        self.props.actionManager('add', {orderid:res.data.orderid, ordertype: res.data.ordertype}, res.data);
       }else{
         console.log('获取历史病历详情异常响应信息', res);
       }
     };
-    doctorAdviceService.importTem(params, callBack);
+    doctorAdviceService.GetData(params, callBack);
   }
   queryTree = () =>{
     var self = this;
@@ -233,6 +235,7 @@ export default class template extends Component {
     var { content, isCut, unfold, pingpu, shuzhuang, dataSource, searchValue } = this.state;
     return (
       <div className="doctorAdvice_template">
+        <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
         <div className="tab">
           <Row>
             <Col span={4}>
@@ -276,7 +279,7 @@ export default class template extends Component {
                         <Col span={24}>诊断:{item.diagnose}</Col>
                       </Row>
                     </div>
-                    <ContentDetailSeven changeInitData ={this.changeInitData} item={item.data} unfold={unfold}/>
+                    <ContentDetailSeven type={"1"} changeInitData ={this.changeInitData} item={item.data} unfold={unfold}/>
                   </div>
                 )
               })

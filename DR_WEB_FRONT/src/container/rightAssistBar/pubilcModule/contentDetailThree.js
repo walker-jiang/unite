@@ -6,6 +6,7 @@
 import React, {Component} from 'react';
 import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, Alert, Modal } from 'antd';
 import doctorAdviceService from '../service/doctorAdviceService.js';
+import TipModal from 'components/dr/modal/tip';
 import SearchTree from './searchTree.js';
 
 const Search = Input.Search;
@@ -75,7 +76,9 @@ export default class ContentDetail extends Component {
         //* 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
         self.props.changeInitData(res.data,4);
       }else{
-        console.log('中成药转换失败', res);
+        self.tipModal.showModal({
+          content: '中成药引入失败'
+        });
       }
     };
     doctorAdviceService.getCpm(params, callBack);
@@ -84,19 +87,26 @@ export default class ContentDetail extends Component {
     var { isCut, isUnfoldAll, drugName, treatname, therapy, four, five, six, seven, item, unfold  } = this.state;
     return (
       <div>
+        <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
         <div className="content-detail-two">
-          <p onClick={()=>this.unfold("drugName",drugName)}>
-            {item.drugName && item.drugName.length>26?<p style={{marginLeft:3}}><Icon type={drugName?"down":"right"}/>成分：</p>:<p style={{marginLeft:15}}>成分：</p>}
-          </p>
-          <p>{ drugName?item.drugName:this.cutOut(item.drugName) }</p>
-          <p onClick={()=>this.unfold("treatname",treatname)}>
-            {item.treatname && item.treatname.length>26?<p style={{marginLeft:3}}><Icon type={treatname?"down":"right"}/>主治：</p>:<p style={{marginLeft:15}}>主治：</p>}
-          </p>
-          <p>{ treatname?item.treatname:this.cutOut(item.treatname) }</p>
-          <p onClick={()=>this.unfold("therapy",therapy)}>
-            {item.therapy && item.therapy.length>26?<p style={{marginLeft:3}}><Icon type={therapy?"down":"right"}/>治则治法：</p>:<p style={{marginLeft:15}}>治则治法：</p>}
-          </p>
-          <p>{ therapy?item.therapy:this.cutOut(item.therapy) }</p>
+          <div>
+            <span onClick={()=>this.unfold("drugName",drugName)} className="left">
+              {item.drugName && item.drugName.length>26?<span style={{fontWeight:600,marginLeft:3}}><Icon type={drugName?"down":"right"}/>成分：</span>:<span style={{fontWeight:600,marginLeft:15}}>成分：</span>}
+            </span>
+            <span className="right">{ drugName?item.drugName:this.cutOut(item.drugName) }</span>
+          </div>
+          <div>
+            <span onClick={()=>this.unfold("treatname",treatname)} className="left">
+              {item.treatname && item.treatname.length>26?<span style={{fontWeight:600,marginLeft:3}}><Icon type={treatname?"down":"right"}/>主治：</span>:<span style={{fontWeight:600,marginLeft:15}}>主治：</span>}
+            </span>
+            <span className="right">{ treatname?item.treatname:this.cutOut(item.treatname) }</span>
+          </div>
+          <div>
+            <span onClick={()=>this.unfold("therapy",therapy)} className="left">
+              {item.therapy && item.therapy.length>26?<span style={{fontWeight:600,marginLeft:3}}><Icon type={therapy?"down":"right"}/>治则治法：</span>:<span style={{fontWeight:600,marginLeft:15}}>治则治法：</span>}
+            </span>
+            <span className="right">{ therapy?item.therapy:this.cutOut(item.therapy) }</span>
+          </div>
         </div>
         <div className="content-detail-two-Button">
           <Button style={{marginTop:20}} onClick={()=>{ this.getCpm(this.props.item) }}>引入</Button>

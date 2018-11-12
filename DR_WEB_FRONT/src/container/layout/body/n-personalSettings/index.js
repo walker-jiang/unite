@@ -8,6 +8,8 @@ import SystemOptions from "./SystemOptions";
 import "./style.less";
 import $ from "jquery";
 const Panel = Collapse.Panel;
+
+
 class PersonalSettings extends React.Component{
   constructor(props) {
     super(props);
@@ -18,26 +20,25 @@ class PersonalSettings extends React.Component{
         dictListObj:[],
         deptData:[],
         imgFile:'',
-        show:false
+        show:false,
+        num:true,
+        vername:'',
+        deptcode:'',
       };
   }
   componentWillMount(){
-
     // const cusVerson = window.getClientVersion();//本地客户端版本第一次获取
     // this.setState({cusVerson})
     this.getVerson('1');//1,7,8
-    this.getPatientData(window.sessionStorage.getItem('userid'));//
+    this.getPatientData(window.sessionStorage.getItem('userid'));//, window.sessionStorage.getItem('token')
     this.getDictList(['post']);
     this.getDept();
-
-
-
   }
   //获取服务器版本
   getVerson=(id)=>{
     const this_=this;
     let params = {
-      url: 'SyVersionController/getVerNo',
+      url: 'SyVersionController/getData',
       server_url:config_login_url,
       data: {
         verid: id,
@@ -46,27 +47,31 @@ class PersonalSettings extends React.Component{
     function callBack(res){
       if(res.result){
         var vername=res.data.vername
+        // console.log('版本信息',res.data)
         this_.setState({
-          vername
+          vername:vername
         })
       }
     }
     Ajax(params, callBack);
   }
-  // BaOrguserController/getData?orgUerid=1
-  //获取登陆者信息===================================================================================== 地址403
+  /**
+   * [getPatientData 获取用户信息]
+   * @param  {[type]} id    [用户id]
+   * @param  {[type]} token [可控]
+   * @return {[type]}       [undefined]
+   */
   getPatientData(id){
     let self = this;
     let params = {
       url: 'BaOrguserController/getData',
-      // server_url:config_service_url,
+      server_url:config_login_url,
       data: {
-        'userId': id,
+        orgUserid:id,
       },
     };
     function callBack(res){
-      console.log('个人设置用户信息：',res);
-      if(res.result){
+      if(res.result && res.data){
         self.setState({ baPatient: res.data });
       }else{
         console.log('异常响应信息', res);
@@ -115,57 +120,65 @@ class PersonalSettings extends React.Component{
     let that = this;
     function success(res) {
       if(res.result){
-        let deptData = res.data;
+        // console.log('科室数据：',res);
         // deptData.forEach((val,i)=>{
           // that.getDocData(parseInt(val.deptid),val.deptname);
         // })
-        that.setState({ deptData:deptData })
+
+        that.setState({ deptData:res.data},()=>{
+
+        })
+
       }
     };
     Ajax(params, success);
   }
 
   Modify=(value,event)=>{
-    // console.log("sad",value,event);
+    const this_=this;
      event.stopPropagation();
-     const Icon1 = $("#icon1"),
-     Icon2 = $("#icon2"),
-     Icon3 = $("#icon3"),
-     Icon4 = $("#icon4");
-    if(value=="User"){
-      console.log("ssss");
-      Icon1.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
-      Icon2.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
-      Icon3.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
-      Icon4.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"})
-      this.setState({status:["1"]});
-      this.PersonalInformationSettings.isModify()
-    }
-    if (value=="个人设置") {
-        this.PersonalInformationSettings.isModify()
-    }else
-    if (value=="修改密码") {
-      this.ChangePassword.isModify()
-    }else
-    if (value=="系统选项") {
-      console.log('isModifyisModify1111',this.SystemOptions);
-      this.SystemOptions.isModify()
-    }else
-    if (value=="系统版本") {
-      console.log('isModifyisModify',this.SystemVersion);
-      // this.SystemVersion.isModify()
-    }else if(value=="User"){
-        this.setState({UserModify:true})
+    if (value=="个人设置" || value=="User") {
+      if(JSON.stringify(this.state.status) == '["1"]' && this.state.num){
+        this.setState({num:false})
+        this_.PersonalInformationSettings.isModify()
+      }else{
+        this.Modify1(value,window.event);
+        setTimeout(function(){ this_.PersonalInformationSettings.isModify() }, 10);
+      }
+    }else if (value=="修改密码") {
+      if(JSON.stringify(this.state.status) == '["2"]' && this.state.num){
+        this.setState({num:false})
+        this_.ChangePassword.isModify()
+      }else{
+        this.Modify1(value,window.event);
+        setTimeout(function(){ this_.ChangePassword.isModify() }, 10);
+      }
+      // this.Modify1(value,window.event);
+      // setTimeout(function(){ this_.ChangePassword.isModify() }, 10);
+    }else if (value=="系统选项") {
+      if(JSON.stringify(this.state.status) == '["3"]' && this.state.num){
+        this.setState({num:false})
+        this_.SystemOptions.isModify()
+      }else{
+        this.Modify1(value,window.event);
+        setTimeout(function(){ this_.SystemOptions.isModify() }, 10);
+      }
+      // this.Modify1(value,window.event);
+      // setTimeout(function(){ this_.SystemOptions.isModify() }, 10);
+    }else if (value=="系统版本") {
+      this.Modify1(value,window.event);
+      // setTimeout(function(){ this_.SystemVersion.isModify() }, 10);
     }
   }
 
   Modify1=(val,e)=>{
+    this.setState({num:true})
     // console.log('thisthis',this);
     const Icon1 = $("#icon1"),
     Icon2 = $("#icon2"),
     Icon3 = $("#icon3"),
     Icon4 = $("#icon4");
-    if(val == '个人设置'){
+    if(val == '个人设置' || val=="User"){
       if(JSON.stringify(this.state.status) == '[]'){
         Icon1.css({'transform':"rotate(-270deg)",'transform-origin':"33% 37% 0"})
         this.setState({status:["1"]})
@@ -257,9 +270,25 @@ class PersonalSettings extends React.Component{
       }
     }
   }
+  handleStatus=(status)=>{
+    this.setState({status:status});
+    const Icon1 = $("#icon1"),
+    Icon2 = $("#icon2"),
+    Icon3 = $("#icon3"),
+    Icon4 = $("#icon4");
+    Icon1.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"});
+    Icon2.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"});
+    Icon3.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"});
+    Icon4.css({'transform':"rotate(-90deg)",'transform-origin':"48% 54% 0"});
+  }
   handleClick=(img)=>{
-    console.log("ssdasda");
+    // console.log("ssdasda");
     this.setState({Img:img})
+  }
+  upSta=(e)=>{
+    this.setState({status:[]})
+    // console.log('$(e.target)',$(e.target).parent().parent().parent().siblings().find('i'));
+    $(e.target).parent().parent().parent().siblings().find('i').css({'transform':'rotate(-90deg)'})
   }
   render() {
     const text = `
@@ -267,7 +296,6 @@ class PersonalSettings extends React.Component{
   Known for its loyalty and faithfulness,
   it can be found as a welcome guest in many households across the world.
 `;
-
     return (
       <div className="PersonalSettings">
           <div className="title" style={{borderBottom:"1px solid #E4E4E4"}}>
@@ -276,20 +304,21 @@ class PersonalSettings extends React.Component{
           <div style={{marginTop:"20px",marginLeft: "3%"}}>
             <div style={{width:"70%",marginLeft:"10px",float:"left"}}>
               <Collapse accordion={false} activeKey={this.state.status}>
-                <Panel   showArrow={false} header={
-                    <div style={{overflow:"hidden",height:"44px",position:"absolute",top:0,width:"100%",lineHeight:"44px"}}>
-                      <p style={{width:"50%",float:"left"}}>
-                        <span style={{fontWeight:'bold'}}>个人信息设置</span>
-                        <sapn style={{color:"#999",fontSize:"12px",marginLeft:"20px"}}>修改和完善个人登录信息</sapn>
-                      </p>
-                      <p style={{width:"50%",float:"right",textAlign:"right"}}>
-                        <span style={{marginRight:"6%"}}><img onClick={(e)=>{this.Modify("个人设置",e)}} src={require("./images/10.png")}></img></span>
-                        <Icon id='icon1' onClick={(e)=>{this.Modify1('个人设置',e)}} type="double-left" theme="outlined" style={{marginRight:"6%",transform:'rotate(-90deg)',color:'#0B6ECB',fontSize:'16px',height:'22px',fontWeight:'bolder' }}></Icon>
-                      </p>
-                    </div>} key="1">
-                  <PersonalInformationSettings prop={[this.state.baPatient,this.state.dictListObj,this.state.deptData,{'status':this.state.status}]} handleClick={this.handleClick.bind(this)}  wrappedComponentRef={(inst)=>this.PersonalInformationSettings=inst}/>
+                <Panel className='styleTop' style={{position:'relative'}} showArrow={false} header={
+                  <div style={{overflow:"hidden",height:"44px",position:"absolute",top:0,width:"100%",lineHeight:"44px"}}>
+                    <p style={{width:"50%",float:"left"}}>
+                      <span style={{fontWeight:'bold'}}>个人信息设置</span>
+                      <sapn style={{color:"#999",fontSize:"12px",marginLeft:"20px"}}>修改和完善个人登录信息</sapn>
+                    </p>
+                    <p style={{width:"50%",float:"right",textAlign:"right"}}>
+                      <span style={{marginRight:"6%"}}><img onClick={(e)=>{this.Modify("个人设置",e)}} src={require("./images/10.png")}></img></span>
+                      <Icon id='icon1' onClick={(e)=>{this.Modify1('个人设置',e)}} type="double-left" theme="outlined" style={{marginRight:"6%",transform:'rotate(-90deg)',color:'#0B6ECB',fontSize:'16px',height:'22px',fontWeight:'bolder' }}></Icon>
+                    </p>
+                  </div>} key="1">
+                  <PersonalInformationSettings handleStatus={this.handleStatus} prop={[this.state.baPatient,this.state.dictListObj,this.state.deptData,{'status':this.state.status}]} handleClick={this.handleClick.bind(this)}  wrappedComponentRef={(inst)=>this.PersonalInformationSettings=inst}/>
+                  <div onClick={this.upSta} style={{position:'absolute',bottom:'28px',right:'56px',fontSize:'15px',color:'#0B6ECB',cursor:'pointer'}}><span>收起</span> <Icon style={{transform:'rotate(90deg)'}} type='double-left'/></div>
                 </Panel>
-                <Panel showArrow={false} header={
+                <Panel className='styleTop' style={{position:'relative'}} showArrow={false} header={
                     <div style={{overflow:"hidden",height:"40px",position:"absolute",top:0,width:"100%",lineHeight:"40px"}}>
                       <p style={{width:"50%",float:"left"}}>
                         <span style={{fontWeight:'bold'}}>修改密码</span>
@@ -301,9 +330,10 @@ class PersonalSettings extends React.Component{
                       </p>
                     </div>
                 } key="2">
-                  <ChangePassword wrappedComponentRef={(inst)=>this.ChangePassword=inst}></ChangePassword>
+                  <ChangePassword handleStatus={this.handleStatus} prop={this.state.baPatient.realname} wrappedComponentRef={(inst)=>this.ChangePassword=inst}></ChangePassword>
+                  <div onClick={this.upSta} style={{position:'absolute',bottom:'28px',right:'56px',fontSize:'15px',color:'#0B6ECB',cursor:'pointer'}}><span>收起</span> <Icon style={{transform:'rotate(90deg)'}} type='double-left'/></div>
                 </Panel>
-                <Panel showArrow={false} header={
+                <Panel className='styleTop' style={{position:'relative'}} showArrow={false} header={
                   <div style={{overflow:"hidden",height:"40px",position:"absolute",top:0,width:"100%",lineHeight:"40px"}}>
                     <p style={{width:"50%",float:"left"}}>
                       <span style={{fontWeight:'bold'}}>系统选项</span>
@@ -315,9 +345,10 @@ class PersonalSettings extends React.Component{
                     </p>
                   </div>
                   } key="3">
-                  <SystemOptions wrappedComponentRef={(inst)=>this.SystemOptions=inst}></SystemOptions>
+                  <SystemOptions handleStatus={this.handleStatus} wrappedComponentRef={(inst)=>this.SystemOptions=inst}></SystemOptions>
+                  <div onClick={this.upSta} style={{position:'absolute',bottom:'28px',right:'56px',fontSize:'15px',color:'#0B6ECB',cursor:'pointer'}}><span>收起</span> <Icon style={{transform:'rotate(90deg)'}} type='double-left'/></div>
                 </Panel>
-                <Panel showArrow={false} header={
+                <Panel className='styleTop' showArrow={false} header={
                   <div style={{overflow:"hidden",height:"40px",position:"absolute",top:0,width:"100%",lineHeight:"40px"}}>
                     <p style={{width:"50%",float:"left"}}>
                       <span style={{fontWeight:'bold'}}>系统版本</span>
@@ -329,7 +360,7 @@ class PersonalSettings extends React.Component{
                     </p>
                   </div>
                   } key="4">
-                  <SystemVersion vername={this.state.vername} cusVerson={this.state.cusVerson} wrappedComponentRef={(inst)=>this.SystemVersion=inst}></SystemVersion>
+                  <SystemVersion handleStatus={this.handleStatus} vername={this.state.vername} cusVerson={this.state.cusVerson} wrappedComponentRef={(inst)=>this.SystemVersion=inst}></SystemVersion>
                 </Panel>
               </Collapse>
             </div>
@@ -339,7 +370,7 @@ class PersonalSettings extends React.Component{
               </div>
               <div className="details" style={{padding:"20px 0 20px 0",borderBottom:"1px solid #E7E7E7",marginRight:"20%"}}>
                 <p>当前用户： <span>{this.state.baPatient.realname}</span><span style={{marginLeft:"20px"}}><img onClick={(e)=>{this.Modify("User",e)}} src={require("./images/10.png")}></img></span></p>
-                <p>所在科室： <span>{this.state.baPatient.deptidDic}</span></p>
+              <p>所在科室： <span>{this.state.baPatient.deptcodeDic}</span></p>
                 <p>职务职级： <span>{this.state.baPatient.postDic}</span></p>
               </div>
               <div className="details" style={{padding:"20px 0 20px 0"}}>

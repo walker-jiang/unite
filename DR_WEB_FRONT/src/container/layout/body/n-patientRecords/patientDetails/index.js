@@ -95,6 +95,8 @@ export default class Index extends Component {
     let sex = this.props.sex;
     let sexDic = this.props.sexDic;
     let birthday = this.props.birthday;
+    console.log('birthdayOne',birthday);
+    
     let patienttypeDic = this.props.patienttypeDic;
     let basicOperation = this.props.basicOperation;
     let cardtype = this.props.cardtype;

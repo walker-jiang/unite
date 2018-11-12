@@ -148,7 +148,7 @@ export default class ChHerbalMedicine extends Component {
       orgCode: window.sessionStorage.getItem('orgid')
     };
     let params = {
-      url: 'Taboo/matchByDtl',
+      url: 'Taboo/matchBy',
       server_url: config_taboo_url,
       async: false,
       type: 'post',
@@ -156,26 +156,61 @@ export default class ChHerbalMedicine extends Component {
     }
     let that = this;
     let promise = null;
+    // function success(res) {
+    //   if(res.result){
+    //     let carefulArr = []; // 慎用项
+    //     let tabooArr = []; // 禁忌项
+    //     res.data.forEach(item => {
+    //       if(item.careful){
+    //         carefulArr.push(item.careful);
+    //       }
+    //       if(item.taboo){
+    //         tabooArr.push(item.taboo);
+    //       }
+    //     });
+    //     if(carefulArr.length || tabooArr.length){ // 弹框提示
+    //       let title = [];
+    //       if(carefulArr.length){
+    //         title.push(<p>慎用项目：{carefulArr.join('、')}</p>);
+    //       }
+    //       if(tabooArr.length){
+    //         title.push(<p>禁忌项目：{tabooArr.join('、')}</p>);
+    //       }
+    //       promise = new Promise((resolve, reject) => {
+    //         confirm({
+    //           title: title.map(item => item),
+    //           iconType: 'exclamation-circle',
+    //           okText: '继续保存',
+    //           cancelText: '查看',
+    //           onOk() { // 继续保存
+    //             resolve(herbalData);
+    //           },
+    //           onCancel() { // 查看禁忌
+    //             herbalData.map(herbalItem => {
+    //               res.data.forEach(itemcTaboo => {
+    //                 if(itemcTaboo.itemid == herbalItem.itemid){
+    //                   herbalItem.careful = itemcTaboo.careful;
+    //                   herbalItem.taboo = itemcTaboo.taboo;
+    //                 }
+    //               })
+    //               return herbalItem;
+    //             });
+    //             reject(herbalData);
+    //           },
+    //         });
+    //       });
+    //     }else{
+    //       promise = new Promise((resolve, reject) => {
+    //         resolve(herbalData);
+    //       });
+    //     }
+    //   }
+    // };
     function success(res) {
       if(res.result){
-        let carefulArr = []; // 慎用项
-        let tabooArr = []; // 禁忌项
-        res.data.forEach(item => {
-          if(item.careful){
-            carefulArr.push(item.careful);
-          }
-          if(item.taboo){
-            tabooArr.push(item.taboo);
-          }
-        });
-        if(carefulArr.length || tabooArr.length){ // 弹框提示
+        if(res.data['taboo'] && res.data['taboo'].length>0){ // 弹框提示
           let title = [];
-          if(carefulArr.length){
-            title.push(<p>慎用项目：{carefulArr.join('、')}</p>);
-          }
-          if(tabooArr.length){
-            title.push(<p>禁忌项目：{tabooArr.join('、')}</p>);
-          }
+          title.push(<p>{res.data['taboo'].join(',')}</p>);
           promise = new Promise((resolve, reject) => {
             confirm({
               title: title.map(item => item),
@@ -187,7 +222,7 @@ export default class ChHerbalMedicine extends Component {
               },
               onCancel() { // 查看禁忌
                 herbalData.map(herbalItem => {
-                  res.data.forEach(itemcTaboo => {
+                  res.data['buOrderDtls'].forEach(itemcTaboo => {
                     if(itemcTaboo.itemid == herbalItem.itemid){
                       herbalItem.careful = itemcTaboo.careful;
                       herbalItem.taboo = itemcTaboo.taboo;
@@ -198,6 +233,10 @@ export default class ChHerbalMedicine extends Component {
                 reject(herbalData);
               },
             });
+          });
+        }else{
+          promise = new Promise((resolve, reject) => {
+            resolve(herbalData);
           });
         }
       }
@@ -216,6 +255,9 @@ export default class ChHerbalMedicine extends Component {
         registerid: window.registerID
       },
     };
+    if(this.props.syndrome){ // 辨证论治添加处方
+      params.server_url = config_InteLigenTreat_url+'TCMAE/';
+    }
     function callBack(res){
       if(res.result && res.data){
         caseData = res.data

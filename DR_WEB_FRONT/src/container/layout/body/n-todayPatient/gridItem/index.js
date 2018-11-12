@@ -1,14 +1,22 @@
 import React, {Component, PropTypes} from 'react'; // react核心
 import styled, { ThemeProvider } from 'styled-components';
+import { Button } from 'antd';
 import { Link } from 'react-router-dom';
+import { today } from 'commonFunc/defaultData';
 import man from './man.png';
 import women from './women.png';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
-export default class Index extends Component {
+export default class GridItem extends Component {
   render() {
     const { gridType, dataSource, doing, redo, done, view, keepDoing } = this.props;
     const themeType = gridType == 0 ? 'to' : ( gridType == 1 ? 'ing_done' : 'done' );
+    const today_integer = parseInt(today.replace(/-/g, ''));
+    const regDate_integer = parseInt((dataSource.regDate.replace(/-/g, '')).substr(0, 8));
+    let disabled = false;
+    if(today_integer != regDate_integer){ // 之前的患者不可以再操作（除了查看信息）
+      disabled = true;
+    }
     return (
       <ThemeProvider theme={theme}>
         <Container themeType={themeType}>
@@ -23,35 +31,36 @@ export default class Index extends Component {
           {
             gridType == 0 ?
             <Footer themeType={themeType}>
-              <ActionButton onClick={e => doing(dataSource.registerid, dataSource.patientid)}>
-                <Link
+              <ActionButton onClick={e => doing(dataSource.registerid, dataSource.patientid)} disabled={disabled}>
+                <StyledLink
+                  disabled={disabled}
                   to={'/Layout/treatment'}>
                   接诊
-                </Link>
+                </StyledLink>
               </ActionButton>
             </Footer>
             : gridType == 1 ?
             <Footer themeType={themeType}>
-              <ActionButton onClick={e => keepDoing(dataSource.registerid, dataSource.patientid)}>
-                <Link to={'/Layout/treatment'}>
+              <ActionButton onClick={e => keepDoing(dataSource.registerid, dataSource.patientid)} disabled={disabled}>
+                <StyledLink to={'/Layout/treatment'} disabled={disabled}>
                   继续接诊
-                </Link>
+                </StyledLink>
               </ActionButton>
-              <ActionButton onClick={e => done(dataSource.registerid)}>
+              <ActionButton onClick={e => done(dataSource.registerid)} disabled={disabled}>
                 完成治疗
               </ActionButton>
             </Footer>
             :
             <Footer themeType={themeType}>
-              <ActionButton onClick={e => redo(dataSource.registerid, dataSource.patientid)}>
-                <Link to={'/Layout/treatment'}>
+              <ActionButton onClick={e => redo(dataSource.registerid, dataSource.patientid)} disabled={disabled}>
+                <StyledLink to={'/Layout/treatment'} disabled={disabled}>
                   重新接诊
-                </Link>
+                </StyledLink>
               </ActionButton>
               <ActionButton onClick={e => view(dataSource.registerid)}>
-                <Link to={'/Layout/treatment'}>
+                <StyledLink to={'/Layout/treatment'}>
                   信息查看
-                </Link>
+                </StyledLink>
               </ActionButton>
             </Footer>
           }
@@ -63,24 +72,24 @@ export default class Index extends Component {
 const theme = {
   to: {
     bg: '#38B6E4',
-    bg1: '#9BDBF2',
+    bg1: 'rgba(250,250,250,0.5)',
     bg3: '#FFFFFF',
   },
   ing_done: {
     bg: '#FF9900',
-    bg1: '#FFCC7F',
+    bg1: 'rgba(250,250,250,0.5)',
     bg3: '#F2F2F2',
   },
   done: {
     bg: '#33CC00',
-    bg1: '#FFCC7F',
+    bg1: 'rgba(250,250,250,0.5)',
     bg3: '#F2F2F2',
   }
 };
 const Container = styled.div`
   float: left;
   margin: 8px;
-  width: 232px;
+  width: 250px;
   height: 139px;
   background-color: ${props => props.theme[props.themeType].bg};
   display: flex;
@@ -122,6 +131,10 @@ const Footer = styled.div`
   border: 1px solid #E4E4E4;
   background-color: ${props => props.theme[props.themeType].bg3};
 `;
+const StyledLink = styled(Link)`
+  color: #0a6ecb;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+`;
 const ActionButton = styled.div`
   &:nth-child(2){
     border-left: 1px solid #E4E4E4;
@@ -131,7 +144,8 @@ const ActionButton = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  color: ${props => props.disabled ? '#CCB5CC' : '#0a6ecb'};
 `;
 /*
 @作者：姜中希

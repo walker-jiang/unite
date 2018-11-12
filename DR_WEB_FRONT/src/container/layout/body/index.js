@@ -14,11 +14,11 @@ const Home = Loadable({
   loader: () => import('./n-home'),
   loading: loadingComponent,
 });
-// import TreatManage from './treatment';
-const TreatManage = Loadable({
-  loader: () => import('./treatment'),
-  loading: loadingComponent,
-});
+import TreatManage from './treatment';
+// const TreatManage = Loadable({
+//   loader: () => import('./treatment'),
+//   loading: loadingComponent,
+// });
 const PatientRegister = Loadable({
   loader: () => import('./n-patientRegister'),
   loading: loadingComponent,
@@ -59,6 +59,7 @@ const ModelManage= Loadable({
   loader: () => import('./n-modelManage'),
   loading: loadingComponent,
 });
+// import PersonalSetting from './n-personalSettings';
 const PersonalSetting= Loadable({
   loader: () => import('./n-personalSettings'),
   loading: loadingComponent,
@@ -67,11 +68,11 @@ const SystemManage= Loadable({
   loader: () => import('./n-systemManage'),
   loading: loadingComponent,
 });
-import UserManage from './n-userManage';
-// const UserManage = Loadable({
-//   loader: () => import('./n-userManage'),
-//   loading: loadingComponent,
-// });
+// import UserManage from './n-userManage';
+const UserManage = Loadable({
+  loader: () => import('./n-userManage'),
+  loading: loadingComponent,
+});
 export default class Body extends Component {
   constructor(props){
     super(props);

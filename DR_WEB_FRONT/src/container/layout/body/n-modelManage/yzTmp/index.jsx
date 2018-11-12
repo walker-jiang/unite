@@ -48,22 +48,22 @@ export default class Index extends Component {
         this.submit = this.submit.bind(this);
         this.modelData = this.modelData.bind(this);
         this.diagnoseUpdate = this.diagnoseUpdate.bind(this);
-        window.noticeAddMedicalFunc = (params) => this.noticeAddMedicalFuncLocal(params);
+        // window.noticeAddMedicalFunc = (params) => this.noticeAddMedicalFuncLocal(params);
     }
-    /**
-     * [noticeAddMedicalFuncLocal 有知识库的处方数据请强求添加医嘱的通知函数]
-     * @param  {[type]} params [草药数据]
-     * @return {[type]}        [undefined]
-     */
-    noticeAddMedicalFuncLocal(params) {
-        this.setState({
-            actionType: 'add', // modify、view、add
-            orderid: '', // 当前医嘱ID
-            buOrderDtlList: { herbalData: JSON.parse(params) }, // 草药数据
-        }, () => {
-            this.chHerbalMedicine.handlePopOpen();
-        });
-    };
+    // /**
+    //  * [noticeAddMedicalFuncLocal 有知识库的处方数据请强求添加医嘱的通知函数]
+    //  * @param  {[type]} params [草药数据]
+    //  * @return {[type]}        [undefined]
+    //  */
+    // noticeAddMedicalFuncLocal(params) {
+    //     this.setState({
+    //         actionType: 'add', // modify、view、add
+    //         orderid: '', // 当前医嘱ID
+    //         buOrderDtlList: { herbalData: JSON.parse(params) }, // 草药数据
+    //     }, () => {
+    //         this.chHerbalMedicine.handlePopOpen();
+    //     });
+    // };
     componentWillMount() {
         this.getData();
     }

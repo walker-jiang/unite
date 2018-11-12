@@ -107,7 +107,6 @@ class PieChart extends React.Component {
             all += parseInt(item.value)
           })
           var str;
-          // console.log('Math.floor(parseInt(data.value)/all*100)',(parseInt(data.value)/all*100).toFixed(1)-(1/all).toFixed(1),Math.round(parseInt(data.value)/all*100),data.value);
           if(all == 0){
             str=`<span>${data.type}</span> <span> 0%</span>  <span>${data.value}人</span>`
           }else{
@@ -139,16 +138,20 @@ class PieChart extends React.Component {
     var date = new Date(),
         year = date.getFullYear(),//年
         month = parseInt(date.getMonth())+parseInt(1),//月
+        month =(month<10 ? "0"+month : month),
         date = date.getDate(),//日
+        date =(date<10 ? "0"+date : date),
         h = new Date().getHours(),//h
         m = new Date().getMinutes(),//m
         s = new Date().getSeconds(),//s
+        h =(h<10 ? "0"+h : h),
+        m =(m<10 ? "0"+m : m),
+        s =(s<10 ? "0"+s : s),
         st1 = year+'-'+month+'-'+date+' '+'00:00:00',
         st = year+'-'+month+'-'+date+' '+h+':'+m+':'+s,
-        monthStart = year+'-'+month+'-'+'1'+' '+'00:00:00',
-        yearStart = year+'-'+'1'+'-'+'1'+' '+'00:00:00';
+        monthStart = year+'-'+month+'-'+'01'+' '+'00:00:00',
+        yearStart = year+'-'+'01'+'-'+'01'+' '+'00:00:00';
     var data={};
-    // var dateTime = new Date(new Date().toLocaleDateString()).getTime()
     if(timeDate){
       if(timeDate == 'day'){
         data ={
@@ -224,7 +227,7 @@ class PieChart extends React.Component {
             fontStyle: "normal",
             height:"70px",
             lineHeight: "70px"}}>
-            本日就诊患者疾病占比分析
+            就诊患者疾病占比分析
         </h2>
       </div>
     )

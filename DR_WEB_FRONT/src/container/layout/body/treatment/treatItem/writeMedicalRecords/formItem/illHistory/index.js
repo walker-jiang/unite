@@ -35,12 +35,13 @@ export default class Index extends Component {
 
   };
   render() {
-    const { getFieldDecorator, formItemLayout, initialValue ,title, disabled = false} = this.props;
+    const { getFieldDecorator, formItemLayout, initialValue ,title, disabled = false, isRequired = false} = this.props;
     let label_prop  = this.getFormItemProps(title);
     return (
       <Row className='height'>
         <Col>
-          <FormItem
+          <SpecFormItem
+            isRequired={isRequired}
             colon={false}
             {...formItemLayout}
             label={title +' ：'}
@@ -50,12 +51,23 @@ export default class Index extends Component {
             })(
               <IllHisEnterPop disabled={disabled} title={title} />
             )}
-          </FormItem>
+          </SpecFormItem>
         </Col>
       </Row>
     );
   }
 }
+const SpecFormItem = styled(FormItem)`
+  &&& .ant-form-item-label > label:before {
+    display: ${props => props.isRequired ? 'inline-block' : 'none'};
+    margin-right: 4px;
+    content: "*";
+    font-family: SimSun;
+    line-height: 1;
+    font-size: 14px;
+    color: #f5222d;
+  }
+`;
 /*
 @作者：姜中希
 @日期：2018-06-25

@@ -9,6 +9,7 @@ import './style/doctorAdvice.less';
 import ContentDetailSeven from '../pubilcModule/contentDetailSeven.js';
 import doctorAdviceService from '../service/doctorAdviceService.js';
 import zanwunerong from './style/zanwunerong.png';
+import TipModal from 'components/dr/modal/tip';
 const Search = Input.Search;
 
 export default class template extends Component {
@@ -92,6 +93,7 @@ export default class template extends Component {
     let params = {
       patientid:window.patientID,
       registerid:window.registerID,//201837501200516148
+      searchValue:""
     };
     function callBack(res){
       if(res.result && res.data){
@@ -123,24 +125,19 @@ export default class template extends Component {
    */
   changeInitData = (item) =>{
     var self = this;
+    console.log("item=============",item);
     let params = {
-      orderidList:item.orderid,//医嘱id集合  //201837501200516147
-      registerid:window.registerID,//当前挂号id 201837501200516148
+      orderid :item.orderid,
     };
     function callBack(res){
+      console.log("获取历史病历详情",res);
       if(res.result){
-        console.log("medicalHistoryTwo获取历史病历详情成功==============",res.data);
-        var record = {
-          ordertype:item.ordertype,
-          orderid:item.orderid,
-        }
-        console.log("record===",record);
-        self.props.actionManager("modify",record);
+        self.props.actionManager('add', {orderid:res.data.orderid, ordertype: res.data.ordertype}, res.data);
       }else{
         console.log('获取历史病历详情异常响应信息', res);
       }
     };
-    doctorAdviceService.ImportList(params, callBack);
+    doctorAdviceService.GetData(params, callBack);
   }
   /**
    * 引入全部病历
@@ -150,23 +147,30 @@ export default class template extends Component {
   changeAllInitData = (item) =>{
     console.log("item====",item);
     var self = this;
-    var orderidList = [];
-    item.initData.forEach((item,index)=>{
-      orderidList.push(item.orderid);
-    })
-    let params = {
-      orderidList:orderidList,//医嘱id集合  //201837501200516147
-      registerid:window.registerID,//当前挂号id 201837501200516148
-    };
-    function callBack(res){
-      if(res.result){
-        console.log("历史病历导入成功==============",res);
-        self.props.getData();
-      }else{
-        console.log('历史病历导入异常响应信息', res);
-      }
-    };
-    doctorAdviceService.ImportList(params, callBack);
+    if(item.initData && item.initData[0].orderid && item.initData[0].ordertype){
+      var orderidList = [];
+      item.initData.forEach((item,index)=>{
+        orderidList.push(item.orderid);
+      })
+      let params = {
+        orderidList:orderidList,//医嘱id集合  //201837501200516147
+        registerid:window.registerID,//当前挂号id 201837501200516148
+      };
+      function callBack(res){
+        if(res.result){
+          console.log("历史病历导入成功==============",res);
+          self.props.getData();
+        }else{
+          console.log('历史病历导入异常响应信息', res);
+        }
+      };
+      doctorAdviceService.ImportList(params, callBack);
+    }else{
+      self.tipModal.showModal({
+        content: '该条数据内容为空，不能引入',
+        stressContent: ""
+      });
+    }
   }
   itemRender = (current, type, originalElement) => {
     if (type === 'prev') {
@@ -190,6 +194,7 @@ export default class template extends Component {
     console.log("content.data.length",content.data);
     return (
       <div className="rightAssistBar_medicalHistory">
+        <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
         <div className="medicalHistory_data">
           <p className="data_p">共<span>{content.length}</span>次病历记录</p>
             {
@@ -208,17 +213,18 @@ export default class template extends Component {
                             <Row>
                               <Col span={16}>
                                 <p className="content-p">
-                                  {item.ctstamp} | {item.orgid} | 医师：{item.org_username} |  <span>{item.casetype == 0?"初诊":"复诊"}</span>
+                                  {item.ctstamp} | {item.orgid} | 医师：{item.org_username?item.org_username:"暂无信息"} |  <span>{item.casetype == 0?"初诊":"复诊"}</span>
                                 </p>
                               </Col>
                               <Col span={8}>
-                                <Button  onClick={()=>{ this.changeAllInitData(item) }}>引入病历</Button>
+                                <Button  onClick={()=>{ this.changeAllInitData(item) }}>引入医嘱</Button>
                                 <Divider type="vertical" />
                               </Col>
                             </Row>
                             <Row><Col span={24}><p>诊断：{item.diagnosisDesc}</p></Col></Row>
                           </div>
                           <ContentDetailSeven
+                            type={"2"}
                             changeInitData ={this.changeInitData}
                             item ={item.data}
                           />
@@ -227,9 +233,9 @@ export default class template extends Component {
                     })
                   }
                   {
-                    total<=10
+                    typeof(total) == "undefined" || total <= 10
                     ?
-                    <center style={{marginBottom:10}}>-------已经到底了-------</center>
+                    <center style={{marginBottom:10,marginTop:10}}>-------已经到底了-------</center>
                     :
                     <center style={content.length<5?{position:'absolute',bottom:10,marginLeft:'30%'}:{marginBottom:10}}>
                         <Pagination current={parseInt(pageSize)} total={total} onChange={this.onChange} itemRender={this.itemRender} />

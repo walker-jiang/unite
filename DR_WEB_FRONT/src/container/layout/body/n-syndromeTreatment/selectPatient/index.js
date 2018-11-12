@@ -8,6 +8,7 @@ import ArrowPicker from 'components/dr/datePicker/arrowPicker';
 import inputSty from 'components/antd/style/input';
 import Icon from 'components/dr/icon';
 import Grid from './grid';
+import extractDataFromIdentityCard from 'commonFunc/extractDataFromIdentityCard';
 import { today } from 'commonFunc/defaultData';
 import zh_CN  from 'antd/lib/locale-provider/zh_CN';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
@@ -41,7 +42,7 @@ export default class SelectPatient extends Component {
       url: 'BuRegisterController/getListByMap',
       data: {
         orgid: window.sessionStorage.getItem('orgid'), // 机构ID
-        deptid: window.sessionStorage.getItem('deptid'), // 科室ID
+        deptcode: window.sessionStorage.getItem('deptid'), // 科室ID
         rcStatus: rcStatus, // 接诊状态
         keyword: keyword, // 患者姓名，姓名拼音简拼手机号
         beginTime: date + ' ' + '00:00:01', // date
@@ -73,7 +74,7 @@ export default class SelectPatient extends Component {
       url: 'BuRegisterController/getSum',
       data: {
         orgid: window.sessionStorage.getItem('orgid'), // 机构ID
-        deptid: window.sessionStorage.getItem('deptid'), // 科室ID
+        deptcode: window.sessionStorage.getItem('deptid'), // 科室ID
         rcStatus: rcStatus, // 接诊状态
         keyword: keyword, // 患者姓名，姓名拼音简拼手机号
         beginTime: date + ' ' + '00:00:01', // date
@@ -118,7 +119,7 @@ export default class SelectPatient extends Component {
         title: '年龄',
         dataIndex: 'birthday',
         key: 'birthday',
-        render: (text, record) => year - parseInt(record.birthday.substr(0,4))
+        render: (text, record) => extractDataFromIdentityCard.getAgeFromBirthday(text.substr(0,4))
       }, {
         title: '手机号',
         dataIndex: 'mobile',
@@ -160,7 +161,7 @@ export default class SelectPatient extends Component {
         title: '操作',
         dataIndex: 'operate',
         key: 'operate',
-        render: (text, record) => <StyButton onStep={(step, registerid) => {this.props.onStep(step, registerid)}}>选择</StyButton>
+        render: (text, record) => <StyButton onClick={() => {this.props.onStep(1, record.registerid)}}>选择</StyButton>
       }];
       if(rcStatus == 0){
         columns.splice(11,2); // 删除就诊时间
@@ -224,6 +225,7 @@ export default class SelectPatient extends Component {
               <SpecTabs>
                 <TabPane activeTab={rcStatus} _key={0} onClick={(e) => this.toggleTabs(0)}>等待辨证论治（{numbers.noVisit}）</TabPane>
                 <TabPane activeTab={rcStatus} _key={1} onClick={(e) => this.toggleTabs(1)}>辨证论治中（{numbers.visiting}）</TabPane>
+                <TabPane activeTab={rcStatus} _key={2} onClick={(e) => this.toggleTabs(2)}>已完成（{numbers.visited}）</TabPane>
               </SpecTabs>
             </Left>
             <Right>

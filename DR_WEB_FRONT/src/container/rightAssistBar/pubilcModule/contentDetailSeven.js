@@ -21,8 +21,8 @@ class ContentOne extends Component {
     if(value == "" || value == null){
       return " ";//空格占位
     }else{
-      if(value.length > 24){
-        return value.substr(0,24)+"...";
+      if(value.length > 20){
+        return value.substr(0,20)+"...";
       }else{
         return value;
       }
@@ -124,11 +124,11 @@ class ContentDetailSeven extends Component {
   }
   render() {
     var { isCut, isUnfoldAll, pridepict, item, unfold, OneUnfold  } = this.state;
-    var { item } = this.props;
+    var { item, type } = this.props;
     console.log("item=====",item);
     return (
       <div>
-        <div className="content-icon" style={{marginTop:-52}}>
+        <div className="content-icon" style={type == "1"?{marginTop:-53,marginRight:16}:{marginTop:-58,marginRight:16}}>
           <Icon type={unfold?"up":"down"} onClick={()=>{ this.pullDown(unfold) }}/>
         </div>
         {

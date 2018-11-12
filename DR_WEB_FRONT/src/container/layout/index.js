@@ -9,6 +9,9 @@ import { Layout } from 'antd';
 class Index extends Component {
   constructor(props){
     super(props);
+    this.state = {
+      link:window.sessionStorage.getItem('selsetd'),
+    }
     window.AddHerbalMedicineFunc = (params) => this.AddHerbalMedicineFunc(params)
   };
   /**
@@ -33,11 +36,27 @@ class Index extends Component {
       this.setUserInfoForClient();
     }
   };
+  componentWillReceiveProps(nextProps){
+      let _this=this
+      // console.log(nextProps.location.pathname)
+      let link= nextProps.location.pathname.split("/");
+      // console.log(link);
+      if(link[2]==undefined){
+        window.sessionStorage.setItem('selsetd', 'home');
+        _this.setState({link:'home'})
+      }else if(link[2]=='treatment'){
+        window.sessionStorage.setItem('selsetd','todayPatient');
+        _this.setState({link:'todayPatient'})
+      }else{
+        window.sessionStorage.setItem('selsetd', link[2]);
+        _this.setState({link:link[2]})
+      }
+  };
   setUserInfoForClient(){
     let userInfoObj = JSON.parse(window.getLoginState());
     console.log('userInfoObj.userid123', userInfoObj);
     window.sessionStorage.setItem('username', userInfoObj.username); // 用户名
-    window.sessionStorage.setItem('deptid', userInfoObj.deptid); // 科室ID
+    window.sessionStorage.setItem('deptid', userInfoObj.deptcode); // 科室ID
     window.sessionStorage.setItem('orgid', userInfoObj.orgid); // 机构ID
     window.sessionStorage.setItem('userid', userInfoObj.userid); // 用户ID
     window.sessionStorage.setItem('post', userInfoObj.post); // 医生级别
@@ -45,7 +64,7 @@ class Index extends Component {
   render() {
     return (
       <Layout style={{height: '100vh',width:"100%",background:'#fff !important'}}>
-        <Sider style={{height:'100%',width:"10%",float:'left'}} ref="MenuItem"></Sider>
+        <Sider style={{height:'100%',width:"10%",float:'left'}} ref="MenuItem" link={this.state.link}></Sider>
         <SpecLayout>
           <Header {...this.props}/>
           <Body {...this.props}/>

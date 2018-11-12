@@ -4,6 +4,8 @@ import { Tag, Input } from 'antd';
 import TextareaEnterPop from 'components/dr/textareaEnterPop';
 import Loading from 'components/dr/loading';
 import SimplePop from './simplePop';
+import Icon from 'components/dr/icon';
+import TipModal from 'components/dr/modal/tip';
 import inputSty from 'components/antd/style/input';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
@@ -85,10 +87,10 @@ export default class MainSpeech extends Component {
    * @param  {[type]} time       [时间]
    * @return {[type]}            [undefined]
    */
-  simplePopSure(primarySym, time){
+  simplePopSure(primarySym, time, unit){
     this.inputEnterPop.handleClose(); // 关闭本弹框
     let pre_text = typeof(this.props.value) == 'string' ? this.props.value + '；' : this.props.value.extractionData;
-    pre_text += !! time ? (primarySym + '(持续时间：' + time + '天)') : primarySym;
+    pre_text += (primarySym + '持续' + time + unit );
     pre_text += '；';
     this.props.onChange({originData: [], extractionData: pre_text}); // 改变主诉表单项的值
   };
@@ -117,7 +119,44 @@ export default class MainSpeech extends Component {
         visibleChild: true
       })
     }
-    this.simplePop.handleOpen(text); // 打开时间框
+    let pre_text = typeof(this.props.value) == 'string' ? this.props.value + '；' : this.props.value.extractionData;
+    // 去重校验
+    let repeat_item_text = this.validateRepeat(pre_text, text);
+    if(repeat_item_text){
+      this.tipModal.showModal({
+        content: '已存在，请勿重复添加！',
+        stressContent: repeat_item_text
+      });
+    }else{
+      this.simplePop.handleOpen(text); // 打开时间框
+    }
+  };
+  /**
+   * [validateRepeat 重复性校验]
+   * @param  {[type]} pre_text [之前的文本]
+   * @param  {[type]} e        [当前文本]
+   * @return {[type]} string         [重复的文本]
+   */
+  validateRepeat(pre_text, e){
+    let pre_text_arr = pre_text.replace(/、/, '；').split('；');
+    let repeat_item_text = '';
+    let cur_text_arr = e.split('、');
+    cur_text_arr.forEach(cur_item => {
+      pre_text_arr.forEach(pre_item => {
+        if(pre_item.indexOf('持续') > 0){
+          if(cur_item === pre_item.substr(0, pre_item.indexOf('持续'))){
+            repeat_item_text = cur_item;
+            return;
+          }
+        }else{
+          if(cur_item === pre_item){
+            repeat_item_text = cur_item;
+            return;
+          }
+        }
+      });
+    });
+    return repeat_item_text;
   };
   /** [handleTagInput 选择标签，接下来应该将标签赋值给输入框] */
   handleTagInput(e){
@@ -186,6 +225,9 @@ export default class MainSpeech extends Component {
             :
             <Loading loading={true}/>
           }
+          {
+            loaded ? (primarySyms.length ? null : <NoData type='empty'></NoData>) : null
+          }
           </Result>
           <Footer>
             <p>🏷常用搜索标签</p>
@@ -198,6 +240,7 @@ export default class MainSpeech extends Component {
             </KeyList>
           </Footer>
         </Container>
+        <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </TextareaEnterPop>
     );
   }
@@ -246,6 +289,15 @@ const Line = styled.div`
     background-color: rgb(117, 171, 222);
     color: white;
   }
+`;
+const NoData = styled(Icon)`
+  width: 35px;
+  height: 35px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -30px;
+  text-align: center;
 `;
 const Footer = styled.div`
   display: block;

@@ -1,7 +1,5 @@
 import React, {Component, PropTypes} from 'react'; // react核心
 import { withRouter } from 'react-router-dom';
-import header from './header.png';
-import re_select from './re_select.png';
 import step_one from './step_one.png';
 import step_two from './step_two.png';
 import step_three from './step_three.png';
@@ -11,6 +9,7 @@ import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import CaseConfirm from '../cure/caseConfirm';
 import SmartDistinguish from '../cure/smartDistinguish';
 import SmartTreatment from '../cure/smartTreatment';
+import Left from '../cure/left';
 import Icon from 'components/dr/icon';
 
 class Cure extends Component {
@@ -39,13 +38,6 @@ class Cure extends Component {
     };
     function callBack(res){
       if(res.result){
-        window.cardno = res.data.baPatient.cardno;
-        window.cardtype = res.data.baPatient.cardtype;
-        window.birthday = res.data.baPatient.birthday;
-        window.sex = res.data.baPatient.sex;
-        window.patientName = res.data.baPatient.patientname;
-        window.patientID = res.data.baPatient.patientid;
-        window.registerID = registerid;
         let { baPatient } = res.data;
         self.setState({ baPatient });
       }else{
@@ -97,39 +89,7 @@ class Cure extends Component {
             <Step active={current == 3} onClick={() => {this.toggle(3)}}><Sign src={step_three}/>智能论治结果</Step>
           </Top>
           <Content>
-            <Left>
-              <DocInfo>
-                <Img src={header} />
-                <TextInfo>
-                    <span>王琰龙</span>
-                    <span>副主任医师</span>
-                </TextInfo>
-              </DocInfo>
-              <Info>
-                <Label>患者姓名 :</Label>
-                <Value>{patientname}</Value>
-              </Info>
-              <Info>
-                <Label>性别 :</Label>
-                <Value>{sexDic}</Value>
-              </Info>
-              <Info>
-                <Label>年龄 :</Label>
-                <Value>{age}</Value>
-              </Info>
-              <Info>
-                <Label>移动电话 :</Label>
-                <Value>{mobile}</Value>
-              </Info>
-              <Info>
-                <Label>医保类型 :</Label>
-                <Value>{patienttypeDic}</Value>
-              </Info>
-              <ActionButton onClick={() => { this.props.history.push('/Layout/syndromeTreatment')}}>
-                <img src={re_select} />
-                <Value>重选患者</Value>
-              </ActionButton>
-            </Left>
+            <Left />
             <Body>
             {bodyComponent}
             </Body>
@@ -138,7 +98,6 @@ class Cure extends Component {
     )
   }
 }
-
 const Container = styled.div`
   width:100%;
   height: 100%;
@@ -186,62 +145,6 @@ const Content = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
-`;
-const Left = styled.div`
-  width: 200px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-right: 1px solid transparent;
-  border-image: linear-gradient( to bottom, #1273CD , white) 100 30;
-  padding-top: 40px;
-`;
-const DocInfo = styled.div`
-  width: 162px;
-  height: 80px;
-  color: #16B4E7;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding-bottom: 30px;
-  border-bottom: 1px solid #CCCCCC;
-`;
-const TextInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-`;
-const Img = styled.img`
-`;
-const Info = styled.div`
-  margin-top: 16px;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-`;
-const Label = styled.div`
-  color: #333333;
-  width: 50%;
-  text-align: right;
-`;
-const Value = styled.div`
-  width: 50%;
-  color: #16B4E7;
-  margin-left: 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-const ActionButton = Info.extend`
-  cursor: pointer;
-  width: 60%;
-  padding: 5px 0px;
-  border-top: 1px solid #CCCCCC;
-  border-bottom: 1px solid #CCCCCC;
 `;
 const Body = styled.div`
   width: calc(100% - 200px);

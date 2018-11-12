@@ -276,13 +276,12 @@ class HomeIndexIndex extends Component {
 
   render() {
     const { orgData, centerData, weightModalVisiable, weightModalData } = this.state;
-    console.log('weightModalData================', weightModalData)
     return (
-      <div className='HomeIndex_home'>
-        <div className='HomeIndex_home_div'>
+      <div className='HomeIndex_home2'>
+        <div className='HomeIndex_home_div2'>
           <p>中成药信息匹配
-            <Button type="primary" onClick={this.onHandleAutomatch}>一键自动匹配</Button>
-          </p><hr /><hr className='hr1' />
+            <Button style={{marginLeft: 20}} type="primary" onClick={this.onHandleAutomatch}>一键自动匹配</Button>
+          </p><hr className='hr1' />
         </div>
         <Row>
           <Col span={12} className="HomeIndex_centerLine" >

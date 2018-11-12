@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import { Form,Collapse,Input,Button,Select,Upload, Icon, message,Modal  } from 'antd';
+// import { Toast, WhiteSpace, WingBlank } from 'antd-mobile';
 import "./style.less";
+import Icons from 'components/dr/icon';
+const Option = Select.Option;
 import Ajax from 'commonFunc/ajaxGetResource';
 // import Ajax from '../../../rightAssistBar/service/xhr/index';
 import styled from 'styled-components';
@@ -11,8 +14,11 @@ function getBase64(img, callback) {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
+  console.log(reader);
 }
-
+// function successToast() {
+//   Toast.success('Load success !!!', 1);
+// }
 class PersonalInformationSettings extends React.Component{
   constructor(props) {
     super(props);
@@ -20,47 +26,68 @@ class PersonalInformationSettings extends React.Component{
         checked:true,
         loading: false,
         data:props.prop,
-        dataImg:props.prop[0].photo
+        dataImg:props.prop[0].photo,
+        ifshow:false,  //是否显示保存成功,
+        imageUrl:'',
       };
-      console.log('fufufuff',this.state.data);
   }
 
   componentDidMount(){
-    console.log('futhis.state.data',this.state.data);
-
-    //个人信息后台数据回显
-    console.log('propprop',this.props.prop);
-    let data=this.state.data[0];//父组件请求得到数据
+    let data=this.state.data[0];//父组件请求得到用户数据
     let postDic = this.state.data[1];//职务
-    let deptidDic = this.state.data[2];//科室
-    // this.getDocData(data,postDic,deptidDic);
-    deptidDic.forEach((val,ind)=>{
-      console.log('可是数据回显：',);
-      console.log('val,ind',val,ind);
-      if(data.deptid == val.deptid){
-        console.log('data.deptid == val.deptid',data.deptid ,val.deptid);
-        postDic.forEach((postv,posti)=>{
-          console.log('postv,posti',postv,posti);
-          console.log('data.post == postv.value111',data.post,postv.value);
-          if(data.post == postv.value){
-            this.props.form.setFieldsValue({
-              "userName":data.orgUserno,
-              "realName":data.realname,
-              "post":data.post == postv.value?postv.vdesc:'',//职务
-              "deptid":data.deptid == val.deptid?val.deptdesc:'',//科室
-              "selphoneNum":data.mobile,
-              "phoneNum":data.phone,
-              "Email":data.email
-            })
-          }
-        })
+    let deptcodeDic = this.state.data[2];//科室
+    // this.getDocData(data,postDic,deptcodeDic);
+
+    console.log('可是数据回显：',data,postDic,deptcodeDic);
+    var post,deptcode;
+    deptcodeDic.forEach((val,ind)=>{
+      if(val!=null){
+        if(data.deptcode == val.deptcode){
+          deptcode=val.deptdesc
+        }
       }
     })
-  }
+    postDic.forEach((postv,posti)=>{
+      if(postv != null){
+        if(data.post == postv.value){
+          post=postv.vname
+        }
+      }
 
+    })
+    //设置回显
+    this.props.form.setFieldsValue({
+      "userName":data.orgUserno,
+      "realName":data.realname,
+      "post":post,//职务
+      "deptcode":deptcode,//科室
+      "selphoneNum":data.mobile,
+      "phoneNum":data.phone,
+      "Email":data.email
+    })
+    // Toast.loading('Loading...', 30, () => {
+    //   console.log('Load complete !!!');
+    // });
+    //
+    // setTimeout(() => {
+    //   Toast.hide();
+    // }, 3000);
+  }
+  /** [isshowed 保存成功提示框] */
+ isshowed =() =>{
+   let _this =this;
+   this.setState({ifshow:true},()=>{
+     function tishi(){
+       _this.setState({ifshow:false})
+       _this.props.handleStatus([]);
+     }
+     setTimeout(tishi,1000)
+   }
+   )
+ }
   //上传图片
   handleChange = (info) => {
-    console.log('infoinfo',info);
+    // console.log('infoinfo',info);
     if (info.file.status === 'uploading') {
       this.setState({ loading: true });
       // this.handleSubmit(e);
@@ -68,7 +95,7 @@ class PersonalInformationSettings extends React.Component{
     }
     if (info.file.status === 'done') {
       getBase64(info.file.originFileObj, imageUrl => this.setState({
-        imageUrl,
+        imageUrl:imageUrl,
         loading: false,
       }));
     }
@@ -91,49 +118,48 @@ class PersonalInformationSettings extends React.Component{
   handleSubmit=(e)=>{
     e.preventDefault()
     e.stopPropagation()
-    this.setState({checked:true})
-    const deptData =this.state.data[2],
-          dictListObj=this.state.data[1];
+    // this.setState({checked:true})
+    const deptData =this.state.data[2],//科室
+          dictListObj=this.state.data[1];//职务
     this.props.form.validateFields((err, values)=>{
-      console.log('valuesvalues',values,err);//8086/BaOrguserController/putData
-      var date;
+      var deptcode='',post='';
       dictListObj.forEach((val,ind)=>{
-        if(values.post == val.vdesc){
-          deptData.forEach((v,i)=>{
-            if(values.deptid == v.deptdesc){
-              date = {
-                "orgUserno":values.userName,//用户号
-                "realname": values.realName,//真姓名
-                "deptid":values.deptid == v.deptdesc?v.deptid:'',//所属科室
-                "post": values.post == val.vdesc?val.value:'',  //职务等级
-                "mobile": values.selphoneNum,//手机号
-                "phone": values.phoneNum,//座机号
-                "email": values.Email,//邮箱
-                "orgUerid":window.sessionStorage.getItem('userid'),
-                // "photo":values.file.file.name,
-                "photourl": values.file ? values.file.file.response.data.url : '',
-              }
-            }
-          })
+        if(val.vdesc != null&&values.post == val.vname){
+          post = val.value;
+          return
         }
       })
-      console.log('date1111',date);
+      deptData.forEach((v,i)=>{
+        console.log(values.deptcode,v,v.deptdesc);
+        if(v.deptdesc != null&&values.deptcode == v.deptdesc){
+          deptcode = v.deptcode;
+          return
+        }
+      })
+      var date = {
+        "orgUserno":values.userName,//用户号
+        "realname": values.realName,//真姓名
+        "deptcode":deptcode,//values.deptcode == v.deptdesc?v.deptcode:'3',//所属科室
+        "post": post,//values.post == val.vdesc?val.value:'',  //职务等级
+        "mobile": values.selphoneNum,//手机号
+        "phone": values.phoneNum,//座机号
+        "email": values.Email,//邮箱
+        "orgUserid":window.sessionStorage.getItem('userid'),
+        "photo":values.file ?values.file.file.name:'',
+        "photourl": values.file ? values.file.file.response.data.url : '',
+      }
+      this.isshowed();
       let params = {
         url: 'BaOrguserController/putData',
         type: 'put',
         data: JSON.stringify(date),
-        server_url:config_service_url
+        server_url:config_login_url
       }
+      console.log('发送的数据',date)
       let that = this;
       function success(res) {
-        console.log('resres11111',res);
         if(res.result){
-          window.modal = Modal.success({
-            title: '修改个人信息成功！',
-            onOk: ()=>{
-              window.modal = null
-            }
-          });
+          that.isshowed();
           that.getPatientData(window.sessionStorage.getItem('userid'));
         }else{
           window.modal = Modal.error({
@@ -151,9 +177,9 @@ class PersonalInformationSettings extends React.Component{
     let self = this;
     let params = {
       url: 'BaOrguserController/getData',
-      server_url:config_service_url,
+      server_url:config_login_url,
       data: {
-        orgUerid: id,
+        orgUserid: id,
       },
     };
     function callBack(res){
@@ -166,7 +192,11 @@ class PersonalInformationSettings extends React.Component{
     };
     Ajax(params, callBack);
   };
-
+  //取消
+  setStatus=()=>{
+    this.setState({checked:true})
+    this.props.handleStatus([]);
+  }
   render() {
     const { getFieldDecorator } = this.props.form;
 
@@ -183,7 +213,7 @@ class PersonalInformationSettings extends React.Component{
    const this_ =this;
    // let config_service_url='http://219.234.5.58:8086/';
    const props = {
-     action: config_service_url + 'BaUploadController/upload',
+     action: config_login_url + 'BaUploadController/upload',
      data: {
        orguserid: window.sessionStorage.getItem('userid'),
        serviceType: 'userPhoto'
@@ -207,7 +237,6 @@ class PersonalInformationSettings extends React.Component{
        return isJPG && isLt2M;
      }
    }
-
     //上传图片
     const uploadButton = (
       <div>
@@ -258,11 +287,11 @@ class PersonalInformationSettings extends React.Component{
                        {...formItemLayout}
                          label="所属科室："
                        >
-                          {getFieldDecorator('deptid', {
+                          {getFieldDecorator('deptcode', {
                             rules: [{ required: true, message: 'Please input your username!' }],
                           })(
-                            <Select disabled={this.state.checked} defaultValue="" placeholder="请选择您所属科室">
-                               {this.state.data[2].map((val,i)=><Option key={i} value={val.deptname}>{val.deptname}</Option>)}
+                            <Select disabled={this.state.checked} placeholder="请选择您所属科室">
+                               {this.state.data[2].map((val,i)=>val!=null?(<Option key={i} value={val.deptname}>{val.deptname}</Option>):'')}
                            </Select>
                           )}
                         </FormItem>
@@ -301,11 +330,7 @@ class PersonalInformationSettings extends React.Component{
                     <FormItem style={{width:'109px'}}
                       {...formItemLayout}
                       label="">
-                      {getFieldDecorator('file', {
-                        rules: [{
-                          required: false,
-                        }],
-                      })(
+                      {getFieldDecorator('file')(
                         <AvatarUploader disabled={this.state.checked} {...props}>
                         {imageUrl ? <img style={{ width: '100%',height:'100%' }} src={imageUrl} alt="avatar" /> :(this.state.dataImg?<img style={{ width: '100%',height:'100%' }} src={this.state.dataImg} alt="avatar" />: uploadButton)}
                         </AvatarUploader>
@@ -319,11 +344,16 @@ class PersonalInformationSettings extends React.Component{
               </div>
             <div className="button" style={{width:"100%",borderTop:"1px solid #ccc",padding:"20px 0 0 10%",display:`${this.state.checked?"none":"block"}`}}>
               <Button htmlType="submit">保存</Button>
-              <Button onClick={()=>{this.setState({checked:true})}}>取消</Button>
+              <Button onClick={this.setStatus}>取消</Button>
+              {this.state.ifshow
+                  ?<Successupdata>
+                  <IconOne type='ok'/>
+                  保存成功
+                </Successupdata>
+                :null}
             </div>
          </Form>
       </div>
-
     )
   }
 }
@@ -359,3 +389,13 @@ const RequestTitle = styled(Upload)`
     float: left;
   }
 `;
+const Successupdata =styled.div`
+ display:inline-block;
+  width:100px;
+  height:20px;
+`
+const IconOne = styled(Icons)`
+  height:20px;
+  width:20px;
+  margin-right:4px;
+`

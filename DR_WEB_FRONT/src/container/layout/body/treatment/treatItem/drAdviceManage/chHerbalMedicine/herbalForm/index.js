@@ -62,7 +62,7 @@ class HerbalForm extends Component {
       this.setState({
         herbalData: buOrderDtlList,
       });
-      if(JSON.stringify(buRecipe) != '{}'){
+      if(JSON.stringify(buRecipe) != '{}' && buRecipe){
         this.setState({
           recipename: buRecipe.recipename,
           remark: buRecipe.remark,
@@ -84,7 +84,7 @@ class HerbalForm extends Component {
         this.setState({
           herbalData: buOrderDtlList,
         });
-        if(JSON.stringify(buRecipe) != '{}'){
+        if(JSON.stringify(buRecipe) != '{}' && buRecipe){
           this.setState({
             recipename: buRecipe.recipename,
             remark: buRecipe.remark,

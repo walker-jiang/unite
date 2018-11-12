@@ -180,7 +180,7 @@ export default class StartWork extends Component {
           </Row>
           <Row type="flex" justify="start">
             <Col lg={24} xl={24} xxl={24}>
-              <div>
+              <div style={styles.newSecond}>
                 <span style={styles.patientText}>测评患者:</span>
                 <span style={styles.patientMessage}>{name}&nbsp;&nbsp;/&nbsp;&nbsp;{sexDesc}&nbsp;&nbsp;/&nbsp;&nbsp;{patientAge}&nbsp;&nbsp;/&nbsp;&nbsp;{phone}</span>
               </div>
@@ -208,7 +208,8 @@ const styles = {
     marginLeft: '6%'
   },
   titleHeight: {
-    height: '72px'
+    height: '72px',
+    display: 'flex'
   },
   tipPhoto: {
     marginTop: '1.7%',
@@ -220,8 +221,8 @@ const styles = {
     fontStyle: 'normal',
     fontSize: '18px',
     textAlign: 'left',
-	  marginLeft: '5rem',
-    marginTop: '-4.3rem',
+	  marginLeft: '1rem',
+    marginTop: '1.7rem',
   },
   tipText: {
     color: '#999999',
@@ -229,9 +230,11 @@ const styles = {
     fontStyle: 'normal',
     color: '#999999',
     fontSize: '14px',
-    textAlign: 'left',
-	  marginLeft: '5rem',
-    marginTop: '-1.5rem',
+	  marginLeft: '-12rem',
+    marginTop: '4rem',
+  },
+  newSecond: {
+    marginTop: '1.5rem'
   },
   bgDiv: {
     position: 'relative'

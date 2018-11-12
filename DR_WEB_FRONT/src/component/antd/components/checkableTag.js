@@ -33,8 +33,10 @@ export default class CheckableTag extends Component {
     if(this.props.onMouseOut){
       func.onMouseOut = (e) => {this.props.onMouseOut()};
     }
+
+    console.log();
     return (
-      <SpecTag color={color} className={color} {...func} >
+      <SpecTag color={color} className={color} {...func} text={text}>
       {text}
       {checkable?<img src={Right} style={styles.clickable}/>:null}
       </SpecTag>
@@ -47,7 +49,7 @@ const styles  = {
   }
 }
 const SpecTag = styled(Tag)`
-  ${tagsSty.semicircle}
+  ${tagsSty.semicircle};
   img{
     position: absolute;
   }

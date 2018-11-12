@@ -1,15 +1,19 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Button, Input, Row, Col } from 'antd';
+import { Button, Input, Row, Col, InputNumber, Radio  } from 'antd';
 import Modal from 'react-modal';
 import buttonSty from 'components/antd/style/button';
+
+const Group = Radio.Group;
+const RadioButton = Radio.Button;
 
 export default class SimplePop extends Component {
   constructor(props){
     super(props);
     this.state = {
-      time: '',
+      time: 1,
+      unit: '天',
       primarySym: '' , // 选中的主症
       visible: false,
     };
@@ -30,12 +34,16 @@ export default class SimplePop extends Component {
   /** [handleOK 本弹框点击确定按钮的提交事件] */
   handleOK(){
     this.setState({visible: false});
-    this.props.onOk(this.state.primarySym, this.state.time);
+    this.props.onOk(this.state.primarySym, this.state.time, this.state.unit);
   };
   /** [handleInput 时间输入事件] */
-  handleInput(e){
-    this.setState({time: e.target.value});
+  handleInput = (e) => {
+    this.setState({time: e});
   };
+  /** [handleToggle 单位切换事件] */
+  handleToggle = (e) => {
+    this.setState({unit: e.target.value});
+  }
   /** [handleEnterPress 包括enter显示，esc隐藏的判断函数] */
   handleEnterPress = (e) => {
     if(e.keyCode == 13){ // enter
@@ -50,7 +58,7 @@ export default class SimplePop extends Component {
     }
   };
   render() {
-    let { visible, primarySym } = this.state;
+    let { visible, primarySym, time, unit } = this.state;
     return (
     <div>
       {
@@ -58,13 +66,22 @@ export default class SimplePop extends Component {
         <Container onKeyDown={this.handleEnterPress}>
           <Body>
             <Line>
-              <Title span={6}>主症：</Title>
-              <Text span={18}>{primarySym}</Text>
+              <Title span={4}>主症：</Title>
+              <Text span={20}>{primarySym}</Text>
             </Line>
             <Line>
-              <Title span={6}>持续时间(天)：</Title>
-              <Col span={18}>
-                <InputDom className='not-draggable' autoFocus={true} onChange={(e)=>{this.handleInput(e)}}/>
+              <Title span={4}>持续时间：</Title>
+              <Col span={6}>
+                <InputNumber min={1} autoFocus='autofocus' max={10} defaultValue={time} onChange={this.handleInput}/>
+              </Col>
+              <Col span={14}>
+                <Group defaultValue={unit} onChange={this.handleToggle}>
+                  <Radio.Button value="时">时</Radio.Button>
+                  <Radio.Button value="天">天</Radio.Button>
+                  <Radio.Button value="周">周</Radio.Button>
+                  <Radio.Button value="月">月</Radio.Button>
+                  <Radio.Button value="年">年</Radio.Button>
+                </Group>
               </Col>
             </Line>
             <Row>
@@ -121,10 +138,9 @@ const Container = styled.div`
   justify-content: center
 `;
 const Body = styled.div`
-  width: 380px;
+  width: 400px;
   height: 131px;
   background-color:rgba(242, 242, 242, 1);
-  padding: 10px 20px;
   display: flex;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.349019607843137);
   flex-direction: column;
@@ -133,6 +149,7 @@ const Body = styled.div`
 const Line = styled(Row)`
   display: flex !important;
   align-items: center;
+  margin: 10px 0px;
 `;
 const Title = styled(Col)`
   text-align: right;
@@ -145,10 +162,8 @@ const Text = styled(Col)`
   overflow: hidden;
   text-overflow: ellipsis;
 `;
-const InputDom = styled(Input)`
-  .ant-input-number {
-    width: 100px;
-  }
+const SpecInputNumber = styled(InputNumber)`
+
 `;
 const SureButton = styled(Button)`
   ${buttonSty.semicircle}

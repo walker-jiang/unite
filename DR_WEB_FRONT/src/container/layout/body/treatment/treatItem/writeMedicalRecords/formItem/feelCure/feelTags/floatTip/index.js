@@ -18,7 +18,6 @@ export default class Index extends Component {
   }
   render() {
     let { details,pulsekey } = this.state
-          console.log('数据1',details)
     let pulseCondition = this.props.pulseCondition;
     let obj = {
           type:"9",

@@ -80,7 +80,7 @@ export default class FellCure extends Component {
   };
   toggleRadio(e){ // 单选按钮切换
     this.setState({
-      curent: (this.state.curent == 0)?1:0
+      curent: (this.state.curent == 0) ? 1 : 0
     });
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();
@@ -119,14 +119,13 @@ export default class FellCure extends Component {
     e.nativeEvent.stopImmediatePropagation();
   };
   render() {
-    let {curent, list,pulseCondition,details,pulsekey} = this.state;
+    let { curent, list, pulseCondition, details, pulsekey } = this.state;
     let expand = this.props.expand;
-              console.log('数据222',list)
     return (
       <Container expand={expand}>
         <FloatTip  onClose={this.onClose} pulseCondition={pulseCondition} details={details} pulsekey={pulsekey}></FloatTip>
-        <div>
-          <RadioGroup value={curent} onChange={(e)=>{this.toggleRadio(e)}}>
+        <div onClick={this.stopBubling}>
+          <RadioGroup value={curent} onChange={(e)=>{this.toggleRadio(e)}} onClick={this.stopBubling}>
             <Radio value={0}>脉象左</Radio>
             <Radio value={1}>脉象右</Radio>
           </RadioGroup>
@@ -134,14 +133,14 @@ export default class FellCure extends Component {
         <PulseLeft curent={curent}>
           {
             list.map((item, index) => {
-              return <CheckableTag key={index} id={item.key} color="blue" onClick={this.checkBoxClick} text={item.name} onMouseEnter={() => {this.handleMouseOver(item.details,item.pulsekey)}}></CheckableTag>
+              return <CheckableTag key={index} id={item.key} color="#41b334" onClick={this.checkBoxClick} text={item.name} onMouseEnter={() => {this.handleMouseOver(item.details,item.pulsekey)}}></CheckableTag>
             })
           }
         </PulseLeft>
         <PulseRight curent={curent}>
           {
             list.map((item, index) => {
-              return <CheckableTag key={index} id={item.key} color="yellow" onClick={this.checkBoxClick} text={item.name}></CheckableTag>
+              return <CheckableTag key={index} id={item.key} color="#41b334" onClick={this.checkBoxClick} text={item.name}></CheckableTag>
             })
           }
         </PulseRight>

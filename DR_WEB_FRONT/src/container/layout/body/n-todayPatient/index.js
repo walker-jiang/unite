@@ -11,6 +11,8 @@ import Icon from 'components/dr/icon';
 import GridItem from './gridItem';
 import { today } from 'commonFunc/defaultData';
 import zh_CN  from 'antd/lib/locale-provider/zh_CN';
+import IconSty from 'components/dr/icon/iconStyle';
+import extractDataFromIdentityCard from 'commonFunc/extractDataFromIdentityCard';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
 export default class TodayPatient extends Component {
@@ -25,6 +27,7 @@ export default class TodayPatient extends Component {
       curPage: 1, // 当前页
       pageSize: pageSize * 4, // 每页记录数
       numbers: {}, // 各个状态的患者数量
+      loadStatus: 0, // 数据加载状态 0 未请求或者请求完毕 1 请求中
     };
     this.getPatientData = this.getPatientData.bind(this);
     this.doing = this.doing.bind(this);
@@ -45,7 +48,7 @@ export default class TodayPatient extends Component {
       url: 'BuRegisterController/getListByMap',
       data: {
         orgid: window.sessionStorage.getItem('orgid'), // 机构ID
-        deptid: window.sessionStorage.getItem('deptid'), // 科室ID
+        deptcode: window.sessionStorage.getItem('deptid'), // 科室ID
         rcStatus: rcStatus, // 接诊状态
         keyword: keyword, // 患者姓名，姓名拼音简拼手机号
         beginTime: date + ' ' + '00:00:01', // date
@@ -60,13 +63,18 @@ export default class TodayPatient extends Component {
         let patienList = res.data.records.map((item, index) => Object.assign(item, { key: index }));
         let totalRecords = res.data.total;
         self.getPatientNumber();
-        self.setState({patienList: patienList, totalRecords});
+        self.setState({patienList: patienList, totalRecords, loadStatus: 0});
       }else{
-        self.setState({patienList: []});
         console.log('异常响应信息', res);
       }
     };
-    ajaxGetResource(params, callBack);
+    this.setState({
+      loadStatus: 1,
+      patienList: [],
+      totalRecords: 0
+    }, () => {
+      ajaxGetResource(params, callBack);
+    });
   };
   /** [getPatientNumber 获取每个状态的总共患者数量] */
   getPatientNumber(){
@@ -77,7 +85,7 @@ export default class TodayPatient extends Component {
       url: 'BuRegisterController/getSum',
       data: {
         orgid: window.sessionStorage.getItem('orgid'), // 机构ID
-        deptid: window.sessionStorage.getItem('deptid'), // 科室ID
+        deptcode: window.sessionStorage.getItem('deptid'), // 科室ID
         rcStatus: rcStatus, // 接诊状态
         keyword: keyword, // 患者姓名，姓名拼音简拼手机号
         beginTime: date + ' ' + '00:00:01', // date
@@ -131,6 +139,7 @@ export default class TodayPatient extends Component {
     window.registerID = registerid;
     window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
     window.patientID = patientid;
+    window.casetype_gloabal = ''; // 就诊类型置为空
     this.modifyRcState(1, registerid);
   };
   /**
@@ -143,6 +152,7 @@ export default class TodayPatient extends Component {
     window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
     window.registerID = registerid;
     window.patientID = patientid;
+    window.casetype_gloabal = ''; // 就诊类型置为空
     this.modifyRcState(1, registerid);
   };
   /**
@@ -164,6 +174,7 @@ export default class TodayPatient extends Component {
     console.log('查看你信息');
     window.registerID = registerid;
     window.patientID = patientid;
+    window.casetype_gloabal = ''; // 就诊类型置为空
     window.modifyPermission = 0; // 治疗书写权限0只读 1 可写
   };
   /**
@@ -175,6 +186,7 @@ export default class TodayPatient extends Component {
     console.log('续诊', patientid);
     window.registerID = registerid;
     window.patientID = patientid;
+    window.casetype_gloabal = ''; // 就诊类型置为空
     window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
   };
   /**
@@ -201,7 +213,7 @@ export default class TodayPatient extends Component {
       title: '年龄',
       dataIndex: 'birthday',
       key: 'birthday',
-      render: (text, record) => year - parseInt(record.birthday.substr(0,4))
+      render: (text, record) => extractDataFromIdentityCard.getAgeFromBirthday(text.substr(0,4))
     }, {
       title: '手机号',
       dataIndex: 'mobile',
@@ -216,12 +228,12 @@ export default class TodayPatient extends Component {
       key: 'patienttypeDic',
     }, {
       title: '就诊医师',
-      dataIndex: 'regDoctorname',
-      key: 'regDoctorname',
+      dataIndex: 'recDoctorname',
+      key: 'recDoctorname',
     }, {
       title: '就诊科室',
-      dataIndex: 'deptidDic',
-      key: 'deptidDic',
+      dataIndex: 'deptcodeDic',
+      key: 'deptcodeDic',
     }, {
       title: '就诊类型',
       dataIndex: 'casetypeDic',
@@ -353,7 +365,7 @@ export default class TodayPatient extends Component {
     return rowLines;
   };
   render() {
-    let { showWay, patienList, numbers, rcStatus,totalRecords, curPage, pageSize } = this.state;
+    let { showWay, patienList, numbers, rcStatus,totalRecords, curPage, pageSize, loadStatus } = this.state;
     const columns = this.getTableColumns(rcStatus);
     let girds = this.getGridList(patienList);
     return (
@@ -386,7 +398,7 @@ export default class TodayPatient extends Component {
             </Grid>
           ) :
           (
-            <SpecTable dataSource={patienList} columns={columns} pagination={false}/>
+            <SpecTable dataSource={patienList} columns={columns} pagination={false} locale={{emptyText: loadStatus ? <DataLoading type='data_loading' /> : <NoData type='empty' /> }}/>
           )
         }
         </Content>
@@ -500,6 +512,11 @@ const SpecTable = styled(Table)`
   }
   tr {
     height: 40px;
+  };
+  &&& .ant-table-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 `;
 const PageContainer = styled.div`
@@ -521,6 +538,13 @@ const SpecPagination = styled(Pagination)`
 `;
 const StyledLink = styled(Link)`
   margin: 5px;
+`;
+const NoData = styled(Icon)`
+  width: 35px;
+  height: 35px;
+`;
+const DataLoading = styled(Icon)`
+  ${IconSty.rotate}
 `;
 /*
 @作者：姜中希

@@ -16,9 +16,6 @@ export default class Login extends Component {
       window.closeBrowser();
     }
   }
-  componentDidMount(){
-    console.log('是否离开2');
-  };
   render() {
     return (
       <LoginWrapper>

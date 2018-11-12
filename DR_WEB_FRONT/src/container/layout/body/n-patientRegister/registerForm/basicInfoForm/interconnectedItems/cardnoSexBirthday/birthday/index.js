@@ -1,7 +1,7 @@
-import React, {Component} from 'react'; // react核心
+import React, {Componentn, PureComponent  } from 'react'; // react核心
 import styled from 'styled-components';
 import { Form, Col, Row, DatePicker } from 'antd';
-import zhCN from 'antd/lib/locale-provider/zh_CN';
+import locale from 'antd/lib/date-picker/locale/zh_CN';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import { today } from 'commonFunc/defaultData';
@@ -12,25 +12,18 @@ import datePickerSty from 'components/antd/style/datePicker';
 
 const FormItem = Form.Item;
 
-export default class Sex extends Component {
-  constructor(props){
-    super(props);
-    this.changeDate = this.changeDate.bind(this);
-  };
-  /**
-   * [changeDate 日期选择器日期改变的监听函数]
-   * @param  {[type]} moment     [带格式的日期对象]
-   * @param  {[type]} dateString [日期字符串]
-   * @return {[type]}            [undefined]
-   */
-  changeDate(moment, dateString){
-    let patientInfo = this.state.patientInfo;
-    patientInfo['birthday'] = moment.format('YYYY-MM-DD');
-  };
+export default class Birthday extends PureComponent  {
   render() {
-    let { formItemLayout, getFieldDecorator, disabled } = this.props.commontProps;
+    let { formItemLayout, getFieldDecorator, disabled, getFieldValue } = this.props.commontProps;
     let initialValue = this.props.initialValue;
-    let age = extractDataFromIdentityCard.getAgeFromBirthday(initialValue);
+    let age = '';
+    if(getFieldValue('birthday')){
+      age = extractDataFromIdentityCard.getAgeFromBirthday(getFieldValue('birthday') ? getFieldValue('birthday').format('YYYY-MM-DD') : '');
+    }else{
+      if(initialValue){
+        age = extractDataFromIdentityCard.getAgeFromBirthday(initialValue ? initialValue : '');
+      }
+    }
     return (
       <SpecSpecFormItem
         {...formItemLayout}
@@ -38,11 +31,12 @@ export default class Sex extends Component {
         label="生日/年龄："
         >
         {getFieldDecorator('birthday', {
-          initialValue: moment(initialValue, 'YYYY-MM-DD')
+          rules: [{ required: true, message: '请选择患者生日!' }],
+          initialValue: initialValue ? moment(initialValue, 'YYYY-MM-DD') : ''
         })(
-          <SpecDatePicker disabled onChange={this.changeDate} disabled allowClear={false}/>
+          <SpecDatePicker locale={locale} allowClear disabled={getFieldValue('cardtype') == '01'}/>
         )}
-        <SpecSpecInput placeholder='年龄' disabled value={age} onChange={() => {}}/>
+        <InputWithLine placeholder='年龄' disabled value={age} onChange={() => {}} />
       </SpecSpecFormItem>
     )
   }
@@ -56,10 +50,39 @@ const SpecSpecFormItem = styled(FormItem)`
 const SpecDatePicker = styled(DatePicker)`
   ${datePickerSty.bottomBorder}
 `;
-const SpecSpecInput = styled(Input)`
-  width: 50px;
+const InputWithLine = styled.input.attrs({
+  type: 'text',
+  autoComplete: 'off',
+  placeholder: props => props.placeholder
+})`
+  border-bottom: 1px solid rgba(215, 215, 215, 1);
+  border-top: none;
+  &&& {
+    width: 75px !important;
+  }
   margin-left: 20px;
-  margin-top: -4px;
+  margin-top: 6px;
+  border-left: none;
+  line-height: 25px;
+  color: black;
+  border-right: none;
+  background: transparent;
+  font-size: 12px;
+  word-break: break-all;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  &:focus {
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid rgba(215, 215, 215, 1);
+    word-break: break-all;
+    outline: none
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 `;
 /*
 @作者：姜中希

@@ -1,38 +1,37 @@
 import React, {Component} from 'react';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
-import { Button, Form, Row, Col, Radio, Select, DatePicker  } from 'antd';
+import { Button, Form, Row, Col, Radio, Select  } from 'antd';
 import PopModal from 'components/popout/basePop';
-import QuickAddName from './quickAddName';
 import TipModal from 'components/dr/modal/tip';
 import Input from 'components/dr/input/basicInput';
 import selectSty from 'components/antd/style/select';
-import calendar from '-!file-loader!components/dr/icon/icons/calendar.svg';
 import buttonSty from 'components/antd/style/button';
 import radioSty from 'components/antd/style/radio';
-import datePickerSty from 'components/antd/style/datePicker';
-import moment from 'moment';
-import extractDataFromIdentityCard from 'commonFunc/extractDataFromIdentityCard';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
+import Cardno from '../../n-patientRegister/registerForm/basicInfoForm/interconnectedItems/cardnoSexBirthday/cardno';
+import Sex from '../../n-patientRegister/registerForm/basicInfoForm/interconnectedItems/cardnoSexBirthday/sex';
+import Birthday from '../../n-patientRegister/registerForm/basicInfoForm/interconnectedItems/cardnoSexBirthday/birthday';
+import PatientName from '../../n-patientRegister/registerForm/basicInfoForm/interconnectedItems/patientName';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 const Option = Select.Option;
 
-class Index extends Component {
+class QuickReception extends Component {
   constructor(props){
     super(props);
     this.state = {
       visible: false,
       patientInfo: {
         patientname: '',
-        sex: 1,
+        sex: '',
         mobile: '',
-        patienttype: '01',
-        cardtype: 1,
+        patienttype: '',
+        cardtype: '',
         cardno: '',
-        birthday: '1992-08-21',
-        casetype: 1,
+        birthday: '',
+        casetype: '',
       }, //患者数据
       defaultDept: {}, // 默认科室
       defaultDoc: {}, //默认医生
@@ -45,8 +44,6 @@ class Index extends Component {
     };
     this.quickReceive = this.quickReceive.bind(this);
     this.closeModal = this.closeModal.bind(this);
-    this.addPatientData = this.addPatientData.bind(this);
-    this.changeDate = this.changeDate.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   };
   /** [getDept 科室数据] */
@@ -93,7 +90,7 @@ class Index extends Component {
       url: 'BaOrguserController/getList',
       data: {
         orgid: window.sessionStorage.getItem('orgid'),
-        deptid: 2,
+        deptcode: window.sessionStorage.getItem('deptid'),
         keyword: ''
       },
     };
@@ -129,12 +126,10 @@ class Index extends Component {
     function callBack(res){
       if(res.result){
         let dictListObj = {};
-        let patientInfo = self.state.patientInfo;
         res.data.forEach(item => {
           dictListObj[item.dictno.toLowerCase()] = item.baDatadictDetailList;
-          patientInfo[item.dictno.toLowerCase()] = item.baDatadictDetailList.length ? item.baDatadictDetailList[0].value : '';
         });
-        self.setState({...dictListObj, patientInfo});
+        self.setState({...dictListObj});
       }else{
         console.log('异常响应信息', res);
       }
@@ -146,22 +141,18 @@ class Index extends Component {
     this.getDept();
     let patientInfo = {
       patientname: '',
-      sex: 1,
+      sex: '',
       mobile: '',
-      patienttype: '01',
-      cardtype: 1,
+      patienttype: '',
+      cardtype: '',
       cardno: '',
-      birthday: '1992-08-21',
-      casetype: 1,
+      birthday: '',
+      casetype: '',
     };
     this.setState({ visible: true, patientInfo });
   };
   closeModal(){
     this.setState({ visible: false });
-  };
-  addPatientData(patientInfo){
-    this.props.form.setFieldsValue({'patientname': patientInfo.patientname});
-    this.setState({ patientInfo });
   };
   handleSubmit = (e) => {
     e.preventDefault();
@@ -179,7 +170,7 @@ class Index extends Component {
           regUserid: window.sessionStorage.getItem('userid'),
           regUsername: window.sessionStorage.getItem('username'),
           orgid: window.sessionStorage.getItem('orgid'),
-          deptid: dept.key,
+          deptcode: dept.key,
           patientid: patientInfo.patientid,
           regTypeid: doctor ? 1 : 2,
           deptname: dept.label,
@@ -200,14 +191,15 @@ class Index extends Component {
             let path = {
               pathname: '/layout/treatment',
             };
-            window.casetype = getFieldValue('casetype');
+            window.casetype_global = getFieldValue('casetype');
             window.registerID = res.data.registerid;
+            window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
             window.patientID = res.data.patientid;
             // 跳转到诊疗界面
             self.props.history.push(path);
           }else{
             self.tipModal.showModal({
-              content: '已存在该患者挂号信息',
+              content: '',
               stressContent: res.desc
             });
             console.log('异常响应信息', res);
@@ -221,46 +213,9 @@ class Index extends Component {
   handleReset = () => {
     this.props.form.resetFields();
   }
-  changeDate(moment, dateString){
-    let patientInfo = this.state.patientInfo;
-    patientInfo['birthday'] = moment.format('YYYY-MM-DD');
-    this.setState({ patientInfo });
-  };
-  /**
-   * [validateCardno 身份证校验]
-   * @param  {[type]}   rule     [校验规则]
-   * @param  {[type]}   value    [当前值]
-   * @param  {Function} callback [回调]
-   * @return {[type]}            [undefined]
-   */
-  validateCardno = (rule, value, callback) => {
-    const { getFieldValue, setFieldsInitialValue } = this.props.form
-    var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
-    let validateResult = true;
-    if(value.trim() == ''){ // 非空校验
-      validateResult = false;
-      callback('请输入身份证！');
-    }
-    if(reg.test(value) === false) // 格式校验
-    {
-      validateResult = false;
-      callback('身份证输入不合法！');
-    }
-    if(validateResult){
-      let birthday = extractDataFromIdentityCard.getBirthdayFromIdCard(value);
-      let sex = extractDataFromIdentityCard.getSexFromIdCard(value);
-      let patientInfo = this.state.patientInfo;
-      patientInfo.birthday = birthday;
-      patientInfo.sex = sex;
-      this.setState({ patientInfo });
-    }
-    // Note: 必须总是返回一个 callback，否则 validateFieldsAndScroll 无法响应
-    callback()
-  }
   render() {
     let { visible, patientInfo, pationtype, cardtype, casetype, sex, deptData, docData, defaultDept, defaultDoc } = this.state;
-    const { getFieldDecorator } = this.props.form;
-    let age = extractDataFromIdentityCard.getAgeFromBirthday(patientInfo.birthday);
+    const { getFieldDecorator, setFieldsValue, getFieldValue } = this.props.form;
     const formItemLayout = {
       labelCol: {
         xs: { span: 8 },
@@ -271,43 +226,27 @@ class Index extends Component {
         sm: { span: 16 },
       },
     };
+    let commontProps = { formItemLayout, getFieldDecorator, setFieldsValue, getFieldValue, disabled: false };
     return (
       <Container>
         <RegisterButton onClick={this.quickReceive}>快速接诊</RegisterButton>
-        <PopModal visible={visible} title='快速接诊' onClose={this.closeModal}>
-          <SpecForm onSubmit={this.handleSubmit} onClick={() => {this.quickAddName.hideResult()}} className='not-draggable'>
+        <PopModal fixed_left={1} visible={visible} title='快速接诊' onClose={this.closeModal}>
+          <SpecForm onSubmit={this.handleSubmit} onClick={() => {this.patientName.hidePopTable()}} className='not-draggable'>
+            <HideFormItem
+              label="患者ID（隐藏）"
+              >
+              {getFieldDecorator('patientid', {
+                initialValue: patientInfo.patientid
+              })(
+                <SpecInput/>
+              )}
+            </HideFormItem>
             <Row>
               <Col span={12}>
-                <FormItem
-                  {...formItemLayout}
-                  colon={false}
-                  label="患者姓名："
-                  >
-                  {getFieldDecorator('patientname', {
-                    rules: [{ required: true, message: '请输入患者姓名!' }],
-                    initialValue: patientInfo.patientname
-                  })(
-                    <QuickAddName ref={ref => {this.quickAddName = ref} } placeholder='请选择患者信息' getQuickData = {this.addPatientData}/>
-                  )}
-                </FormItem>
+                <PatientName commontProps={commontProps} ref={ ref => { this.patientName = ref }} initialValue={patientInfo.patientname}/>
               </Col>
               <Col span={11}>
-                <FormItem
-                  {...formItemLayout}
-                  colon={false}
-                  label="性别："
-                  >
-                  {getFieldDecorator('sex', {
-                    rules: [{ required: true, message: '请输入患者性别!' }],
-                    initialValue: patientInfo.sex
-                  })(
-                    <SpecRadioGroup disabled>
-                    {
-                      sex.map(item => <Radio value={item.value} key={item.value}>{item.vname}</Radio>)
-                    }
-                    </SpecRadioGroup>
-                  )}
-                </FormItem>
+                <Sex commontProps={commontProps} sex={sex} initialValue={patientInfo.sex}/>
               </Col>
             </Row>
             <Row>
@@ -335,7 +274,7 @@ class Index extends Component {
                     rules: [{ required: true, message: '请输入患者类型!' }],
                     initialValue: patientInfo.patienttype
                   })(
-                    <SpecSelect>
+                    <SpecSelect allowClear onFocus={() => {this.patientName.hidePopTable()}}>
                     {
                       pationtype.map(item => <Option key={item.value} value={item.value}>{item.vname}</Option>)
                     }
@@ -355,7 +294,7 @@ class Index extends Component {
                     rules: [{ required: true, message: '请输入证件类型!' }],
                     initialValue: patientInfo.cardtype
                   })(
-                    <SpecSelect>
+                    <SpecSelect allowClear onFocus={() => {this.patientName.hidePopTable()}}>
                     {
                       cardtype.map(item => <Option key={item.value} value={item.value}>{item.vname}</Option>)
                     }
@@ -364,36 +303,12 @@ class Index extends Component {
                 </FormItem>
               </Col>
               <Col span={11}>
-                <FormItem
-                  {...formItemLayout}
-                  colon={false}
-                  label="证件号码："
-                  >
-                  {getFieldDecorator('cardno', {
-                    rules: [{ validator: this.validateCardno }],
-                    initialValue: patientInfo.cardno })
-                    (
-                      <Input placeholder='请输入患者证件号码' />
-                    )
-                  }
-                </FormItem>
+                <Cardno commontProps={commontProps} initialValue={patientInfo.cardno}/>
               </Col>
             </Row>
             <Row>
               <Col span={12}>
-                <SpecFormItem
-                  {...formItemLayout}
-                  colon={false}
-                  label="生日/年龄："
-                  >
-                  {getFieldDecorator('birthday', {
-                    rules: [{ type: 'object', required: true, message: '请输入选择生日!' }],
-                    initialValue: moment(patientInfo.birthday, 'YYYY-MM-DD')
-                  })(
-                    <SpecDatePicker disabled onChange={this.changeDate} allowClear={false}/>
-                  )}
-                  <SpecInput placeholder='年龄' disabled value={age} onChange={() => {}}/>
-                </SpecFormItem>
+                <Birthday commontProps={commontProps} initialValue={patientInfo.birthday}/>
               </Col>
               <Col span={11}>
                 <FormItem
@@ -467,7 +382,10 @@ const Container = styled.div`
   height: 100%;
 `;
 const RegisterButton = styled(Button)`
-  ${buttonSty.semicircle}
+  ${buttonSty.semicircle};
+  &&& {
+    padding: 2px 22px;
+  }
 `;
 const SpecForm= styled(Form)`
   width: 600px;
@@ -475,11 +393,13 @@ const SpecForm= styled(Form)`
     margin-bottom: 10px;
   }
 `;
+const HideFormItem = styled(FormItem)`
+  &&& {
+    display: none;
+  }
+`;
 const SpecRadioGroup = styled(RadioGroup)`
   ${radioSty.borderRadioGroup}
-`;
-const SpecDatePicker = styled(DatePicker)`
-  ${datePickerSty.bottomBorder}
 `;
 const SpecFormItem = styled(FormItem)`
   .ant-form-item-children{
@@ -496,7 +416,7 @@ const SpecSelect = styled(Select)`
   ${selectSty.thinArrow}
 `;
 const SureButton = styled(Button)`
-  ${buttonSty.semicircle}
+  ${buttonSty.semicircle};
 `;
 const CancelButton = styled(Button)`
   ${buttonSty.gray}
@@ -513,5 +433,5 @@ const Footer = styled.div`
 @日期：2018-09-12
 @描述：今日诊疗
 */
-const QuickReception = Form.create()(Index);
-export default withRouter(QuickReception);
+const QuickReceptionWrapper = Form.create()(QuickReception);
+export default withRouter(QuickReceptionWrapper);

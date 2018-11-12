@@ -29,17 +29,19 @@ class Examination extends Component {
       // buRecipe: {}, // 原始处方信息
       data: {}, //原始医嘱信息
       deptData: [], // 执行科室数据
+      mitype: [], // 以保内医保外字典数据
+      selectedMitype: '', // 选择的医保类型
       feeAll: 0, // 合计费用
       // 初始化数据
       buDiagnosisList: [], // 诊断明细信息
       aim: '', // 检验目的
-      miType: '1', // 0 医保外， 1医保内 默认选择医保内
       examineData: [], // 检验项目数据
     }
   }
   componentWillMount(){
     this.getDiagnoseData();
     this.getDept();
+    this.getMitype(['mitype']);
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
       this.getExamineData(this.props.orderid);
     }else{ // 添加可以初始化数据
@@ -47,7 +49,7 @@ class Examination extends Component {
         let { buOrderDtlList = [], buOrdmedical } = this.props.attachOrder;
         let { buOrdmedicalSuitList = [], ...Recipe } = buOrdmedical;
         this.setState({
-          suitTechData: buOrderDtlList.concat(buOrdmedicalSuitList),
+          examineData: buOrderDtlList.concat(buOrdmedicalSuitList),
           aim: Recipe.aim,
           miType: Recipe.miType,
         });
@@ -72,6 +74,29 @@ class Examination extends Component {
     };
     ajaxGetResource(params, success);
   }
+  /** [getMittype 获取字典数据] */
+  getMitype(DictTypeList){
+    let self = this;
+    let params = {
+      url: 'BaDatadictController/getListData',
+      data: {
+        dictNoList: DictTypeList
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        let dictListObj = {};
+        res.data.forEach(item => {
+          dictListObj[item.dictno.toLowerCase()] = item.baDatadictDetailList;
+        });
+        const selectedMitype = dictListObj.mitype.length ? dictListObj.mitype[0].value : '';
+        self.setState({...dictListObj, selectedMitype});
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
   /** [getDiagnoseData 组件初始化获取加载诊断数据] */
   getDiagnoseData(){
     console.log('window.registerID', window.registerID);
@@ -246,7 +271,7 @@ class Examination extends Component {
       title: "检验项/检验明细项",
       dataIndex: 'itemname',
       key: 'itemname',
-      render: (text, record, index) => record.orderSuitid ? <span><Stress>{record.orderSuitname}</Stress>/{record.itemname}</span> : <span>{record.itemname}</span>
+      render: (text, record, index) => record.orderSuitid ? <span><Stress>{record.orderSuitname}</Stress>/<MiTypeText>{record.itemname}</MiTypeText></span> : <span><MiTypeText>{record.itemname}</MiTypeText></span>
     }, {
       title: "执行科室",
       dataIndex: 'deptname',
@@ -331,8 +356,14 @@ class Examination extends Component {
     }
     return { dataSource, feeAll };
   };
+  /** [changeMitype 选择医保类型] */
+  changeMitype = (e) => {
+    this.setState({
+      selectedMitype: e.target.value,
+    });
+  }
   render () {
-    let { visiblePop, examineData, buDiagnosisList, miType, aim } = this.state;
+    let { visiblePop, examineData, buDiagnosisList, aim, mitype, selectedMitype } = this.state;
     const { getFieldDecorator } = this.props.form;
 
     const {dataSource, feeAll} = this.getTableDataSource(deepClone(examineData));
@@ -410,14 +441,11 @@ class Examination extends Component {
               {...specFormItemLayout}
               label={<span><Add>➕</Add>快速添加：</span>}
               >
-                {getFieldDecorator('miType',{
-                  initialValue: miType
-                })(
-                  <SpecRadioGroup>
-                    <Radio value='0'>医保外</Radio>
-                    <Radio value='1'>医保内</Radio>
-                  </SpecRadioGroup>
-                )}
+                <SpecRadioGroup value={selectedMitype} onChange={this.changeMitype}>
+                {
+                  mitype.map(item => <Radio key={item.value} value={item.value}>{item.vname}</Radio>)
+                }
+                </SpecRadioGroup>
               </SpecFormItem>
           </Col>
           <Col span={16}>
@@ -425,7 +453,7 @@ class Examination extends Component {
               {...formItemLayout}
               >
                 {getFieldDecorator('addQuickly')(
-                  <QuickAddExamineItem placeholder='请输入检验项目首字母快速添加' icon='#0A6ECB' ref={ref => this.quickAddExamineItem = ref} getQuickData = {this.addExamineData.bind(this)}/>
+                  <QuickAddExamineItem placeholder='请输入检验项目首字母快速添加' selectedMitype={selectedMitype} icon='#0A6ECB' ref={ref => this.quickAddExamineItem = ref} getQuickData = {this.addExamineData.bind(this)}/>
                 )}
               </FormItem>
           </Col>
@@ -563,6 +591,9 @@ const SpecTable = styled(Table)`
   .ant-table-thead th {
     color: rgb(102, 102, 102);
   }
+`;
+const MiTypeText = styled.span`
+  color: red;
 `;
 const ExaminationForm = Form.create()(Examination);
 

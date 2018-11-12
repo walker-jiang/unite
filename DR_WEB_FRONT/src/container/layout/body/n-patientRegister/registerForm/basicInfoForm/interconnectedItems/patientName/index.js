@@ -1,7 +1,9 @@
 import React, {Component} from 'react'; // react核心
 import styled from 'styled-components';
 import { Form, Col, Row } from 'antd';
-import QuickAddName from '../../../../../n-todayPatient/quickReception/quickAddName';
+import moment from 'moment';
+import 'moment/locale/zh-cn';
+import QuickAddName from './quickAddName';
 
 const FormItem = Form.Item;
 
@@ -19,90 +21,106 @@ export default class PatientName extends Component {
    * @param {[type]} patientInfo [患者基本数据]
    */
   addPatientData(patientInfo){
-    let province = {
-      key: patientInfo.provinceid,
-      label: patientInfo.provinceidDic
-    };
-    let city = {
-      key: patientInfo.cityid,
-      label: patientInfo.cityidDic
-    };
-    let district = {
-      key: patientInfo.districtid,
-      label: patientInfo.districtidDic
-    };
-    patientInfo.province = province;
-    patientInfo.city = city;
-    patientInfo.district = district;
+    if(patientInfo){
+      let province = {
+        key: patientInfo.provinceid,
+        label: patientInfo.provinceidDic
+      };
+      let city = {
+        key: patientInfo.cityid,
+        label: patientInfo.cityidDic
+      };
+      let district = {
+        key: patientInfo.districtid,
+        label: patientInfo.districtidDic
+      };
+      patientInfo.province = {
+        value: province,
+        istouched: true
+      };
+      patientInfo.city = city;
+      patientInfo.city = {
+        value: city,
+        istouched: true
+      };
+      patientInfo.district = district;
+      patientInfo.district = {
+        value: district,
+        istouched: true
+      };
 
-    delete patientInfo.addrHome;
-    delete patientInfo.allergichistory;
-    delete patientInfo.createDate;
-    delete patientInfo.creator;
-    delete patientInfo.ctsorgid;
-    delete patientInfo.ctsorgidDic;
-    delete patientInfo.ctstamp;
-    delete patientInfo.disabilityCertificateNo;
-    delete patientInfo.disabilityCertificateNo;
-    delete patientInfo.healthCardNo;
-    delete patientInfo.householdRegisterNo;
-    delete patientInfo.jclevel;
-    delete patientInfo.key;
-    delete patientInfo.miName;
-    delete patientInfo.miNo;
-    delete patientInfo.miType;
-    delete patientInfo.officerNo;
-    delete patientInfo.outpatientno;
-    delete patientInfo.passportNo;
-    delete patientInfo.pasthistory;
-    delete patientInfo.phoneWorkunit;
-    delete patientInfo.pinyin;
-    delete patientInfo.postcode;
-    delete patientInfo.status;
-    delete patientInfo.upstamp;
-    delete patientInfo.useflag;
-    delete patientInfo.workunit;
-    delete patientInfo.provinceid;
-    delete patientInfo.provinceidDic;
-    delete patientInfo.cityid;
-    delete patientInfo.cityidDic;
-    delete patientInfo.districtid;
-    delete patientInfo.districtidDic;
-    delete patientInfo.bloodGroupDic;
-    delete patientInfo.cardtypeDic;
-    delete patientInfo.patienttypeDic;
-    delete patientInfo.positionDic;
-    delete patientInfo.sexDic;
-    delete patientInfo.ctAddr;
-    delete patientInfo.birthday;
-    delete patientInfo.sex;
+      delete patientInfo.addrHome;
+      delete patientInfo.allergichistory;
+      delete patientInfo.createDate;
+      delete patientInfo.creator;
+      delete patientInfo.ctsorgid;
+      delete patientInfo.ctsorgidDic;
+      delete patientInfo.ctstamp;
+      delete patientInfo.disabilityCertificateNo;
+      delete patientInfo.disabilityCertificateNo;
+      delete patientInfo.healthCardNo;
+      delete patientInfo.householdRegisterNo;
+      delete patientInfo.jclevel;
+      delete patientInfo.key;
+      delete patientInfo.miName;
+      delete patientInfo.miNo;
+      delete patientInfo.miType;
+      delete patientInfo.officerNo;
+      delete patientInfo.outpatientno;
+      delete patientInfo.passportNo;
+      delete patientInfo.pasthistory;
+      delete patientInfo.phoneWorkunit;
+      delete patientInfo.pinyin;
+      delete patientInfo.postcode;
+      delete patientInfo.status;
+      delete patientInfo.upstamp;
+      delete patientInfo.useflag;
+      delete patientInfo.workunit;
+      delete patientInfo.provinceid;
+      delete patientInfo.provinceidDic;
+      delete patientInfo.cityid;
+      delete patientInfo.cityidDic;
+      delete patientInfo.districtid;
+      delete patientInfo.districtidDic;
+      delete patientInfo.bloodGroupDic;
+      delete patientInfo.cardtypeDic;
+      delete patientInfo.patienttypeDic;
+      delete patientInfo.positionDic;
+      delete patientInfo.sexDic;
+      delete patientInfo.ctAddr;
+      // delete patientInfo.birthday;
+      // delete patientInfo.sex;
 
-    // let composePatientInfo = {
-    //   patientid:
-    //   patientname:
-    //   miCardno
-    //   patientno:
-    //   mobile:
-    //   countryCode:
-    //   nationCode
-    //   cardtype:
-    //   cardno:
-    //   sex
-    //   birthday
-    //   patienttype:
-    //   maritalStatus:
-    //   position:
-    //   bloodGroup:
-    //   province
-    //   city
-    //   district
-    //   streetdesc:
-    //   phoneHome:
-    //   ctName:
-    //   ctPhone:
-    //   ctRole:
-    // };
-    this.props.commontProps.setFieldsValue({...patientInfo});
+      // let composePatientInfo = {
+      //   patientid:
+      //   patientname:
+      //   miCardno
+      //   patientno:
+      //   mobile:
+      //   countryCode:
+      //   nationCode
+      //   cardtype:
+      //   cardno:
+      //   sex
+      //   birthday
+      //   patienttype:
+      //   maritalStatus:
+      //   position:
+      //   bloodGroup:
+      //   province
+      //   city
+      //   district
+      //   streetdesc:
+      //   phoneHome:
+      //   ctName:
+      //   ctPhone:
+      //   ctRole:
+      // };
+      patientInfo.birthday = moment(patientInfo.birthday, 'YYYY-MM-DD');
+
+      this.props.commontProps.setFieldsValue({...patientInfo});
+
+    }
   };
   render() {
     let { formItemLayout, getFieldDecorator,  disabled } = this.props.commontProps;
@@ -117,7 +135,7 @@ export default class PatientName extends Component {
             rules: [{ required: true, message: '请填写患者姓名!' }],
             initialValue: initialValue
           })(
-            <QuickAddName ref={ref => {this.quickAddName = ref} } placeholder='请选择患者信息' getQuickData = {this.addPatientData}/>
+            <QuickAddName ref={ref => {this.quickAddName = ref} } disabled={disabled} placeholder='请选择患者信息' getQuickData = {this.addPatientData}/>
           )}
       </SpecFormItem>
     )

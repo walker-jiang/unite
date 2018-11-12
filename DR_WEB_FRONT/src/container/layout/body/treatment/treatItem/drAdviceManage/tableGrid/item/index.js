@@ -49,6 +49,7 @@ const Container = styled.div`
   position: relative;
   float: left;
   margin: 3px;
+  margin-top: 10px;
   width: 210px;
   height: 145px;
   font-size: 12px;

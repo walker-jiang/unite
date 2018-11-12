@@ -18,32 +18,32 @@ class Index extends Component {
         url: 'BaOrguserController/getDataByidAndToken',
         server_url: config_login_url,
         data: {
-          orgUerid: window.sessionStorage.getItem('userid'),
+          orgUserid: window.sessionStorage.getItem('userid'),
           serviceToken: window.sessionStorage.getItem('token')
         }
       };
       function success(res) {
+        console.log( res.data)
         if(window.loginSystem){ // 监测客户端方法
           console.log('监测到客户端loginSystem方法');
-          that.setUserInfo(res.data.baOrguser.deptid, res.data.baOrguser.orgid, res.data.baOrguser.orgUserid, res.data.baOrguser.post, res.data.baOrguser.realname, res.data.baOrguser.photo);
+          that.setUserInfo(res.data.baOrguser.deptcode, res.data.baOrguser.orgid, res.data.baOrguser.orgUserid, res.data.baOrguser.post, res.data.baOrguser.realname, res.data.baOrguser.photo);
         }else{
           // 将当前用户的信息保存供其它组件用
           window.sessionStorage.setItem('username', res.data.baOrguser.realname); // 用户名
-          window.sessionStorage.setItem('deptid', res.data.baOrguser.deptid); // 科室ID
+          window.sessionStorage.setItem('deptid', res.data.baOrguser.deptcode); // 科室ID
           window.sessionStorage.setItem('orgid', res.data.baOrguser.orgid); // 机构ID
-          window.sessionStorage.setItem('userid', res.data.baOrguser.orgUerid); // 用户ID
-          window.sessionStorage.setItem('post', res.data.baOrguser.post); // 医生级别
-          window.sessionStorage.setItem('token', res.data.serviceToken); // 医生级别
+          window.sessionStorage.setItem('userid', res.data.baOrguser.orgUserid); // 用户ID
+          window.sessionStorage.setItem('selsetd', 'home'); //默认显示首页
           that.props.history.push('/layout');
         }
       };
       getResource(params, success);
     };
-    setUserInfo(deptid, orgid , userid, post, username, photo){
+    setUserInfo(deptcode, orgid , userid, post, username, photo){
       let obj = {
         userid: userid,
         orgid: orgid,
-        deptid: deptid,
+        deptcode: deptcode,
         post: post,
         username: username,
         photo: photo

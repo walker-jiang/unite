@@ -1,8 +1,6 @@
 import React, {Component, PropTypes} from 'react'; // react核心
 import { withRouter } from 'react-router-dom';
 import { Steps } from 'antd';
-import header from './header.png';
-import re_select from './re_select.png';
 import styled from 'styled-components';
 import extractDataFromIdentityCard from 'commonFunc/extractDataFromIdentityCard';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
@@ -10,6 +8,7 @@ import CaseConfirm from './caseConfirm';
 import SmartDistinguish from './smartDistinguish';
 import SmartTreatment from './smartTreatment';
 import Finish from './finish';
+import Left from './left';
 import Icon from 'components/dr/icon';
 const Step = Steps.Step;
 
@@ -95,39 +94,7 @@ class Cure extends Component {
             </SpecSteps>
           </Top>
           <Content>
-            <Left>
-              <DocInfo>
-                <Img src={header} />
-                <TextInfo>
-                    <span>{window.sessionStorage.getItem('username') ? window.sessionStorage.getItem('username') : '未知'}</span>
-                    <span>{window.sessionStorage.getItem('postDic') ? window.sessionStorage.getItem('postDic') : '未知'}</span>
-                </TextInfo>
-              </DocInfo>
-              <Info>
-                <Label>患者姓名 :</Label>
-                <Value>{patientname}</Value>
-              </Info>
-              <Info>
-                <Label>性别 :</Label>
-                <Value>{sexDic}</Value>
-              </Info>
-              <Info>
-                <Label>年龄 :</Label>
-                <Value>{age}</Value>
-              </Info>
-              <Info>
-                <Label>移动电话 :</Label>
-                <Value>{mobile}</Value>
-              </Info>
-              <Info>
-                <Label>医保类型 :</Label>
-                <Value>{patienttypeDic}</Value>
-              </Info>
-              <ActionButton onClick={() => { this.props.history.push('/Layout/syndromeTreatment')}}>
-                <img src={re_select} />
-                <Value>重选患者</Value>
-              </ActionButton>
-            </Left>
+            <Left />
             <Body>
             {bodyComponent}
             </Body>
@@ -204,64 +171,8 @@ const SpecSteps = styled(Steps)`
 `;
 const Content = styled.div`
   width: 100%;
-  height: 100%;
+  height: calc(100% - 50px);
   display: flex;
-`;
-const Left = styled.div`
-  width: 200px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-right: 1px solid transparent;
-  border-image: linear-gradient( to bottom, #1273CD , white) 100 30;
-  padding-top: 40px;
-`;
-const DocInfo = styled.div`
-  width: 162px;
-  height: 80px;
-  color: #16B4E7;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding-bottom: 30px;
-  border-bottom: 1px solid #CCCCCC;
-`;
-const TextInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-`;
-const Img = styled.img`
-`;
-const Info = styled.div`
-  margin-top: 16px;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-`;
-const Label = styled.div`
-  color: #333333;
-  width: 50%;
-  text-align: right;
-`;
-const Value = styled.div`
-  width: 50%;
-  color: #16B4E7;
-  margin-left: 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
-const ActionButton = Info.extend`
-  cursor: pointer;
-  width: 60%;
-  padding: 5px 0px;
-  border-top: 1px solid #CCCCCC;
-  border-bottom: 1px solid #CCCCCC;
 `;
 const Body = styled.div`
   width: calc(100% - 200px);

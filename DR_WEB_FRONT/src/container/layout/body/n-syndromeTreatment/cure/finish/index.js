@@ -166,34 +166,24 @@ export default class Finish extends Component {
   };
   render() {
     let { dataSource, buDiagnosisList } = this.state;
-    console.log('dataSource', dataSource);
     return (
         <Container >
           <FinishImg src={finish} />
           <FinishTip>辩证论治已完成</FinishTip>
           <Content>
-            <RightTip><Right src={right} />已确认诊断结果：（成功加入该患者诊断）</RightTip>
+            <RightTip>
+              <Right src={right} />已确认诊断结果：
+              <GreenText>（成功加入该患者诊断）</GreenText>
+            </RightTip>
             <Line>{getDiagnoseText(buDiagnosisList)}</Line>
-            <RightTip><Right src={right} />已确认治疗方案：（成功加入该患者医嘱）</RightTip>
+            <RightTip>
+              <Right src={right} />已确认治疗方案：
+              <GreenText>（成功加入该患者医嘱）</GreenText>
+            </RightTip>
             {
               dataSource.map((item, index) => {
                 return this.getOrderTypeDic(item, index)
               })
-            }
-            {
-              // <Line>1.中药处方：</Line>
-              // <Line>&nbsp;&nbsp;&nbsp;&nbsp;药单：金银花10g、柴胡10g、栀子20g、枸杞10g、党参10g、黄芪20g</Line>
-              // <Line>&nbsp;&nbsp;&nbsp;&nbsp;用法/频次：口服/一日2次</Line>
-              // <Line>2.中成药处方：感冒清热颗粒 | 口服 | 1日2次</Line>
-              // <Line>3.中医适宜技术：适宜技术类型：针刺 |  取穴：大椎、合谷、风池</Line>
-              // <RightTip><Right src={right} />已确认诊断结果：（成功加入该患者诊断）</RightTip>
-              // <Line>感冒/风寒感冒</Line>
-              // <RightTip><Right src={right} />已确认治疗方案：（成功加入该患者医嘱）</RightTip>
-              // <Line>1.中药处方：</Line>
-              // <Line>&nbsp;&nbsp;&nbsp;&nbsp;药单：金银花10g、柴胡10g、栀子20g、枸杞10g、党参10g、黄芪20g</Line>
-              // <Line>&nbsp;&nbsp;&nbsp;&nbsp;用法/频次：口服/一日2次</Line>
-              // <Line>2.中成药处方：感冒清热颗粒 | 口服 | 1日2次</Line>
-              // <Line>3.中医适宜技术：适宜技术类型：针刺 |  取穴：大椎、合谷、风池</Line>
             }
           </Content>
           <ActionButton>
@@ -239,6 +229,9 @@ const RightTip = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+`;
+const GreenText = styled.span`
+  color: #008000;
 `;
 const Line = styled.div`
   height: 28px;

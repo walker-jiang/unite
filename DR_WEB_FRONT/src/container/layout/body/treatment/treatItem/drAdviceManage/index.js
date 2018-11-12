@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import styled from 'styled-components';
 import { Button, Pagination, Tabs } from 'antd';
 import getResource from 'commonFunc/ajaxGetResource';
+import Loadable from 'react-loadable'; // 加载时进行模块分离
 import ScrollArea from 'components/scrollArea';
 import AdvicePrint from './advicePrint';
 import PreviewPrint from './advicePrint/previewPrint/index.js';
@@ -22,10 +23,24 @@ import AddHeader from './addHeader';
 import dashed from './imgs/dashed.png';
 import TipModal from 'components/dr/modal/tip';
 import buttonSty from 'components/antd/style/button';
-import MedicalHistoryTwo from "../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
-import DoctorAdviceTemplate from "../../../../../rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
-import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
+// import MedicalHistoryTwo from "../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
+// import DoctorAdviceTemplate from "../../../../../rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
+// import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
 const TabPane = Tabs.TabPane;
+
+const loadingComponent = () => (<div>Loading...</div>);
+const MedicalHistoryTwo = Loadable({
+  loader: () => import('../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js'),
+  loading: loadingComponent,
+});
+const DoctorAdviceTemplate = Loadable({
+  loader: () => import('../../../../../rightAssistBar/doctorAdvice/doctorAdviceTemplate.js'),
+  loading: loadingComponent,
+});
+const IntelligentTreat = Loadable({
+  loader: () => import('../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js'),
+  loading: loadingComponent,
+});
 
 export default class Index extends Component {
   constructor(props) {
@@ -54,14 +69,16 @@ export default class Index extends Component {
    * @return {[type]}        [undefined]
    */
   noticeAddMedicalFuncLocal(params){
-    // let herbalData = JSON.parse(params);
+    let herbalData = JSON.parse(params);
     // herbalData.forEach((item) => {
     //   let formateItem = converItemToNeededCN(item, herbalData, 0);
     // });
     this.setState({
       actionType: 'add', // modify、view、add
       orderid: '', // 当前医嘱ID
-      attachOrder: {}, // 草药数据
+      attachOrder: {
+        buOrderDtlList: herbalData
+      }, // 草药数据
     }, () => {
       this.chHerbalMedicine.handlePopOpen();
     });
@@ -1108,9 +1125,8 @@ export default class Index extends Component {
       selectedRows: selectedRows
     };
     return (
-      <div>
+      <Container>
         <List>
-          <SpecScrollArea height={160}>
             <AddHeader operate={this.actionManager}></AddHeader>
             <DataShow>
               <Header>
@@ -1141,7 +1157,6 @@ export default class Index extends Component {
               // <ChHerbalMedicineInteligentTreat wrappedComponentRef={ref => {this.chHerbalMedicineInteligentTreat = ref}} reloadList = {this.getData} />
             }
             <InteligentTreat loadClick={this.loadClick.bind(this)} visiblePopInteligence={this.visiblePopInteligence} ref={ref => this.inteligentTreat = ref} reloadList = {this.getData} />
-          </SpecScrollArea>
           <Footer>
             <CheckAction>
               <CheckAll onClick={() => {this.checkChange('all')}}>全选</CheckAll>
@@ -1163,7 +1178,7 @@ export default class Index extends Component {
               <TabPane tab="智能论治" key="1">
                 <IntelligentTreat type={1} actionManager= {this.actionManager} modelData={this.modelData}/>
               </TabPane>
-              <TabPane tab="历史模板" key="2">
+              <TabPane tab="历史医嘱" key="2">
                 <MedicalHistoryTwo type={1} actionManager= {this.actionManager} getData={this.getData}/>
               </TabPane>
               <TabPane tab="医嘱模板" key="3">
@@ -1173,10 +1188,13 @@ export default class Index extends Component {
           }
         </Modal>
         <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
-      </div>
+      </Container>
     )
   }
 }
+const Container = styled.div`
+  height: 100%;
+`;
 const SpecScrollArea = styled(ScrollArea)`
   display: flex;
   flex-direction: column;
@@ -1184,6 +1202,7 @@ const SpecScrollArea = styled(ScrollArea)`
 const List = styled.div`
   &&& {
     width: calc(100% - 410px);
+    height: 100%;
   }
 `;
 const Modal = styled.div`
@@ -1206,6 +1225,7 @@ const DataShow = styled.div`
   padding: 13px;
   padding-bottom: 0px;
   border-top: 1px solid #E1E1E1;
+  height: calc( 100% - 140px );
 `;
 const SpecTabs = styled(Tabs)`
   .ant-tabs-nav-container {
@@ -1246,6 +1266,7 @@ const Toggle = styled.div`
   height: fit-content;
   z-index: 2px;
   margin-right: 10px;
+  padding-right: 5px;
 `;
 const SpecTableIcon = styled(TableIcon)`
   background: ${props => props.showWay == 'table' ? 'rgba(10, 110, 203, 1)' : '#999999'};

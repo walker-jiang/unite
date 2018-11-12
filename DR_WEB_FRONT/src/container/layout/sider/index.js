@@ -6,6 +6,7 @@ import "./fontStyle.less"
 import "./iconfont.css";
 import Icon1 from 'components/dr/icon';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
+import { browserHistory } from 'react-router';
 const { Header, Content, Footer, Sider } = Layout;
 const SubMenu = Menu.Item;
 var onresize= window;
@@ -20,13 +21,21 @@ class SiderDemo extends React.Component {
         height:"",//外层高度
         length:0,//移动的距离,
         up:false,
-        down:true
+        down:true,
+        link:window.sessionStorage.getItem('selsetd')||'',
       };
   }
   componentWillMount(){
     onresize.removeEventListener("resize",this.handleHeight) //清楚窗口变化监听
     this.getLeftMoules();
-  }
+    window.addEventListener('hashchange', () => {
+    })
+};
+componentWillReceiveProps(nextProps) {
+  this.setState({
+    link:nextProps.link,
+  })
+}
   /** [getLeftMoules 获取左侧菜单] */
   getLeftMoules(){
     let self = this;
@@ -45,6 +54,7 @@ class SiderDemo extends React.Component {
           if(res.data==null){
             self.setState({ leftModules: [] });
           }else{
+            console.log(res.data.leftMenuList)
             self.setState({ leftModules: res.data.leftMenuList });
           }
         }else{
@@ -64,13 +74,15 @@ class SiderDemo extends React.Component {
     }
     this.setState({ collapsed:!this.state.collapsed,style });
   }
+  /** [handleClick 保存当前用户的key] */
+  handleClick = (e) => {
+  }
   //检测浏览器窗口大小变化
   handleHeight=()=>{
     const screenHeight=document.documentElement.clientHeight;
     var dom=document.getElementById("kk")
     let  height="auto"
     if (screenHeight<dom.offsetHeight) {
-
        height =`${screenHeight-56*2}px`;
     }
     this.setState({
@@ -101,23 +113,43 @@ class SiderDemo extends React.Component {
     }
   }
   render() {
-    let { collapsed ,leftModules} = this.state;
+    let { collapsed ,leftModules,} = this.state;
     let userName = window.sessionStorage.getItem('username');
+    let select=this.state.link||window.sessionStorage.getItem('selsetd');
     const MenuOption=[]
     if(leftModules.length !=0){
       leftModules.forEach(item=>{
-        if(item.syModule.callurl.indexOf('http') == 0){
-          var div = <MenuItems trigger={null} key={item.syModule.moddesc}>
-                      <a href={item.syModule.callurl + '&username=' + userName} target='_blank'>
-                        <StyleICon type={item.syModule.moddesc} value={collapsed}/>
-                        <span style={{color:'#90bee2'}}>{item.syModule.modname}</span>
-                      </a>
-                    </MenuItems>
-          MenuOption.push(div)
+        let link= item.syModule.callurl.split("/");
+        if(link[2]==undefined){
+            link='home'
         }else{
-          var div = <MenuItems trigger={null} key={item.syModule.moddesc}>
+            link=link[2]
+        }
+        if(item.syModule.callurl.indexOf('http') == 0){
+          if(item.syModule.modid == 10) {
+            var div =
+            <MenuItems trigger={null} key={item.syModule.moddesc}>
+              <a href={item.syModule.callurl+'&username='+userName} target='_blank'>
+                <StyleICon type={item.syModule.moddesc} value={collapsed}/>
+                <span style={{color:'#90bee2'}}>{item.syModule.modname}</span>
+              </a>
+            </MenuItems>
+            MenuOption.push(div)
+          } else {
+            var div =
+            <MenuItems trigger={null} key={item.syModule.moddesc}>
+              <a href={item.syModule.callurl} target='_blank'>
+                <StyleICon type={item.syModule.moddesc} value={collapsed}/>
+                <span style={{color:'#90bee2'}}>{item.syModule.modname}</span>
+              </a>
+            </MenuItems>
+            MenuOption.push(div)
+          }
+
+        }else{
+          var div = <MenuItems trigger={null} key={link}>
             <Link to={item.syModule.callurl}>
-              <StyleICon type={item.syModule.moddesc} value={collapsed}/>
+               <StyleICon type={item.syModule.moddesc} value={collapsed}/>
               <span style={{color:'#90bee2'}}>{item.syModule.modname}</span>
             </Link>
           </MenuItems>
@@ -140,15 +172,17 @@ class SiderDemo extends React.Component {
             <div style={{width:"140px",position:"relative",overflow:"hidden",paddingRight:"-20px",height:this.state.height}}>
               <SpecMenu
                 theme="dark"
-                defaultSelectedKeys={['1']}
+                defaultSelectedKeys={[select||'home']}
+                selectedKeys={[select]}
                 mode="inline"
+                onClick={this.handleClick.bind(this)}
                 collaps={collapsed.toString()}
                >
                 {MenuOption}
                 {( window.sessionStorage.getItem('userid')!=undefined)?
-                <MenuItems id="height" trigger={null}>
+                <MenuItems id="height" trigger={null} key="more">
                   <Links to='/Layout/more' trigger={null}>
-                    <StyleICon type='more' value={collapsed}/>
+                       <StyleICon type={'more'} value={collapsed}/>
                     <span style={{color:'#90bee2'}}>更多</span>
                   </Links>
                 </MenuItems>:null}
@@ -185,17 +219,7 @@ const SpecSider = styled(Sider)`
     }
   }
   .ant-menu-item-selected {
-    color:#fff !important;
     background:rgba(10, 110, 203, 1) !important;
-    a{
-      color: #fff  !important;
-    }
-  }
-  .ant-menu-item-active {
-    color: #C0D6E2 !important;
-    a{
-      color: #C0D6E2  !important;
-    }
   }
   .ant-menu-inline-collapsed{
     width: 50px;
@@ -208,32 +232,36 @@ const SpecSider = styled(Sider)`
  }
 `;
 const Links=styled(Link)`
- color:#91BEE2
- &&&:hover{
-   color:#C0D6E2 !important;
- }
+ color:#91BEE2;
 `
 const StyleICon = styled(Icon1)`
   width: ${ props => props.value ? '20px' : '16px'};
   height: ${ props => props.value ? '20px' : '16px'};
   margin-right: 14px;
+  fill:#91BEE2;
   margin-left: ${ props => props.value ? '-20px' : '0px'};
-  ${'' /* .ant-menu-item-selected>li>a>span>svg{
-      fill:#C0D6E2 !important;
-  } */}
-
 `;
+const RotateICon =styled(Icon1)`
+ transition: All 0.4s ease-in-out;
+ transform: rotate(360deg)
+`
 const SpecMenu = styled(Menu)`
   &&&.ant-menu-dark, .ant-menu-dark .ant-menu-sub {
     background-color: rgba(31, 63, 105, 1);
   }
 `;
-const Spans = styled.span`
-
-`
 const MenuItems =styled(SubMenu)`
- .ant-menu-item-selected>a{
+ &&&.ant-menu-item-selected>a>span:nth-child(2){
     color:#FFF !important;
+ }
+ &&&.ant-menu-item-selected>a>span:nth-child(1)>svg{
+    fill:#FFF;
+ }
+ &&&.ant-menu-item-active>a>span:nth-child(2){
+   color:#C0D6E2 !important;
+ }
+ &&&.ant-menu-item-active>a>span:nth-child(1)>svg{
+    fill:#C0D6E2;
  }
 `
 
@@ -241,6 +269,6 @@ export default SiderDemo
 
 /*
 @作者：马奔
-@日期：2018-10-15
+@日期：2018-11-1
 @描述：左侧菜单栏
 */

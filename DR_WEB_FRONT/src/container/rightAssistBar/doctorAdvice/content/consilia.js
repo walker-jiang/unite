@@ -31,7 +31,7 @@ export default class IntelligentTreat extends Component {
   }
   insertData = (dataSource) => {
     console.log("dataSource=========",dataSource);
-    if(dataSource.dataList){
+    if(dataSource && dataSource.dataList){
       var array = [];
       dataSource.dataList.forEach((item,index)=>{//辩证论治套的一层
         if(dataSource.dataList && item != "null"){

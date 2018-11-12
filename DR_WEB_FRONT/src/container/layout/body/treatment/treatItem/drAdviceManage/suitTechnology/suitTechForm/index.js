@@ -411,7 +411,7 @@ class SuitTechForm extends Component {
               labelInValue={true}
               onSelect={(e)=>{this.onModifySelectValue(record.itemid, 'deptid', 'deptname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
               {
-                deptData.map((item) => <Option key={item.deptid} value={item.deptid}>{item.deptname}</Option>)
+                deptData.map((item) => item ? <Option key={item.deptid} value={item.deptid}>{item.deptname}</Option> : null)
               }
             </SpecSelect>
           )

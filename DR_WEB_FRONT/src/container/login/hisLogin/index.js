@@ -35,7 +35,7 @@ class hisLogin extends Component {
         // alert('登录成功，开始初始化');
         // 将当前用户的信息保存供其它组件用
         window.sessionStorage.setItem('username', res.data.baOrguser.realname); // 用户名
-        window.sessionStorage.setItem('deptid', res.data.baOrguser.deptid); // 科室ID
+        window.sessionStorage.setItem('deptid', res.data.baOrguser.deptcode); // 科室ID
         window.sessionStorage.setItem('orgid', res.data.baOrguser.orgid); // 机构ID
         window.sessionStorage.setItem('userid', res.data.baOrguser.orgUerid); // 用户ID
         window.sessionStorage.setItem('post', res.data.baOrguser.post); // 医生级别

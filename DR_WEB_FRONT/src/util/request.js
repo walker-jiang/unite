@@ -1,6 +1,6 @@
 /* global window */
 import axios from 'axios'
-import qs from 'qs'
+// import qs from 'qs'
 // import jsonp from 'jsonp'
 import cloneDeep from 'lodash.clonedeep'
 import pathToRegexp from 'path-to-regexp'
@@ -55,19 +55,16 @@ const fetch = (options) => {
     url = `http://query.yahooapis.com/v1/public/yql?q=select * from json where url='${options.url}?${encodeURIComponent(qs.stringify(options.data))}'&format=json`
     data = null
   }*/
-
+  axios.defaults.headers['token'] = sessionStorage['token'];
   switch (method.toLowerCase()) {
     case 'get':
       return axios.get(url, {
         params: cloneData,
       })
     case 'delete':
-      return axios.delete(url, {
-        data: cloneData,
-      })
+      return axios.delete(url, {data: cloneData})
     case 'post':
       return axios.post(url, cloneData)
-      //return axios.post(url, qs.stringify(cloneData, { allowDots: true }))
     case 'put':
       return axios.put(url, cloneData)
     case 'patch':

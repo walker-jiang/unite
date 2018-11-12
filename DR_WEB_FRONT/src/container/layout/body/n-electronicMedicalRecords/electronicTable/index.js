@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import inputSty from 'components/antd/style/input';
 import 'antd/lib/button/style';
 import moment from 'moment';
-import Icon from 'components/dr/iconRight';
+import Icon from 'components/dr/icon';
 import { today } from 'commonFunc/defaultData';
 import zh_CN  from 'antd/lib/locale-provider/zh_CN';
 import bingLi from '../images/bingLi.png'
@@ -45,7 +45,7 @@ componentWillMount () {
 //点击搜索框搜索
 getPatientData(){
   console.log('diyicijin');
-  
+
   this.changeTime ()
 }
 
@@ -275,8 +275,8 @@ disabledStartDate = (startValue) => {
             <KeywordsSreach>
                 查询关键词：
             </KeywordsSreach>
-            <SpecInput placeholder='请输入姓名/手机号/患者编号快速查询' 
-            onChange={(e) => {this.setState({ keyword: e.target.value })}} 
+            <SpecInput placeholder='请输入姓名/手机号/患者编号快速查询'
+            onChange={(e) => {this.setState({ keyword: e.target.value })}}
             onKeyDown={ e => { e.keyCode == 13 ? this.changeTime() : null }}></SpecInput>
             <SearchIcon type='search-thin' fill='#FFFFFF' onClick={this.getPatientData}></SearchIcon>
           </SreachKeywords>
@@ -359,10 +359,11 @@ const MedicalCenter = styled.span`
   font-size: 14px;
 `;
 const SreachKeywords = styled.div`
-  width: 27rem;
   margin-left: 72.7rem;
-  margin-top: 0.7rem;
-  position: absolute;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 `;
 const KeywordsSreach = styled.span`
   margin-left: -7rem;

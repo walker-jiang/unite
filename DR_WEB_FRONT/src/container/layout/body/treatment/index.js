@@ -5,8 +5,9 @@ import Loadable from 'react-loadable'; // 加载时进行模块分离
 import { Button } from 'antd';
 import Icon from 'components/dr/icon';
 import buttonSty from 'components/antd/style/button';
+import extractDataFromIdentityCard from 'commonFunc/extractDataFromIdentityCard';
 // import PatientDetailInfo from './treatItem/patientDetailInfo';
-// import WriteMedicalRecords from './treatItem/writeMedicalRecords';
+import WriteMedicalRecords from './treatItem/writeMedicalRecords';
 // import DrAdviceManage from './treatItem/drAdviceManage';
 // import DiseasePreventTreat from './treatItem/diseasePreventTreat';
 import PatientList from './patientList';
@@ -17,10 +18,10 @@ const PatientDetailInfo = Loadable({
   loader: () => import('./treatItem/patientDetailInfo'),
   loading: loadingComponent,
 });
-const WriteMedicalRecords = Loadable({
-  loader: () => import('./treatItem/writeMedicalRecords'),
-  loading: loadingComponent,
-});
+// const WriteMedicalRecords = Loadable({
+//   loader: () => import('./treatItem/writeMedicalRecords'),
+//   loading: loadingComponent,
+// });
 const DrAdviceManage = Loadable({
   loader: () => import('./treatItem/drAdviceManage'),
   loading: loadingComponent,
@@ -34,7 +35,7 @@ class Index extends Component {
   constructor(props){
     super(props);
     this.state = {
-      treatTab: 2, // window.herbalData ? 2 :
+      treatTab: 1, // window.herbalData ? 2 :
       patienttypeDic: '',
       sexDic: '',
       age: 0,
@@ -52,7 +53,9 @@ class Index extends Component {
     this.setState({
       treatTab: 2
     }, () => {
-      window.noticeAddMedicalFunc(params);
+      if(window.noticeAddMedicalFunc){
+        window.noticeAddMedicalFunc(params);
+      }
     });
   };
   componentWillMount(){
@@ -82,7 +85,7 @@ class Index extends Component {
         self.setState({
           patienttypeDic: res.data.patienttypeDic,
           sexDic: res.data.sexDic,
-          age: date.getFullYear() - parseInt(res.data.birthday.substr(0, 4)),
+          age: extractDataFromIdentityCard.getAgeFromBirthday(res.data.birthday.substr(0,4)),
           visible: false
         });
       }else{
@@ -144,11 +147,11 @@ class Index extends Component {
       <Container>
         <Header>
           <PatientInfo>
-            {window.patientName} / {sexDic} / {age}岁 / {patienttypeDic}
+            {window.patientName} / {sexDic} / {age} / {patienttypeDic}
           </PatientInfo>
           <TreatStatus>
             <span>• 诊疗中</span>
-            <DownIcon type='down' onClick={() => {this.setState({ visible: !visible })}}></DownIcon>
+            <DownIcon type={visible ? 'up_thin' : 'down'} onClick={() => {this.setState({ visible: !visible })}}></DownIcon>
           </TreatStatus>
           <RegisterButton onClick={this.finishTreat}>完成诊疗</RegisterButton>
           <SpecTabs>
@@ -170,6 +173,7 @@ const Container = styled.div`
   height: 100%;
   width: 100%;
   overflow: hidden;
+  position: absolute;
 `;
 const Header = styled.div`
   height: 50px;
@@ -199,12 +203,15 @@ const TreatStatus = styled.div`
   border-right: 1px solid #797979;
 `;
 const DownIcon = styled(Icon)`
-  width: 16px;
-  height: 16px;
-  margin-top: 5px;
+  width: 18px;
+  height: 18px;
+  margin-top: 10px;
 `;
 const RegisterButton = styled(Button)`
-  ${buttonSty.semicircle}
+  ${buttonSty.semicircle};
+  &&& {
+    padding: 2px 22px;
+  }
 `;
 const SpecTabs = styled.div`
   margin: 20px;
@@ -224,6 +231,7 @@ const TabPane = styled.div`
 const Content = styled.div`
   width: 100%;
   position: relative;
+  height: calc( 100% - 50px );
 `;
 /*
 @作者：姜中希

@@ -62,7 +62,9 @@ handleBlur() {
 handleFocus() {
   console.log('focus');
 }
-
+handleStatus=()=>{
+  this.props.handleStatus([]);
+}
   render() {
           const { getFieldDecorator } = this.props.form;
           const formItemLayout = {
@@ -197,7 +199,7 @@ handleFocus() {
                   <div style={{width:"100%",borderTop:"1px solid #ccc",padding:"20px 0 0 10%"}}>
                     <div className="button" >
                       <Button htmlType="submit">保存</Button>
-                      <Button>取消</Button>
+                      <Button onClick={this.handleStatus}>取消</Button>
                     </div>
                     <div className="yema">
                       <span>{this.state.page}/{this.state.num}</span><span onClick={this.last} style={{cursor:'pointer'}}>上一页</span><span onClick={this.next} style={{cursor:'pointer'}}>下一页</span>

@@ -49,6 +49,8 @@ export default class Electronic extends Component {
       weightnum: '',
       chOrderList: [],//中医处方
       weOrderList: [],//西医处方
+      diagnosisWay: '',
+      disname: ''
     };
   };
   componentDidMount(){
@@ -87,6 +89,8 @@ export default class Electronic extends Component {
       weightnum: data[i].weightnum,//体重
       chOrderList: data[i].chOrderList,//中医处方
       weOrderList: data[i].weOrderList,//西医处方
+      diagnosisWay: data[i].buDiagnosisInfo.buDiagnosisList[0].diagnosisWay,//中/西医诊断判断
+      disname: data[i].buDiagnosisInfo.buDiagnosisList[0].disname,//中/西医诊断
       // syndrome: data[i].syndrome,//血常规
       // syndrome: data[i].syndrome,//尿检
       // syndrome: data[i].syndrome,//脑部CT
@@ -97,7 +101,26 @@ export default class Electronic extends Component {
 
   render() {
     let ss = null;
-    let {orgidDic,name, age, sex, type, upstamp, temperature, breath, pulse, systolicPressure, diastolicPressure, casetype,chOrderList,weOrderList} = this.state;
+    let {diagnosisWay,disname,orgidDic,name, age, sex, type, upstamp, temperature, breath, pulse, systolicPressure, diastolicPressure, casetype,chOrderList,weOrderList} = this.state;
+    let zy;
+    let xy;
+    if(diagnosisWay = '1') {
+      zy = disname;
+      xy = '暂略；';
+    } else {
+      xy = disname;
+      zy = '暂略；';
+    }
+    let cl;
+    let wl;
+    chOrderList.forEach((item)=>{
+      console.log('item',item)
+      cl = item.ordercontent;
+    })
+    weOrderList.forEach((item)=>{
+      console.log('item',item)
+      wl = item.ordercontent;
+    })
     if(casetype != ''){//判断初复诊：1为初诊，2为复诊；
       var ct = casetype;
       ss = <RadioGroup name="radiogroup" disabled defaultValue={ct}>
@@ -190,11 +213,11 @@ export default class Electronic extends Component {
                 </Row>
                 <Row>
                   <Col style={styles.colLeftStyle} span={3}>中医诊断：</Col>
-                  <Col style={styles.colRightStyle} span={21}>{chOrderList}</Col>
+                  <Col style={styles.colRightStyle} span={21}>{zy}</Col>
                 </Row>
                 <Row>
                   <Col style={styles.colLeftStyle} span={3}>西医诊断：</Col>
-                  <Col style={styles.colRightStyle} span={21}>{weOrderList}</Col>
+                  <Col style={styles.colRightStyle} span={21}>{xy}</Col>
                 </Row>
                 <Row>
                   <Col style={styles.colLeftStyle} span={3}>医生建议：</Col>
@@ -223,11 +246,11 @@ export default class Electronic extends Component {
                 <div>
                   <Row>
                     <Col style={styles.colLeftStyle} span={3}>中医处方：</Col>
-                    <Col style={styles.colRightStyleOther} span={21}></Col>
+                    <Col style={styles.colRightStyleOther} span={21}>{cl}</Col>
                   </Row>
                   <Row>
                     <Col style={styles.colLeftStyle} span={3}>西医处方：</Col>
-                    <Col style={styles.colRightStyleOther} span={21}></Col>
+                    <Col style={styles.colRightStyleOther} span={21}>{wl}</Col>
                   </Row>
                 </div>
               </div>

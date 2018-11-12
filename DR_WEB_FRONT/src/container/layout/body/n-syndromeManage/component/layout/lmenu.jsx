@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Menu, Icon } from 'antd';
 import styled from 'styled-components';
 const SubMenu = Menu.SubMenu;
-/**   
+/**
  * 公共菜单
  *
  * @export
@@ -15,12 +15,13 @@ export class Lmenu extends Component {
   render() {
     return (
       <Menu
-        style={{ width: 200, height:"52rem" }}
+        style={{ width: 200, height:"100%",backgroundColor:"#fff"}}
         className='myTreat'
-        defaultSelectedKeys={['1']}
+        defaultSelectedKeys={['9']}
         mode="inline"
+        openKeys={['sub1']}
       >
-        <Menu.Item key="1">
+        {/* <Menu.Item key="1">
           <Link to="/Layout/sub/Home">
             <MenuIcon type="appstore" />
             <span>导航管理</span>
@@ -31,7 +32,7 @@ export class Lmenu extends Component {
             <MenuIcon type="appstore" />
             <span>临床指南管理</span>
           </Link>
-        </Menu.Item>
+        </Menu.Item> */}
         <SubMenu key="sub1" title={<span><Icon type="setting" /><span>辨证论治院方</span></span>}>
           <Menu.Item key="9">
             <Link to="/Layout/sub/zhong">
@@ -54,7 +55,7 @@ export class Lmenu extends Component {
           {/* <Menu.Item key="10">中成药匹配</Menu.Item>
           <Menu.Item key="11">适宜技术匹配</Menu.Item> */}
         </SubMenu>
-        <Menu.Item key="3">
+        {/* <Menu.Item key="3">
           <Link to="/Layout/sub/mprescription">
             <MenuIcon type="appstore" />
             <span>现代方剂管理</span>
@@ -107,7 +108,7 @@ export class Lmenu extends Component {
             <MenuIcon type="appstore" />
             <span>数据字典管理</span>
           </Link>
-        </Menu.Item>
+        </Menu.Item> */}
       </Menu>
     )
   }

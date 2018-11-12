@@ -3,10 +3,13 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import SearchInput from 'components/dr/input/searchInput';
 import { Table } from 'antd';
+import Icon from 'components/dr/icon';
 import getResource from 'commonFunc/ajaxGetResource';
 import tableSty from 'components/antd/style/table';
+import IconSty from 'components/dr/icon/iconStyle';
+import HocAddTable from '../../../hocAddTable';
 
-export default class Index extends Component {
+class QuickAddSuitTechItem extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -189,10 +192,10 @@ export default class Index extends Component {
     return columns;
   };
   render() {
-    let { showResult, examineItemsData } = this.state;
+    let { showResult = false, itemsData = [], loadStatus = 0 } = this.props;
     let columns = this.getColumns();
     return (
-      <SearchInput {...this.props} onFocus={this.showResult} displayed={this.showResult} onKeyDown={this.handleEnterPress}>
+      <SearchInput {...this.props} displayed={this.props.showResultFunc} onKeyDown={this.props.handleEnterPress}>
         {
           showResult?
           (
@@ -201,18 +204,18 @@ export default class Index extends Component {
                 onRow={(record) => {
                   return {
                     onClick: (e) => {
-                      this.checkedLine(record, record.status?0:2);
+                      this.props.checkedLine(record, record.status?0:2);
                       e.stopPropagation();
-                      this.getValue(record);
+                      this.props.getValue(record);
                     },       // 点击行
                   };
                 }}
                 rowClassName={(record, index)=>{
                   return record.status ? (record.status == 1 ? 'Selected' : 'checked') : 'unSelected';
                 }}
-                locale={{emptyText: '暂无适宜技术项目数据' }}
+                locale={{emptyText: loadStatus ? <DataLoading type='data_loading' /> : '暂无适宜技术项目数据' }}
                 columns={columns}
-                dataSource={examineItemsData}
+                dataSource={itemsData}
                 pagination={false}
               >
               </SpecTable>
@@ -242,9 +245,19 @@ const Result = styled.div`
 const SpecTable = styled(Table)`
   ${tableSty.selectedTable}
 `;
-
+const DataLoading = styled(Icon)`
+  ${IconSty.rotate}
+`;
 /*
 @作者：姜中希
 @日期：2018-08-22
 @描述：快速添加适宜技术项目
 */
+let params = {
+  url: 'BaOrderSuitController/getList',
+  async: false,
+  data: {
+    ordertype: 3
+  }
+};
+export default HocAddTable(QuickAddSuitTechItem, params)

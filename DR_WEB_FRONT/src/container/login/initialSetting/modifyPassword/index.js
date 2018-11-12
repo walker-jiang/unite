@@ -48,7 +48,7 @@ class Index extends Component {
   handleClick() {
     this.props.form.validateFields((err, values) => {
       let paramsData = {
-        orgUerId: window.sessionStorage.getItem('userid'),
+        orgUserId: window.sessionStorage.getItem('userid'),
         newPassword: values.password
       };
       if (!err) {

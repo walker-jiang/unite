@@ -7,12 +7,12 @@ import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import TipModal from 'components/dr/modal/tip';
 import CaseType from './caseType';
 import PrimarySymptom from './primarySymptom';
-import OtherSymptom from './illHistory';
-import IllHistory_allergy from './illHistory';
+import CarefulItem from './carefulItem';
+import OtherSymptom from '../../../treatment/treatItem/writeMedicalRecords/formItem/illHistory';
+import IllHistory_allergy from '../../../treatment/treatItem/writeMedicalRecords/formItem/illHistory';
 import ObserveCure from '../../../treatment/treatItem/writeMedicalRecords/formItem/observeCure';
 import FeelCure from '../../../treatment/treatItem/writeMedicalRecords/formItem/feelCure';
 import HabitusInspect from '../../../treatment/treatItem/writeMedicalRecords/formItem/habitusInspect';
-import CarefulItem from './carefulItem';
 import OtherInspect from '../../../treatment/treatItem/writeMedicalRecords/formItem/otherInspect';
 const FormItem = Form.Item;
 
@@ -162,7 +162,7 @@ class CaseConfirm extends Component {
             <OtherInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.psycheck}></OtherInspect>
           </FormSpec>
           <SpecCheckbox readOnly={this.props.readOnly} onChange={() => { this.setState({ isRequired: !isRequired }) }}>忽略病情病历确认</SpecCheckbox>
-          <SureButton type="primary" onClick={this.handleSubmit} readonly={this.props.readonly}>智能辩证</SureButton>
+          <SureButton type="primary" onClick={this.handleSubmit} readOnly={this.props.readOnly}>智能辩证</SureButton>
           <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
           <Prompt
             when={isEdit}

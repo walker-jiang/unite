@@ -275,7 +275,7 @@ export default class SmartDistinguish extends Component {
     buDiagnosisInfo.registerid = window.registerID,
     buDiagnosisInfo.registerno = "12312";
     Object.assign(diagnoseFinalInfoOrigin, buDiagnosisInfo);
-    if(values){
+    if(values){ // 从智能辩证获取了值
       let finalObj = {
         casetype: values.casetype,
         pridepict: this.getString(values.pridepict),
@@ -301,7 +301,9 @@ export default class SmartDistinguish extends Component {
         orgid: window.sessionStorage.getItem('orgid'),
         registerid: window.registerID,
       };
-      Object.assign(initCaseData, finalObj);
+      Object.assign(initCaseData, finalObj); // 修改时需要带上之前返回的值
+    }else{
+      initCaseData.buDiagnosisInfo = diagnoseFinalInfoOrigin;
     }
     let self = this;
     let params = {
@@ -432,47 +434,49 @@ export default class SmartDistinguish extends Component {
     return (
       <Container onClick={this.hideFloatLayer}>
         <Left>
-          <DiaTitle>患者诊断</DiaTitle>
-          <Middle>
-            <AddContainer>
-              <Name>疾病：</Name>
-              <AddIllBySymptom enterEvent={this.enterEvent} autofocus='autofocus' id='symptom'  ref={ref => this.addIllBySymptom = ref} placeholder='请输入病症中文关键字或拼音简写搜索' notify={this.getMessage}/>
-              <Name>症候：</Name>
-              <AddIllByManifestations enterEvent={this.enterEvent} id='manifestations' ref={ref => this.addIllByManifestation = ref} placeholder='请输入病侯中文关键字或拼音简写搜索' symptomId={symptomId}/>
-              <AddAction type="primary" onClick={() => { this.enterEvent('', 'manifestations') }}>添加诊断</AddAction>
-            </AddContainer>
-            <SpecTable
-              dataSource={diagnoseData}
-              columns={columns}
-              pagination={Pagination_dia}/>
-          </Middle>
-          <History>
-            <Header>
-              <Title>
-                📅历史诊断
-              </Title>
-              <Tip>
-                💡双击下方历史诊断可加入到当前诊断信息中
-              </Tip>
-            </Header>
-            <SpecTable
-              onRow={(record) => {
-                return {
-                  onDoubleClick: (e) => {
-                    this.SelectedLine(record);
-                    e.stopPropagation();
-                    e.nativeEvent.stopImmediatePropagation();
-                  },       // 点击行
-                };
-              }}
-              rowClassName={(record, index)=>{
-                return ((record.status) ? 'Selected' : 'unSelected');
-              }}
-              dataSource={diagnoseHisData}
-              columns={hisCols}
-              pagination={Pagination_his}/>
-          </History>
-          <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
+          <Content>
+            <DiaTitle>患者诊断</DiaTitle>
+            <Middle>
+              <AddContainer>
+                <Name>疾病：</Name>
+                <AddIllBySymptom enterEvent={this.enterEvent} autofocus='autofocus' id='symptom'  ref={ref => this.addIllBySymptom = ref} placeholder='请输入病症中文关键字或拼音简写搜索' notify={this.getMessage}/>
+                <Name>症候：</Name>
+                <AddIllByManifestations enterEvent={this.enterEvent} id='manifestations' ref={ref => this.addIllByManifestation = ref} placeholder='请输入病侯中文关键字或拼音简写搜索' symptomId={symptomId}/>
+                <AddAction type="primary" onClick={() => { this.enterEvent('', 'manifestations') }}>添加诊断</AddAction>
+              </AddContainer>
+              <SpecTable
+                dataSource={diagnoseData}
+                columns={columns}
+                pagination={Pagination_dia}/>
+            </Middle>
+            <History>
+              <Header>
+                <Title>
+                  📅历史诊断
+                </Title>
+                <Tip>
+                  💡双击下方历史诊断可加入到当前诊断信息中
+                </Tip>
+              </Header>
+              <SpecTable
+                onRow={(record) => {
+                  return {
+                    onDoubleClick: (e) => {
+                      this.SelectedLine(record);
+                      e.stopPropagation();
+                      e.nativeEvent.stopImmediatePropagation();
+                    },       // 点击行
+                  };
+                }}
+                rowClassName={(record, index)=>{
+                  return ((record.status) ? 'Selected' : 'unSelected');
+                }}
+                dataSource={diagnoseHisData}
+                columns={hisCols}
+                pagination={Pagination_his}/>
+            </History>
+            <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
+          </Content>
           <ActionButton readOnly={this.props.readOnly}>
             <Checkbox >同步到患者诊断</Checkbox>
             <SureButton type="primary" onClick={this.submitCaseData}>智能论治</SureButton>
@@ -485,7 +489,7 @@ export default class SmartDistinguish extends Component {
               <AuxiliaryDiagnosis
                 type={"2"}
                 addChinaMedicineData={this.addChinaMedicineData}
-                changeInitDataTwo={this.addChinaMedicineData} 
+                changeInitDataTwo={this.addChinaMedicineData}
               />
             </TabPane>
           </SpecTabs>
@@ -496,11 +500,15 @@ export default class SmartDistinguish extends Component {
 }
 const Container = styled.div`
   display: flex;
+  height: 100%;
 `;
 const Left = styled.div`
   flex-grow: 1;
   padding: 0px 17px;
   border-right: 1px solid #CCCCCC;
+`;
+const Content = styled.div`
+  height: calc(100% - 55px);
 `;
 const Right = styled.div`
   width: 422px;
@@ -597,7 +605,11 @@ const AddAction = styled(Button)`
 `;
 const ActionButton = styled.div`
   border-top: 1px solid #CCCCCC;
+<<<<<<< HEAD
+  align-items: center;
+=======
   margin-top: 30px;
+>>>>>>> n-develop
   display: ${props => props.readOnly ? 'none' : 'flex'}
 `;
 const BorderButton = styled(Button)`

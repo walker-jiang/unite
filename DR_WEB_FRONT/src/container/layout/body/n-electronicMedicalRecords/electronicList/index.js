@@ -164,7 +164,7 @@ export default class index extends Component {
         </Title>
         <CenterArea id="eleBingLi">
             <Row>
-                <Col span={6}>
+                <Col span={7}>
                     <ScrollArea height={100}>
                         <ListBorder className="listRightLine">
                             {lodeData}
@@ -172,7 +172,7 @@ export default class index extends Component {
                         </ListBorder>
                     </ScrollArea>    
                 </Col>
-                <Col span={16} offset={1}>
+                <Col span={15} offset={1}>
                     <ScrollArea height={100}>
                         <ElectronicRight data={data} i={i} patientname={patientname} sex={sex} birthday={birthday}  patienttypeDic={patienttypeDic} examDate={examDate} casetype={casetype} orgidDic={orgidDic} />
                     </ScrollArea>
@@ -274,6 +274,8 @@ const ListData = styled.div`
     border-left:none;
     border-right:none; 
     cursor:pointer;
+    color: #0a6ecb;
+    background-color: #ffffff;
 `;
 const First = styled.p`
     

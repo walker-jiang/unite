@@ -17,11 +17,11 @@ function getDiagnoseText(originData = []){
     }else{
       diagnoseChiane = item.disname; // 中医病症
       let minifest = ''; // 病侯
-      if(!item.buDiagnosisDismainfList){
+      if(!item.buDiagnosisSyndromeList){ // 没有症候直接显示疾病名称
         return;
       }
-      item.buDiagnosisDismainfList.forEach((itemChildChile, indexChildChild) => { // 病侯
-        minifest += itemChildChile.manifname + '，'
+      item.buDiagnosisSyndromeList.forEach((itemChildChile, indexChildChild) => { // 病侯
+        minifest += itemChildChile.synname + '，'
       });
       if(minifest){
         minifest = '（' + minifest.substr(0, minifest.length - 1) + '）';
@@ -51,28 +51,36 @@ function getDiagnoseDataSource(originData = [], type = 'now'){
   let data = deepClone(originData); // 深克隆一份对象
   let diagnoseHisData = new Array();
   data.forEach((item, index)=>{ //诊断明细
-    if(item.buDiagnosisDismainfList && item.buDiagnosisDismainfList.length > 0){
-      item.buDiagnosisDismainfList.forEach((itemNext, indexNext) => {
-        let itemChild = {};
-        itemChild.key = diagnoseHisData.length; // 加唯一key值
-        itemChild.order = diagnoseHisData.length + 1;
-        itemChild.diagnosisName = item.diagnosisName + '/' + itemNext.manifname;
-        itemChild.diagnosisCode = itemNext.manifcode;
-        itemChild.manifCode = item.diagnosisCode;
-        itemChild.diagnosisWay = item.diagnosisWay;
-        itemChild.diagnosisWayDic = item.diagnosisWayDic;
-        itemChild.diagnosisType = '-';
-        itemChild.doubtDiaTypeDic = '-';
-        itemChild.mainDiaTypeDic = '-';
-        itemChild.utstamp = item.utstamp;
-        itemChild.type = '症候';
-        itemChild.doctorname = type == 'now' ? window.sessionStorage.getItem('username') : item.doctorname;
-
-        diagnoseHisData.push(itemChild);
-      });
+    if(item.buDiagnosisSyndromeList){ // 中医诊断
+      if(item.buDiagnosisSyndromeList.length > 0){ // 有病候数组
+        item.buDiagnosisSyndromeList.forEach((itemNext, indexNext) => {
+          let itemChild = {};
+          itemChild.key = diagnoseHisData.length; // 加唯一key值
+          itemChild.order = diagnoseHisData.length + 1;
+          itemChild.diagnosisName = item.diagnosisName + '/' + itemNext.synname;
+          itemChild.diagnosisCode = itemNext.syncode;
+          itemChild.manifCode = item.diagnosisCode;
+          itemChild.diagnosisWay = item.diagnosisWay;
+          itemChild.diagnosisWayDic = '中医诊断';
+          itemChild.diagnosisType = '-';
+          itemChild.doubtDiaTypeDic = '-';
+          itemChild.mainDiaTypeDic = '-';
+          itemChild.utstamp = item.utstamp;
+          itemChild.type = '症候';
+          itemChild.doctorname = type == 'now' ? window.sessionStorage.getItem('username') : item.doctorname;
+          diagnoseHisData.push(itemChild);
+        });
+      }else{ // 没有病候
+        item.diagnosisWayDic = '中医诊断';
+        item.diagnosisType = '-';
+        item.doubtDiaTypeDic = '-';
+        item.mainDiaTypeDic = '-';
+        item.doctorname = type == 'now' ? window.sessionStorage.getItem('username') : item.doctorname;
+        diagnoseHisData.push(item);
+      }
     }else{
       item.key = diagnoseHisData.length; // 加唯一key值
-      item.order = diagnoseHisData.length + 1;
+      item.diagnosisWayDic = '西医诊断';
       item.doctorname = type == 'now' ? window.sessionStorage.getItem('username') : item.doctorname;
       diagnoseHisData.push(item);
     }
@@ -131,7 +139,7 @@ function combinedAddFormData(values, itemData, type){
   let buDiagnosisInfo = {
     buDiagnosisList: values.diagnose.originData,
     "cardno": window.cardno,
-    "deptid": window.sessionStorage.getItem('deptid'),
+    "deptcode": window.sessionStorage.getItem('deptid'),
     "diagnosisDesc": values.diagnose.extractionData,
     "doctorid": window.sessionStorage.getItem('userid'),
     "orgid": window.sessionStorage.getItem('orgid'),

@@ -3,8 +3,10 @@ import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import SearchInput from 'components/dr/input/searchInput';
 import { Table } from 'antd';
+import Icon from 'components/dr/icon';
 import getResource from 'commonFunc/ajaxGetResource';
 import tableSty from 'components/antd/style/table';
+import IconSty from 'components/dr/icon/iconStyle';
 
 export default class QuickAddHerb extends Component {
   constructor(props){
@@ -14,6 +16,7 @@ export default class QuickAddHerb extends Component {
       herbData: [], //草药数据数组
       totalLines: 0, // 查询结果总行数
       curLine: 0, // 当前行,从0开始，-1表示未选中任何行
+      loadStatus: 0, // 数据加载状态 0 未请求或者请求完毕 1 请求中
     };
     this.showResult = this.showResult.bind(this);
     this.hideResult = this.hideResult.bind(this);
@@ -40,19 +43,26 @@ export default class QuickAddHerb extends Component {
         console.log('异常响应信息', res);
       }
     };
-    getResource(params, success);
+    this.setState({ loadStatus: 1, herbData:[], showResult: true, totalLines: 0, curLine: 0 }, ()=>{ // 先把项目置空
+      getResource(params, success);
+    });
   };
   /* [showResult 查询、展示结果] */
   showResult(value = ''){
-    this.setState({
-      showResult: true
-    });
-    this.getMedicineData(value);
+    if(value.trim() != ''){
+      this.getMedicineData(value);
+    }else{ // 空输入项关闭下拉框
+      this.hideResult();
+    }
   };
   /* [hideResult 收起查询结果] */
   hideResult(){
     this.setState({
-      showResult: false
+      showResult: false,
+      herbData: [],
+      totalLines: 0,
+      curLine: 0,
+      loadStatus: 0
     });
   };
   /* [getValue 获取表格选中行数据] */
@@ -131,8 +141,12 @@ export default class QuickAddHerb extends Component {
         this.SelectedLine(herbData[curLine]);
         break;
       case 13:         // Enter 添加到处方列表
-        this.checkedLine(herbData[curLine], 2);
-        this.getEnterValue(curLine)
+        if(herbData.length > 0 && this.state.showResult){
+          this.checkedLine(herbData[curLine], 2);
+          this.getEnterValue(curLine)
+        }else{
+          this.tipModal.showModal({stressContent: '请选择项目'});
+        }
         break;
     };
     this.setState({ curLine });
@@ -180,7 +194,7 @@ export default class QuickAddHerb extends Component {
     return columns;
   };
   render() {
-    let { showResult, herbData } = this.state;
+    let { showResult, herbData, loadStatus } = this.state;
     let columns = this.getColumns();
     return (
       <SearchInput {...this.props} onFocus={this.showResult} displayed={this.showResult} onKeyDown={this.handleEnterPress}>
@@ -201,7 +215,7 @@ export default class QuickAddHerb extends Component {
                 rowClassName={(record, index)=>{
                   return record.status ? (record.status == 1 ? 'Selected' : 'checked') : 'unSelected';
                 }}
-                locale={{emptyText: '暂无中成药/西药数据数据' }}
+                locale={{emptyText: loadStatus ? <DataLoading type='data_loading' /> : '暂无中成药/西药数据数据' }}
                 columns={columns}
                 dataSource={herbData}
                 pagination={false}></SpecTable>
@@ -223,7 +237,7 @@ const Result = styled.div`
   color: rgba(0,0,0,0.65);
   z-index: 5;
   background: #fff;
-  padding: 0 5px;
+  padding: 0 15px;
   border-left: 1px solid #bebebe;
   border-right: 1px solid #bebebe;
   border-bottom: 1px solid #bebebe;
@@ -231,7 +245,9 @@ const Result = styled.div`
 const SpecTable = styled(Table)`
   ${tableSty.selectedTable}
 `;
-
+const DataLoading = styled(Icon)`
+  ${IconSty.rotate}
+`;
 /*
 @作者：姜中希
 @日期：2018-08-18

@@ -20,7 +20,7 @@ export default class SyndromeTreatment extends Component {
   };
   /** [getRegisterPatientFromHis 调用his查询患者信息的服务] */
   getRegisterPatientFromHis(){
-    alert('正在向his请求患者信息。。。');
+    // alert('正在向his请求患者信息。。。');
     // 成功得到患者信息后获取该患者的病历信息
     // this.getSyndromeData();
     // 失败的话再次请求
@@ -72,7 +72,7 @@ export default class SyndromeTreatment extends Component {
     if(current == 0){
       compo = <SelectPatient onStep={this.stepFunc}/>;
     }else if(current == -1){ // 辨证论治详情
-      compo = <SyndromeDetail registerid={registerid}/>
+      compo = <SyndromeDetail/>
     }else{
       compo = <Cure onStep={this.stepFunc} current={current} />;
     }

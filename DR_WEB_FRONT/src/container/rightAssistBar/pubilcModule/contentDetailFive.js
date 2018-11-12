@@ -32,7 +32,10 @@ class ContentDetailFiveItem extends Component {
           //* 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
           self.props.changeInitData(res.data,3);
         }else{
-          alert('名医医案转换失败', res);
+          console.log('名医医案转换失败', res);
+          self.tipModal.showModal({
+            content: '名医医案引入失败'
+          });
         }
       };
       doctorAdviceService.addPrescription(params, callBack);

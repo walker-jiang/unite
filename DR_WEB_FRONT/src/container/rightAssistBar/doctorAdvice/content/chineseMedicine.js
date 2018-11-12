@@ -31,7 +31,7 @@ export default class IntelligentTreat extends Component {
       this.setState({isQuery:nextProps.isQuery,pageSize:nextProps.pageSize});
   }
   insertData = (dataSource) => {
-    if(dataSource.dataList){
+    if(dataSource && dataSource.dataList){
       var array = [];
       dataSource.dataList.forEach((item,index)=>{
         array.push({

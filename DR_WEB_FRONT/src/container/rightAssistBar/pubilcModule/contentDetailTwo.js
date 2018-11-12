@@ -6,6 +6,7 @@
 import React, {Component} from 'react';
 import { Icon, Row, Col, Button, Input, Tabs, Divider, Select, Menu, Dropdown, Alert, Modal } from 'antd';
 import doctorAdviceService from '../service/doctorAdviceService.js';
+import TipModal from 'components/dr/modal/tip';
 
 class ContentDetailTwoItem extends Component {
   constructor(props){
@@ -160,7 +161,10 @@ export default class ContentDetail extends Component {
           //* 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
           self.props.changeInitData(res.data,3);
         }else{
-          console.log('草药转换失败', res);
+          self.log('草药转换失败', res);
+          self.tipModal.showModal({
+            content: '草药引入失败'
+          });
         }
       };
       doctorAdviceService.getcmdrugs(params, callBack);
@@ -171,29 +175,38 @@ export default class ContentDetail extends Component {
     console.log("this.props.item====",item.baUsage);
     return (
       <div>
+        <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
         <div className="content-detail-two" style={{paddingBottom:item.priors == "1"?10:5}}>
-          <p onClick={()=>this.unfold("drugName",drugName)}>
-            {item.drugName.length>35?<p><Icon type={drugName?"down":"right"}/>主方：</p>:<p style={{marginLeft:15}}>主方：</p>}
-          </p>
-          <p>{ drugName?(item.drugName == ""?"无":item.drugName):this.cutOut(item.drugName) }</p>
-          <p onClick={()=>this.unfold("treatname",treatname)}>
-            {
-              item.treatname.length>35
-              ?
-              <p><Icon type={treatname?"down":"right"}/>主治：</p>
-              :
-              <p style={{marginLeft:15}}>主治：</p>
-            }
-          </p>
-          <p>{ treatname?(item.treatname == ""?"无":item.treatname):this.cutOut(item.treatname) }</p>
-          <p onClick={()=>this.unfold("therapy",therapy)}>
-            {item.therapy.length>25?<p><Icon type={therapy?"down":"right"}/>治则治法：</p>:<p style={{marginLeft:15}}>治则治法：</p>}
-          </p>
-          <p>{ therapy?(item.therapy == ""?"无":item.therapy):this.cutOut(item.therapy) }</p>
-          <p onClick={()=>this.unfold("freqname",freqname)}>
-            {item.freqname && item.freqname.length>25?<p><Icon type={freqname?"down":"right"}/>用法/频次：</p>:<p style={{marginLeft:15}}>用法/频次：</p>}
-          </p>
-          <p>{item.baUsage?item.baUsage.usagename:"无"}/{item.freqname?item.freqname:"无"}</p>
+          <div>
+            <span onClick={()=>this.unfold("drugName",drugName)} className="left">
+              {item.drugName.length>35?<span style={{fontWeight:600}}><Icon type={drugName?"down":"right"}/>主方：</span>:<span style={{fontWeight:600,marginLeft:15}}>主方：</span>}
+            </span>
+            <span className="right">{ drugName?(item.drugName == ""?"无":item.drugName):this.cutOut(item.drugName) }</span>
+          </div>
+          <div>
+            <span onClick={()=>this.unfold("treatname",treatname)} className="left">
+              {
+                item.treatname.length>35
+                ?
+                <span style={{fontWeight:600}}><Icon type={treatname?"down":"right"}/>主治：</span>
+                :
+                <span style={{fontWeight:600,marginLeft:15}}>主治：</span>
+              }
+            </span>
+            <span className="right">{ treatname?(item.treatname == ""?"无":item.treatname):this.cutOut(item.treatname) }</span>
+          </div>
+          <div>
+            <span onClick={()=>this.unfold("therapy",therapy)} className="left">
+              {item.therapy.length>25?<span style={{fontWeight:600}}><Icon type={therapy?"down":"right"}/>治则治法：</span>:<span style={{fontWeight:600,marginLeft:15}}>治则治法：</span>}
+            </span>
+            <span className="right">{ therapy?(item.therapy == ""?"无":item.therapy):this.cutOut(item.therapy) }</span>
+          </div>
+          <div>
+            <span onClick={()=>this.unfold("freqname",freqname)} className="left">
+              {item.freqname && item.freqname.length>25?<span style={{fontWeight:600}}><Icon type={freqname?"down":"right"}/>用法/频次：</span>:<span style={{fontWeight:600,marginLeft:15}}>用法/频次：</span>}
+            </span>
+            <span className="right">{item.baUsage?item.baUsage.usagename:"无"}/{item.freqname?item.freqname:"无"}</span>
+          </div>
           {
             item.priors == "1"
             ?

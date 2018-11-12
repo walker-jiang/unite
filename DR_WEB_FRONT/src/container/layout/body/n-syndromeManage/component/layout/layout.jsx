@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react'; // 引入了React和PropTypes。PropTypes是用于检查props参数类型，可有可无，最好是有
 import { is, fromJS } from 'immutable';
+import styled from 'styled-components';
 import Loadable from 'react-loadable'; // 加载时进行模块分离
 // 公共头部
 // 公共菜单
@@ -128,8 +129,8 @@ class Main extends Component {
   render() {
     return (
       <Layout className="layout">
-        <Sider><Lmenu/></Sider>
-        <Content className="layout-content" style={{ overflow: 'auto'}}>
+        <Sider1><Lmenu style={{ backgroundColor:"#fff"}}/></Sider1>
+      <Content className="layout-content" style={{ overflow: 'auto',marginLeft:'2px'}}>
            {/* <Route path="/Layout/sub" component={HomeIndex} exact></Route> */}
            {/* <Route path="/Layout/sub/home" component={HomeIndex1} exact></Route> */}
            <Route path="/Layout/sub/Home" component={HomeIndex} exact></Route>
@@ -151,5 +152,7 @@ class Main extends Component {
     );
   }
 }
-
+const Sider1 = styled(Sider)`
+   background-color: #fff !important;
+ `
 export default Main;

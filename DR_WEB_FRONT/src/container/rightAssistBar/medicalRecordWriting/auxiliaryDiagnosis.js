@@ -39,7 +39,15 @@ export default class template extends Component {
   };
   componentWillMount(){
     var { listenFormData } = this.state;
-    this.GetAuxiliaryList(listenFormData);
+    if(listenFormData){
+      this.GetAuxiliaryList(listenFormData);
+    }
+  }
+  componentWillReceiveProps(nextProps){
+    console.log("nextProps@@@@@@@@@!!",nextProps.listenFormData);
+    if(nextProps.listenFormData){
+      this.GetAuxiliaryList(nextProps.listenFormData);
+    }
   }
   /**
    * 替换html中的标签，得到html标签中的文字

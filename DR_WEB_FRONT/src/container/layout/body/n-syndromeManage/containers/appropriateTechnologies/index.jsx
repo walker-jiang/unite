@@ -1,7 +1,7 @@
 import React, { Component } from 'react'; // 引入了React和PropTypes
 import lodash from 'lodash';
 import './style/homeIndex.less';
-import { Row, Col, Button, Tag, Icon, Modal, Table, Divider, message } from 'antd';
+import { Row, Col, Button, Tag, Icon, Modal, Table, Divider, message, Menu } from 'antd';
 import {
   autoMatchSTechnology, getOrgSTechnologyList, getCenterSTechnologyList,
   matchSTechnology, deleteMatchSTechnology, updateSTechnologyOrg
@@ -292,12 +292,11 @@ class HomeIndexIndex extends Component {
   render() {
     const { orgData, centerData, weightModalVisiable, weightModalData } = this.state;
     return (
-      <div className='HomeIndex_home'>
-        <div className='HomeIndex_home_div'>
+      <div className='HomeIndex_home3'>
+        <div className='HomeIndex_home_div3'>
           <p>中医适宜技术信息匹配
-            <Icon type="swap" theme="outlined" />
-            <Button type="primary" onClick={this.onHandleAutomatch}>一键自动匹配</Button>
-          </p><hr /><hr className='hr1' />
+            <Button type="primary" style={{marginLeft: 20}} onClick={this.onHandleAutomatch}>一键自动匹配</Button>
+          </p><hr className='hr1' />
         </div>
         <Row>
           <Col span={12} className="HomeIndex_centerLine" >

@@ -7,6 +7,7 @@ import React, {Component} from 'react';
 import { Icon, Row, Col, Button, Radio, Input, Rate, Tabs, Divider, Spin, Pagination   } from 'antd';
 import '../style/doctorAdvice.less';
 import ATModal from './aTModal.js';
+import TipModal from 'components/dr/modal/tip';
 import ContentDetailFour from '../../pubilcModule/contentDetailFour.js';
 import doctorAdviceService from '../../service/doctorAdviceService.js';
 import zanwunerong from '../style/zanwunerong.png';
@@ -36,7 +37,7 @@ export default class IntelligentTreat extends Component {
     this.setState({isQuery:nextProps.isQuery,pageSize:nextProps.pageSize});
   }
   insertData = (dataSource) => {
-    if(dataSource.dataList){
+    if(dataSource && dataSource.dataList){
       var array = [];
       dataSource.dataList.forEach((item,index)=>{
         array.push({
@@ -66,7 +67,7 @@ export default class IntelligentTreat extends Component {
         };
         function callBack(res){
           if(res.flag == 1){
-            console.log("适宜技术转换成功==============");
+            console.log("适宜技术转换成功==============",res);
             //* 医嘱订单类型；1-检验申请单 2.检查申请单 3.-中草药处方、4-中成药及西药处方 5-适宜技术处方 6-西医治疗 7-嘱托
             //self.props.changeInitData(res.data,5);
             if(res.data && res.data.buOrderDtlList.length>0){
@@ -78,6 +79,9 @@ export default class IntelligentTreat extends Component {
           }else{
             self.setState({ queryTableIsQuery:true });
             console.log('适宜技术转换失败', res);
+            self.tipModal.showModal({
+              content: '适宜技术引入失败'
+            });
           }
         };
         doctorAdviceService.getSt(params, callBack);
@@ -186,9 +190,9 @@ export default class IntelligentTreat extends Component {
   }
   render() {
     var { content, visible, tableSource, AllData, isQuery, pageSize, total, queryTableIsQuery } = this.state;
-    console.log("appropriateTechnology=====",visible);
     return (
       <div className="prescription">
+        <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
         <ATModal
           AllData={AllData}
           closeModal={this.closeModal}

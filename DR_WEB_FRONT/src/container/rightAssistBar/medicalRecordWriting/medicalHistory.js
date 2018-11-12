@@ -73,7 +73,7 @@ export default class template extends Component {
             initData:item,//原数据
           });
         })
-        console.log("==================",content);
+        console.log("==================#{#{#{}}}",content);
         self.setState({ content:content,total:res.data.total,isQuery:true });
       }else{
         self.setState({ isQuery:true });
@@ -137,6 +137,7 @@ export default class template extends Component {
   }
   render() {
     var { content, unfold, total, isQuery, pageSize } = this.state;
+    console.log("totaltotaltotaltotal",typeof(total) == "undefined");
     return (
       <div className="rightAssistBar_medicalHistory">
         <div className="medicalHistory_data">
@@ -167,16 +168,16 @@ export default class template extends Component {
                           <Row><Col span={24}><p>诊断：{item.diagnosisDesc}</p></Col></Row>
                         </div>
                         <ContentDetail item={item.data} changeInitData={this.changeInitData}/>
-                      </div>  
+                      </div>
                     )
                   })
                 }
                 {
-                  total<=10
+                  typeof(total) == "undefined" || total <= 10
                   ?
-                  <center style={{marginBottom:10}}>-------已经到底了-------</center>
+                  <center style={{marginBottom:10,marginTop:10}}>-------已经到底了-------</center>
                   :
-                  <center style={content.length<5?{position:'absolute',bottom:10,marginLeft:'30%'}:{marginBottom:10}}>
+                  <center style={content.length<5?{position:'absolute',bottom:10}:{marginBottom:10}}>
                       <Pagination current={parseInt(pageSize)} total={total} onChange={this.onChange} itemRender={this.itemRender} />
                   </center>
                 }

@@ -8,10 +8,11 @@ import obj_prototype from 'commonFunc/prototype'; // 引入自定义的原型方
 import './global.css'; // 全局样式文件
 import 'antd/dist/antd.less';
 const loadingComponent = () => (<div>Loading...</div>);
-const Layout = Loadable({
-  loader: () => import('./container/layout'),
-  loading: loadingComponent,
-});
+import Layout from './container/layout';
+// const Layout = Loadable({
+//   loader: () => import('./container/layout'),
+//   loading: loadingComponent,
+// });
 // import Login from './container/login';
 const Login = Loadable({
   loader: () => import('./container/login'),

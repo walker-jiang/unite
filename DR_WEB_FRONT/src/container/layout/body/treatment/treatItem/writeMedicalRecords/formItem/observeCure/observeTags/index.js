@@ -20,10 +20,6 @@ export default class ObserveCure extends Component {
     this.tagsOver = this.tagsOver.bind(this);
     this.tagsOut = this.tagsOut.bind(this);
   };
-  componentWillMount(){
-    this.getTongueCoatedData();
-    this.getTongueNatureData();
-  };
   /** [getTongueCoatedData 获取舌苔列表] */
   getTongueCoatedData(){
     let self = this;
@@ -42,6 +38,12 @@ export default class ObserveCure extends Component {
       }
     };
     ajaxGetResource(params, callBack);
+  };
+  componentWillReceiveProps(nextProps){
+    if(nextProps.expand){
+      this.getTongueCoatedData();
+      this.getTongueNatureData();
+    }
   };
   /** [getTongueNatureData 获取舌质列表] */
   getTongueNatureData(e){
@@ -64,23 +66,29 @@ export default class ObserveCure extends Component {
   };
   /** [coatedTagClick 舌苔标签被选择] */
   coatedTagClick(text, checkable, id){
-    let tongueCoatedSelected = this.state.tongueCoatedSelected;
-    this.traverseArr(text, checkable, tongueCoatedSelected, id);
+    let {tongueCoatedSelected, tongueNatureSelected} = this.state;
+    if(checkable){ // 选中
+      tongueCoatedSelected.push({id: id, name: text});
+    }else{ // 取消
+      tongueCoatedSelected = tongueCoatedSelected.remove({ name: text});
+    }
+    this.setState({ tongueCoatedSelected }, () => {
+      let {tongueCoatedSelected, tongueNatureSelected} = this.state;
+      this.props.onClick(tongueCoatedSelected, tongueNatureSelected);
+    });
   };
   /** [natureTagClick 舌质标签被选择] */
   natureTagClick(text, checkable, id){
-    let tongueNatureSelected = this.state.tongueNatureSelected;
-    this.traverseArr(text, checkable, tongueNatureSelected, id);
-  };
-  /** [traverseArr 将已经选择的通知父组件显示] */
-  traverseArr(text, checkable, arr, id){
-    if(checkable){ // 选中
-      arr.push({id: id, name: text});
-    }else{ // 取消
-      arr.pop({id: id, name: text});
-    }
     let {tongueCoatedSelected, tongueNatureSelected} = this.state;
-    this.props.onClick(tongueCoatedSelected, tongueNatureSelected);
+    if(checkable){ // 选中
+      tongueNatureSelected.push({id: id, name: text});
+    }else{ // 取消
+      tongueNatureSelected = tongueNatureSelected.remove({ name: text});
+    }
+    this.setState({ tongueNatureSelected }, () => {
+      let {tongueCoatedSelected, tongueNatureSelected} = this.state;
+      this.props.onClick(tongueCoatedSelected, tongueNatureSelected);
+    });
   };
   /**
    * [tagsOver 鼠标滑过标签2后触发另一个事件]
@@ -116,7 +124,7 @@ export default class ObserveCure extends Component {
           </Row>
         </Type>
         <Type>
-          <Title>舌胎：</Title>
+          <Title>舌苔：</Title>
           <Row>
           {
             tongueCoatedList.map((item, index) => {

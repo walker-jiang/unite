@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { Row, Col, Menu, Icon } from 'antd'
 import $ from 'jquery';
+import PopModal from 'components/popout/baseCure';
 import echarts from 'echarts/lib/echarts';
 import 'echarts/lib/chart/bar';
 import 'echarts/lib/component/tooltip';
@@ -29,6 +30,7 @@ export default class TestResults extends Component {
   constructor(props){
     super(props);
     this.state = {
+      visible: false,
       current: '1',
       display: 'none',
       status: 0,
@@ -50,6 +52,8 @@ export default class TestResults extends Component {
       printDataSource: []
     };
     this.handClick = this.handClick.bind(this);
+    this.quickReceive = this.quickReceive.bind(this);
+    this.closeModal = this.closeModal.bind(this);
     window.RportPrintCure = (params) => this.RportPrintCure(params)
   };
 
@@ -311,8 +315,15 @@ export default class TestResults extends Component {
     }
   }
 
+  quickReceive(){
+    this.setState({ visible: true });
+  };
+  closeModal(){
+    this.setState({ visible: false });
+  };
+
   render() {
-    let { imgUrl, url, status, yearEight, bodyType, performance, diet, motion, reminder, lifeWay} = this.state;
+    let { visible, imgUrl, url, status, yearEight, bodyType, performance, diet, motion, reminder, lifeWay} = this.state;
     let sexDesc = this.props.sexDesc;
     let name = this.props.name;
     let patientAge = this.props.patientAge;
@@ -348,6 +359,9 @@ export default class TestResults extends Component {
     }
     return (
       <div id="testResult" style={styles.names}>
+        <PopModal fixed_left={1} visible={visible} title='' onClose={this.closeModal}>
+          <img src={imgUrl} style={styles.ewmFD}/>
+        </PopModal>
           <Row type="flex" justify="start" style={styles.rowMarginTop}>
             <Col lg={2} xl={2} xxl={2} offset={1}>
               <div>
@@ -360,7 +374,7 @@ export default class TestResults extends Component {
               </div>
             </Col>    
             <Col lg={1} xl={1} xxl={1} offset={1}> 
-                <img src={imgUrl} style={styles.erweima}/>
+                <img src={imgUrl} onClick={this.quickReceive} style={styles.erweima}/>
             </Col>  
             <Col lg={5} xl={5} xxl={5} style={styles.rightImage}> 
               <div id="noPrint">
@@ -472,6 +486,9 @@ export default class TestResults extends Component {
 */
 
 const styles = {
+  ewmFD: {
+    width: '100%'
+  },
   canvasImage:{
     backgroundColor: 'white'
   },

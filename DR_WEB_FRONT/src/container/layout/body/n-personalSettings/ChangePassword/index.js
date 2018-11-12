@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
-import { Form,Collapse,Input,Button,Select,Modal  } from 'antd';
+import { Form,Collapse,Input,Button,Select,Modal ,message } from 'antd';
 import "./style.less"
 // import Ajax from '../../../../rightAssistBar/service/xhr/index';
 import Ajax from 'commonFunc/ajaxGetResource';
+import Icons from 'components/dr/icon';
+import styled from 'styled-components';
 
 const FormItem = Form.Item;
 const Panel = Collapse.Panel;
@@ -10,17 +12,32 @@ class ChangePassword extends React.Component{
   constructor(props) {
     super(props);
       this.state = {
-        checked:true
+        checked:true,
+        realname:props.prop,
+        ifshow:false,
       };
   }
   isModify=()=>{
+    this.setState({checked:true})
     this.setState({checked:false})
   }
-
+  /** [isshowed 保存成功提示框] */
+ isshowed =() =>{
+   let _this =this;
+   this.setState({ifshow:true},()=>{
+     function tishi(){
+       _this.setState({ifshow:false})
+       _this.props.handleStatus([]);
+     }
+     setTimeout(tishi,1000)
+   }
+   )
+ }
   handleSubmit=(e)=>{
-    console.log("e11111",this.props.form);
+    let that =this;
+    // console.log("e11111",this.props.form);
     this.props.form.validateFields((err, values) => {
-      console.log('values',values,err);
+      // console.log('values',values,err);
 
       // var reg = /^[A-z0-9]{6,20}$/
       // var valo = reg.test(values.password)
@@ -31,26 +48,22 @@ class ChangePassword extends React.Component{
         // console.log('config_service_url',config_service_url);
           if(values.newPassword == values.rnewpwd){
             var date = {
-              newPassword:values.password,
-              orgUerid:window.sessionStorage.getItem('userid'),
-              password:values.password
+              newPassword:values.newPassword,
+              orgUserid:window.sessionStorage.getItem('userid'),
+              password:values.password,
+              realname:that.state.realname,
             }
+            console.log(date);
             let params = {
-              url: 'BaOrguserController/updatePassword',
-              type: 'post',
+              url: 'BaOrguserController/changePassword',
+              type: 'put',
               data: JSON.stringify(date),
-              server_url:'http://219.234.5.58:8086/'
+              server_url:config_login_url,
             }
-            let that = this;
             function success(res) {
               console.log('resres11111',res);
               if(res.desc == '成功' && res.code == 200){
-                window.modal = Modal.success({
-                  title: '修改密码成功！',
-                  onOk: ()=>{
-                    window.modal = null
-                  }
-                });
+                that.isshowed();
               }else{
                 window.modal = Modal.error({
                   title: '请求失败，修改密码不成功！',
@@ -63,7 +76,12 @@ class ChangePassword extends React.Component{
             Ajax(params, success);
 
           }else{
-            alert('两次新密码不一致')
+            window.modal = Modal.error({
+              title: '两次新密码不一致',
+              onOk: ()=>{
+                window.modal = null
+              }
+            });
           }
         // }else{
           // alert('新密码与原始密码重复')
@@ -81,9 +99,14 @@ class ChangePassword extends React.Component{
       if (!err) {
 
         const data = new URLSearchParams(values);
-        console.log('data',data);
+        // console.log('data',data);
         }
     })
+  }
+  //取消
+  setStatus=()=>{
+    this.setState({checked:true});
+    this.props.handleStatus([]);
   }
   render() {
           const { getFieldDecorator } = this.props.form;
@@ -139,7 +162,7 @@ class ChangePassword extends React.Component{
               </div>
             <div className="button" style={{width:"100%",borderTop:"1px solid #ccc",padding:"20px 0 0 10%",display:`${this.state.checked?"none":"block"}`}}>
               <Button onClick={this.handleSubmit} htmlType="submit">保存</Button>
-              <Button>取消</Button>
+              <Button onClick={this.setStatus}>取消</Button>
             </div>
          </Form>
       </div>
@@ -147,4 +170,14 @@ class ChangePassword extends React.Component{
     )
   }
 }
+const Successupdata =styled.div`
+ display:inline-block;
+  width:100px;
+  height:20px;
+`
+const IconOne = styled(Icons)`
+  height:20px;
+  width:20px;
+  margin-right:4px;
+`
 export default Form.create()(ChangePassword)

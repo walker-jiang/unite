@@ -15,7 +15,7 @@ export default class Index extends Component {
             {...formItemLayout}
             colon={false}
             className='height'
-            label="🔊患者主诉："
+            label="患者主诉："
           >
           {getFieldDecorator('pridepict', {
             initialValue: initialValue

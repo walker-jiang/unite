@@ -18,6 +18,7 @@ const bottomBorder = css`
     width: 20px;
     height: 20px;
     margin-top: -10px;
+    margin-right: -10px;
   }
   .ant-calendar-picker-icon:after {
     content: '';

@@ -9,7 +9,7 @@ export default class Index extends React.Component {
     this.state = {
       totalModules: this.props.totalModules,
       RightData: this.props.rightMenuList,
-      rightMenuList: '',
+      rightMenuList:[],
     };
     this.sortUp = this.sortUp.bind(this)
     this.sortDown = this.sortDown.bind(this)

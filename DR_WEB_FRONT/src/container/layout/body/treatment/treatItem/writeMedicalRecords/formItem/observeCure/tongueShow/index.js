@@ -83,13 +83,18 @@ export default class ObserveCure extends Component {
     var dataURL = canvas.toDataURL("image/png");
     return dataURL;
   }
+  stopPop = (e) => {
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
+  };
   render() {
     let { visible, curIndex } = this.state;
     let urlArr = this.props.value;
     let { url, text, detail } = this.props.standard;
+    let { modify_picture, others }= this.props;
     return (
-      <div>
-        <SpecInput {...this.props} />
+      <div onClick={this.stopPop}>
+        <SpecInput {...modify_picture} />
         {
           visible ?
             <PicShow>
@@ -101,7 +106,7 @@ export default class ObserveCure extends Component {
                   <ClsoeIcon type='close'  onClick={this.handleClose}/>
                 </Header>
                 <Body>
-                  <Picture src={config_service_url + urlArr[curIndex]} onClick={this.modify_picture}></Picture>
+                  <Picture src={urlArr[curIndex]} onClick={this.modify_picture}></Picture>
                   <Page>
                     <PrevIcon type='up' onClick={this.prev}/>
                     <NextIcon type='up' onClick={this.next}/>
@@ -117,7 +122,7 @@ export default class ObserveCure extends Component {
                   <Title>{text}</Title>
                 </Header>
                 <Body>
-                  <Picture src={config_service_url + url}></Picture>
+                  <Picture src={url}></Picture>
                   <Explaination>
                     {detail}
                   </Explaination>

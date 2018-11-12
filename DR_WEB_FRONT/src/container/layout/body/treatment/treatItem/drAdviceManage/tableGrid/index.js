@@ -108,8 +108,10 @@ const Container = styled.div`
   float: left;
   width: 100%;
   height: 100%;
+
 `;
 const Grid = styled.div`
+  height: calc( 100% - 40px);
   position: relative;
   float: left;
   width: 200px;

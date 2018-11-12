@@ -43,7 +43,7 @@ export default class InputSelect extends Component {
     }
     return (
       <Container >
-        <Input {...other} value={value.extractionData} onKeyDown={this.handleEnterPress}/>
+        <Input {...other} value={value.extractionData} autoComplete="off" onKeyDown={this.handleEnterPress}/>
         <Search type={type} fill={icon} right={icon_right} onClick={()=>{this.handleEnterPress({keyCode: 13})}}/>
         <Popout visible={visible} title ={title} onClose={this.handleClose} hbgColor={hbgColor} icon_type={icon_type}>
           {this.props.children}

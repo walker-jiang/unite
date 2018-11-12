@@ -20,7 +20,7 @@ export default class Index extends React.Component {
        total:0  , // 总条数
        page:1  ,//当前页
        pagesize:10  ,  //每页的条数
-       roles:[], //角色的集合
+       roles:'', //角色的集合
     };
   }
   componentWillMount(){
@@ -136,7 +136,7 @@ export default class Index extends React.Component {
         key: 'kkk',
         render: (text, record) => (<span>
           {
-           // record.
+           // {record.syOrgroleList[0].}
           }
         </span>)
        }, {

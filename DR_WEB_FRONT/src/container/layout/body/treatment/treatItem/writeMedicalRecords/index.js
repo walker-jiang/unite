@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import { Form, Icon, Button, Row, Col, Tabs ,Modal,Input} from 'antd';
+import { Link, Prompt } from 'react-router-dom';
+import { Form, Button, Row, Col, Tabs ,Modal,Input} from 'antd';
+import Loadable from 'react-loadable'; // 加载时进行模块分离
+import Icon from 'components/dr/icon';
 import Loading from 'components/dr/loading';
 import CaseType from './formItem/caseType';
 import MainSpeech from './formItem/mainSpeech';
@@ -26,21 +29,37 @@ import ScrollArea from 'components/scrollArea';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import buttonSty from 'components/antd/style/button';
 import { getDiagnoseText } from 'commonFunc/transform';
-import Template from "roots/rightAssistBar/medicalRecordWriting/medicalRecordTemplate.js";
-import MedicalHistory from "roots/rightAssistBar/medicalRecordWriting/medicalHistory.js";
-import BiofeedbckTherpy from "roots/rightAssistBar/medicalRecordWriting/BiofeedbckTherpy.js";
-import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
+// import Template from "roots/rightAssistBar/medicalRecordWriting/medicalRecordTemplate.js";
+// import MedicalHistory from "roots/rightAssistBar/medicalRecordWriting/medicalHistory.js";
+// import BiofeedbckTherpy from "roots/rightAssistBar/medicalRecordWriting/BiofeedbckTherpy.js";
+// import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
+
+const loadingComponent = () => (<div>Loading...</div>);
+const Template = Loadable({
+  loader: () => import('roots/rightAssistBar/medicalRecordWriting/medicalRecordTemplate.js'),
+  loading: loadingComponent,
+});
+const MedicalHistory = Loadable({
+  loader: () => import('roots/rightAssistBar/medicalRecordWriting/medicalHistory.js'),
+  loading: loadingComponent,
+});const BiofeedbckTherpy = Loadable({
+  loader: () => import('roots/rightAssistBar/medicalRecordWriting/BiofeedbckTherpy.js'),
+  loading: loadingComponent,
+});const AuxiliaryDiagnosis = Loadable({
+  loader: () => import('roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js'),
+  loading: loadingComponent,
+});
 
 const TabPane = Tabs.TabPane;
 const bodyHeight = document.body.clientHeight;
 const FormItem = Form.Item;
 
-class Index extends Component {
+class WriteMedicalRecords extends Component {
   constructor(props){
     super(props);
     this.state = {
       saved: 0, //是否点击保存按钮, 0未保存 1 保存中 2 保存成功
-      tabIndex: 1, // 当前tab
+      tabIndex: '', // 当前tab
       caseItems: [], // 病历指标项
       temname:'',
       initData: {
@@ -51,7 +70,7 @@ class Index extends Component {
         "buTargetChooseList": [],
         "casetype": '',
         "chfingerprint": '',
-        "deptid": '',
+        "deptcode": '',
         "diastolicPressure": '',//舒张压
         "doctorid": '',
         "doctorname": '',
@@ -95,7 +114,7 @@ class Index extends Component {
       url: 'BaTargetController/getPerList',
       data: {
         orgid: window.sessionStorage.getItem('orgid'),
-        deptid: window.sessionStorage.getItem('deptid'),
+        deptcode: window.sessionStorage.getItem('deptid'),
         doctorid: window.sessionStorage.getItem('userid'),
         targettype: '01'
       },
@@ -151,7 +170,7 @@ class Index extends Component {
           if(item.isChoose == '01'){
             let selectedItem = {
               chooselevel: '03', // 指标类型 个人
-              deptid: window.sessionStorage.getItem('deptid'),
+              deptcode: window.sessionStorage.getItem('deptid'),
               doctorid: window.sessionStorage.getItem('userid'),
               orgid: window.sessionStorage.getItem('orgid'),
               targetid: item.targetid,
@@ -163,7 +182,7 @@ class Index extends Component {
         let buDiagnosisInfo = initData.buDiagnosisInfo ? initData.buDiagnosisInfo : {};
         buDiagnosisInfo.buDiagnosisList = values.diagnose.originData;
         buDiagnosisInfo.cardno = window.cardno;
-        buDiagnosisInfo.deptid = window.sessionStorage.getItem('deptid');
+        buDiagnosisInfo.deptcode = window.sessionStorage.getItem('deptid');
         buDiagnosisInfo.diagnosisDesc = "诊断描述";
         buDiagnosisInfo.doctorname = window.sessionStorage.getItem('username');
         buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
@@ -174,11 +193,11 @@ class Index extends Component {
         buDiagnosisInfo.registerid = window.registerID;
         buDiagnosisInfo.registerno = "12312";
         let finalObj = {
-          casetype: values.casetype1,
+          casetype: values.casetype,
           allergichistory: this.getString(values.allergichistory),
           breath: values.breath,
           buDiagnosisInfo: buDiagnosisInfo,
-          deptid: window.sessionStorage.getItem('deptid'),
+          deptcode: window.sessionStorage.getItem('deptid'),
           diastolicPressure: values.diastolicPressure,
           doctorid: window.sessionStorage.getItem('userid'),
           doctorname: window.sessionStorage.getItem('username'),
@@ -235,6 +254,17 @@ class Index extends Component {
             },2000);
           }else{
             console.log('异常响应信息', res);
+            setTimeout(function(){
+              self.setState({
+                saved: 3,
+              }, ()=>{
+                setTimeout(function(){
+                  self.setState({
+                    saved: 0,
+                  });
+                }, 1000);
+              });
+            },2000);
           }
         };
         ajaxGetResource(params, callBack);
@@ -257,7 +287,6 @@ class Index extends Component {
    */
   changeCaseItem(itemType, status){
     let caseItems = this.state.caseItems;
-    console.log('改变指标项', caseItems);
     caseItems.forEach((item) => {
       if(item.targetid == itemType){
         item.isChoose = status ? '01' : '02';
@@ -279,9 +308,18 @@ class Index extends Component {
    * [changeTabs 左右联动]
    * @param  {[type]} initData
    */
-  changeInitData = (initData) =>{
-    console.log('initData', initData);
-    this.setState({initData})
+  changeInitData = (param) =>{
+    // console.log("左右联动initData",param);
+    // console.log("this.state.initData",this.state.initData);
+    // var initData = this.state.initData;
+    // var key;
+    // for(key in param){
+    //   if(key in initData){
+    //     initData[key] = param[key];
+    //   }
+    // }
+    // console.log("修改后的",initData);
+    this.props.form.setFieldsValue(param);
   }
   /**
    * [changeTabs 左右联动]
@@ -399,7 +437,7 @@ class Index extends Component {
         ],
         "cardno": "1",
         "ctstamp": "2018-10-22T03:36:17.855Z",
-        "deptid": 0,
+        "deptcode": 0,
         "diagnosisDesc": "1",
         "doctorid": 0,
         "doctorname": "1",
@@ -445,7 +483,7 @@ class Index extends Component {
     "casetype": this.state.finalObj.casetype,
     "chfingerprint": this.state.initData.chfingerprint,
     "ctstamp": "2018-10-22T03:36:17.855Z",
-    "deptid": window.sessionStorage.getItem('deptid'),
+    "deptcode": window.sessionStorage.getItem('deptid'),
     "diastolicPressure": this.state.finalObj.diastolicPressure,
     "doctorid":  window.sessionStorage.getItem('userid'),
     "doctorname":  window.sessionStorage.getItem('username'),
@@ -500,7 +538,8 @@ class Index extends Component {
  }
   render() {
     let { saved, caseItems, tabIndex, initData } = this.state;
-    const { getFieldDecorator, setFieldsValue, getFieldsValue } = this.props.form;
+    const { getFieldDecorator, setFieldsValue, getFieldsValue, isFieldsTouched } = this.props.form;
+    let isEdit = isFieldsTouched();
     let { pridepict = '', hpi = '', inspection = '', palpation = '', smelling = '' } = getFieldsValue();
     let listenFormData =  {
       pridepict: this.getString(pridepict),
@@ -602,6 +641,7 @@ class Index extends Component {
               </Col>
               <Saving span={10}>
                 {
+
                   saved == 0 ? null :
                   (
                     saved == 1 ?
@@ -610,8 +650,8 @@ class Index extends Component {
                     </SaveTip>
                     :
                     <SaveTip>
-                      <Success type="check-circle"/>
-                      <span>诊疗单保存成功</span>
+                      <TipIcon type={saved == 2 ? 'success' : 'fail'}/>
+                      <span>诊疗单保存{saved == 2 ? '成功' : '失败'}</span>
                     </SaveTip>
                   )
                 }
@@ -623,7 +663,7 @@ class Index extends Component {
         </SpecForm>
         <Modals>
         {
-          tabIndex == 1 ?
+          tabIndex == '1' ?
           (
             <SpecTabs key='1' defaultActiveKey='1' animated={false}>
               <TabPane tab="病历模板" key="1">
@@ -673,6 +713,10 @@ class Index extends Component {
            </FormItems>
 
         </SpeModal>
+        <Prompt
+          when={isEdit}
+          message="离开会丢失未保存的数据，确定离开?"
+        />
       </Container>
     );
   }
@@ -728,11 +772,9 @@ const SaveTip = styled.div`
     color: #c467da;
   }
 `;
-const Success = styled(Icon)`
+const TipIcon = styled(Icon)`
   margin-right: 10px;
-  &::before {
-    color: #e6981e;
-  }
+  margin-top: 5px;
 `;
 const BorderButton = styled(Button)`
   ${buttonSty.white}
@@ -797,5 +839,5 @@ const Inputs=styled(Input)`
 @日期：2018-06-25
 @描述：书写诊疗单界面, 滚动区域仅限于tabs内容
 */
-const TreatmentList = Form.create()(Index);
-export default TreatmentList;
+const WrapperWriteMedicalRecords = Form.create()(WriteMedicalRecords);
+export default WrapperWriteMedicalRecords;

@@ -5,8 +5,7 @@ import { Tabs, Button } from 'antd';
 import ReactModal from 'react-modal';
 import Icon from 'components/dr/icon';
 import buttonSty from 'components/antd/style/button';
-import BasicInfoForm from './basicInfoForm';
-import PreTreatForm from './preTreatForm';
+import BasicInfoForm from '../../n-patientRegister/registerForm/basicInfoForm';
 import SaveTip from 'components/dr/modal/saveTip';
 import Tip from 'components/dr/modal/tip';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
@@ -34,7 +33,25 @@ class Index extends Component {
     function callBack(res){
       if(res.result){
         let baPatient = res.data;
-        self.setState({ baPatient: baPatient });
+        if(baPatient.provinceid){
+          baPatient.province = {
+            key: baPatient.provinceid,
+            label: baPatient.provinceidDic
+          };
+        }
+        if(baPatient.cityid){
+          baPatient.city = {
+            key: baPatient.cityid,
+            label: baPatient.cityidDic
+          };
+        }
+        if(baPatient.districtid){
+          baPatient.district = {
+            key: baPatient.districtid,
+            label: baPatient.districtidDic
+          };
+        }
+        self.setState({ baPatient });
       }else{
         console.log('异常响应信息', res);
       }
@@ -42,17 +59,20 @@ class Index extends Component {
     ajaxGetResource(params, callBack);
   };
   submit = (e) =>{
-    debugger
     const { handSonsson } = this.props
-      if(handSonsson){
+    if(handSonsson){
+      setTimeout(() => {
         handSonsson(1)
-      }
+      }, 400);
+    }
     let baPatient = this.state.baPatient;
     let basicOperation = this.props.basicOperation;
     let finalBaisicInfo = deepClone(baPatient); // 添加修改这个初始化都没毛病
     if(this.basicInfoForm){
       let values = this.basicInfoForm.handleSubmit(e);
       Object.assign(finalBaisicInfo, values); // 赋新值
+      console.log('values',values);
+
       finalBaisicInfo.addrHome = values.province.label + values.city.label + values.district.label;
       finalBaisicInfo.birthday = values.birthday.format('YYYY-MM-DD');
       finalBaisicInfo.creator = window.sessionStorage.getItem('userid');
@@ -60,7 +80,7 @@ class Index extends Component {
       finalBaisicInfo.cityid = values.city.key;
       finalBaisicInfo.districtid = values.district.key
       finalBaisicInfo.ctsorgid = window.sessionStorage.getItem('orgid');
-    
+
       if(basicOperation == 'view' || basicOperation == 'modify'){ // 修改
         baPatient = Object.assign(baPatient); // 戴上原来查询出的基本信息
       }else if(basicOperation == 'add'){
@@ -85,7 +105,7 @@ class Index extends Component {
         }
       };
       ajaxGetResource(params, callBack);
-      
+
     }
   }
   render() {
@@ -95,7 +115,7 @@ class Index extends Component {
     return (
       <Container>
         <Content>
-          <BasicInfoForm wrappedComponentRef={ ref => { this.basicInfoForm = ref }} disabled={basicOperation == 'view'} baPatient={baPatient}></BasicInfoForm>
+          <BasicInfoForm wrappedComponentRef={ ref => { this.basicInfoForm = ref }} disabled={basicOperation == 'view'} baPatient={baPatient} formType='basicInfo'></BasicInfoForm>
           <ActionButton>
             <SureButton type="primary" onClick={this.submit} disabled={basicOperation == 'view'}>保存</SureButton>
             <CancelButton type="primary">取消</CancelButton>
@@ -139,7 +159,7 @@ const ArrowIcon = styled(Icon)`
 `;
 const Content = styled.div`
   width: 100%;
-  height: calc(100% - 50px);
+  height: calc(100% - 110px);
   margin-top: 5rem;
   display: flex;
   flex-direction: column;
@@ -149,6 +169,7 @@ const Content = styled.div`
 const ActionButton = styled.div`
   width: 1097px;
   margin-top: 10px;
+  margin-left: 15rem;
 `;
 const SureButton = styled(Button)`
   ${buttonSty.semicircle}

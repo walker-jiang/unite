@@ -29,7 +29,26 @@ export default class Index extends Component {
     };
     function callBack(res){
       if(res.result){
-        self.setState({ baPatient: res.data });
+        let baPatient = res.data;
+        if(baPatient.provinceid){
+          baPatient.province = {
+            key: baPatient.provinceid,
+            label: baPatient.provinceidDic
+          };
+        }
+        if(baPatient.cityid){
+          baPatient.city = {
+            key: baPatient.cityid,
+            label: baPatient.cityidDic
+          };
+        }
+        if(baPatient.districtid){
+          baPatient.district = {
+            key: baPatient.districtid,
+            label: baPatient.districtidDic
+          };
+        }
+        self.setState({ baPatient });
       }else{
         console.log('异常响应信息', res);
       }
@@ -73,16 +92,10 @@ export default class Index extends Component {
   }
   render() {
     let { editable, baPatient } = this.state;
-    console.log('baPatient', baPatient);
-    let match = {
-      params: {
-        id: 'v123'
-      }
-    };
     return (
       <Container>
         <FormStyle>
-          <BasicInfoForm disabled={!editable} baPatient={baPatient} ref={ ref => { this.basicInfoForm = ref }}></BasicInfoForm>
+          <BasicInfoForm disabled={!editable} baPatient={baPatient} ref={ ref => { this.basicInfoForm = ref }} formType='basicInfo'></BasicInfoForm>
         </FormStyle>
         {
           editable ?
@@ -101,8 +114,11 @@ export default class Index extends Component {
   }
 }
 const Container = styled.div`
-  margin: 25px;
-  margin-bottom: 0px;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
 `;
 const FormStyle = styled.div`
 `;
@@ -111,6 +127,8 @@ const ActionButton = styled.div`
 `;
 const ActiveEdit = styled.div`
   font-size: 13px;
+  margin-top: 10px;
+  width: 1097px;
   color: rgb(10, 110, 203);;
 `;
 const SureButton = styled(Button)`

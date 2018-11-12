@@ -39,11 +39,11 @@ export default class SelectPatient extends Component {
     let { rcStatus, keyword, totalRecords, pageSize } = this.state;
     let page = this.state.curPage;
     let orgid = window.sessionStorage.getItem('orgid');
-    let deptid = window.sessionStorage.getItem('deptid');
+    let deptcode = window.sessionStorage.getItem('deptid');
     let doctorid = window.sessionStorage.getItem('userid');
     let beginTime = date + ' ' + '00:00:01';
     let endTime = date + ' ' + '23:59:59';
-    let patientData = {orgid,deptid,doctorid,rcStatus,keyword,beginTime,endTime,totalRecords,page,pageSize};
+    let patientData = {orgid,deptcode,doctorid,rcStatus,keyword,beginTime,endTime,totalRecords,page,pageSize};
     console.log("patientData==",patientData);
     let params = {
       url: 'healthcabin/user/get/type/list',
@@ -73,11 +73,11 @@ export default class SelectPatient extends Component {
     let { rcStatus, keyword, totalRecords, pageSize } = this.state;
     let page = this.state.curPage;
     let orgid = window.sessionStorage.getItem('orgid');
-    let deptid = window.sessionStorage.getItem('deptid');
+    let deptcode = window.sessionStorage.getItem('deptid');
     let doctorid = window.sessionStorage.getItem('userid');
     let beginTime = date + ' ' + '00:00:01';
     let endTime = date + ' ' + '23:59:59';
-    let patientData = {orgid,deptid,doctorid,rcStatus,keyword,beginTime,endTime,totalRecords,page,pageSize};
+    let patientData = {orgid,deptcode,doctorid,rcStatus,keyword,beginTime,endTime,totalRecords,page,pageSize};
     let params = {
       url: 'healthcabin/user/get/type/count',
       server_url: config_CureService_url,
@@ -340,13 +340,14 @@ const SearchIcon = styled(Icon)`
   margin-left: -2px;
 `;
 const Body = styled.div`
-  height: calc(100% - 50px);
+  height: calc(100% - 119px);
   border: 1px solid #CCCCCC;
 `;
 const Content = styled.div`
   width: 100%;
-  height: calc(100% - 40px);
+  height: calc(100% - 110px);
   overflow: scroll;
+  position: relative;
   ::-webkit-scrollbar {
     display: none;
   }

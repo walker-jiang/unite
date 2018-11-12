@@ -20,9 +20,9 @@ class SystemOptions extends React.Component{
     console.log('wwwwwwwww',window.sessionStorage.username);
     var  div=<div></div>
     if (window.sessionStorage.username) {
-      div=  <SystemUserLogin ref="SystemUserLogin" form={this.props.form}></SystemUserLogin>
+      div=  <SystemUserLogin  handleStatus={this.props.handleStatus} ref="SystemUserLogin" form={this.props.form}></SystemUserLogin>
     }else {
-      div=<NoLogin form={this.props.form}></NoLogin>
+      div=<NoLogin  handleStatus={this.props.handleStatus} form={this.props.form}></NoLogin>
     }
     return (
       <div>

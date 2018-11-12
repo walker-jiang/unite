@@ -22,33 +22,33 @@ export default class Index extends Component {
       </Header>
       <Body>
         <RowLine>
-          <Linkx to='/Layout/systemManage'>
+          {/* <Linkx to='/Layout/systemManage'>
             <StyleIcon type='m_system_setup'/>
           <Pan>系统设置</Pan>
-          </Linkx>
-          <Linkx to='/Layout/'>
+          </Linkx> */}
+          {/* <Linkx to='/Layout/'>
             <StyleIcon type='manage_patient'/>
           <Pan>诊疗管理</Pan>
-          </Linkx>
-          <Linkx to='/Layout/'>
+          </Linkx> */}
+          <Linkx to='/Layout/sub/zhong'>
             <StyleIcon type='manage_syndrome_treatment'/>
           <Pan>辩证论治管理</Pan>
           </Linkx>
-          <Linkx to='/Layout/'>
+          {/* <Linkx to='/Layout/'>
             <StyleIcon type='manage_compatible_contraindication'/>
-          <Pan>配伍禁忌管理</Pan>
-          </Linkx>
+          <Pan>配伍禁忌管理</Pan> */}
+          {/* </Linkx>
           <Linkx to='/Layout/remoteEducation'>
             <StyleIcon type='manage_knowledge'/>
-          <Pan>知识库管理</Pan>
-          </Linkx>
+          <Pan>知识库管理</Pan> */}
+          {/* </Linkx> */}
         </RowLine>
-        <RowLine className="a_left">
+        {/* <RowLine className="a_left">
           <Linkx to='/Layout/'>
             <StyleIcon type='manage_cure_not_ill'/>
           <Pan>治未病管理</Pan>
           </Linkx>
-        </RowLine>
+        </RowLine> */}
       </Body>
     </Container>)
   }
@@ -115,9 +115,10 @@ const Body = styled.div`
   border: 1px solid rgba(228, 228, 228, 1);
 `
 const RowLine = styled.div `
+  padding:0px 90px;
   display: flex !important;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
   width: 100%;
   &.a_left{
     justify-content: start !important;

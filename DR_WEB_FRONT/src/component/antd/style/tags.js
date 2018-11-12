@@ -4,6 +4,7 @@ const semicircle = css`
   &&& {
     border-radius: 10px;
     padding: 0px 15px;
+    color: ${props => props.text.indexOf('白') >= 0 ? 'black' : 'white'};
   }
 `;
 const yelloGreen = css`

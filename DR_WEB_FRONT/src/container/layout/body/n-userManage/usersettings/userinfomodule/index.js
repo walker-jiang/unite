@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import Icon from 'components/dr/icon';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
+
 export default class Index extends React.Component{
   constructor(props) {
     super(props);
@@ -16,7 +17,7 @@ export default class Index extends React.Component{
     };
   }
   componentWillMount(){
-    this.getuserinfo();
+    this.getuserinfo(); 
   }
   /**[getuserinfo 拿到用户数据数据]*/
   getuserinfo(){

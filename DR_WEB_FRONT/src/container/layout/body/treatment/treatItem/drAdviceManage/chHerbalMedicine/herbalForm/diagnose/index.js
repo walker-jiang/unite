@@ -90,6 +90,7 @@ export default class Diagnose extends Component {
       dataIndex: 'order',
       align: 'center',
       key: 'order',
+      render: (text, record, index) => index + 1 
     }, {
       title: '诊断码',
       dataIndex: 'diagnosisCode',
@@ -115,13 +116,11 @@ export default class Diagnose extends Component {
       dataIndex: 'mainDiaTypeDic',
       align: 'center',
       key: 'mainDiaTypeDic',
-      render:(text, record, index)=> record.doubtDiaTypeDic ?  record.doubtDiaTypeDic : '-'
     }, {
       title: '疑似诊断',
       dataIndex: 'doubtDiaTypeDic',
       align: 'center',
       key: 'doubtDiaTypeDic',
-      render:(text, record, index)=> record.doubtDiaTypeDic ?  record.doubtDiaTypeDic : '-'
     }, {
       title: '诊断医生',
       align: 'center',
@@ -187,19 +186,23 @@ export default class Diagnose extends Component {
     let diagnoseFinalInfo = this.state.diagnoseFinalInfo;
     let symptom = this.addIllBySymptom.getSelectedData(); // 获取疾病信息
     let manifestation = this.addIllByManifestation.getSelectedData(); // 获取症候信息
-
+    console.log('symptom', symptom);
+    console.log('manifestation', manifestation);
     if(symptom && 'diseaseid' in symptom){ // 校验疾病非空
       let exist = diagnoseFinalInfo.some(item => item.diagnosisCode == symptom.discode);
       if(!exist){ // 最终诊断对象中不存在该疾病
         // console.log('不存在该疾病');
         let item = deepClone(symptom);
-        symptom.buDiagnosisDismainfList = manifestation;
+        symptom.buDiagnosisSyndromeList = manifestation;
         symptom.diagnosisName = symptom.disname;
         symptom.diagnosisCode = symptom.discode;
         symptom.diaid = '';
+        symptom.buDiagnosisSyndromeList.forEach(item => {
+          item.diseaseid = symptom.diseaseid;
+        });
         symptom.diagnosisWay = 1;
         diagnoseFinalInfo.push(symptom);
-      }else{ // 最终诊断对象中存在该疾病
+      }else{ // 最终诊断对象中存在该疾病继续遍历病候
         if(manifestation.length){ // 选择病候则判断该疾病下的病候有没有重复
           diagnoseFinalInfo.forEach(item => {
             if(item.diagnosisCode == symptom.discode){ // 先遍历出该疾病
@@ -212,7 +215,8 @@ export default class Diagnose extends Component {
                 if(existedManifestation.length > 0){ // 存在重复病候
                   existedManifestations = existedManifestations.concat(existedManifestation.map(itemObj => itemObj.manifname));
                 }else{ // 该病候和已有病候不重复则添加该病候
-                  item.buDiagnosisDismainfList.push(itemChild);
+                  itemChild.diseaseid = symptom.diseaseid;
+                  item.buDiagnosisSyndromeList.push(itemChild);
                 }
               });
               if(existedManifestations.length){
@@ -322,12 +326,17 @@ export default class Diagnose extends Component {
         filterIllByDiagnose = filterIllByDiagnose.concat(existedDiagnose);
       }else{ // 加入诊断数组中
         itemChild.buDiagnosisDismainfList = [];
+        console.log('itemChild', itemChild);
         itemChild.diagnosisName = itemChild.dianame;
         itemChild.diagnosisCode = itemChild.diacode;
         itemChild.diagnosisWay = 0;
+        itemChild.diagnosisWayDic = '西医';
         itemChild.diagnosisType = repeatDiagnose;
+        itemChild.diagnosisTypeDic = repeatDiagnose == 1 ? '初步诊断' : '确认诊断'
         itemChild.mainDiaType = mainDiagnose ? '01' : '02';
+        itemChild.mainDiaTypeDic = mainDiagnose ? '是' : '否';
         itemChild.doubtDiaType = doubleDiagnose === '' ? '' : ( doubleDiagnose ? '01' : '02' );
+        itemChild.doubtDiaTypeDic = doubleDiagnose === '' ? '-' : ( doubleDiagnose ? '是' : '否' );
         diagnoseFinalInfo.push(itemChild);
         // delete itemChild.dianame;
         // delete itemChild.diacode;
@@ -374,7 +383,7 @@ export default class Diagnose extends Component {
         if(this.state.diagnoseFinalInfo.length){
           let self = this;
           confirm({
-            title: '确定即将保存诊断数据?',
+            title: '确定保存诊断数据（并同步到患者病历）?',
             cancelText: '取消',
             okText: '保存',
             onOk() {

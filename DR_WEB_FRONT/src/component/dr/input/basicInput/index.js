@@ -21,7 +21,7 @@ const Sign = styled(Icon)`
 `;
 const InputWithLine = styled.input.attrs({
   type: 'text',
-  autoComplete: 'off',
+  // autoComplete: 'off',
   placeholder: props => props.placeholder
 })`
   border-bottom: 1px solid rgba(215, 215, 215, 1);
@@ -34,12 +34,20 @@ const InputWithLine = styled.input.attrs({
   background: transparent;
   margin-top: 10px;
   font-size: 12px;
+  word-break: break-all;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   &:focus {
     border-top: none;
     border-left: none;
     border-right: none;
     border-bottom: 1px solid rgba(215, 215, 215, 1);
+    word-break: break-all;
     outline: none
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 `;
 /*

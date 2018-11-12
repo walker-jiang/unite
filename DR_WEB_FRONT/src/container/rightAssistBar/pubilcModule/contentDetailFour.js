@@ -82,7 +82,7 @@ export default class ContentDetail extends Component {
   constructor(props){
     super(props);
     this.state = {
-      one:false,
+      position:false,
       treatname:false,
       attention:false,
       four:false,
@@ -103,7 +103,7 @@ export default class ContentDetail extends Component {
   }
   unfold = (number,isUnfold) =>{
     switch (number) {
-      case "one":this.setState({one:!isUnfold});break;
+      case "position":this.setState({position:!isUnfold});break;
       case "treatname":this.setState({treatname:!isUnfold});break;
       case "attention":this.setState({attention:!isUnfold});break;
       case "four":this.setState({four:!isUnfold});break;
@@ -144,22 +144,39 @@ export default class ContentDetail extends Component {
     this.setState({unfold:!unfold});
   }
   render() {
-    var { isCut, isUnfoldAll, one, treatname, attention, four, five, six, seven, item, unfold  } = this.state;
+    var { isCut, isUnfoldAll, position, treatname, attention, four, five, six, seven, item, unfold  } = this.state;
+    var newPosition;
+    var buImtreatprelistStAcupoints = item.buImtreatprelistStAcupoints;
+    if(buImtreatprelistStAcupoints && buImtreatprelistStAcupoints.length !=0){
+      buImtreatprelistStAcupoints.forEach((item,index)=>{
+        if(index == 0){
+          newPosition = item.acupointName;
+        }else{
+          newPosition = newPosition+","+item.acupointName;
+        }
+      })
+    }
     return (
       <div>
         <div className="content-detail-two" style={{paddingBottom:item.priors == "1"?5:5}}>
-          <p onClick={()=>this.unfold("one",one)}>
-            {item.one && item.one.length>18?<p style={{marginLeft:3}}><Icon type={one?"down":"right"}/>取穴/部位：</p>:<p style={{marginLeft:15}}>取穴/部位：</p>}
-          </p>
-          <p>{ one?(item.one == ""?"无":item.one):this.cutOut(item.one) }</p>
-          <p onClick={()=>this.unfold("treatname",treatname)}>
-            {item.treatname && item.treatname.length>18?<p style={{marginLeft:3}}><Icon type={treatname?"down":"right"}/>主治：</p>:<p style={{marginLeft:15}}>主治：</p>}
-          </p>
-          <p>{ treatname?(item.treatname == ""?"无":item.treatname):this.cutOut(item.treatname) }</p>
-          <p onClick={()=>this.unfold("attention",attention)}>
-            {item.attention && item.attention.length>18?<p style={{marginLeft:3}}><Icon type={attention?"down":"right"}/>操作方法：</p>:<p style={{marginLeft:15}}>操作方法：</p>}
-          </p>
-          <p style={{marginRight:64}}>{ attention?(item.attention == ""?"无":item.attention):this.cutOutTwo(item.attention) }</p>
+          <div>
+            <span onClick={()=>this.unfold("position",position)} className="left">
+              {newPosition && newPosition.length>25?<span style={{fontWeight:600,marginLeft:3}}><Icon type={position?"down":"right"}/>取穴/部位：</span>:<span style={{fontWeight:600,marginLeft:15}}>取穴/部位：</span>}
+            </span>
+            <span className="right">{ position?(newPosition == ""?"无":newPosition):this.cutOut(newPosition) }</span>
+          </div>
+          <div>
+            <span onClick={()=>this.unfold("treatname",treatname)} className="left">
+              {item.treatname && item.treatname.length>18?<span style={{fontWeight:600,marginLeft:3}}><Icon type={treatname?"down":"right"}/>主治：</span>:<span style={{fontWeight:600,marginLeft:15}}>主治：</span>}
+            </span>
+            <span className="right">{ treatname?(item.treatname == ""?"无":item.treatname):this.cutOut(item.treatname) }</span>
+          </div>
+          <div>
+            <span onClick={()=>this.unfold("attention",attention)} className="left">
+              {item.attention && item.attention.length>18?<span style={{fontWeight:600,marginLeft:3}}><Icon type={attention?"down":"right"}/>操作方法：</span>:<span style={{fontWeight:600,marginLeft:15}}>操作方法：</span>}
+            </span>
+            <span className="right">{ attention?(item.attention == ""?"无":item.attention):this.cutOutTwo(item.attention) }</span>
+          </div>
           {
             item.priors == "1"
             ?

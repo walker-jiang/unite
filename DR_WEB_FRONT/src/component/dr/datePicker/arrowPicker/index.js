@@ -3,6 +3,7 @@ import { DatePicker } from 'antd';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
+import locale from 'antd/lib/date-picker/locale/zh_CN';
 import moment from 'moment';
 import { today } from 'commonFunc/defaultData';
 import Icon from 'components/dr/icon';
@@ -45,6 +46,7 @@ export default class DateSelector extends Component {
             defaultValue={moment(today, 'YYYY-MM-DD')}
             value={moment(dateValue, 'YYYY-MM-DD')}
             allowClear={false}
+            locale={locale}
             onChange={this.changeDate}
             format='YYYY-MM-DD'
           />

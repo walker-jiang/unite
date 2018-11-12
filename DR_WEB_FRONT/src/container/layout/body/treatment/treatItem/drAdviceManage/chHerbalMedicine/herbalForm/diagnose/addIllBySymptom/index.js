@@ -208,10 +208,12 @@ const Result = styled.div`
   min-height: 20px;
   z-index: 3;
   font-size: 12px;
+  max-height: 400px;
+  overflow-y: auto;
   box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.15);
   color: rgba(0,0,0,0.65);
-  background: white;
-  padding: 2px 5px;
+  background: #F1F1F1;
+  padding: 2px 8px;
 `;
 const SpecTable = styled(Table)`
   ${tableSty.selectedTable}

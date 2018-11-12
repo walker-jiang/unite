@@ -123,13 +123,14 @@ class SystemManagement extends React.Component {
      })
      let rightData=[];
       rightList.forEach(item=>{
-        if(item.modid!=7){
+        if(item.callurl.indexOf('http') != 0){
           rightData.push({
             modid:item.modid,
             syModule:{
                 callurl:config_local_url+item.callurl,
                 modname:item.modname,
                 modid:item.modid,
+                moddesc:item.moddesc,
             },
           })
         }else{
@@ -139,6 +140,7 @@ class SystemManagement extends React.Component {
               callurl:item.callurl,
               modname:item.modname,
               modid:item.modid,
+              moddesc:item.moddesc,
             }
           })
         }
@@ -169,18 +171,6 @@ class SystemManagement extends React.Component {
   onRefa = (ref) => {
           this.rightMenuList = ref
       }
- /**
-  * [onChange Tab切换的onchang事件]
-  * @param  {[type]} activeKey [当前的tab的值 框架自带]
-  * @return {[type]}           [undefined]
-  */
-  onChange=(activeKey)=>{
-    if(activeKey==1){
-      this.setState({clssName:true})
-    }else{
-        this.setState({clssName:false})
-    }
- }
   /**
    * [getCarouselCom description]
    * @param  {[type]} totalModules [平铺列表数据]
@@ -254,14 +244,13 @@ class SystemManagement extends React.Component {
           </SpecCarousel>
         </Body>
         {
-           //
           this.state.visible ? <SpecModal width={"700px"} height={"36px"} maskStyle={{ background: "rgba(0,0,0,.3)" }} title="应用设置" maskClosable={false} visible={true} onOk={this.handleOk} onCancel={this.handleCancel} footer={false}>
             <Form layout="inline" onSubmit={this.handleSubmit}>
-              <Tabbox defaultActiveKey="1" onChange={ this.onChange}>
-                 <Tables tab={<span>{this.state.clssName?<TabIcon type="m_leftMenu_on"/>:<TabIcon type="m_leftMenu"/>}左侧菜单栏</span>} key="1" >
+              <Tabbox defaultActiveKey="1">
+                 <Tables tab={<span><TabIcon type="m_leftMenu"/>左侧菜单栏</span>} key="1" >
                    <LeftMenuList onRef={this.onRef} totalModules={totalModules} leftMenuList={frameData.leftMenuList}/>
                  </Tables>
-                 <Tables tab={<span>{this.state.clssName?<TabIcon type="m_rightMenu"/>:<TabIcon type="m_rightMenu_on"/>}右侧悬浮框</span>} key="2" forceRender={true}>
+                 <Tables tab={<span><TabIcon type="m_rightMenu"/>右侧悬浮框</span>} key="2" forceRender={true}>
                     <RightMenuList onRefa={this.onRefa} totalModules={totalModules} rightMenuList={frameData.rightMenuList} />
                  </Tables>
               </Tabbox>
@@ -288,12 +277,17 @@ const Container = styled.div`
 `;
 const Body = styled.div`
   width:1000px;
+  overflow: scroll;
+  ::-webkit-scrollbar{
+    display: none;
+  }
+  height: calc(100vh - 150px);
+  position: relative;
   margin: 0 auto;
   -webkit-user-select:none;
   -moz-user-select:none;
   -ms-user-select:none;
   user-select:none;
-  background-color: #fff;
 `;
 const Head = styled.div`
   width:1000px;
@@ -373,9 +367,7 @@ const StyleIcon = styled(Icon1)`
 const TabIcon = styled(Icon1)`
   width: 17px;
   height: 17px;
-  &&&:hover{
-    fill:#0088F7 !important;
-  }
+  fill: #999;
 `;
 const Label = styled.div`
   height: 19px;
@@ -392,12 +384,20 @@ const Tabbox=styled(Tabs)`
   .ant-tabs-tab{
     margin-right: 0px !important;
   }
-  .ant-tabs-ink-bar{
-    margin-left: 19px !important;
+  .ant-tabs-tab:hover>span>span>svg{
+    fill: #78C2FF;
   }
+  .ant-tabs-ink-bar{
+    margin-left: 19px ;
+  }
+  .ant-tabs-tab-active>span>span>svg{
+     fill: #1890ff !important;
+   }
+   .ant-tabs-tab-active>span{
+      color: #1890ff !important;
+    }
 `
 const Tables=styled(TabPane)`
-
 `
 const SpecCarousel = styled(Carousel)`
 
@@ -428,6 +428,7 @@ const SpecCarousel = styled(Carousel)`
 const SpecModal = styled(Modal)`
   .ant-modal-body{
      padding-top: 8px !important;
+     background-color: #fff;
   }
   .ant-checkbox-inner{
     border-color: #000;

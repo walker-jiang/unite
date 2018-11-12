@@ -74,8 +74,8 @@ export default class Index extends Component {
     let expand = this.state.expand;
     return (
       <SpecRow>
-        <SpecCol span={3} onClick={(e)=>this.expand(e, !expand)}>
-          <Arrow type={expand ? 'up-circle' : 'down-circle'}/>
+        <SpecCol span={3}>
+          <Arrow type={expand ? 'up-circle' : 'down-circle'} onClick={(e)=>this.expand(e, !expand)}/>
           <span>切诊：</span>
         </SpecCol>
         <Col span={21}>

@@ -1,16 +1,50 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import { Radio, Form, Row, Col} from 'antd';
+import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 
 export default class Index extends Component {
-  componentDidMount(){
-    // this.radio.focus(); // 初始化radio获取焦点
+  constructor(props){
+    super(props);
+    this.state = {
+      casetype: []
+    };
+  };
+  componentWillMount(){
+    this.getDictList(['casetype']);
+  };
+  /**
+   * [getDictList 获取字典列表]
+   * @param  {[type]} DictTypeList [字典项数组]
+   * @return {[type]}              [undefined]
+   */
+  getDictList(DictTypeList){
+    let self = this;
+    let params = {
+      url: 'BaDatadictController/getListData',
+      data: {
+        dictNoList: DictTypeList
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        let dictListObj = {};
+        res.data.forEach(item => {
+          dictListObj[item.dictno.toLowerCase()] = item.baDatadictDetailList;
+        });
+        self.setState({...dictListObj});
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
   };
   render() {
     const { getFieldDecorator, formItemLayout, initialValue} = this.props;
+    const casetype = this.state.casetype;
     return (
       <SpecRow>
         <Col span={24}>
@@ -20,11 +54,12 @@ export default class Index extends Component {
             label="就诊类型："
           >
           {getFieldDecorator('casetype', {
-            initialValue: initialValue // initialValue == '1' && '1' || initialValue == '2'  && '2' || '0'
+            initialValue: initialValue
           })(
-            <RadioGroup>
-              <Radio value='1' onClick={(e)=>{this.props.changeTabs(1)}} ref={(ref)=>{this.radio = ref}}>初诊</Radio>
-              <Radio value='2' onClick={(e)=>{this.props.changeTabs(2)}}>复诊</Radio>
+            <RadioGroup >
+            {
+              casetype.map(item => <Radio key={item.value} value={item.value}>{item.vname}</Radio>)
+            }
             </RadioGroup>
           )}
           </FormItem>

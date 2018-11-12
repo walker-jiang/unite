@@ -6,6 +6,10 @@ function getResource(params , success, error ){
   jQuery.ajax({
     type: type,
     url: server_url + params.url,
+    beforeSend: function(request) {
+      request.setRequestHeader("Token", window.sessionStorage.getItem('token'));
+      request.setRequestHeader("orgid", window.sessionStorage.getItem('orgid'));
+    },
     processData: processData,
     dataType: dataType,
     contentType: contentType,

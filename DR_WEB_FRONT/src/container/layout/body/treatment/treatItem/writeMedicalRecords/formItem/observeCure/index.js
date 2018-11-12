@@ -132,14 +132,14 @@ export default class ObserveCure extends Component {
     this.tongueShow.handleOpen();
   };
   render() {
-    const { getFieldDecorator, formItemLayout, initialValue, visiblePicture, camera = true } = this.props;
+    const { getFieldDecorator, formItemLayout, initialValue, visiblePicture, getFieldsValue, camera = true } = this.props;
     let { expand, tonguePicture, standard } = this.state;
     return (
       <Container camera={camera}>
         <Row>
-          <SpecCol span={3} onClick={(e)=>this.expand(e, 'expand', !expand)}>
-            <Arrow type={expand ? 'up-circle' : 'down-circle'}/>
-            <span>望诊：</span>
+          <SpecCol span={3} >
+            <Arrow type={expand ? 'up-circle' : 'down-circle'} onClick={(e)=>{this.expand(e, !expand)}}/>
+            <span>舌诊：</span>
           </SpecCol>
           <Col span={21}>
             <SpecFormItem>
@@ -148,7 +148,7 @@ export default class ObserveCure extends Component {
               })(
                 <Input onClick={(e)=>this.expand(e, !expand)} onKeyDown={this.handleEnterPress} innerRef={ref => {this.input = ref}}/>
               )}
-              <ObserveTags onClick={this.observeTagsClick} expand={expand} tagsOver={this.tagsOver} tagsOut={this.tagsOut}/>
+              <ObserveTags selectedText={getFieldsValue(['inspection'])} onClick={this.observeTagsClick} expand={expand} tagsOver={this.tagsOver} tagsOut={this.tagsOut}/>
             </SpecFormItem>
           </Col>
           {

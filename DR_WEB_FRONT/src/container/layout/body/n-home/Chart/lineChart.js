@@ -61,17 +61,18 @@ class LineChart extends React.Component {
         m = new Date().getMinutes(),//m
         s = new Date().getSeconds(),//s
         st = year+'-'+month+'-'+dat+' '+h+':'+m+':'+s,
-        yearStart= (year-5)+'-'+'01'+'-'+'01'+' '+'00:00:00',
+        yearStart= (year-4)+'-'+'01'+'-'+'01'+' '+'00:00:00',
         data;
-        date.setMonth(date.getMonth()-5);//之前的5个月
-        date.setDate(date.getDate()-10);//之前的10个工作日
+        date.setMonth(date.getMonth()-3);//之前的5个月
+        date.setDate(date.getDate()-9);//之前的10个工作日
     var month1 = date.getMonth()+1,
-        month1 =(month1<10 ? "0"+month1 : month1),
-        dat1 = date.getDate(),
-        dat1 =(dat1<10 ? "0"+dat1 : dat1),
-        st1 = year+'-'+month+'-'+dat1+' '+'00:00:00',
+        month1 =(month1<10 ? "0"+month1 : month1);
+    var date1 =new Date(),timestamp, newDate,day1,st1,monthStart;
+        timestamp = date1.getTime(),
+        newDate = new Date(timestamp - 5 * 24 * 3600 * 1000),
+        day1 =(newDate.getDate()<10 ? "0"+newDate.getDate() : newDate.getDate()),
+        st1 = newDate.getFullYear()+'-'+(parseInt(newDate.getMonth())+parseInt(1))+'-'+day1+' '+'00:00:00',
         monthStart = year+'-'+month1+'-'+'01'+' '+'00:00:00';
-    // console.log('dateTime',month,month1,dat1);
     if(linechartDate){
       if(linechartDate == 'day'){
         data ={
@@ -120,10 +121,12 @@ class LineChart extends React.Component {
       }
       Ajax(params,scallBack,ecallback);
       function scallBack(res){
-        res.data.map((val,i) => {
-          dataA.push({month:val.times,temperature:val.firstcas,city:jz},{month:val.times,temperature:val.firstcas,city:cz},{month:val.times,temperature:val.oldcas,city:fz})
-        })
-        // console.log('dataA',dataA);
+        if(res.data){
+          console.log('患者就诊量趋势分析',res.data);
+          res.data.map((val,i) => {
+            dataA.push({month:val.times,temperature:val.firstcas,city:jz},{month:val.times,temperature:val.firstcas,city:cz},{month:val.times,temperature:val.oldcas,city:fz})
+          })
+        }
         this_.setState({
           daTa:dataA
         },()=>{
@@ -135,6 +138,7 @@ class LineChart extends React.Component {
       }
     }
   }
+
     render(){
       return(
         <div id="id">

@@ -97,7 +97,7 @@ class Index extends Component {
       url: 'BaOrguserController/getList',
       data: {
         orgid: window.sessionStorage.getItem('orgid'),
-        deptid: 2,
+        deptcode: window.sessionStorage.getItem('deptid'),
         keyword: ''
       },
     };

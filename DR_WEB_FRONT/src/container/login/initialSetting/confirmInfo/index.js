@@ -59,10 +59,9 @@ class Index extends Component {
           "deptid": values.dept,
           "orgName": values.userName, //
           "photourl": values.file ? values.file.file.response.data.url : '',
-          "orgUerid": window.sessionStorage.getItem('userid'),
+          "orgUserid": window.sessionStorage.getItem('userid'),
           "realname": values.realName
         };
-        console.log('data', data);
         let params = {
           url: 'BaOrguserController/putData',
           type: 'put',
@@ -146,7 +145,7 @@ class Index extends Component {
             }],
           })(
             <AvatarUploader {...props}>
-            {imageUrl ? <img src={imageUrl} alt="avatar" /> : uploadButton}
+            {imageUrl ? <img src={imageUrl} style={{ width: '100%' }} alt="avatar" /> : uploadButton}
             </AvatarUploader>
           )}
           <AvatarRequest>

@@ -106,6 +106,7 @@ const ActionButton = styled.div`
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  color: #0a6ecb;
 `;
 /*
 @作者：姜中希

@@ -28,7 +28,11 @@ export default class Index extends Component {
     }, () => { // 一段时间后消失
       if(status == 2 || status == 3){
         window.setTimeout(() => {
-          this.setState({ visible: false });
+          this.setState({ visible: false }, () => {
+            if(status == 2){
+              this.props.successCallback();
+            }
+          });
         }, 1000);
       }
     });

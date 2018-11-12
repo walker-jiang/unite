@@ -3,11 +3,13 @@ import styled from 'styled-components';
 import { Input, Table, Pagination, LocaleProvider, Button } from 'antd';
 import { Link } from 'react-router-dom';
 import ArrowPicker from 'components/dr/datePicker/arrowPicker';
+import extractDataFromIdentityCard from 'commonFunc/extractDataFromIdentityCard';
 import inputSty from 'components/antd/style/input';
 import Icon from 'components/dr/icon';
 import { today } from 'commonFunc/defaultData';
 import zh_CN  from 'antd/lib/locale-provider/zh_CN';
 import buttonSty from 'components/antd/style/button';
+import IconSty from 'components/dr/icon/iconStyle';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
 export default class Index extends Component {
@@ -21,6 +23,7 @@ export default class Index extends Component {
       totalRecords: 0, // 总记录数
       curPage: 1, // 当前页
       pageSize: pageSize * 4, // 每页记录数
+      loadStatus: 0, // 数据加载状态 0 未请求或者请求完毕 1 请求中
     };
     this.getPatientData = this.getPatientData.bind(this);
   };
@@ -36,7 +39,7 @@ export default class Index extends Component {
       url: 'BuRegisterController/getListByMap',
       data: {
         orgid: window.sessionStorage.getItem('orgid'), // 机构ID
-        deptid: window.sessionStorage.getItem('deptid'), // 科室ID
+        deptcode: window.sessionStorage.getItem('deptid'), // 科室ID
         // rcStatus: rcStatus, // 接诊状态
         keyword: keyword, // 患者姓名，姓名拼音简拼手机号
         beginTime: date + ' ' + '00:00:01', // date
@@ -50,63 +53,77 @@ export default class Index extends Component {
       if(res.result){
         let patienList = res.data.records.map((item, index) => Object.assign(item, { key: index }))
         let totalRecords = res.data.total;
-        self.setState({patienList: patienList, totalRecords});
+        self.setState({patienList: patienList, totalRecords, loadStatus: 0});
       }else{
-        self.setState({patienList: []});
         console.log('异常响应信息', res);
       }
     };
-    ajaxGetResource(params, callBack);
+    this.setState({
+      loadStatus: 1,
+      patienList: [],
+      totalRecords: 0
+    }, () => {
+      ajaxGetResource(params, callBack);
+    });
   };
   /** [getTableColumns 获取表格列] */
   getTableColumns(){
-    let date = new Date();
-    const year = date.getFullYear();
     const columns = [{
       title: '患者编号',
       dataIndex: 'patientno',
       key: 'patientno',
+      width: '6%',
     }, {
       title: '患者姓名',
       dataIndex: 'patientname',
       key: 'patientname',
+      width: '6%',
     }, {
       title: '性别',
       dataIndex: 'sexDic',
       key: 'sexDic',
+      width: '4%',
     }, {
       title: '年龄',
       dataIndex: 'birthday',
       key: 'birthday',
-      render: (text, record) => year - parseInt(record.birthday.substr(0,4))
+      width: '4%',
+      render: (text, record) => extractDataFromIdentityCard.getAgeFromBirthday(text.substr(0,4))
     }, {
       title: '手机号',
       dataIndex: 'mobile',
       key: 'mobile',
+      width: '9%',
     }, {
       title: '身份证号',
       dataIndex: 'cardno',
       key: 'cardno',
+      width: '14%',
     }, {
       title: '患者类型',
       dataIndex: 'patienttypeDic',
       key: 'patienttypeDic',
+      width: '8%',
     }, {
       title: '就诊类型',
       dataIndex: 'casetypeDic',
       key: 'casetypeDic',
+      width: '5%',
     }, {
       title: '就诊医师',
       dataIndex: 'recDoctorname',
       key: 'recDoctorname',
+      width: '4%',
     }, {
       title: '登记时间',
       dataIndex: 'regDate',
       key: 'regDate',
+      width: '8%',
     }, {
       title: '就诊状态',
       dataIndex: 'rcStatus',
       key: 'rcStatus',
+      width: '7%',
       render: (text, record) =>
         record.rcStatus == 0 ?
         <State_to_do>•待接诊</State_to_do>
@@ -118,6 +135,7 @@ export default class Index extends Component {
       title: '操作',
       dataIndex: 'operate',
       key: 'operate',
+      width: '6%',
       render: (text, record) =>
         <span>
           <StyledLink
@@ -157,7 +175,7 @@ export default class Index extends Component {
     });
   }
   render() {
-    let { patienList, totalRecords, curPage, pageSize } = this.state;
+    let { patienList, totalRecords, curPage, pageSize, loadStatus } = this.state;
     const columns = this.getTableColumns();
     return (
       <Container>
@@ -177,7 +195,11 @@ export default class Index extends Component {
           </Right>
         </Header>
         <Content>
-          <SpecTable dataSource={patienList} columns={columns} pagination={false} scroll={{ y: 40 }}/>
+          <SpecTable
+            dataSource={patienList}
+            columns={columns}
+            pagination={false}
+            locale={{emptyText: loadStatus ? <DataLoading type='data_loading' /> : <NoData type='empty' /> }}/>
         </Content>
         <LocaleProvider locale={zh_CN}>
           <PageContainer>
@@ -257,29 +279,38 @@ const Content = styled.div`
     display: none;
   }
   height: calc(100% - 120px);
+  overflow: scroll;
   position: relative;
 `;
 const SpecTable = styled(Table)`
   &&&.ant-table-wrapper, .ant-spin-nested-loading, .ant-spin-container, .ant-table, .ant-table-content, .ant-table-scroll {
     height: 100%  !important;
-  }
+  };
   .ant-table-scroll {
     ::-webkit-scrollbar {
       display: none;
     }
-  }
+  };
   .ant-table-body {
     max-height: calc(100% - 40px) !important;
     ::-webkit-scrollbar {
       display: none;
     }
-  }
+  };
+  .ant-table-thead > tr > th, .ant-table-tbody > tr > td{
+    white-space: nowrap;
+  };
   margin: 16px;
   th {
     background: #E4E4E4 !important;
-  }
+  };
   tr {
     height: 40px;
+  };
+  &&& .ant-table-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 `;
 const State_to_do =styled.span`
@@ -308,6 +339,13 @@ const SpecPagination = styled(Pagination)`
 `;
 const StyledLink = styled(Link)`
   margin: 10px;
+`;
+const NoData = styled(Icon)`
+  width: 35px;
+  height: 35px;
+`;
+const DataLoading = styled(Icon)`
+  ${IconSty.rotate}
 `;
 /*
 @作者：姜中希

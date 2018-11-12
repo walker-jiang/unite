@@ -74,9 +74,9 @@ export default class MedicalRecordTemplate extends Component {
         console.log("获取table列表成功==============",res);
         var data = res.data;
         var content = [];
+        //{ name:"模板级别",value:item.temlevel,nameDesc:"temlevel" },
         data.forEach((item,index)=>{
           var newItem = [
-            { name:"模板级别",value:item.temlevel,nameDesc:"temlevel" },
             { name:"主诉",value:item.pridepict,nameDesc:"pridepict" },
             { name:"望诊",value:item.inspection,nameDesc:"inspection" },
             { name:"闻诊",value:item.smelling,nameDesc:"smelling" },
@@ -176,9 +176,12 @@ export default class MedicalRecordTemplate extends Component {
       newItem[key] = this.repalceHtml(item[key])
     }
     var buDiagnosisInfo = item.buDiagnosisInfo;
-    buDiagnosisInfo['buDiagnosisList'] = buDiagnosisInfo.buDiagnosisTempletList;
-    delete buDiagnosisInfo.buDiagnosisTempletList;
-    newItem['buDiagnosisInfo'] = buDiagnosisInfo;
+    console.log("buDiagnosisInfo========",buDiagnosisInfo);
+    if(buDiagnosisInfo && buDiagnosisInfo.id && buDiagnosisInfo.buDiagnosisList != 0){
+      buDiagnosisInfo['buDiagnosisList'] = buDiagnosisInfo.buDiagnosisTempletList;
+      delete buDiagnosisInfo.buDiagnosisTempletList;
+      newItem['buDiagnosisInfo'] = buDiagnosisInfo;
+    }
     this.props.changeInitData(newItem);
   }
   cut = (isCut,type) =>{
@@ -239,7 +242,7 @@ export default class MedicalRecordTemplate extends Component {
             </Col>
           </Row>
         </div>
-        <div className="data" style={{backgroundColor:'#F2F2F2'}}>
+        <div className="data" style={{backgroundColor:'#F2F2F2',paddingBottom:80}}>
           {
             isCut
             ?
@@ -281,13 +284,6 @@ export default class MedicalRecordTemplate extends Component {
                 TreeChangeInitData={this.TreeChangeInitData}
               />
             </div>
-          }
-          {
-            content.length>10
-            ?
-            <p className="pagination" onClick={()=>{ this.pagination(searchValue, page, size) }}>点击加载更多...</p>
-            :
-            null
           }
         </div>
       </div>

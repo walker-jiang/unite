@@ -70,8 +70,9 @@ export default class index extends Component {
     let patientname = this.props.patientname;
     let sexDic = this.props.sexDic;
     let birthday = this.props.birthday;
+    console.log('birthday2',birthday);
     let patienttypeDic = this.props.patienttypeDic;
-    console.log('jhdus',data)
+    console.log('jhdus',JSON.stringify(data),upstamp,patientname,sexDic,birthday,patienttypeDic)
     // console.log('jhduscdsfsd',arr)
     // console.log('i',i)
     var lodeData = data.map((item, i)=>{
@@ -82,12 +83,12 @@ export default class index extends Component {
             </ListData>
         )
     });
-    console.log(lodeData);
+    console.log('lodeData',lodeData);
     return (
     <Container>
         <CenterArea id="eleBingLi">
             <Row>
-                <Col span={6}>
+                <Col span={7}>
                     <ScrollArea height={100}>
                         <ListBorder className="listRightLine">
                             {lodeData}
@@ -95,7 +96,7 @@ export default class index extends Component {
                         </ListBorder>
                     </ScrollArea>
                 </Col>   
-                <Col span={16} offset={1}>
+                <Col span={15} offset={1}>
                     <ScrollArea height={100}>
                         <ElectronicRight data={data} i={i} patientname={patientname} sexDic={sexDic} birthday={birthday}  patienttypeDic={patienttypeDic} upstamp={upstamp} />
                     </ScrollArea>
@@ -166,6 +167,9 @@ const ListData = styled.div`
     border-top:none;
     border-left:none;
     border-right:none; 
+    cursor:pointer;
+    color: #0a6ecb;
+    background-color: #ffffff;
 `;
 const First = styled.p`
     

@@ -9,13 +9,13 @@ import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
 import MedicalHistoryTwo from "../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
 import ChHerbalMedicine from '../../../treatment/treatItem/drAdviceManage/chHerbalMedicine';
-import ChPatentMedicine from '../../../treatment/treatItem/drAdviceManage/chPatentMedicine';
+import ChPatentMedicine from './chPatentMedicine';
 import SuitTechnology from '../../../treatment/treatItem/drAdviceManage/suitTechnology';
 import Examination from '../../../treatment/treatItem/drAdviceManage/examination';
 import Inspection from '../../../treatment/treatItem/drAdviceManage/inspection';
 import WesternMedicine from '../../../treatment/treatItem/drAdviceManage/westernMedicine';
 import Material from '../../../treatment/treatItem/drAdviceManage/material';
-// import AddHeader from '../../../treatment/treatItem/drAdviceManage/addHeader';
+import AddHeader from './addHeader';
 import re_diagnose from './re_diagnose.png';
 import { getDiagnoseText } from 'commonFunc/transform';
 
@@ -172,14 +172,12 @@ export default class SmartTreatment extends Component {
       <Container>
         <Left>
           <Content>
+          <AddHeader operate={this.actionManager}></AddHeader>
             <ReadableDiagnose>
               <Label>诊断：</Label>
               <SpecInput value={getDiagnoseText(buDiagnosisList)} disabled/>
-              <ReDiagnose onClick={() => {this.props.onStep(1)}}><img src={re_diagnose}/>重新辩证</ReDiagnose>
+              <ReDiagnose onClick={() => {this.props.onStep(2)}}><img src={re_diagnose}/>重新辩证</ReDiagnose>
             </ReadableDiagnose>
-            {
-              // <AddHeader operate={this.actionManager}></AddHeader>
-            }
             <TableGrid {...girdProps}/>
           </Content>
           <ActionButton readOnly={this.props.readOnly}>
@@ -212,10 +210,12 @@ export default class SmartTreatment extends Component {
 const Container = styled.div`
   display: flex;
   height: 100%;
+  width: 100%;
 `;
 const Left = styled.div`
-  flex-grow: 1;
+  height: 100%;
   padding: 20px;
+  width: calc(100% - 422px);
   border-right: 1px solid #CCCCCC;
 `;
 const Content = styled.div`
@@ -228,6 +228,7 @@ const Right = styled.div`
 const ReadableDiagnose = styled.div`
   display: flex;
   align-items: center;
+  border: none;
 `;
 const Label = styled.div`
   width: 60px;
@@ -235,7 +236,7 @@ const Label = styled.div`
 `;
 const ReDiagnose = styled.div`
   cursor: pointer;
-  width: 90px;
+  width: 120px;
   display: flex;
   justify-content: space-between;
   align-items: center;

@@ -50,11 +50,23 @@ class DiagnoseModify extends Component {
   handleSubmit(formValue){
     let buDiagnosisInfo = this.state.buDiagnosisInfo;
     if(JSON.stringify(buDiagnosisInfo) == '{}'){
-      this.tipModal.showModal({ stressContent: '保存失败，未找到该患者病历信息！！' });
+        buDiagnosisInfo.buDiagnosisList = formValue.originData;
+        buDiagnosisInfo.cardno = window.cardno;
+        buDiagnosisInfo.deptcode = window.sessionStorage.getItem('deptid');
+        buDiagnosisInfo.diagnosisDesc = formValue.originData ? formValue.originData.extractionData : '';
+        buDiagnosisInfo.doctorname = window.sessionStorage.getItem('username');
+        buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
+        buDiagnosisInfo.orgid = window.sessionStorage.getItem('orgid');
+        buDiagnosisInfo.patientid = window.patientID;
+        buDiagnosisInfo.patientname = window.patientName;
+        buDiagnosisInfo.patientno = "test";
+        buDiagnosisInfo.registerid = window.registerID;
+        buDiagnosisInfo.registerno = "12312";
+    }else{
+      buDiagnosisInfo.buDiagnosisList = formValue.originData;
+      buDiagnosisInfo.doctorname = window.sessionStorage.getItem('username');
+      buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
     }
-    buDiagnosisInfo.buDiagnosisList = formValue.originData;
-    buDiagnosisInfo.doctorname = window.sessionStorage.getItem('username');
-    buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
     let params = {
       url: 'BuDiagnosisInfoController/postData',
       type: 'POST',
@@ -70,6 +82,97 @@ class DiagnoseModify extends Component {
     };
     ajaxGetResource(params, success);
   }
+  // /** [getIndicator 获取病历指标项目] */
+  // getIndicator(){
+  //   let self = this;
+  //   let caseItems = [];
+  //   let params = {
+  //     url: 'BaTargetController/getPerList',
+  //     async: false,
+  //     data: {
+  //       orgid: window.sessionStorage.getItem('orgid'),
+  //       deptcode: window.sessionStorage.getItem('deptid'),
+  //       doctorid: window.sessionStorage.getItem('userid'),
+  //       targettype: '01'
+  //     },
+  //   };
+  //   function callBack(res){
+  //     if(res.result){
+  //       caseItems = res.data;
+  //     }else{
+  //       console.log('异常响应信息', res);
+  //     }
+  //   };
+  //   ajaxGetResource(params, callBack);
+  //   return caseItems;
+  // };
+  // modelCaseData(formValue){
+  //   let caseItems = this.getIndicator();
+  //   let selectedItems = new Array();
+  //   caseItems.forEach((item) => {
+  //     if(item.isChoose == '01'){
+  //       let selectedItem = {
+  //         chooselevel: '03', // 指标类型 个人
+  //         deptid: window.sessionStorage.getItem('deptid'),
+  //         doctorid: window.sessionStorage.getItem('userid'),
+  //         orgid: window.sessionStorage.getItem('orgid'),
+  //         targetid: item.targetid,
+  //         targettype: '01', //病历指标
+  //       };
+  //       selectedItems.push(selectedItem);
+  //     }
+  //   });
+  //   let buDiagnosisInfo = {};
+  //   buDiagnosisInfo.buDiagnosisList = formValue.originData;
+  //   buDiagnosisInfo.cardno = window.cardno;
+  //   buDiagnosisInfo.deptid = window.sessionStorage.getItem('deptid');
+  //   buDiagnosisInfo.diagnosisDesc = formValue.originData ? formValue.originData.extractionData : '';
+  //   buDiagnosisInfo.doctorname = window.sessionStorage.getItem('username');
+  //   buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
+  //   buDiagnosisInfo.orgid = window.sessionStorage.getItem('orgid');
+  //   buDiagnosisInfo.patientid = window.patientID;
+  //   buDiagnosisInfo.patientname = window.patientName;
+  //   buDiagnosisInfo.patientno = "test";
+  //   buDiagnosisInfo.registerid = window.registerID;
+  //   buDiagnosisInfo.registerno = "12312";
+  //   let finalObj = {
+  //     casetype: '',
+  //     allergichistory: '',
+  //     breath: '',
+  //     buDiagnosisInfo: buDiagnosisInfo,
+  //     deptid: window.sessionStorage.getItem('deptid'),
+  //     diastolicPressure: '',
+  //     doctorid: window.sessionStorage.getItem('userid'),
+  //     doctorname: window.sessionStorage.getItem('username'),
+  //     familyhistory: '',
+  //     hpi: '',
+  //     inspection: '',
+  //     moHistory: '',
+  //     orgid: window.sessionStorage.getItem('orgid'),
+  //     palpation: '',
+  //     pasthistory: '',
+  //     personhistory: '',
+  //     pridepict: '',
+  //     pulse: '',
+  //     registerid: window.registerID,
+  //     smelling: '',
+  //     suggession: '',
+  //     syndrome: '',
+  //     systolicPressure: '',
+  //     temperature: '',
+  //     treatprinciple: '',
+  //     heightnum: '',
+  //     weightnum: '',
+  //     psycheck: '',
+  //     buTargetChooseList: selectedItems,
+  //     facephoto: '',
+  //     sidephoto: '',
+  //     isperiod: '',
+  //     ispregnancy: '',
+  //     gestationalWeeks: 1,
+  //   };
+  //   return finalObj;
+  // };
   render () {
     let { buDiagnosisList } = this.state;
     const { getFieldDecorator, getFieldsValue } = this.props.form;
@@ -89,7 +192,7 @@ class DiagnoseModify extends Component {
     };
     return (
       <SpecForm className='not-draggable'>
-          <FormItem
+          <SpecFormItem
             {...formItemLayout}
             label="诊断：">
           {getFieldDecorator('diagnose', {
@@ -97,7 +200,7 @@ class DiagnoseModify extends Component {
           })(
             <Diagnose onChange={this.handleSubmit}/>
           )}
-          </FormItem>
+          </SpecFormItem>
         <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </SpecForm>
     )
@@ -108,6 +211,11 @@ const SpecForm = styled(Form)`
   .ant-row {
     margin-top: -10px;
     margin-left: -10px;
+  }
+`;
+const SpecFormItem = styled(FormItem)`
+  &&& > .ant-form-item-label {
+    width: 60px;
   }
 `;
 const DiagnoseModifyWrapper = Form.create()(DiagnoseModify);

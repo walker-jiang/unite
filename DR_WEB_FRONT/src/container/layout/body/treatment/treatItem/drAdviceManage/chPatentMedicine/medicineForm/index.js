@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Table, Form, Icon, Select, Radio, Input, Row, Col, } from 'antd';
+import { Table, Form, Icon, Select, Radio, Input, Row, Col, InputNumber  } from 'antd';
 import Diagnose from '../../chHerbalMedicine/herbalForm/diagnose';
 import QuickAddMedicine from './quickAddMedicine';
 import InputBaseLine from 'components/dr/input/basicInput';
@@ -18,12 +18,13 @@ const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-class Index extends Component {
+class ChPatentMedicineForm extends Component {
   constructor (props) {
     super(props);
     this.state = {
       buDiagnosisInfo: {}, // 诊断主信息对象
       usageData: [], // 用法下拉框
+      frequencyData: [], // 频次下拉框
       buDiagnosisInfo: {}, // 诊断信息主表原始数据，修改时需要使用
       buRecipe: {}, // 原始处方信息
       data: {}, //原始医嘱信息
@@ -33,6 +34,22 @@ class Index extends Component {
       miType: 1, // 0 医保外， 1医保内 默认选择医保内
       medicineData: [], // 药品数据
     }
+  }
+  /** [getSpecialFrequency  获取频次下拉数据] */
+  getSpecialFrequency() {
+    let params = {
+      url: 'BaFreqController/getList',
+      data: {}
+    };
+    let that = this;
+    function success(res) {
+      if(res.result){
+        console.log('res',res);
+        let frequencyData = res.data;
+        that.setState({ frequencyData })
+      }
+    };
+    ajaxGetResource(params, success);
   }
   /** [getSpecialUsage 获取特殊用法下拉数据] */
   getSpecialUsage() {
@@ -76,6 +93,7 @@ class Index extends Component {
   };
   componentWillMount(){
     this.getDiagnoseData();
+    this.getSpecialFrequency();
     this.getSpecialUsage();
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
       this.getCHMedicineAdvice(this.props.orderid);
@@ -150,14 +168,48 @@ class Index extends Component {
    * @return {[type]}            [void]
    */
   onModifyInputValue(newValue, itemid, item){
+    console.log('biaoge',newValue,itemid,item);
     let medicineData = this.state.medicineData;
+      medicineData.forEach((Dataitem, index)=>{
+        if(item == 'defDosage' || item == 'takedays') {
+          Dataitem.count = Math.ceil(((Dataitem.defDosage*Dataitem.times)*[Math.ceil(Dataitem.takedays/Dataitem.days)])/(Dataitem.mediFactor*Dataitem.packageFactor));
+        } else if ( item == 'count' ) {
+          Dataitem.takedays = Math.ceil (((Dataitem.mediFactor*Dataitem.packageFactor*Dataitem.count)/(Dataitem.defDosage*Dataitem.times))*Dataitem.days)
+        }
+        Dataitem[item] = Dataitem.itemid == itemid ? newValue : Dataitem[item];
+      }); 
+      this.setState({ medicineData });
+      console.log('medicineData',medicineData);
+  };
+/**
+   * [onModifySelectValueFreqname 表格中频次下拉框选项改变后触发的函数]
+   * @param  {[type]} itemid [当前药品ID]
+   * @param  {[type]} idItem     [当前药品项ID]
+   * @param  {[type]} nameItem   [当前药品项名称]
+   * @param  {[type]} newID      [新药品项ID]
+   * @param  {[type]} newName    [新药品项名称]
+   * @return {[type]}            [void]
+   */
+  onModifySelectValueFreqname(itemid, idItem, nameItem, newID, newName){
+    let medicineData = this.state.medicineData;
+    let frequencyData = this.state.frequencyData;
     medicineData.forEach((Dataitem, index)=>{
-      Dataitem[item] = Dataitem.itemid == itemid ? newValue : Dataitem[item];
+      if(Dataitem.itemid == itemid){
+        frequencyData.forEach((item)=>{
+          if(newID == item.freqcode  && newName == item.freqname){
+            Dataitem.days = item.days;
+            Dataitem.times = item.times;
+            Dataitem.count = Math.ceil(((Dataitem.defDosage*Dataitem.times)*[Math.ceil(Dataitem.takedays/Dataitem.days)])/(Dataitem.mediFactor*Dataitem.packageFactor));
+          }
+        })
+      }
+      Dataitem[idItem] = Dataitem.itemid == itemid ? newID : Dataitem[idItem];
+      Dataitem[nameItem] = Dataitem.itemid == itemid ? newName : Dataitem[nameItem];
     });
     this.setState({ medicineData });
   };
   /**
-   * [onModifySelectValue 表格中下拉框选项改变后触发的函数]
+   * [onModifySelectValue 表格中用法下拉框选项改变后触发的函数]
    * @param  {[type]} itemid [当前药品ID]
    * @param  {[type]} idItem     [当前药品项ID]
    * @param  {[type]} nameItem   [当前药品项名称]
@@ -180,7 +232,18 @@ class Index extends Component {
    */
   addMedicineData (medicineItem) {
     let medicineData = this.state.medicineData;
+    let frequencyData = this.state.frequencyData;
     let formateItem = converItemToNeededCN(medicineItem, medicineData, 0);
+    console.log('formateItem',formateItem);
+    formateItem.takedays = '3';
+    frequencyData.forEach((item) => {
+      console.log('item',item);
+      if(item.freqcode == formateItem.freqcode){
+        formateItem.days = item.days;
+        formateItem.times = item.times;
+      }
+    });
+    formateItem.count = Math.ceil(((formateItem.defDosage*formateItem.times)*[Math.ceil(formateItem.takedays/formateItem.days)])/(formateItem.mediFactor*formateItem.packageFactor));
     for(let i=0; i < medicineData.length; i++){
       if(medicineData[i].itemname == formateItem.itemname){
         this.tipModal.showModal({
@@ -189,11 +252,13 @@ class Index extends Component {
         return false;
       }
     }
-    medicineData.push(medicineItem);
+    medicineData.push(formateItem);
     this.setState({ medicineData });
+    console.log('第一次',medicineData);
   }
   /** [getTableColumns 设置表格列] */
   getTableColumns(){
+    let frequencyData = this.state.frequencyData;
     let usageData = this.state.usageData;
     let columns = [{
       title: "序号",
@@ -206,44 +271,59 @@ class Index extends Component {
       key: 'itemname',
       render: (text, record, index) => <span>{text}</span>
     }, {
-      title: "数量/单位",
-      dataIndex: 'unitprice',
-      key: 'unitprice',
-      render: (text, record, index)=>
-      <span>
-        <InputCount onBlur={(e)=>{ record.defQty != e.target.value ? this.onModifyInputValue(e.target.value, record.itemid, 'count') : ''}} defaultValue={record.defQty} />{record.baseUnitDic}
-      </span>
+      title: "规格",
+      dataIndex: 'specification',
+      key: 'specification',
+      render: (text, record, index)=><span>{text}</span>
     }, {
       title: "单位剂量",
-      dataIndex: 'mediUnit',
-      key: 'mediUnit',
-        render: (text, record, index) => <span>{text}mg</span>
+      dataIndex: 'mediFactor',
+      key: 'mediFactor',
+        render: (text, record, index) => <span>{text}{record.mediUnit}</span>
     }, {
       title: "单次剂量",
-      dataIndex: 'defQty',
-      key: 'defQty',
-      render: (text, record, index) => <span>{text}mg</span>
+      dataIndex: 'defDosage',
+      key: 'defDosage',
+      render: (text, record, index) =>
+      <span><InputNumber1 size="small" min={1} max={100000} onChange={(value)=>{ this.onModifyInputValue(value, record.itemid, 'defDosage') }} value={text} />{record.mediUnit}</span>
     }, {
       title: "频次",
       dataIndex: 'freqname',
       key: 'freqname',
-      render: (text, record, index) => <span>{text}/天</span>
+      render: (text, record) => (
+        <SpecSelect
+          value={{key: record.freqcode, label: record.freqname}}
+          labelInValue={true}
+          onSelect={(e)=>{this.onModifySelectValueFreqname(record.itemid, 'freqcode', 'freqname', e.key, e.label)}}>
+          {
+            frequencyData.map((item) => <Option key={item.freqcode} value={item.freqcode}>{item.freqname}</Option>)
+          }
+        </SpecSelect>
+      )
     }, {
       title: "天数",
-      dataIndex: 'defTakedays',
-      key: 'defTakedays',
-      render: (text, record, index)=><InputDays onBlur={(e)=>{ record.defTakedays != e.target.value ? this.onModifyInputValue(e.target.value, record.itemid, 'defTakedays') : ''}} defaultValue={record.defTakedays}/>
+      dataIndex: 'takedays',
+      key: 'takedays',
+      render: (text, record, index)=><InputNumber1 size="small" min={1} max={100000} onChange={(value)=>{ this.onModifyInputValue(value, record.itemid, 'takedays') }} value={ text }/>
+    }, {
+      title: "数量/单位",
+      dataIndex: 'count',
+      key: 'count',
+      render: (text, record, index)=>
+      <span>
+        <InputNumber1 size="small" min={1} max={100000} onChange={(value)=>{ this.onModifyInputValue(value, record.itemid, 'count')}} value={ text }/>/{record.packageUnit}
+      </span>
     }, {
       title: "用法",
       dataIndex: 'usagename',
       key: 'usagename',
       render: (text, record)=>(
         <SpecSelect
-          defaultValue={{key: record.usageid, label: record.usagename}}
+        value={{key: record.usagecode, label: record.usagename}}
           labelInValue={true}
-          onSelect={(e)=>{this.onModifySelectValue(record.itemid, 'usageid', 'usagename', e.key, e.label)}}>
+          onSelect={(e)=>{this.onModifySelectValue(record.itemid, 'usagecode', 'usagename', e.key, e.label)}}>
           {
-            usageData.map((item) => <Option key={item.usageid} value={item.usageid}>{item.usagename}</Option>)
+            usageData.map((item) => <Option key={item.usagecode} value={item.usagecode}>{item.usagename}</Option>)
           }
         </SpecSelect>
       )
@@ -411,6 +491,11 @@ const SpecFormItem = styled(FormItem)`
 const SpecSelect = styled(Select)`
   ${selectSty.blackTriangle}
 `;
+const InputNumber1 = styled(InputNumber)`
+&&&.ant-input-number {
+  width: 49px;
+}
+`;
 const InputCount = styled(Input)`
   &&& {
     ${inputSty.short};
@@ -473,9 +558,9 @@ const Total = styled.div`
   width: 100px;
   line-height: 35px;
 `;
-const ChPatentMedicineForm = Form.create()(Index);
+const ChPatentMedicineFormWrapper = Form.create()(ChPatentMedicineForm);
 
-export default ChPatentMedicineForm;
+export default ChPatentMedicineFormWrapper;
 /*
 @作者：姜中希
 @日期：2018-08-19
