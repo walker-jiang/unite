@@ -215,18 +215,24 @@ export default class TestResults extends Component {
     printDataSource.data.age = patientAge;
     // let newData={ name, time, sexDesc, patientAge, ...printDataSource }
     console.log('printDataSource',JSON.stringify(printDataSource));
-    window.reportPrint(1,JSON.stringify(printDataSource))
+    window.reportPrint(0,JSON.stringify(printDataSource))
   }
 
   pdfClick(){
     // 导出PDF
-    var pdf = new jsPDF('p', 'mm', 'a4');
-        var print_content = $('#testResult');
-        var filename = '测评结果.pdf';
-        $('#testResult').css("background", "#fff")
-        pdf.addHTML($('#testResult'), function(){
-            pdf.output("save", filename)
-        })
+    let printDataSource = this.state.printDataSource;
+    delete(printDataSource["status"]);
+    delete(printDataSource["msg"]);
+    delete(printDataSource["result"]);
+    let time = this.state.time || this.state.yearEight[0];
+    let { sexDesc, name, patientAge } = this.props;
+    printDataSource.data.name = name;
+    printDataSource.data.time = time;
+    printDataSource.data.sexDesc = sexDesc;
+    printDataSource.data.age = patientAge;
+    // let newData={ name, time, sexDesc, patientAge, ...printDataSource }
+    console.log('printDataSource',JSON.stringify(printDataSource));
+    window.reportPrint(0,JSON.stringify(printDataSource))
   }
 
   onEcharts() {

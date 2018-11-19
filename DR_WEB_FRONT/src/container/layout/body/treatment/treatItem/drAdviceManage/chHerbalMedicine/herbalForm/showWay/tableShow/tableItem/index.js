@@ -106,6 +106,7 @@ export default class TableItem extends Component {
           }
 
         </TipIcon>
+        { value.itemid ? '' : <LackTip>暂缺</LackTip> }
         <CloseIcon type="close" onClick={()=>{this.props.onDelete(value)}} />
         <DataWrapper exist={value.exist}>
           <CenterWrapper>
@@ -178,6 +179,12 @@ const TabooTip = styled.img`
   float: left;
   cursor: pointer;
   margin: 5px;
+`;
+const LackTip = styled.span`
+  position: absolute;
+  right: 25px;
+  top: 5px;
+  font-size: 12px;
 `;
 const CloseIcon = styled(Icon)`
   font-size: 14px;

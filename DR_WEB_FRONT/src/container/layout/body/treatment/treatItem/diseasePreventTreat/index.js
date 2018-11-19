@@ -67,7 +67,7 @@ export default class DiseasePreventTreat extends Component {
     var date = new Date;
     var year = date.getFullYear(); 
     let patientAge = year - age.substr(0,4)
-    console.log('patientAge', patientAge);
+    console.log('name', name);
     let t  = null;
     if(visible == 0){
       t = <Cure onToggle={this.handleClick.bind(this)} visible={visible} imgUrl={imgUrl} sexDesc = {sexDesc} name={name} patientAge={patientAge} phone={phone} />

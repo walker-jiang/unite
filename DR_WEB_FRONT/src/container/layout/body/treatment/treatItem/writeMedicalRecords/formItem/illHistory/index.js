@@ -38,18 +38,17 @@ export default class Index extends Component {
     const { getFieldDecorator, formItemLayout, initialValue ,title, disabled = false, isRequired = false} = this.props;
     let label_prop  = this.getFormItemProps(title);
     return (
-      <Row className='height'>
+      <Row>
         <Col>
           <SpecFormItem
             isRequired={isRequired}
             colon={false}
             {...formItemLayout}
-            label={title +' ：'}
-            className='height' >
+            label={title +' ：'}>
             {getFieldDecorator(label_prop, {
               initialValue: initialValue,
             })(
-              <IllHisEnterPop disabled={disabled} title={title} />
+              <IllHisEnterPop disabled={disabled} title={title} itemFieldname={label_prop} onKeyDown={() => {this.props.onEnterKeyDown()}}/>
             )}
           </SpecFormItem>
         </Col>
@@ -68,6 +67,7 @@ const SpecFormItem = styled(FormItem)`
     color: #f5222d;
   }
 `;
+
 /*
 @作者：姜中希
 @日期：2018-06-25

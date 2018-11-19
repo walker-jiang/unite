@@ -19,7 +19,7 @@ export default class Index extends Component {
           {getFieldDecorator('treatprinciple', {
             initialValue: initialValue,
           })(
-            <CurePrinciplePop />
+            <CurePrinciplePop itemFieldname='treatprinciple'/>
           )}
           </FormItem>
         </Col>

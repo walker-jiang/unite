@@ -60,7 +60,7 @@ export default class CarefulItem extends Component {
       },
      };
     const YESNO = this.state.YESNO;
-    if(window.sex == '01'){
+    if(window.sex == '1'){
       initialValue.isperiod = '02';
       initialValue.ispregnancy = '02';
     }
@@ -75,7 +75,7 @@ export default class CarefulItem extends Component {
             {getFieldDecorator('isperiod', {
               initialValue: YESNO.length ? ( initialValue.isperiod ? initialValue.isperiod : YESNO[0].value ) : ''
             })(
-              <SpecRadioGroup disabled={window.sex == '01'}>
+              <SpecRadioGroup disabled={window.sex == '1'}>
               {
                 YESNO.map(item => <Radio value={item.value} key={item.value}>{item.vname}</Radio>)
               }
@@ -92,7 +92,7 @@ export default class CarefulItem extends Component {
             {getFieldDecorator('ispregnancy', {
               initialValue: YESNO.length ? ( initialValue.ispregnancy ? initialValue.ispregnancy : YESNO[0].value ) : ''
             })(
-              <SpecRadioGroup onChange={this.ispregnancyHandler} disabled={window.sex == '01'}>
+              <SpecRadioGroup onChange={this.ispregnancyHandler} disabled={window.sex == '1'}>
               {
                 YESNO.map(item => <Radio value={item.value} key={item.value}>{item.vname}</Radio>)
               }
@@ -101,7 +101,7 @@ export default class CarefulItem extends Component {
           </FormItem>
         </Col>
         {
-          ispregnancy == '01' && window.sex != '01'?
+          ispregnancy == '01' && window.sex != '1'?
           <Col span={5} offset={1}>
             <FormItem
               colon={false}

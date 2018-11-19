@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import { Form, Row, Col } from 'antd';
-import Input from 'components/dr/input/basicInput';
+import SmellCurePop from './smellCurePop';
 
 const FormItem = Form.Item;
 
@@ -19,7 +19,7 @@ export default class Index extends Component {
           {getFieldDecorator('smelling', {
             initialValue: initialValue
           })(
-            <Input />
+            <SmellCurePop itemFieldname='smelling' onKeyDown={() => {this.props.onEnterKeyDown()}}/>
           )}
           </FormItem>
         </Col>

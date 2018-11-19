@@ -88,38 +88,42 @@ export default class SmartDistinguish extends Component {
     console.log("manifestation=============",manifestation);
     this.addChinaMedicineData(symptom, manifestation);
   };
-  /**
-   * [addChinaMedicineData 添加中医病症病侯信息到诊断表中]
-   * @param {Object} [symptom={}]       [疾病对象]
-   * @param {Array}  [manifestation=[]] [病候数组]
-   */
-  addChinaMedicineData(symptom = {}, manifestation = []){
+  /** [addChinaMedicineData 添加中医病症病侯信息到诊断表中] */
+  addChinaMedicineData(e){
     let diagnoseFinalInfo = this.state.diagnoseFinalInfo;
+    let symptom = this.addIllBySymptom.getSelectedData(); // 获取疾病信息
+    let manifestation = this.addIllByManifestation.getSelectedData(); // 获取症候信息
+    console.log('symptom', symptom);
+    console.log('manifestation', manifestation);
     if(symptom && 'diseaseid' in symptom){ // 校验疾病非空
       let exist = diagnoseFinalInfo.some(item => item.diagnosisCode == symptom.discode);
       if(!exist){ // 最终诊断对象中不存在该疾病
         // console.log('不存在该疾病');
         let item = deepClone(symptom);
-        symptom.buDiagnosisDismainfList = manifestation;
+        symptom.buDiagnosisSyndromeList = manifestation;
         symptom.diagnosisName = symptom.disname;
         symptom.diagnosisCode = symptom.discode;
         symptom.diaid = '';
+        symptom.buDiagnosisSyndromeList.forEach(item => {
+          item.diseaseid = symptom.diseaseid;
+        });
         symptom.diagnosisWay = 1;
         diagnoseFinalInfo.push(symptom);
-      }else{ // 最终诊断对象中存在该疾病
+      }else{ // 最终诊断对象中存在该疾病继续遍历病候
         if(manifestation.length){ // 选择病候则判断该疾病下的病候有没有重复
           diagnoseFinalInfo.forEach(item => {
             if(item.diagnosisCode == symptom.discode){ // 先遍历出该疾病
               let existedManifestations = []; // 重复的病候们
               manifestation.forEach(itemChild => { // 遍历档当前选择的病候们
                 let existedManifestation = []; // 存储重复的病候
-                if(item.buDiagnosisDismainfList){
-                  existedManifestation = item.buDiagnosisDismainfList.filter( itemChildChild => itemChildChild.manifcode == itemChild.manifcode); // 遍历出当前疾病下重复的病候
+                if(item.buDiagnosisSyndromeList){
+                  existedManifestation = item.buDiagnosisSyndromeList.filter( itemChildChild => itemChildChild.syncode == itemChild.syncode); // 遍历出当前疾病下重复的病候
                 }
                 if(existedManifestation.length > 0){ // 存在重复病候
                   existedManifestations = existedManifestations.concat(existedManifestation.map(itemObj => itemObj.manifname));
                 }else{ // 该病候和已有病候不重复则添加该病候
-                  item.buDiagnosisDismainfList.push(itemChild);
+                  itemChild.diseaseid = symptom.diseaseid;
+                  item.buDiagnosisSyndromeList.push(itemChild);
                 }
               });
               if(existedManifestations.length){
@@ -147,17 +151,17 @@ export default class SmartDistinguish extends Component {
    */
   delDiagnose(record){
     let diagnoseFinalInfo = this.state.diagnoseFinalInfo;
-    if(record.manifCode){ // 删除症候
+    if(record.syncode){ // 删除症候
       diagnoseFinalInfo.forEach((item) => {
-        if(item.diagnosisCode == record.manifCode){
-          item.buDiagnosisDismainfList = item.buDiagnosisDismainfList.remove({'manifcode': record.diagnosisCode});
-          if(item.buDiagnosisDismainfList.length == 0){ // 删除最后一个症候，该疾病也被删除
-            diagnoseFinalInfo = diagnoseFinalInfo.remove({diagnosisCode: record.manifCode});
+        if(item.diagnosisCode == record.syncode){
+          item.buDiagnosisSyndromeList = item.buDiagnosisSyndromeList.remove({'syncode': record.diagnosisCode});
+          if(item.buDiagnosisSyndromeList.length == 0){ // 删除最后一个症候，该疾病也被删除
+            diagnoseFinalInfo = diagnoseFinalInfo.remove({diagnosisCode: record.syncode});
           }
         }
       });
     }else{
-      // console.log('疾病', record.manifCode);
+      // console.log('疾病', record.syncode);
       // console.log('疾病diagnoseFinalInfo', diagnoseFinalInfo);
       diagnoseFinalInfo = diagnoseFinalInfo.remove({diagnosisCode: record.diagnosisCode});
     }
@@ -214,22 +218,22 @@ export default class SmartDistinguish extends Component {
       if(record.manifCode){ // 有症候
         diagnoseHisOriginData.forEach((item) => {
           if(item.diagnosisCode == record.manifCode){ // 疾病匹配
-            item.buDiagnosisDismainfList.forEach((itemChild) => {
+            item.buDiagnosisSyndromeList.forEach((itemChild) => {
               if(itemChild.manifcode == record.diagnosisCode){ // 症候匹配
                 let result = diagnoseFinalInfo.some((finalItem) => {
                   if(finalItem.diagnosisCode ==  record.manifCode){ // 当前诊断中已存在该疾病，则加入到该疾病的症候数组中
-                    let exist = finalItem.buDiagnosisDismainfList.some((finalItemChild) => finalItemChild.manifcode == itemChild.manifcode);
+                    let exist = finalItem.buDiagnosisSyndromeList.some((finalItemChild) => finalItemChild.manifcode == itemChild.manifcode);
                     if(exist){
                       this.tipModal.showModal({ stressContent: '该疾病病候已存在' });
                     }else{
-                      finalItem.buDiagnosisDismainfList.push(itemChild);
+                      finalItem.buDiagnosisSyndromeList.push(itemChild);
                     }
                     return true;
                   }
                 });
                 if(!result){ // 当前诊断中不存在该疾病
-                  item.buDiagnosisDismainfList = [];
-                  item.buDiagnosisDismainfList.push(itemChild);
+                  item.buDiagnosisSyndromeList = [];
+                  item.buDiagnosisSyndromeList.push(itemChild);
                   diagnoseFinalInfo.push(item);
                 }
               }
@@ -263,14 +267,14 @@ export default class SmartDistinguish extends Component {
       this.tipModal.showModal({ stressContent: '未添加诊断不能提交' });
     }
     buDiagnosisInfo.buDiagnosisList = diagnoseFinalInfo;
-    buDiagnosisInfo.cardno = this.props.baPatient.cardno;
-    buDiagnosisInfo.deptid = window.sessionStorage.getItem('deptid');
+    buDiagnosisInfo.cardno = window.cardno;
+    buDiagnosisInfo.deptcode = window.sessionStorage.getItem('deptid');
     buDiagnosisInfo.diagnosisDesc = "诊断描述";
     buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
-    // buDiagnosisInfo.doctorname = window.sessionStorage.getItem('username');
+    buDiagnosisInfo.doctorname = window.sessionStorage.getItem('username');
     buDiagnosisInfo.orgid = window.sessionStorage.getItem('orgid');
-    buDiagnosisInfo.patientid = this.props.baPatient.patientID;
-    buDiagnosisInfo.patientname = this.props.baPatient.patientName;
+    buDiagnosisInfo.patientid = window.patientID;
+    buDiagnosisInfo.patientname = window.patientName;
     buDiagnosisInfo.patientno = "test";
     buDiagnosisInfo.registerid = window.registerID,
     buDiagnosisInfo.registerno = "12312";
@@ -295,7 +299,7 @@ export default class SmartDistinguish extends Component {
         gestationalWeeks: values.gestationalWeeks,
         psycheck: values.psycheck,
         buDiagnosisInfo: diagnoseFinalInfoOrigin,
-        deptid: window.sessionStorage.getItem('deptid'),
+        deptcode: window.sessionStorage.getItem('deptid'),
         doctorid: window.sessionStorage.getItem('userid'),
         doctorname: window.sessionStorage.getItem('username'),
         orgid: window.sessionStorage.getItem('orgid'),

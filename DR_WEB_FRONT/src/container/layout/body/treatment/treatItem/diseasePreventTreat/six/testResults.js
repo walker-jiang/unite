@@ -116,7 +116,7 @@ export default class TestResults extends Component {
         let that = this;
         function success(res){
           that.setState({
-            printDataSource: res.data,
+            printDataSource: res,
             scoreChart: res.data.scoreChart,//echert数据
             bodyType: res.data.conclusion.bodyType,//体质
             performance: res.data.conclusion.performance,//体质描述
@@ -153,7 +153,7 @@ export default class TestResults extends Component {
         let that = this;
         function success(res){
           that.setState({
-            printDataSource: res.data,
+            printDataSource: res,
             scoreChart: res.data.scoreChart,//echert数据
             bodyType: res.data.conclusion.bodyType,//体质
             performance: res.data.conclusion.performance,//体质描述
@@ -204,6 +204,34 @@ export default class TestResults extends Component {
 
   printClick(){
     let printDataSource = this.state.printDataSource;
+    console.log('delete', printDataSource);
+    delete(printDataSource["status"]);
+    delete(printDataSource["msg"]);
+    delete(printDataSource["result"]);
+    delete(printDataSource.data.resultStr);
+    let time = this.state.time || this.state.yearEight[0];
+    let { sexDesc, name, patientAge } = this.props;
+    console.log('printDataSource', printDataSource);
+    console.log('props', name,sexDesc);
+    printDataSource.data.name = name;
+    printDataSource.data.time = time;
+    printDataSource.data.sexDesc = sexDesc;
+    printDataSource.data.age = patientAge;
+    // let newData={ name, time, sexDesc, patientAge, ...printDataSource }
+    console.log('printDataSource222',JSON.stringify(printDataSource));
+    window.reportPrint(0,JSON.stringify(printDataSource))
+  }
+
+  pdfClick(){
+    // 导出PDF
+    // var pdf = new jsPDF('p', 'mm', 'a4');
+    //     var print_content = $('#testResult');
+    //     var filename = '测评结果.pdf';
+    //     $('#testResult').css("background", "#fff")
+    //     pdf.addHTML($('#testResult'), function(){
+    //         pdf.output("save", filename)
+    //     })
+    let printDataSource = this.state.printDataSource;
     delete(printDataSource["status"]);
     delete(printDataSource["msg"]);
     delete(printDataSource["result"]);
@@ -215,18 +243,7 @@ export default class TestResults extends Component {
     printDataSource.data.age = patientAge;
     // let newData={ name, time, sexDesc, patientAge, ...printDataSource }
     console.log('printDataSource',JSON.stringify(printDataSource));
-    window.reportPrint(1,JSON.stringify(printDataSource))
-  }
-
-  pdfClick(){
-    // 导出PDF
-    var pdf = new jsPDF('p', 'mm', 'a4');
-        var print_content = $('#testResult');
-        var filename = '测评结果.pdf';
-        $('#testResult').css("background", "#fff")
-        pdf.addHTML($('#testResult'), function(){
-            pdf.output("save", filename)
-        })
+    window.reportPrint(0,JSON.stringify(printDataSource))
   }
 
   onEcharts() {

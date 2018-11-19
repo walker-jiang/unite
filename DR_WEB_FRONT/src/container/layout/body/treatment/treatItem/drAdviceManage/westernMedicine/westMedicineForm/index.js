@@ -29,11 +29,12 @@ class Index extends Component {
       // buRecipe: {}, // 原始处方信息
       data: {}, //原始医嘱信息
       deptData: [], // 执行科室数据
+      mitype: [], // 以保内医保外字典数据
+      selectedMitype: '', // 选择的医保类型
       feeAll: 0, // 合计费用
       // 初始化数据
       buDiagnosisList: [], // 诊断明细信息
       aim: '', // 西医治疗目的
-      miType: '1', // 0 医保外， 1医保内 默认选择医保内
       WestMedicineData: [], // 西医治疗项目数据
     }
   }
@@ -50,6 +51,7 @@ class Index extends Component {
     // }
     this.getDiagnoseData();
     this.getDept();
+    this.getMitype(['mitype']);
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
       this.getWestMedicineData(this.props.orderid);
     }else{ // 添加可以初始化数据
@@ -64,12 +66,36 @@ class Index extends Component {
       }
     }
   };
+  /** [getMittype 获取字典数据] */
+  getMitype(DictTypeList){
+    let self = this;
+    let params = {
+      url: 'BaDatadictController/getListData',
+      data: {
+        dictNoList: DictTypeList
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        let dictListObj = {};
+        res.data.forEach(item => {
+          dictListObj[item.dictno.toLowerCase()] = item.baDatadictDetailList;
+        });
+        const selectedMitype = dictListObj.mitype.length ? dictListObj.mitype[0].value : '';
+        self.setState({...dictListObj, selectedMitype});
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
   /** [getDept 执行科室数据] */
   getDept() {
     let params = {
       url: 'BaDepartmentController/getList',
       server_url: config_login_url,
       data: {
+        orgid: window.sessionStorage.getItem('orgid'),
         keyword: 1
       }
     };
@@ -155,7 +181,6 @@ class Index extends Component {
    * @return {[type]}            [void]
    */
   onModifyInputValue(newValue, itemid, item, orderSuitid){
-    console.log('newValue, itemid, item, orderSuitid', newValue, itemid, item, orderSuitid);
     let WestMedicineData = this.state.WestMedicineData;
     WestMedicineData.forEach((Dataitem, index)=>{
       if(orderSuitid){ // 修改医嘱套明细项
@@ -194,10 +219,6 @@ class Index extends Component {
         Dataitem[idItem] = Dataitem.itemid == itemid ? newID : Dataitem[idItem];
         Dataitem[nameItem] = Dataitem.itemid == itemid ? newName : Dataitem[nameItem];
       }
-    });
-
-    medicineData.forEach((Dataitem, index)=>{
-
     });
     this.setState({ WestMedicineData });
   };
@@ -261,7 +282,7 @@ class Index extends Component {
       title: "治疗项/治疗明细项",
       dataIndex: 'itemname',
       key: 'itemname',
-      render: (text, record, index) => record.orderSuitid ? <span><Stress>{record.orderSuitname}</Stress>/{record.itemname}</span> : <span>{record.itemname}</span>
+      render: (text, record, index) => record.orderSuitid ? <span><Stress>{record.orderSuitname}</Stress>/<MiTypeText miType={record.miType}>{record.itemname}</MiTypeText></span> : <MiTypeText miType={record.miType}>{record.itemname}</MiTypeText>
     }, {
       title: "执行科室",
       dataIndex: 'deptname',
@@ -331,6 +352,7 @@ class Index extends Component {
           itemChild.key = dataSource.length
           itemChild.orderSuitid = item.orderSuitid;
           itemChild.orderSuitname = item.orderSuitname;
+          itemChild.miType = item.miType;
           feeAll += itemChild.count * itemChild.unitprice;
           dataSource.push(itemChild);
         });
@@ -351,8 +373,14 @@ class Index extends Component {
     }
     return { dataSource, feeAll };
   };
+  /** [changeMitype 选择医保类型] */
+  changeMitype = (e) => {
+    this.setState({
+      selectedMitype: e.target.value,
+    });
+  }
   render () {
-    let { visiblePop, WestMedicineData, buDiagnosisList, miType, aim } = this.state;
+    let { visiblePop, WestMedicineData, buDiagnosisList, mitype, selectedMitype, aim } = this.state;
     const { getFieldDecorator } = this.props.form;
     const {dataSource, feeAll} = this.getTableDataSource(deepClone(WestMedicineData));
     const columns = this.getTableColumns();
@@ -429,14 +457,11 @@ class Index extends Component {
               {...specFormItemLayout}
               label={<span><Add>➕</Add>快速添加：</span>}
               >
-                {getFieldDecorator('miType',{
-                  initialValue: miType
-                })(
-                  <SpecRadioGroup>
-                    <Radio value='0'>医保外</Radio>
-                    <Radio value='1'>医保内</Radio>
-                  </SpecRadioGroup>
-                )}
+              <SpecRadioGroup value={selectedMitype} onChange={this.changeMitype}>
+              {
+                mitype.map(item => <Radio key={item.value} value={item.value}>{item.vname}</Radio>)
+              }
+              </SpecRadioGroup>
               </SpecFormItem>
           </Col>
           <Col span={16}>
@@ -444,7 +469,7 @@ class Index extends Component {
               {...formItemLayout}
               >
                 {getFieldDecorator('addQuickly')(
-                  <QuickAddWestMedicineItem placeholder='请输入治疗项目首字母快速添加' icon='#0A6ECB' ref={ref => this.quickAddWestMedicineItem = ref} getQuickData = {this.addWestMedicineData.bind(this)}/>
+                  <QuickAddWestMedicineItem placeholder='请输入治疗项目首字母快速添加' selectedMitype={selectedMitype} icon='#0A6ECB' ref={ref => this.quickAddWestMedicineItem = ref} getQuickData = {this.addWestMedicineData.bind(this)}/>
                 )}
               </FormItem>
           </Col>
@@ -475,7 +500,7 @@ class Index extends Component {
             rowClassName={(record, index)=>record.itemid != '空' ? 'dotted' : 'dotted clear'} >
           </SpecTable>
           <Tip>💡提示：医保外项目以红色显示</Tip>
-          <Total>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
+          <Total margin_right={dataSource.length}>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
         </Footer>
         <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </SpecForm>
@@ -493,8 +518,10 @@ const HiddenRow = styled(Row)`
   }
 `;
 const SpecRow = styled(Row)`
-  max-height: 88px;
-  overflow: scroll;
+  &&& {
+    height: 78px;
+    overflow: scroll;
+  }
   ::-webkit-scrollbar {
     display: none;
   }
@@ -509,7 +536,6 @@ const SpecFormItem = styled(FormItem)`
 const SpecSelect = styled(Select)`
   ${selectSty.blackTriangle}
 `;
-
 const InputCount = styled(Input)`
   &&& {
     ${inputSty.short};
@@ -540,14 +566,12 @@ const Stress = styled.span`
 const Tip = Stress.extend`
   position: absolute;
   top: 290px;
-  left: 20px;
   line-height: 35px;
 `;
 const Total = styled.div`
   position: absolute;
   top: 290px;
-  left: 550px;
-  width: 100px;
+  right: ${props => props.margin_right ? '200px' : '0px'}
   line-height: 35px;
 `;
 const Add = styled.span`
@@ -583,7 +607,10 @@ const SpecTable = styled(Table)`
 const SpecTag = styled(Tag)`
   ${tagsSty.yelloGreen}
 `;
-
+// 医保外红色显示
+const MiTypeText = styled.span`
+  color: ${props => props.miType == '1' ? 'red' : 'black'};
+`;
 const ChPatentMedicineForm = Form.create()(Index);
 
 export default ChPatentMedicineForm;

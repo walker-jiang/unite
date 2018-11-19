@@ -164,8 +164,8 @@ export default class Province extends Component {
       <Row>
         <Col span={8} >
           <SpecFormItem
-            labelCol={{span: 10}}
-            wrapperCol={{span: 12}}
+            labelCol={{span: 8}}
+            wrapperCol={{span: 15}}
             colon={false}
             label="住址："
             >
@@ -184,8 +184,9 @@ export default class Province extends Component {
         </Col>
         <Col span={4}>
           <SpecFormItem
-            labelCol={{span: 0}}
+            labelCol={{span: 2}}
             wrapperCol={{span: 22}}
+            label=' '
             colon={false}
             >
               {getFieldDecorator('city', {
@@ -203,7 +204,7 @@ export default class Province extends Component {
         </Col>
         <Col span={4} >
           <SpecFormItem
-            labelCol={{span: 1}}
+            labelCol={{span: 2}}
             wrapperCol={{span: 22}}
             colon={false}
             label=' '
@@ -221,10 +222,10 @@ export default class Province extends Component {
               )}
           </SpecFormItem>
         </Col>
-        <Col span={7}>
+        <Col span={8}>
           <SpecFormItem
-            labelCol={{span: 1}}
-            wrapperCol={{span: 23}}
+            labelCol={{span: 2}}
+            wrapperCol={{span: 22}}
             colon={false}
             label=" "
             >

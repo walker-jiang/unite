@@ -40,10 +40,11 @@ export default class SelectPatient extends Component {
     let { rcStatus, keyword, totalRecords, curPage, pageSize } = this.state;
     let params = {
       url: 'BuRegisterController/getListByMap',
+      server_url: config_InteLigenTreat_url + 'TCMAE/',
       data: {
         orgid: window.sessionStorage.getItem('orgid'), // 机构ID
         deptcode: window.sessionStorage.getItem('deptid'), // 科室ID
-        rcStatus: rcStatus, // 接诊状态
+        bzlzStatus: rcStatus, // 接诊状态
         keyword: keyword, // 患者姓名，姓名拼音简拼手机号
         beginTime: date + ' ' + '00:00:01', // date
         endTime: date + ' ' + '23:59:59',
@@ -72,10 +73,11 @@ export default class SelectPatient extends Component {
     let { rcStatus, keyword, totalRecords, curPage, pageSize } = this.state;
     let params = {
       url: 'BuRegisterController/getSum',
+      server_url: config_InteLigenTreat_url + 'TCMAE/',
       data: {
         orgid: window.sessionStorage.getItem('orgid'), // 机构ID
         deptcode: window.sessionStorage.getItem('deptid'), // 科室ID
-        rcStatus: rcStatus, // 接诊状态
+        bzlzStatus: rcStatus, // 接诊状态
         keyword: keyword, // 患者姓名，姓名拼音简拼手机号
         beginTime: date + ' ' + '00:00:01', // date
         endTime: date + ' ' + '23:59:59',
@@ -223,9 +225,11 @@ export default class SelectPatient extends Component {
               </Toggle>
               <Bread></Bread>
               <SpecTabs>
-                <TabPane activeTab={rcStatus} _key={0} onClick={(e) => this.toggleTabs(0)}>等待辨证论治（{numbers.noVisit}）</TabPane>
-                <TabPane activeTab={rcStatus} _key={1} onClick={(e) => this.toggleTabs(1)}>辨证论治中（{numbers.visiting}）</TabPane>
-                <TabPane activeTab={rcStatus} _key={2} onClick={(e) => this.toggleTabs(2)}>已完成（{numbers.visited}）</TabPane>
+                <TabPane activeTab={rcStatus} _key={0} onClick={(e) => this.toggleTabs(0)}>未完成（{numbers.noVisit}）</TabPane>
+                <TabPane activeTab={rcStatus} _key={1} onClick={(e) => this.toggleTabs(1)}>已完成（{numbers.visited}）</TabPane>
+                {
+                  // <TabPane activeTab={rcStatus} _key={2} onClick={(e) => this.toggleTabs(2)}>已完成（{numbers.visited}）</TabPane>
+                }
               </SpecTabs>
             </Left>
             <Right>

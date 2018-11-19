@@ -29,7 +29,7 @@ export default class Index extends Component {
       if(status == 2 || status == 3){
         window.setTimeout(() => {
           this.setState({ visible: false }, () => {
-            if(status == 2){
+            if(status == 2 && this.props.successCallback){
               this.props.successCallback();
             }
           });

@@ -175,7 +175,7 @@ export default class ContentDetail extends Component {
             <span onClick={()=>this.unfold("attention",attention)} className="left">
               {item.attention && item.attention.length>18?<span style={{fontWeight:600,marginLeft:3}}><Icon type={attention?"down":"right"}/>操作方法：</span>:<span style={{fontWeight:600,marginLeft:15}}>操作方法：</span>}
             </span>
-            <span className="right">{ attention?(item.attention == ""?"无":item.attention):this.cutOutTwo(item.attention) }</span>
+            <span className="right" style={{marginRight:10}}>{ attention?(item.attention == ""?"无":item.attention):this.cutOutTwo(item.attention) }</span>
           </div>
           {
             item.priors == "1"

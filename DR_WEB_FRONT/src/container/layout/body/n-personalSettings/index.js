@@ -24,6 +24,12 @@ class PersonalSettings extends React.Component{
         num:true,
         vername:'',
         deptcode:'',
+        realname:'',        //用户名
+        deptcodeDic:'',      //科室
+        postDic:'',         //职级
+        orgcode:'',         //机构编号
+        orgName:'',        //机构名称
+        orgidDic:'',         //机构类型
       };
   }
   componentWillMount(){
@@ -61,7 +67,7 @@ class PersonalSettings extends React.Component{
    * @param  {[type]} token [可控]
    * @return {[type]}       [undefined]
    */
-  getPatientData(id){
+  getPatientData=(id)=>{
     let self = this;
     let params = {
       url: 'BaOrguserController/getData',
@@ -72,7 +78,7 @@ class PersonalSettings extends React.Component{
     };
     function callBack(res){
       if(res.result && res.data){
-        self.setState({ baPatient: res.data });
+        self.setState({ baPatient: res.data,realname:res.data.realname,deptcodeDic:res.data.deptcodeDic, postDic:res.data.postDic, orgcode:res.data.orgcode, orgName:res.data.orgName, orgidDic:res.data.orgidDic});
       }else{
         console.log('异常响应信息', res);
       }
@@ -308,21 +314,21 @@ class PersonalSettings extends React.Component{
                   <div style={{overflow:"hidden",height:"44px",position:"absolute",top:0,width:"100%",lineHeight:"44px"}}>
                     <p style={{width:"50%",float:"left"}}>
                       <span style={{fontWeight:'bold'}}>个人信息设置</span>
-                      <sapn style={{color:"#999",fontSize:"12px",marginLeft:"20px"}}>修改和完善个人登录信息</sapn>
+                      <span style={{color:"#999",fontSize:"12px",marginLeft:"20px"}}>修改和完善个人登录信息</span>
                     </p>
                     <p style={{width:"50%",float:"right",textAlign:"right"}}>
                       <span style={{marginRight:"6%"}}><img onClick={(e)=>{this.Modify("个人设置",e)}} src={require("./images/10.png")}></img></span>
                       <Icon id='icon1' onClick={(e)=>{this.Modify1('个人设置',e)}} type="double-left" theme="outlined" style={{marginRight:"6%",transform:'rotate(-90deg)',color:'#0B6ECB',fontSize:'16px',height:'22px',fontWeight:'bolder' }}></Icon>
                     </p>
                   </div>} key="1">
-                  <PersonalInformationSettings handleStatus={this.handleStatus} prop={[this.state.baPatient,this.state.dictListObj,this.state.deptData,{'status':this.state.status}]} handleClick={this.handleClick.bind(this)}  wrappedComponentRef={(inst)=>this.PersonalInformationSettings=inst}/>
+                  <PersonalInformationSettings handleStatus={this.handleStatus} getPatientData={this.getPatientData} prop={[this.state.baPatient,this.state.dictListObj,this.state.deptData,{'status':this.state.status}]} handleClick={this.handleClick.bind(this)}  wrappedComponentRef={(inst)=>this.PersonalInformationSettings=inst}/>
                   <div onClick={this.upSta} style={{position:'absolute',bottom:'28px',right:'56px',fontSize:'15px',color:'#0B6ECB',cursor:'pointer'}}><span>收起</span> <Icon style={{transform:'rotate(90deg)'}} type='double-left'/></div>
                 </Panel>
                 <Panel className='styleTop' style={{position:'relative'}} showArrow={false} header={
                     <div style={{overflow:"hidden",height:"40px",position:"absolute",top:0,width:"100%",lineHeight:"40px"}}>
                       <p style={{width:"50%",float:"left"}}>
                         <span style={{fontWeight:'bold'}}>修改密码</span>
-                        <sapn style={{color:"#999",fontSize:"12px",marginLeft:" 43px"}}>定期修改登录密码，减小密码泄露风险</sapn>
+                        <span style={{color:"#999",fontSize:"12px",marginLeft:" 43px"}}>定期修改登录密码，减小密码泄露风险</span>
                       </p>
                       <p style={{width:"50%",float:"right",textAlign:"right"}}>
                         <span style={{marginRight:"6%"}}><img onClick={(e)=>{this.Modify("修改密码",e)}} src={require("./images/10.png")}></img></span>
@@ -337,7 +343,7 @@ class PersonalSettings extends React.Component{
                   <div style={{overflow:"hidden",height:"40px",position:"absolute",top:0,width:"100%",lineHeight:"40px"}}>
                     <p style={{width:"50%",float:"left"}}>
                       <span style={{fontWeight:'bold'}}>系统选项</span>
-                      <sapn style={{color:"#999",fontSize:"12px",marginLeft:" 43px"}}>定义系统运行的的各种参数信息</sapn>
+                      <span style={{color:"#999",fontSize:"12px",marginLeft:" 43px"}}>定义系统运行的的各种参数信息</span>
                     </p>
                     <p style={{width:"50%",float:"right",textAlign:"right"}}>
                       <span style={{marginRight:"6%"}}><img onClick={(e)=>{this.Modify("系统选项",e)}} src={require("./images/10.png")}></img></span>
@@ -346,13 +352,13 @@ class PersonalSettings extends React.Component{
                   </div>
                   } key="3">
                   <SystemOptions handleStatus={this.handleStatus} wrappedComponentRef={(inst)=>this.SystemOptions=inst}></SystemOptions>
-                  <div onClick={this.upSta} style={{position:'absolute',bottom:'28px',right:'56px',fontSize:'15px',color:'#0B6ECB',cursor:'pointer'}}><span>收起</span> <Icon style={{transform:'rotate(90deg)'}} type='double-left'/></div>
+                  <div onClick={this.upSta} style={{position:'absolute',top:'405px',right:'56px',fontSize:'15px',color:'#0B6ECB',cursor:'pointer'}}><span>收起</span> <Icon style={{transform:'rotate(90deg)'}} type='double-left'/></div>
                 </Panel>
                 <Panel className='styleTop' showArrow={false} header={
                   <div style={{overflow:"hidden",height:"40px",position:"absolute",top:0,width:"100%",lineHeight:"40px"}}>
                     <p style={{width:"50%",float:"left"}}>
                       <span style={{fontWeight:'bold'}}>系统版本</span>
-                      <sapn style={{color:"#999",fontSize:"12px",marginLeft:" 43px"}}>查看版本号，手动更新版本</sapn>
+                      <span style={{color:"#999",fontSize:"12px",marginLeft:" 43px"}}>查看版本号，手动更新版本</span>
                     </p>
                     <p style={{width:"50%",float:"right",textAlign:"right"}}>
                       <span style={{marginRight:"6%"}}><img onClick={(e)=>{this.Modify("系统版本",e)}} src={require("./images/10.png")}></img></span>
@@ -369,14 +375,14 @@ class PersonalSettings extends React.Component{
                 <img style={{width:"100px",height:"100px"}} src={this.state.Img?this.state.Img:this.state.baPatient.photo}></img>
               </div>
               <div className="details" style={{padding:"20px 0 20px 0",borderBottom:"1px solid #E7E7E7",marginRight:"20%"}}>
-                <p>当前用户： <span>{this.state.baPatient.realname}</span><span style={{marginLeft:"20px"}}><img onClick={(e)=>{this.Modify("User",e)}} src={require("./images/10.png")}></img></span></p>
-              <p>所在科室： <span>{this.state.baPatient.deptcodeDic}</span></p>
-                <p>职务职级： <span>{this.state.baPatient.postDic}</span></p>
+                <p>当前用户： <span>{this.state.realname}</span><span style={{marginLeft:"20px"}}><img onClick={(e)=>{this.Modify("User",e)}} src={require("./images/10.png")}></img></span></p>
+              <p>所在科室： <span>{this.state.deptcodeDic}</span></p>
+                <p>职务职级： <span>{this.state.postDic}</span></p>
               </div>
               <div className="details" style={{padding:"20px 0 20px 0"}}>
-                <p>机构编号： <span>{this.state.baPatient.orgcode} </span><span style={{marginLeft:"20px"}}><img onClick={this.Modify} src={require("./images/10.png")}></img></span></p>
-                <p>机构名称： <span>{this.state.baPatient.orgName}</span></p>
-                <p>机构类型： <span>{this.state.baPatient.orgidDic}</span></p>
+                <p>机构编号： <span>{this.state.orgcode} </span><span style={{marginLeft:"20px"}}><img onClick={this.Modify} src={require("./images/10.png")}></img></span></p>
+                <p>机构名称： <span>{this.state.orgName}</span></p>
+                <p>机构类型： <span>{this.state.orgidDic}</span></p>
               </div>
             </div>
           </div>

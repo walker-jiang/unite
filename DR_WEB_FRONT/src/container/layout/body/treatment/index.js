@@ -85,7 +85,7 @@ class Index extends Component {
         self.setState({
           patienttypeDic: res.data.patienttypeDic,
           sexDic: res.data.sexDic,
-          age: extractDataFromIdentityCard.getAgeFromBirthday(res.data.birthday.substr(0,4)),
+          age: extractDataFromIdentityCard.getAgeFromBirthday(res.data.birthday.substr(0,10)),
           visible: false
         });
       }else{
@@ -137,9 +137,9 @@ class Index extends Component {
     if(treatTab == 0){
       curTabComponet = <PatientDetailInfo />
     }else if(treatTab == 1){
-      curTabComponet = <WriteMedicalRecords />
+      curTabComponet = <WriteMedicalRecords/>
     }else if(treatTab == 2){
-      curTabComponet = <DrAdviceManage />
+      curTabComponet = <DrAdviceManage/>
     }else if(treatTab == 3){
       curTabComponet = <DiseasePreventTreat />
     }

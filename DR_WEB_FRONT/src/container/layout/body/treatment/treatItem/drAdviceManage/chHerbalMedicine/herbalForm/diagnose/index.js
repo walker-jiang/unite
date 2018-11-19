@@ -69,9 +69,12 @@ export default class Diagnose extends Component {
     function callBack(res){
       if(res.result && res.data){
         if(res.data.records.length){
-          let diagnoseHisOriginData = res.data.records[0].buDiagnosisList;
-          diagnoseHisOriginData.forEach((item) => {
-            item.doctorname = res.data.records[0].doctorname;
+          let diagnoseHisOriginData = [];
+          res.data.records.forEach(item => {
+            item.buDiagnosisList.forEach(itemChild => {
+              itemChild.doctorname = item.doctorname;
+              diagnoseHisOriginData.push(itemChild);
+            });
           });
           self.setState({
             diagnoseHisOriginData: diagnoseHisOriginData
@@ -90,7 +93,7 @@ export default class Diagnose extends Component {
       dataIndex: 'order',
       align: 'center',
       key: 'order',
-      render: (text, record, index) => index + 1 
+      render: (text, record, index) => index + 1
     }, {
       title: '诊断码',
       dataIndex: 'diagnosisCode',
@@ -145,8 +148,8 @@ export default class Diagnose extends Component {
     if(record.manifCode){ // 删除症候
       diagnoseFinalInfo.forEach((item) => {
         if(item.diagnosisCode == record.manifCode){
-          item.buDiagnosisDismainfList = item.buDiagnosisDismainfList.remove({'manifcode': record.diagnosisCode});
-          if(item.buDiagnosisDismainfList.length == 0){ // 删除最后一个症候，该疾病也被删除
+          item.buDiagnosisSyndromeList = item.buDiagnosisSyndromeList.remove({'syncode': record.diagnosisCode});
+          if(item.buDiagnosisSyndromeList.length == 0){ // 删除最后一个症候，该疾病也被删除
             diagnoseFinalInfo = diagnoseFinalInfo.remove({diagnosisCode: record.manifCode});
           }
         }
@@ -186,7 +189,6 @@ export default class Diagnose extends Component {
     let diagnoseFinalInfo = this.state.diagnoseFinalInfo;
     let symptom = this.addIllBySymptom.getSelectedData(); // 获取疾病信息
     let manifestation = this.addIllByManifestation.getSelectedData(); // 获取症候信息
-    console.log('symptom', symptom);
     console.log('manifestation', manifestation);
     if(symptom && 'diseaseid' in symptom){ // 校验疾病非空
       let exist = diagnoseFinalInfo.some(item => item.diagnosisCode == symptom.discode);
@@ -209,8 +211,8 @@ export default class Diagnose extends Component {
               let existedManifestations = []; // 重复的病候们
               manifestation.forEach(itemChild => { // 遍历档当前选择的病候们
                 let existedManifestation = []; // 存储重复的病候
-                if(item.buDiagnosisDismainfList){
-                  existedManifestation = item.buDiagnosisDismainfList.filter( itemChildChild => itemChildChild.manifcode == itemChild.manifcode); // 遍历出当前疾病下重复的病候
+                if(item.buDiagnosisSyndromeList){
+                  existedManifestation = item.buDiagnosisSyndromeList.filter( itemChildChild => itemChildChild.syncode == itemChild.syncode); // 遍历出当前疾病下重复的病候
                 }
                 if(existedManifestation.length > 0){ // 存在重复病候
                   existedManifestations = existedManifestations.concat(existedManifestation.map(itemObj => itemObj.manifname));
@@ -240,29 +242,29 @@ export default class Diagnose extends Component {
   // 历史诊断双击选择
   SelectedLine(record){
     let {diagnoseHisOriginData, diagnoseFinalInfo} = this.state;
-    if(record.manifCode){ // 有症候
-      console.log('// 有症候',diagnoseHisOriginData );
+    if(record.manifCode){ // 该字段表示有症候但是改字段代表的值是症候对应的疾病
       diagnoseHisOriginData.forEach((item) => {
         if(item.diagnosisCode == record.manifCode){ // 疾病匹配
-          console.log('// 疾病匹配');
-          item.buDiagnosisDismainfList.forEach((itemChild) => {
-            if(itemChild.manifcode == record.diagnosisCode){ // 症候匹配
+          item.buDiagnosisSyndromeList.forEach((itemChild) => {
+            if(itemChild.syncode == record.diagnosisCode){ // 症候匹配
               console.log('症候匹配');
               let result = diagnoseFinalInfo.some((finalItem) => {
                 if(finalItem.diagnosisCode ==  record.manifCode){ // 当前诊断中已存在该疾病，则加入到该疾病的症候数组中
-                  let exist = finalItem.buDiagnosisDismainfList.some((finalItemChild) => finalItemChild.manifcode == itemChild.manifcode);
+                  let exist = finalItem.buDiagnosisSyndromeList.some((finalItemChild) => finalItemChild.syncode == itemChild.syncode);
                   if(exist){
                     this.tipModal.showModal({ stressContent: '该疾病病候已存在' });
                   }else{
-                    finalItem.buDiagnosisDismainfList.push(itemChild);
+                    finalItem.buDiagnosisSyndromeList.push(itemChild);
                   }
                   return true;
                 }
               });
-              if(!result){ // 当前诊断中不存在该疾病
-                item.buDiagnosisDismainfList = [];
-                item.buDiagnosisDismainfList.push(itemChild);
-                diagnoseFinalInfo.push(item);
+              if(!result){ // 当前诊断中不存在该疾病, 把症候放入buDiagnosisSyndromeList中
+                let buDiagnosisSyndromeListFinal = [];
+                let { buDiagnosisSyndromeList, ...buDiagnosisListObj } = item;
+                buDiagnosisSyndromeListFinal.push(itemChild);
+                buDiagnosisListObj.buDiagnosisSyndromeList = buDiagnosisSyndromeListFinal;
+                diagnoseFinalInfo.push(buDiagnosisListObj);
               }
             }
           });
@@ -325,7 +327,7 @@ export default class Diagnose extends Component {
       if(existedDiagnose.length){ // 已存在该对象
         filterIllByDiagnose = filterIllByDiagnose.concat(existedDiagnose);
       }else{ // 加入诊断数组中
-        itemChild.buDiagnosisDismainfList = [];
+        itemChild.buDiagnosisSyndromeList = [];
         console.log('itemChild', itemChild);
         itemChild.diagnosisName = itemChild.dianame;
         itemChild.diagnosisCode = itemChild.diacode;

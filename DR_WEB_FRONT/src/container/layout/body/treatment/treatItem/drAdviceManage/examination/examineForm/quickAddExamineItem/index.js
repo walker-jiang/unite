@@ -8,12 +8,13 @@ import getResource from 'commonFunc/ajaxGetResource';
 import tableSty from 'components/antd/style/table';
 import IconSty from 'components/dr/icon/iconStyle';
 import HocAddTable from '../../../hocAddTable';
+// import HocKeyFunc from '../../../';
 
 class QuickAddExamineItem extends Component {
   componentWillReceiveProps(nextProps){
     this.setState({
       showResult: nextProps.showResult,
-      examineItemsData: nextProps.examineItemsData,
+      itemsData: nextProps.itemsData,
       loadStatus: nextProps.loadStatus
     });
   };
@@ -63,11 +64,10 @@ class QuickAddExamineItem extends Component {
     return columns;
   };
   render() {
-    // let { showResult, examineItemsData, loadStatus } = this.state;
     let { showResult = false, itemsData = [], loadStatus = 0 } = this.props;
     let columns = this.getColumns();
     return (
-      <SearchInput {...this.props} onFocus={this.showResult} displayed={this.props.showResultFunc} onKeyDown={this.props.handleEnterPress}>
+      <SearchInput {...this.props} displayed={this.props.showResultFunc} onKeyDown={this.props.handleEnterPress}>
         {
           showResult?
           (
@@ -95,7 +95,6 @@ class QuickAddExamineItem extends Component {
           )
           :null
         }
-
       </SearchInput>
     );
   }
@@ -121,17 +120,29 @@ const SpecTable = styled(Table)`
 const DataLoading = styled(Icon)`
   ${IconSty.rotate}
 `;
-/*
-@作者：姜中希
-@日期：2018-08-22
-@描述：快速添加检验项目
-*/
 let params = {
   url: 'BaOrderSuitController/getList',
   async: false,
   data: {
     ordertype: 1,
-    // mitype: 
+    // mitype:
+  },
+  processData: (data) => { // 后台返回数据处理函数
+    let itemsData = data.baMedicalDtlList.map((item, index)=>{
+      item.key = index; // 加唯一key值
+      item.status = (index == 0) ? 1 : 0; // 0表示全部未选中,1表示选择了该行,初始化时默认选中第一行
+      return item
+    });
+    data.baOrderSuitList.forEach((item, index)=>{
+      item.key = itemsData.length; // 加唯一key值
+      itemsData.push(item);
+    });
+    return itemsData;
   }
 };
-export default HocAddTable(QuickAddExamineItem, params)
+export default HocAddTable(QuickAddExamineItem, params);
+/*
+@作者：姜中希
+@日期：2018-08-22
+@描述：快速添加检验项目
+*/

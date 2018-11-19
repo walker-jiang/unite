@@ -171,7 +171,7 @@ export default class Index extends Component {
      return {
       	"buDiagnosisInfo": {
       		"buDiagnosisList": [{
-      			"buDiagnosisDismainfList": [{
+      			"buDiagnosisSyndromeList": [{
       				"ctstamp": "2018-10-23 02:26:56",
       				"diagnosisid": "201840232816106454",
       				"diseaseid": 191,
@@ -383,7 +383,7 @@ export default class Index extends Component {
     return {
     	"buDiagnosisInfo": {
     		"buDiagnosisList": [{
-    			"buDiagnosisDismainfList": [{
+    			"buDiagnosisSyndromeList": [{
     				"ctstamp": "2018-10-23 03:02:53",
     				"diagnosisid": "201840234973861497",
     				"diseaseid": 191,

@@ -28,13 +28,37 @@ class ChPatentMedicineForm extends Component {
       buDiagnosisInfo: {}, // 诊断信息主表原始数据，修改时需要使用
       buRecipe: {}, // 原始处方信息
       data: {}, //原始医嘱信息
+      mitype: [], // 以保内医保外字典数据
+      selectedMitype: '', // 选择的医保类型
       // 初始化数据
       buDiagnosisList: [], // 诊断明细信息
       recipename: '', // 处方名称
-      miType: 1, // 0 医保外， 1医保内 默认选择医保内
       medicineData: [], // 药品数据
     }
   }
+  /** [getMittype 获取字典数据] */
+  getMitype(DictTypeList){
+    let self = this;
+    let params = {
+      url: 'BaDatadictController/getListData',
+      data: {
+        dictNoList: DictTypeList
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        let dictListObj = {};
+        res.data.forEach(item => {
+          dictListObj[item.dictno.toLowerCase()] = item.baDatadictDetailList;
+        });
+        const selectedMitype = dictListObj.mitype.length ? dictListObj.mitype[0].value : '';
+        self.setState({...dictListObj, selectedMitype});
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
   /** [getSpecialFrequency  获取频次下拉数据] */
   getSpecialFrequency() {
     let params = {
@@ -95,6 +119,7 @@ class ChPatentMedicineForm extends Component {
     this.getDiagnoseData();
     this.getSpecialFrequency();
     this.getSpecialUsage();
+    this.getMitype(['mitype']);
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
       this.getCHMedicineAdvice(this.props.orderid);
     }else{ // 添加可以初始化数据
@@ -177,7 +202,7 @@ class ChPatentMedicineForm extends Component {
           Dataitem.takedays = Math.ceil (((Dataitem.mediFactor*Dataitem.packageFactor*Dataitem.count)/(Dataitem.defDosage*Dataitem.times))*Dataitem.days)
         }
         Dataitem[item] = Dataitem.itemid == itemid ? newValue : Dataitem[item];
-      }); 
+      });
       this.setState({ medicineData });
       console.log('medicineData',medicineData);
   };
@@ -269,7 +294,7 @@ class ChPatentMedicineForm extends Component {
       title: "药名",
       dataIndex: 'itemname',
       key: 'itemname',
-      render: (text, record, index) => <span>{text}</span>
+      render: (text, record, index) => <MiTypeText miType={this.state.selectedMitype}>{text}</MiTypeText>
     }, {
       title: "规格",
       dataIndex: 'specification',
@@ -363,8 +388,14 @@ class ChPatentMedicineForm extends Component {
     }
     return {dataSource, feeAll};
   };
+  /** [changeMitype 选择医保类型] */
+  changeMitype = (e) => {
+    this.setState({
+      selectedMitype: e.target.value,
+    });
+  }
   render () {
-    let { visiblePop, medicineData, buDiagnosisList, miType, recipename } = this.state;
+    let { visiblePop, medicineData, buDiagnosisList, mitype, selectedMitype, recipename } = this.state;
     const { getFieldDecorator } = this.props.form;
     let baMedicines = this.props.buOrderDtlList;
     const columns = this.getTableColumns();
@@ -437,17 +468,15 @@ class ChPatentMedicineForm extends Component {
           </Row>
           <Row>
             <Col span={8}>
-              <SpecFormItem
-                {...specFormItemLayout}
-                label={<span><Add>➕</Add>快速添加：</span>}  >
-                  {getFieldDecorator('addQuickly',{
-                    initialValue: miType
-                  })(
-                    <SpecRadioGroup>
-                      <Radio value={0}>医保内</Radio>
-                      <Radio value={1}>医保外</Radio>
-                    </SpecRadioGroup>
-                  )}
+            <SpecFormItem
+              {...specFormItemLayout}
+              label={<span><Add>➕</Add>快速添加：</span>}
+              >
+                <SpecRadioGroup value={selectedMitype} onChange={this.changeMitype}>
+                {
+                  mitype.map(item => <Radio key={item.value} value={item.value}>{item.vname}</Radio>)
+                }
+                </SpecRadioGroup>
               </SpecFormItem>
             </Col>
             <Col span={16}>
@@ -455,7 +484,7 @@ class ChPatentMedicineForm extends Component {
                 {...formItemLayout}
                 >
                   {getFieldDecorator('addQuickly')(
-                    <QuickAddMedicine placeholder='请输入中成药或西药首字母快速添加' icon='#0A6ECB' ref={ref => this.quickAddMedicine = ref} getQuickData = {this.addMedicineData.bind(this)}/>
+                    <QuickAddMedicine placeholder='请输入中成药或西药首字母快速添加' selectedMitype={selectedMitype} icon='#0A6ECB' ref={ref => this.quickAddMedicine = ref} getQuickData = {this.addMedicineData.bind(this)}/>
                   )}
                 </FormItem>
             </Col>
@@ -557,6 +586,10 @@ const Total = styled.div`
   left: 550px;
   width: 100px;
   line-height: 35px;
+`;
+// 医保外红色显示
+const MiTypeText = styled.span`
+  color: ${props => props.miType == '1' ? 'red' : 'black'};
 `;
 const ChPatentMedicineFormWrapper = Form.create()(ChPatentMedicineForm);
 

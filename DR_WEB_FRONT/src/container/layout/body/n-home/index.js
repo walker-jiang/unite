@@ -32,6 +32,7 @@ class Home extends React.Component {
       };
   }
   componentDidMount=()=>{
+    this.generateTAble(this.state.set)
     //首页就诊量请求
     var date = new Date(),
         year = date.getFullYear(),//年
@@ -76,7 +77,7 @@ class Home extends React.Component {
       beginTime:st1,
       endTime:st,
       doctorid:window.sessionStorage.getItem('userid'),
-      casetype:0,
+      casetype:1,
     }
     const params0 = {
       type:'get',
@@ -89,7 +90,6 @@ class Home extends React.Component {
     }
     Ajax(params0,scallBack0,ecallback0);
     function scallBack0(res){
-console.log('今日首诊总量',res.data);
       this_.setState({
         daTa0:res.data
       });
@@ -102,7 +102,7 @@ console.log('今日首诊总量',res.data);
       beginTime:st1,
       endTime:st,
       doctorid:window.sessionStorage.getItem('userid'),
-      casetype:1,
+      casetype:2,
     }
     const params1 = {
       type:'get',
@@ -115,7 +115,6 @@ console.log('今日首诊总量',res.data);
     }
     Ajax(params1,scallBack1,ecallback1);
     function scallBack1(res){
-console.log('今日复诊总量',res.data);
       this_.setState({
         daTa1:res.data
       });
@@ -145,8 +144,13 @@ console.log('今日复诊总量',res.data);
     Ajax(jzparams,jzcsallBack,jzecallback);
     var data1 =[],this_=this;
     function jzcsallBack(res){
+      console.log('接诊中',res.data.records)
+      let patienList = res.data.records.map((item, index)=>{
+        item.key = index; // 加唯一key值
+        return item
+      });
       this_.setState({
-        data2:res.data.records,
+        data2:patienList,
       });
     }
     function jzecallback(res){
@@ -174,8 +178,13 @@ console.log('今日复诊总量',res.data);
     Ajax(djzparams,djzcsallBack,djzecallback);
     var data =[],this_=this;
     function djzcsallBack(res){
+        console.log('待接诊',res.data.records)
+        let patienList = res.data.records.map((item, index)=>{
+          item.key = index; // 加唯一key值
+          return item
+        });
       this_.setState({
-        data:res.data.records
+        data:patienList
       },()=>{this_.render});
     }
     function djzecallback(res){
@@ -203,11 +212,14 @@ console.log('今日复诊总量',res.data);
     Ajax(ywcparams,ywccsallBack,ywcecallback);
     var data =[],this_=this;
     function ywccsallBack(res){
-      console.log(res.data.records);
+        console.log('完成接诊',res.data.records)
+      let patienList = res.data.records.map((item, index)=>{
+        item.key = index; // 加唯一key值
+        return item
+      });
       this_.setState({
-        data3:res.data.records
+        data3:patienList
       },()=>{this_.render});
-
     }
     function ywcecallback(res){
       console.log('首页接诊信息列表请求已完成未成功',res);
@@ -287,10 +299,8 @@ console.log('今日复诊总量',res.data);
       let path = {
         pathname: '/layout/treatment/' + rec.registerid,
       };
-
       window.registerID = rec.registerid;
       window.patientID = rec.patientid;
-      window.sessionStorage.setItem('selsetd', 'today_patient'); //默认显示诊疗页
       window.modifyPermission = 1;// 治疗书写权限0只读 1 可写
       window.casetype_gloabal = ''; // 就诊类型置为空
       // 跳转到接诊界面
@@ -299,9 +309,187 @@ console.log('今日复诊总量',res.data);
       console.log('异常响应信息', res);
     }
   }
+  /**
+   * [redo 重新接诊函数]
+   * @param  {[type]} registerid [接诊ID]
+   * @return {[type]}            [undefined]
+   */
+  redo(registerid, patientid){
+    console.log('重新接诊',registerid, patientid);
+    let path = {
+      pathname: '/layout/treatment/' + registerid,
+    };
+    window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
+    window.registerID = registerid;
+    window.patientID = patientid;
+    window.casetype_gloabal = ''; // 就诊类型置为空
+    console.log(window.registerID,window.patientID,window.casetype_gloabal,'232113')
+    this.modifyRcState(1, registerid);
+    this.props.history.push(path);
+  };
+  forEachList=(numArr,datalist,columns)=>{
+    numArr.forEach((item)=>{
+      columns.push(datalist[item-1])
+    })
+    return columns
+  }
+  /** [generateTAble 生成表格] */
+  generateTAble=(set)=>{
+    let that= this
+    let datalist=[
+      {
+      // 1 患者姓名
+        title: '患者姓名',
+        dataIndex: 'patientname',
+        align:'center',
+        render:(text,record)=>{
+          if(record.sexDic == '男'){
+            return(
+              <span><Icon type='man'/>{text}</span>
+            )
+          }else{
+            return(
+              <span><Icon type='woman'/>{text}</span>
+            )
+          }
+        }
+      },
+      {
+        // 2 患者编号,
+        title: '患者编号',
+        dataIndex: 'patientid',
+        align:'center',
+      },
+      {
+      // 3  性别
+        title: '性别',
+        dataIndex: 'sexDic',
+        align:'center',
+      },
+      {
+        //  4  年龄
+        title: '年龄',
+        dataIndex: 'birthday',
+          align:'center',
+          render:(text,record)=>{
+            const bir=record.birthday.split(' ',1)
+             return extractDataFromIdentityCard.getAgeFromBirthday(bir)
+          }
+        },
+      {
+      // 5 手机号
+        title: '手机号',
+        dataIndex: 'mobile',
+        align:'center',
+      },
+      {
+      // 6 身份证号
+        title: '证件号码',
+        dataIndex: 'cardno',
+        align:'center',
+      },
+      {
+      //7 患者类型
+        title: '患者类型',
+        dataIndex: 'patienttypeDic',
+        align:'center',
+      },
+      {
+        // 8 接诊科室
+        title: '接诊科室',
+        dataIndex: 'deptcodeDic',
+        align:'center',
+      },
+      {
+        // 9 接诊医生
+        title: '接诊医生',
+        dataIndex: 'recDoctorname',
+        align:'center',
+      },
+      {
+        // 10 登记时间,
+        title: '登记时间',
+        dataIndex: 'regDate',
+        align:'center',
+      },
+      {
+        //11 接诊时间
+        title: '接诊时间',
+        dataIndex: 'examDate',
+        align:'center',
+      },
+      {
+          //12 就诊类型
+        title: '就诊类型',
+        dataIndex: 'casetype',
+        align:'center',
+        render:(text, record) => (<span>
+          {
+            record.casetypeDic
+              ? record.casetypeDic
+              : '-'
+          }
+        </span>)
+      },
+        {
+          // 13 待接诊操作
+          title: '操作',
+          dataIndex: 's',
+          align:'center',
+          render:(test,record)=>{
+            return (
+              <div style={{color:"#0A6ECB",cursor:'pointer'}} onClick={this.jzAct.bind(this, record)}>接诊</div>
+            )
+          }
+        },
+      {
+           // 14 接诊操作
+         title: '操作',
+         dataIndex: 's',
+         align:'center',
+         render:(test,record)=>{
+           return (
+             <div style={{color:"#0A6ECB"}}><span style={{cursor:'pointer',marginRight:'5px'}} onClick={this.goonjz.bind(this,record)}>继续接诊</span>|<span style={{cursor:'pointer',marginLeft:'5px'}} onClick={this.overjz.bind(this,record)}>完成接诊</span></div>
+           )
+         }
+       },
+      {
+        //  15 完成操作
+        title: '操作',
+        dataIndex: 's',
+        align:'center',
+        render:(test,record)=>{
+          return (
+            <div style={{color:"#0A6ECB"}}><span style={{cursor:'pointer',marginRight:'5px'}} onClick={()=>this.redo(record.registerid,record.patientid)}>重新接诊</span>|<span style={{cursor:'pointer',marginLeft:'5px'}} onClick={this.overjz.bind(this,record)}>查看病历</span></div>
+          )
+        }
+      }
+    ];
+  if(set){
+    var column1=[1,2,3,4,5,6,7,10,13],
+        column2=[1,2,3,4,5,6,7,11,14],
+        column3=[1,2,3,4,5,6,7,11,15];
+        var  columns1=[],
+             columns2=[],
+             columns3=[];
+       columns1=that.forEachList(column1,datalist,columns1)
+       columns2=that.forEachList(column2,datalist,columns2)
+       columns3=that.forEachList(column3,datalist,columns3)
+  }else{
+    var column1=[1,2,3,4,5,6,7,12,8,9,10,13],
+        column2=[1,2,3,4,5,6,7,12,8,9,11,14],
+        column3=[1,2,3,4,5,6,7,12,8,9,11,15];
+   var  columns1=[],
+        columns2=[],
+        columns3=[];
+       columns1=that.forEachList(column1,datalist,columns1)
+       columns2=that.forEachList(column2,datalist,columns2)
+       columns3=that.forEachList(column3,datalist,columns3)
+  };
+  return {columns1:columns1,columns2:columns2,columns3:columns3}
+  }
   //完成接诊跳转
   overjz=(rec)=>{
-    // console.log('recrececcc',rec);
     if(rec.registerid){
       let path = {
         pathname: '/layout/treatment/' + rec.registerid,
@@ -317,7 +505,6 @@ console.log('今日复诊总量',res.data);
     }
   }
   render() {
-      var this_ = this,columns=[],columns2=[],columns3=[],data=[],data2=[],data3=[];
       var style=!this.state.set?{
             width:"30%",
             left:"70%",
@@ -347,495 +534,11 @@ console.log('今日复诊总量',res.data);
             marginLeft:"20px",
             padding:"0 0 0 20px"
           }
-      if(this.state.set){
-        columns = [
-            {
-              title: '患者姓名',
-              dataIndex: 'patientname',
-              align:'center',
-              render:(text,record)=>{
-                if(record.sexDic == '男'){
-                  return(
-                    <span><Icon type='man'/>{text}</span>
-                  )
-                }else{
-                  return(
-                    <span><Icon type='woman'/>{text}</span>
-                  )
-                }
-
-              }
-            },
-            {
-              title: '患者编号',
-              dataIndex: 'patientid',
-              align:'center',
-            },
-            {
-              title: '性别',
-              dataIndex: 'sexDic',
-              align:'center',
-            },
-            {
-            title: '年龄',
-            dataIndex: 'birthday',
-              align:'center',
-              render:(text,record)=>{
-                const bir=record.birthday.split(' ',1)
-                 return extractDataFromIdentityCard.getAgeFromBirthday(bir)
-              }
-            },
-            {
-              title: '手机号',
-              dataIndex: 'mobile',
-              align:'center',
-            },
-            {
-              title: '身份证号',
-              dataIndex: 'cardno',
-              align:'center',
-            },
-            {
-              title: '患者类型',
-              dataIndex: 'patienttypeDic',
-              align:'center',
-            },
-            {
-              title: '就诊时间',
-              dataIndex: 'regDate',
-              align:'center',
-            },
-            {
-              title: '操作',
-              dataIndex: 's',
-              align:'center',
-              render:(test,record)=>{
-                // console.log('recordrecord',record);
-                return (
-                  <div style={{color:"#3366ff",cursor:'pointer'}} onClick={this.jzAct.bind(this, record)}>接诊</div>
-                )
-              }
-            }
-        ];
-        data = this.state.data;
-        columns2 = [
-            {
-              title: '患者姓名',
-              dataIndex: 'patientname',
-              align:'center',
-              render:(text,record)=>{
-                if(record.sexDic == '男'){
-                  return(
-                    <span><Icon type='man'/>{text}</span>
-                  )
-                }else{
-                  return(
-                    <span><Icon type='woman'/>{text}</span>
-                  )
-                }
-
-              }
-            },
-            {
-              title: '患者编号',
-              dataIndex: 'patientid',
-              align:'center',
-            },
-            {
-              title: '性别',
-              dataIndex: 'sexDic',
-              align:'center',
-            },
-            {
-            title: '年龄',
-            dataIndex: 'birthday',
-              align:'center',
-              render:(text,record)=>{
-                const bir=record.birthday.split(' ',1)
-                 return extractDataFromIdentityCard.getAgeFromBirthday(bir)
-              }
-          },
-            {
-              title: '手机号',
-              dataIndex: 'mobile',
-              align:'center',
-            },
-            {
-              title: '身份证号',
-              dataIndex: 'cardno',
-              align:'center',
-            },
-            {
-              title: '患者类型',
-              dataIndex: 'patienttypeDic',
-              align:'center',
-            },
-            {
-              title: '接诊日期',
-              dataIndex: 'examDate',
-              align:'center',
-            },
-            {
-              title: '操作',
-              dataIndex: 's',
-              align:'center',
-              render:(test,record)=>{
-                return (
-                  <div style={{color:"#3366ff"}}><span style={{cursor:'pointer'}} onClick={this.goonjz.bind(this,record)}>继续接诊</span>|<span style={{cursor:'pointer'}} onClick={this.overjz.bind(this,record)}>完成接诊</span></div>
-                )
-              }
-            }
-          ];
-        data2 = this.state.data2;
-        //已完成
-        columns3 = [
-            {
-              title: '患者姓名',
-              dataIndex: 'patientname',
-              align:'center',
-              render:(text,record)=>{
-                if(record.sexDic == '男'){
-                  return(
-                    <span><Icon type='man'/>{text}</span>
-                  )
-                }else{
-                  return(
-                    <span><Icon type='woman'/>{text}</span>
-                  )
-                }
-
-              }
-            },
-            {
-              title: '患者编号',
-              dataIndex: 'patientid',
-              align:'center',
-            },
-            {
-              title: '性别',
-              dataIndex: 'sexDic',
-              align:'center',
-            },
-            {
-            title: '年龄',
-            dataIndex: 'birthday',
-              align:'center',
-              render:(text,record)=>{
-                const bir=record.birthday.split(' ',1)
-                 return extractDataFromIdentityCard.getAgeFromBirthday(bir)
-              }
-          },
-            {
-              title: '手机号',
-              dataIndex: 'mobile',
-              align:'center',
-            },
-            {
-              title: '身份证号',
-              dataIndex: 'cardno',
-              align:'center',
-            },
-            {
-              title: '患者类型',
-              dataIndex: 'patienttypeDic',
-              align:'center',
-            },
-            {
-              title: '就诊日期',
-              dataIndex: 'examDate',
-              align:'center',
-            },
-            {
-              title: '操作',
-              dataIndex: 's',
-              align:'center',
-              render:(test,record)=>{
-                return (
-                  <div style={{color:"#3366ff"}}><span style={{cursor:'pointer'}} onClick={this.goonjz.bind(this,record)}>重新接诊</span>|<span style={{cursor:'pointer'}} onClick={this.overjz.bind(this,record)}>查看病例</span></div>
-                )
-              }
-            }
-          ];
-        data3 = this.state.data3;
-      }else{
-        columns = [
-            {
-              title: '患者姓名',
-              dataIndex: 'patientname',
-              align:'center',
-              render:(text,record)=>{
-                if(record.sexDic == '男'){
-                  return(
-                    <span><Icon type='man'/>{text}</span>
-                  )
-                }else{
-                  return(
-                    <span><Icon type='woman'/>{text}</span>
-                  )
-                }
-
-              }
-            },
-            {
-              title: '患者编号',
-              dataIndex: 'patientid',
-              align:'center',
-            },
-            {
-              title: '性别',
-              dataIndex: 'sexDic',
-              align:'center',
-            },
-            {
-            title: '年龄',
-            dataIndex: 'birthday',
-              align:'center',
-              render:(text,record)=>{
-                const bir=record.birthday.split(' ',1)
-                 return extractDataFromIdentityCard.getAgeFromBirthday(bir)
-              }
-          },
-            {
-              title: '手机号',
-              dataIndex: 'mobile',
-              align:'center',
-            },
-            {
-              title: '身份证号',
-              dataIndex: 'cardno',
-              align:'center',
-            },
-            {
-              title: '患者类型',
-              dataIndex: 'patienttypeDic',
-              align:'center',
-            },
-            {
-              title: '就诊类型',
-              dataIndex: 'casetype',
-              align:'center',
-              render:(text, record) => (<span>
-                {
-                  record.casetype
-                    ? '复诊'
-                    : '初诊'
-                }
-              </span>)
-            },
-            {
-              title: '接诊科室',
-              dataIndex: 'deptcodeDic',
-              align:'center',
-            },
-            {
-              title: '接诊医生',
-              dataIndex: 'recDoctorname',
-              align:'center',
-            },
-            {
-              title: '登记时间',
-              dataIndex: 'regDate',
-              align:'center',
-            },
-            {
-              title: '操作',
-              dataIndex: 's',
-              align:'center',
-              render:(test,record)=>{
-                return (
-                  <div style={{color:"#3366ff",cursor:'pointer'}} onClick={this.jzAct.bind(this, record)}>接诊</div>
-                )
-              }
-            }
-        ];
-        data = this.state.data;
-        columns2 = [
-            {
-              title: '患者姓名',
-              dataIndex: 'patientname',
-              align:'center',
-              render:(text,record)=>{
-                if(record.sexDic == '男'){
-                  return(
-                    <span><Icon type='man'/>{text}</span>
-                  )
-                }else{
-                  return(
-                    <span><Icon type='woman'/>{text}</span>
-                  )
-                }
-
-              }
-            },
-            {
-              title: '患者编号',
-              dataIndex: 'patientid',
-              align:'center',
-            },
-            {
-              title: '性别',
-              dataIndex: 'sexDic',
-              align:'center',
-            },
-            {
-              title: '年龄',
-              dataIndex: 'birthday',
-                align:'center',
-                render:(text,record)=>{
-                  const bir=record.birthday.split(' ',1)
-                   return extractDataFromIdentityCard.getAgeFromBirthday(bir)
-                }
-            },
-            {
-              title: '手机号',
-              dataIndex: 'mobile',
-              align:'center',
-            },
-            {
-              title: '身份证号',
-              dataIndex: 'cardno',
-              align:'center',
-            },
-            {
-              title: '患者类型',
-              dataIndex: 'patienttypeDic',
-              align:'center',
-            },
-            {
-              title: '就诊类型',
-              dataIndex: 'casetype',
-              align:'center',
-              render:(text, record) => (<span>
-                {
-                  record.casetype
-                    ? '复诊'
-                    : '初诊'
-                }
-              </span>)
-            },
-            {
-              title: '接诊科室',
-              dataIndex: 'deptcodeDic',
-              align:'center',
-            },
-            {
-              title: '接诊医生',
-              dataIndex: 'recDoctorname',
-              align:'center',
-            },
-            {
-              title: '接诊时间',
-              dataIndex: 'examDate',
-              align:'center',
-            },
-            {
-              title: '操作',
-              dataIndex: 's',
-              align:'center',
-              render:(test,record)=>{
-                return (
-                  <div style={{color:"#3366ff"}}><span style={{cursor:'pointer'}} onClick={this.goonjz.bind(this,record)}>继续接诊</span>|<span style={{cursor:'pointer'}} onClick={this.overjz.bind(this,record)}>完成接诊</span></div>
-                )
-              }
-            }
-          ];
-        data2 = this.state.data2;
-        //已完成
-        columns3 = [
-            {
-              title: '患者姓名',
-              dataIndex: 'patientname',
-              align:'center',
-              render:(text,record)=>{
-                if(record.sexDic == '男'){
-                  return(
-                    <span><Icon type='man'/>{text}</span>
-                  )
-                }else{
-                  return(
-                    <span><Icon type='woman'/>{text}</span>
-                  )
-                }
-
-              }
-            },
-            {
-              title: '患者编号',
-              dataIndex: 'patientid',
-              align:'center',
-            },
-            {
-              title: '性别',
-              dataIndex: 'sexDic',
-              align:'center',
-            },
-            {
-              title: '年龄',
-              dataIndex: 'birthday',
-                align:'center',
-                render:(text,record)=>{
-                  const bir=record.birthday.split(' ',1)
-                   return extractDataFromIdentityCard.getAgeFromBirthday(bir)
-                }
-            },
-            {
-              title: '手机号',
-              dataIndex: 'mobile',
-              align:'center',
-            },
-            {
-              title: '身份证号',
-              dataIndex: 'cardno',
-              align:'center',
-            },
-            {
-              title: '患者类型',
-              dataIndex: 'patienttypeDic',
-              align:'center',
-            },
-            {
-              title: '就诊类型',
-              dataIndex: 'casetype',
-              align:'center',
-              render:(text, record) => (<span>
-                {
-                  record.casetype
-                    ? '复诊'
-                    : '初诊'
-                }
-              </span>)
-            },
-            {
-              title: '接诊科室',
-              dataIndex: 'deptcodeDic',
-              align:'center',
-            },
-            {
-              title: '接诊医生',
-              dataIndex: 'recDoctorname',
-              align:'center',
-            },
-            {
-              title: '接诊时间',
-              dataIndex: 'examDate',
-              align:'center',
-            },
-            {
-              title: '操作',
-              dataIndex: 's',
-              align:'center',
-              render:(test,record)=>{
-                return (
-                  <div style={{color:"#3366ff"}}><span style={{cursor:'pointer'}} onClick={this.goonjz.bind(this,record)}>重新接诊</span>|<span style={{cursor:'pointer'}} onClick={this.overjz.bind(this,record)}>查看病例</span></div>
-                )
-              }
-            }
-          ];
-        data3 = this.state.data3;
-      }
+      let {data,data2,data3,set}=this.state;
+      let {columns1,columns2,columns3} =this.generateTAble(set);
     return (
-      <div>
-        <div className="home">
+      <Container>
+        <Homes className="home">
           <div id="deng" style={{
             position:"absolute",
             display:`${this.state.set?"none":"block"}`,
@@ -859,18 +562,18 @@ console.log('今日复诊总量',res.data);
           </div>
           <div style={{width:`${!this.state.set?"100%":"70%"}`,padding:'20px',float:"left",background:""}}>
             <Row className="fontStyle">
-              <Col xs={{ span: 5, offset: 1 }} lg={{ span: 7, offset: 0 }}>
+              <Col xs={{ span: 5, offset: 1 }} lg={{ span: 7, offset: 1 }}>
                 <Card >
                   <p style={{color:'#666666',fontSize:'16px'}}>今日接诊总量</p>
                   <p style={{color:'#0A6ECB',fontSize:'28px'}}>{this.state.daTa?this.state.daTa:'0'}人</p>
                 </Card></Col>
-              <Col xs={{ span: 11, offset: 1 }} lg={{ span:7, offset: 1 }} style={{marginLeft:"6%"}}>
+              <Col xs={{ span: 11, offset: 1 }} lg={{ span:7, offset: 0 }} style={{marginLeft:"20px"}}>
                 <Card>
                   <p>今日首诊总量</p>
                   <p>{this.state.daTa0?this.state.daTa0:'0'}人</p>
                 </Card>
               </Col>
-              <Col xs={{ span: 5, offset: 1 }} lg={{ span: 7, offset: 1 }} style={{marginLeft:"6%"}}>
+              <Col xs={{ span: 5, offset: 1 }} lg={{ span: 7, offset: 0 }} style={{marginLeft:"20px"}}>
                 <Card>
                   <p>今日复诊总量</p>
                   <p>{this.state.daTa1?this.state.daTa1:'0'}人</p>
@@ -881,11 +584,11 @@ console.log('今日复诊总量',res.data);
               <div className='dian'>今日门诊</div>
             </Row>
             <Row>
-              <HomeTabs columns={columns} data={data} columns2={columns2} data2={data2} columns3={columns3} data3={data3} date={this.state.data3.length}></HomeTabs>
+              <HomeTabs columns={columns1} data={data} columns2={columns2} data2={data2} columns3={columns3} data3={data3} date={this.state.data3.length}></HomeTabs>
             </Row>
           </div>
 
-          <div style={style}>
+          <RightChart style={style}>
             <Row style={{fontFamily: "'Microsoft Tai Le Negreta', 'Microsoft Tai Le Normal', 'Microsoft Tai Le'",
                 fontWeight: 700,
                 fontStyle: "normal",
@@ -921,13 +624,31 @@ console.log('今日复诊总量',res.data);
                 <LineChart ronRef={this.ronRefs}></LineChart>
               </div>
             </Divline>
-          </div>
-        </div>
-      </div>
+          </RightChart>
+        </Homes>
+      </Container>
       );
     }
   }
 export default Home
+const Container = styled.div `
+  width:100%;
+  overflow: hidden;
+  height: calc(100vh - 50px);
+`;
+const Homes =styled.div`
+ height:100%;
+ width:100%;
+`
+const RightChart =styled.div`
+ width:100%;
+ overflow: scroll;
+ ::-webkit-scrollbar{
+   display: none;
+ }
+ position: relative;
+ height:calc(100vh - 50px);
+`
 const RadioGroups = styled(RadioGroup)`
   height:35px;
   line-height:60px !important;

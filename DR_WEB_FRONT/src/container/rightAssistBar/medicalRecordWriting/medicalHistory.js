@@ -33,7 +33,7 @@ export default class template extends Component {
     function callBack(res){
       if(res.result && res.data){
         console.log("获取历史病历成功==============",res);
-        var data = res.data;
+        var data = res.data.records;
         var content = [];
         data.forEach((item,index)=>{
           var newItem = [ //主键 billid

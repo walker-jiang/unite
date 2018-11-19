@@ -30,6 +30,7 @@ export default class SmartTreatment extends Component {
       actionType: '', // 打开弹框的目的（添加，查看，修改，删除）
       orderid: '', // 修改、查看、删除时的医嘱ID
       attachOrder: {}, // 打开添加弹框时初始化的数据
+      listenFormData: {}, // 左右侧联动的数据
     };
     this.actionManager = this.actionManager.bind(this);
     this.getOrderData = this.getOrderData.bind(this);
@@ -67,7 +68,9 @@ export default class SmartTreatment extends Component {
     function callBack(res){
       if(res.result && res.data){ // 获取当前诊断明细数据
         let { buDiagnosisList, ...buDiagnosisInfo } = res.data;
-        window.searchITList();
+        if(window.searchITList){
+          window.searchITList();
+        }
         self.setState({
           buDiagnosisList: buDiagnosisList,
         });
@@ -80,6 +83,30 @@ export default class SmartTreatment extends Component {
   componentWillMount(){
     this.getOrderData();
     this.getDiagnoseData();
+    this.getSyndromeData();
+  };
+  /** [getSyndromeData 获取患者病历数据] */
+  getSyndromeData(){
+    let self = this;
+    let params = {
+      url: 'BuPatientCaseController/getData',
+      server_url: config_InteLigenTreat_url + 'TCMAE/',
+      data: {
+        registerid: window.registerID
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        if(res.data){
+          self.setState({ listenFormData: {} })
+        }else{
+
+        }
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
   };
   /**
    * [onDelete 删除医嘱信息]
@@ -147,6 +174,28 @@ export default class SmartTreatment extends Component {
       });
     }
   };
+  finish = () => {
+    let self = this;
+    let params = {
+      url: 'BuRegisterController/receive',
+      async: false,
+      server_url: config_InteLigenTreat_url + 'TCMAE/',
+      data: {
+        bzlzStatus: 1, // 接诊状态
+        registerid: window.registerID, // 就诊id
+        doctorid: window.sessionStorage.getItem('userid'), // 接诊医生
+        doctorname: window.sessionStorage.getItem('username'), // 接诊医生
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        self.props.onStep(4);
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
   render() {
     let { dataSource, actionType, orderid, buDiagnosisList, attachOrder } = this.state;
     let openProps = {
@@ -182,7 +231,7 @@ export default class SmartTreatment extends Component {
           </Content>
           <ActionButton readOnly={this.props.readOnly}>
             <Checkbox>同步到患者医嘱</Checkbox>
-            <SureButton type="primary" onClick={() => {this.props.onStep(4)}}>完成</SureButton>
+            <SureButton type="primary" onClick={this.finish}>完成</SureButton>
             <BorderButton type="primary" onClick={() => {this.props.onStep(2)}}>返回上一步</BorderButton>
           </ActionButton>
         </Left>
@@ -194,14 +243,16 @@ export default class SmartTreatment extends Component {
         <WesternMedicine {...openProps} ref={ref => this.westernMedicine = ref}/>
         <Material {...openProps} ref={ref => this.material = ref} />
         <Right>
-          <SpecTabs key='1' defaultActiveKey='1' animated={false}>
-            <TabPane tab="智能论治" key="1">
-              <IntelligentTreat type={2} actionManager= {this.actionManager}/>
-            </TabPane>
-            <TabPane tab="历史论治" key="2">
-              <MedicalHistoryTwo type={2} actionManager= {this.actionManager}/>
-            </TabPane>
-          </SpecTabs>
+          {
+            // <SpecTabs key='1' defaultActiveKey='1' animated={false}>
+            //   <TabPane tab="智能论治" key="1">
+            //     <IntelligentTreat type={2} actionManager= {this.actionManager}/>
+            //   </TabPane>
+            //   <TabPane tab="历史论治" key="2">
+            //     <MedicalHistoryTwo type={2} actionManager= {this.actionManager}/>
+            //   </TabPane>
+            // </SpecTabs>
+          }
         </Right>
       </Container>
     );

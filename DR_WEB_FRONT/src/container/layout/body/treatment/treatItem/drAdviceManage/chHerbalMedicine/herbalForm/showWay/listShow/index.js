@@ -33,7 +33,7 @@ export default class Index extends Component {
         title: '草药名称',
         dataIndex: 'itemname',
         key: 'itemname',
-        render: (text, record, index)=> <span>{text}</span>
+        render: (text, record, index)=> <MiTypeText miType={this.props.selectedMitype}>{text}</MiTypeText>
       },{
         title: '剂量/单位',
         dataIndex: 'baseUnit',
@@ -96,7 +96,10 @@ const ListWrap = styled(Table)`
     border-bottom: 1px solid rgb(178, 20, 20)
   }
 `;
-
+// 医保外红色显示
+const MiTypeText = styled.span`
+  color: ${props => props.miType == '1' ? 'red' : 'black'};
+`;
 /*
 @作者：姜中希
 @日期：2018-08-15

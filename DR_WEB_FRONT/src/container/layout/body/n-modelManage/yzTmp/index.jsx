@@ -48,22 +48,22 @@ export default class Index extends Component {
         this.submit = this.submit.bind(this);
         this.modelData = this.modelData.bind(this);
         this.diagnoseUpdate = this.diagnoseUpdate.bind(this);
-        // window.noticeAddMedicalFunc = (params) => this.noticeAddMedicalFuncLocal(params);
+        window.noticeAddMedicalFunc = (params) => this.noticeAddMedicalFuncLocal(params);
     }
-    // /**
-    //  * [noticeAddMedicalFuncLocal 有知识库的处方数据请强求添加医嘱的通知函数]
-    //  * @param  {[type]} params [草药数据]
-    //  * @return {[type]}        [undefined]
-    //  */
-    // noticeAddMedicalFuncLocal(params) {
-    //     this.setState({
-    //         actionType: 'add', // modify、view、add
-    //         orderid: '', // 当前医嘱ID
-    //         buOrderDtlList: { herbalData: JSON.parse(params) }, // 草药数据
-    //     }, () => {
-    //         this.chHerbalMedicine.handlePopOpen();
-    //     });
-    // };
+    /**
+     * [noticeAddMedicalFuncLocal 有知识库的处方数据请强求添加医嘱的通知函数]
+     * @param  {[type]} params [草药数据]
+     * @return {[type]}        [undefined]
+     */
+    noticeAddMedicalFuncLocal(params) {
+        this.setState({
+            actionType: 'add', // modify、view、add
+            orderid: '', // 当前医嘱ID
+            buOrderDtlList: { herbalData: JSON.parse(params) }, // 草药数据
+        }, () => {
+            this.chHerbalMedicine.handlePopOpen();
+        });
+    };
     componentWillMount() {
         this.getData();
     }
@@ -1176,7 +1176,7 @@ export default class Index extends Component {
         this.setState({ diagnoseText });
     };
     render() {
-        const { newTmp } = this.props;
+        const { openTmp } = this.props;
         let { dataSource, tatalRecords, currentPage, actionType, orderid, buOrderDtlList, showWay, diagnoseText } = this.state;
         let that = this;
         let selectedRows = dataSource.filter((item) => item.checkState);
@@ -1254,7 +1254,7 @@ export default class Index extends Component {
                                 <SimplePagination {...pagination}></SimplePagination>
                             </CheckAction>
                             <div>
-                                <Button onClick={() => newTmp('fl')}>返回</Button>
+                                <Button onClick={() => openTmp('fl')}>返回</Button>
                                 <SureButton type="primary" onClick={this.submit} disabled={!window.modifyPermission}>提交</SureButton>
                                 <BorderButton type="primary" onClick={() => { this.handlePrintClick() }}>打印</BorderButton>
                                 <BorderButton type="primary">另存成模板</BorderButton>

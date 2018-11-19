@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Draggable from 'react-draggable'; // The default
 import { Button, Icon } from 'antd';
 import Modal from 'react-modal';
+import StyModal from 'components/reactModal';
 import iconSty from 'components/antd/style/icon';
 import buttonSty from 'components/antd/style/button';
 
@@ -24,11 +25,15 @@ export default class Popout extends Component {
     this.props.onOk();
   };
   render() {
-    let {visible, children, onOk, title = '精美弹框', hbgColor = '#0A6ECB', icon_type = 'lightBlue'} = this.props;
+    // fixed_left 0 弹框在窗体左侧出现 1 弹框在窗体中央出现
+    let {visible, children, onOk, title = '精美弹框', hbgColor = '#0A6ECB', icon_type = 'lightBlue', fixed_left } = this.props;
+
     return (
-      <Modal
+      <WindowModal
+         className="Modal"
+         overlayClassName="Overlay"
          isOpen={visible}
-         style={modalStyle}
+         fixed_left={fixed_left}
          ariaHideApp={false}
           >
         <Draggable
@@ -58,50 +63,17 @@ export default class Popout extends Component {
             }
           </Pannel>
         </Draggable>
-      </Modal>
+      </WindowModal>
     );
   }
 }
-const modalStyle = {
-   overlay: {
-     position: 'fixed',
-     top: 0,
-     left: 0,
-     zIndex: 3,
-     padding: '0px',
-     width: '100vw',
-     height: '100vh',
-     backgroundColor: 'rgba(0, 0, 0, 0.2)'
-   },
-   content: {
-     zIndex: 3,
-     paddingTop: '0px',
-     paddingBottom: '0px',
-     position: 'fixed',
-     top: '0px',
-     left: '0px',
-     right: '0px',
-     bottom: '0px',
-     background: 'transparent',
-     overflow: 'auto',
-     border: 'none',
-     display: 'flex',
-     justifyContent: 'center',
-     alignItems: 'center',
-     outline: 'none',
-   }
- };
-const Container = styled.div`
-  position: fixed;
-  left: 0px;
-  top: 0px;
-  right: 0px;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.2);
-  display: flex;
-  justify-content: center;
-  align-items: center
+const WindowModal = styled(Modal)`
+  ${StyModal.windowModal};
+  &&& {
+    align-items: ${props => props.fixed_left ? 'center' : 'flex-start'};
+    justify-content: ${props => props.fixed_left ? 'center' : 'flex-end'};
+    padding-top: ${props => props.fixed_left ? '0px' : '100px'};
+  }
 `;
 const Pannel = styled.div`
   background-color: #FFFFFF;

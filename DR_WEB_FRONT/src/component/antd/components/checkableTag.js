@@ -13,12 +13,16 @@ export default class CheckableTag extends Component {
   };
   handleTagClick(e, checkable){
     let { id = '' } = this.props;
+    let self = this;
+    console.log('e', e.target);
+    console.log('e', e.target.innerText);
     this.setState({
       checkable: !checkable
+    }, () => {
+      self.props.onClick(this.props.text, !checkable, id);
     });
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();
-    this.props.onClick(e.target.innerText, !checkable, id);
   };
   render() {
     let checkable = this.state.checkable;

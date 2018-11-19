@@ -129,10 +129,10 @@ class PatientBasicInfo extends Component {
             )}
           </HideFormItem>
           <Row>
-            <Col span={7} offset={1}>
+            <Col span={8}>
               <PatientName commontProps={commontProps} ref={ ref => { this.patientName = ref }} initialValue={patientInfo.patientname}/>
             </Col>
-            <Col span={7}>
+            <Col span={8}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -145,7 +145,7 @@ class PatientBasicInfo extends Component {
                 )}
               </SpecFormItem>
             </Col>
-            <Col span={7} offset={1}>
+            <Col span={8}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -160,7 +160,7 @@ class PatientBasicInfo extends Component {
             </Col>
           </Row>
           <Row>
-            <Col span={7} offset={1}>
+            <Col span={8}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -174,7 +174,7 @@ class PatientBasicInfo extends Component {
                   )}
               </SpecFormItem>
             </Col>
-            <Col span={7} >
+            <Col span={8} >
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -193,7 +193,7 @@ class PatientBasicInfo extends Component {
                   )}
               </SpecFormItem>
             </Col>
-            <Col span={7} offset={1}>
+            <Col span={8}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -214,7 +214,7 @@ class PatientBasicInfo extends Component {
             </Col>
           </Row>
           <Row>
-            <Col span={7} offset={1}>
+            <Col span={8}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -234,18 +234,18 @@ class PatientBasicInfo extends Component {
                 )}
               </SpecFormItem>
             </Col>
-            <Col span={7}>
+            <Col span={8}>
               <Cardno commontProps={commontProps} initialValue={patientInfo.cardno}/>
               </Col>
-              <Col span={7} offset={1}>
+              <Col span={8}>
                 <Sex commontProps={commontProps} sex={sex} initialValue={patientInfo.sex}/>
               </Col>
           </Row>
           <Row>
-            <Col span={7} offset={1}>
+            <Col span={8}>
               <Birthday commontProps={commontProps} initialValue={patientInfo.birthday}/>
             </Col>
-            <Col span={7}>
+            <Col span={8}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -264,7 +264,7 @@ class PatientBasicInfo extends Component {
                   )}
               </SpecFormItem>
             </Col>
-            <Col span={7} offset={1}>
+            <Col span={8}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -285,7 +285,7 @@ class PatientBasicInfo extends Component {
             </Col>
           </Row>
           <Row>
-            <Col span={7} offset={1}>
+            <Col span={8}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -304,7 +304,7 @@ class PatientBasicInfo extends Component {
                   )}
               </SpecFormItem>
             </Col>
-            <Col span={7} >
+            <Col span={8} >
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -323,7 +323,7 @@ class PatientBasicInfo extends Component {
                   )}
               </SpecFormItem>
             </Col>
-            <Col span={7} offset={1}>
+            <Col span={8}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -339,7 +339,7 @@ class PatientBasicInfo extends Component {
           </Row>
           <AreaSelector commontProps={commontProps} onFocus={() => {this.patientName.hidePopTable()}} initialValue={{ province: patientInfo.province, city: patientInfo.city, district: patientInfo.district, streetdesc: patientInfo.streetdesc}}/>
           <Row>
-            <Col span={7}  offset={1}>
+            <Col span={8}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -352,7 +352,7 @@ class PatientBasicInfo extends Component {
                   )}
               </SpecFormItem>
             </Col>
-            <Col span={7}>
+            <Col span={8}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -371,7 +371,7 @@ class PatientBasicInfo extends Component {
                   )}
               </SpecFormItem>
             </Col>
-            <Col span={7} offset={1}>
+            <Col span={8}>
               <SpecFormItem
                 {...formItemLayout}
                 colon={false}
@@ -398,6 +398,10 @@ const SpecForm = styled(Form)`
   width: 897px;
   max-height: 450px;
   overflow: auto;
+  &&& {
+    padding-right: 50px;
+    padding-left: 20px;
+  }
   border: 1px solid rgba(10, 110, 203, 1);
 `;
 const HideFormItem = styled(FormItem)`

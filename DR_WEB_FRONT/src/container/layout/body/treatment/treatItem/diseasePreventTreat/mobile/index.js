@@ -5,6 +5,7 @@ import False from "./false";
 import GetQuestionList from "./getQuestionList";
 import GetResult from "./getResult";
 import TestCompleted from "./testCompleted";
+import getResource from 'commonFunc/ajaxGetResource';
 
 export default class Mobile extends Component {
   constructor(props){
@@ -15,7 +16,8 @@ export default class Mobile extends Component {
       name: '',
       sex: '',
       age: '',
-      certificatesNumber: ''
+      certificatesNumber: '',
+      certificatesType: ''
     };
   };
 
@@ -34,7 +36,41 @@ export default class Mobile extends Component {
     this.setState({
       visible: obj.first || '1',
       userId: obj.userId
+    }, function(){
+      this.getUserMessage();
     })
+  }
+
+  getUserMessage () {
+    let userId = this.state.userId;
+    let params = {
+      type: 'GET',
+      server_url: config_CureService_url,
+      url: 'healthcabin/user/get/id',
+      contentType: '',
+      crossDoman:true,
+      data:{
+        userId: userId
+      }
+    };
+    let that = this;
+    var date=new Date;
+    var year=date.getFullYear(); 
+    function success(res){
+      console.log('患者信息',res)
+      that.setState({
+        name: res.data.name,
+        age: year - res.data.birthday.substr(0,4),
+        sex: res.data.sex,
+        certificatesNumber: res.data.certificatesNumber,
+        certificatesType: res.data.certificatesType
+      })
+    };
+
+    function error(res){
+      console.log('失败',res)
+    };
+    getResource(params, success, error);
   }
 
   handleClick(pram){
@@ -43,25 +79,27 @@ export default class Mobile extends Component {
      });
   };
 
-  patientInformation(userId,name,sex,age,certificatesNumber){
-    this.setState({
-      userId : userId,
-      name: name,
-      sex: sex,
-      age: age,
-      certificatesNumber: certificatesNumber
-    })
-  }
+  // patientInformation(userId,name,sex,age,certificatesNumber){
+  //   this.setState({
+  //     userId : userId,
+  //     name: name,
+  //     sex: sex,
+  //     age: age,
+  //     certificatesNumber: certificatesNumber
+  //   })
+  // }
 
   handleClickResult(){
 
   }
 
   render() {
-    let {visible,userId,name,sex,age,certificatesNumber}  = this.state;
+    let {visible,userId,name,sex,age,certificatesNumber,certificatesType}  = this.state;
+    console.log('diyici',certificatesNumber,certificatesType);
+    
     let t  = null;
     if(visible == 1){
-      t = <Identify onToggle={this.handleClick.bind(this)} patientInformation={this.patientInformation.bind(this)}/>
+      t = <Identify onToggle={this.handleClick.bind(this)} certificatesNumber={certificatesNumber} certificatesType={certificatesType} />
     } else if (visible == 2) {
       t = <False onToggle={this.handleClick.bind(this)} />
     } else if (visible == 3) {

@@ -16,20 +16,19 @@
 // const config_local_url = 'https://www.xiaotangren.com:8443'; // 前端服务地址提供给客户端
 // const config_syndromeTreatment_url = 'http://10.192.1.115:8088/';
 const config_service_url = 'http://192.168.103.190:8087/'; // 后台服务地址 10.192.4.233:8088   219.234.5.58:8087
-const config_AssistBar_url = 'http://192.168.103.166:8088/'; // 测试病历书写-----易超文
-const config_AssistBar_urlTwo = 'http://192.168.103.166:8088/'; // 测试病历书写-----尧尧
-const config_CureService_url = 'http://192.168.103.166:8098/'; // 治未病后台服务地址
-const config_InteLigenTreat_url = 'http://192.168.103.166:8765/'; // 辨证论治服务地址
-const config_taboo_url = 'http://192.168.103.166:8764/'; // 中药禁忌检验后台服务地址
+const config_CureService_url = 'http://192.168.103.190:8098/'; // 治未病后台服务地址
+const config_InteLigenTreat_url = 'http://192.168.103.190:8765/'; // 辨证论治服务地址 10.192.1.115
+const config_taboo_url = 'http://192.168.103.190:8764/'; // 中药禁忌检验后台服务地址
 const config_login_url = 'http://192.168.103.190:8086/'; // 登录服务地址
-const config_InteLigenTreatManagement_url = 'http://192.168.103.166:8087/'; // 辨证论治后台服务地址
-const config_BaiduEncyclopedia ='http://192.168.103.166:8080/';   // 百度百科查询服务地址
+const config_InteLigenTreatManagement_url = 'http://192.168.103.190:8087/'; // 辨证论治后台服务地址
+const config_BaiduEncyclopedia ='http://192.168.103.190:8080/';   // 百度百科查询服务地址
 const config_local_url = 'http://localhost:8080'; // 前端服务地址提供给客户端,客户端点击左侧栏时会戴上这个ip
 const colorData = ['#33cc00', '#ff0000', '#6cc' ] // His系统背景颜色
 const pageSize = 5; // 分页时每页显示的记录数
 const questionTemplate = "1" //治疗反馈题目模板类型
 const systemName = '中医馆健康信息平台2.0'; // 系统名称
-const release_version = 'Sinosoft Co,.Ltd.11.09.v4'; // 发布版本号
+const release_version = 'Sinosoft Co,.Ltd.11.18.v1'; // 发布版本号
+const config_orgSelect_url = 'http://192.168.103.190:8086/';// 获取登录页面机构名称
 const defaultSysModuleList = [
   {
     "ctstamp": "2018-10-09 10:46:33",

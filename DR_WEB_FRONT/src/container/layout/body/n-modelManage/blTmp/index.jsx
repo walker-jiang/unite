@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import lodash from 'lodash';
 import styled from 'styled-components';
 import { Form, Icon, Button, Row, Col, Tabs } from 'antd';
 import Loading from 'components/dr/loading';
+import SelectSearchForm from './selectSearchForm.js';
 import TmpName from '../TmpName';
 import MainSpeech from 'roots/layout/body/treatment/treatItem/writeMedicalRecords/formItem/mainSpeech';
 import IllHistory_present from 'roots/layout/body/treatment/treatItem/writeMedicalRecords/formItem/illHistory';
@@ -31,26 +34,35 @@ import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxili
 import DoctorAdviceTemplate from "roots/rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
 import IntelligentTreat from "roots/rightAssistBar/doctorAdvice/intelligentTreat.js";
 
-import { getBLData } from '../service';
+import {
+  getBLData,  //获取病历数据
+  createBLTmpData,  //创建模板
+  putBLTmpData,
+  serverUrl,  //服务地址 配合getAjaxResource使用
+} from '../service.js'; 
 
-const TabPane = Tabs.TabPane;
-const bodyHeight = document.body.clientHeight;
-const FormItem = Form.Item;
+const DEFAULT_USERID = sessionStorage.getItem('userid');
+const DEFAULT_USERNAME = sessionStorage.getItem('username');
+const DEFAULT_ORGID = sessionStorage.getItem('orgid');
+const DEFAULT_DEPTID = sessionStorage.getItem('deptid');
 
+window.modifyPermission = 1;  //可以修改
 class BLTmp extends Component {
   constructor(props) {
     super(props);
     this.state = {
       saved: 0, //是否点击保存按钮, 0未保存 1 保存中 2 保存成功
       tabIndex: 1, // 当前tab
+      tmpName: "",  //模板名称
       initData: {
+        "temname": "",  //模板名称
         "allergichistory": '',//过敏史
         "billid": '',
         "breath": '',//呼吸
-        "buDiagnosisInfo": {},//诊断
-        "buTargetChooseList": [],
+        "buDiagnosisInfoTemplet": {},//诊断
+        "buTempletManage": {},  //模板详情
         "chfingerprint": '',
-        "deptid": '',
+        "deptcode": '',
         "diastolicPressure": '',//舒张压
         "doctorid": '',
         "doctorname": '',
@@ -82,10 +94,12 @@ class BLTmp extends Component {
   };
   /** [getCaseData 初始化病历数据] */
   getCaseData = () => {
-    const { paramData } = this.props;
-    if(getBLData) {
-      getBLData(paramData? paramData: {}).then((data) => {
-        this.setState({initData: data.data});
+    const { paramData, tmpName } = this.props;
+    //paramData如果为空则表示是新建
+    if (getBLData && "temmanageid" in paramData) {
+      getBLData(paramData ? paramData : {}).then((data) => {
+        const _data = { ...data.data, temname: tmpName };
+        this.setState({ initData: _data });
       });
     }
   };
@@ -96,60 +110,40 @@ class BLTmp extends Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
-        let { caseItems, initData } = this.state;
-        let selectedItems = new Array();
-        let buDiagnosisInfo = initData.buDiagnosisInfo ? initData.buDiagnosisInfo : {};
-        buDiagnosisInfo.buDiagnosisList = values.diagnose.originData;
-        buDiagnosisInfo.cardno = window.cardno;
-        buDiagnosisInfo.deptid = window.sessionStorage.getItem('deptid');
-        buDiagnosisInfo.diagnosisDesc = "诊断描述";
-        buDiagnosisInfo.doctorid = window.sessionStorage.getItem('userid');
-        buDiagnosisInfo.orgid = window.sessionStorage.getItem('orgid');
-        buDiagnosisInfo.patientid = window.patientID;
-        buDiagnosisInfo.patientname = window.patientName;
-        buDiagnosisInfo.patientno = "test";
-        buDiagnosisInfo.registerid = window.registerID;
-        buDiagnosisInfo.registerno = "12312";
-        let finalObj = {
-          allergichistory: this.getString(values.allergichistory),
-          breath: values.breath,
-          buDiagnosisInfo: buDiagnosisInfo,
-          deptid: window.sessionStorage.getItem('deptid'),
-          diastolicPressure: values.diastolicPressure,
-          doctorid: window.sessionStorage.getItem('userid'),
-          doctorname: window.sessionStorage.getItem('username'),
-          familyhistory: this.getString(values.familyhistory),
-          hpi: this.getString(values.hpi),
-          inspection: this.getString(values.inspection),
-          moHistory: this.getString(values.moHistory),
-          orgid: window.sessionStorage.getItem('orgid'),
-          palpation: this.getString(values.palpation),
-          pasthistory: this.getString(values.pasthistory),
-          personhistory: this.getString(values.personhistory),
-          pridepict: this.getString(values.pridepict),
-          pulse: values.pulse,
-          registerid: window.registerID,
-          smelling: values.smelling,
-          suggession: values.suggession,
-          syndrome: this.getString(values.syndrome),
-          systolicPressure: values.systolicPressure,
-          temperature: values.temperature,
-          treatprinciple: this.getString(values.treatprinciple),
-          heightnum: values.heightnum,
-          weightnum: values.weightnum,
-          psycheck: values.psycheck,
-          buTargetChooseList: selectedItems,
-          facephoto: values.inspectionPicture[0],
-          sidephoto: values.inspectionPicture[1]
-        };
+        if ((typeof (values.diagnose) == 'object' && !values.diagnose.extractionData) || (typeof (values.diagnose) == 'string' && !values.diagnose)) {
+          this.tipModal.showModal({
+            content: '诊断不能为空',
+          });
+          return;
+        }
+
+        let { initData } = this.state;
+        let buDiagnosisInfo = initData.buDiagnosisInfoTemplet ? initData.buDiagnosisInfoTemplet : {};
+
+        //模板管理信息表
+        let buTempletManage = 'buTempletManage' in initData ? initData['buTempletManage'] : {};
+        if ('temmanageid' in values && values['temmanageid']['item'] && values['temmanageid']['item'].length > 0) {
+          const parentObj = values['temmanageid']['item'][0];
+          this._generateBbuTempletManage(buTempletManage, parentObj, values['temname']);
+        }
+
+        //诊断主表和明细
+        this._buDiagnosisInfo(values, buDiagnosisInfo);
+
+        //诊疗模板
+        let finalObj = this._BuPatientCaseTemplet(values, buDiagnosisInfo);
+
+        //模板管理信息
+        finalObj['buTempletManage'] = { buTempletManageList: [], ...buTempletManage };
+
         Object.assign(initData, finalObj);
         let self = this;
         this.setState({
           saved: 1
         });
         let params = {
-          url: 'BuPatientCaseController/' + (initData.billid ? 'putData' : 'postData'),
+          url: initData.billid ? putBLTmpData() : createBLTmpData(),
+          server_url: serverUrl,
           data: JSON.stringify(initData),
           type: initData.billid ? 'put' : 'post',
         };
@@ -174,6 +168,110 @@ class BLTmp extends Component {
       }
     });
   }
+
+  //新建是需要拼接的数据格式
+  _generateBbuTempletManage = (buTempletManage, parentObj, temname) => {
+    // buTempletManage["temmanageid"] = 0;  //模板管理主键，新建是不需要
+    // buTempletManage["temcode"] = "1";  //模板编码 冗余字段，暂时不需要
+    buTempletManage["temname"] = temname;
+    // buTempletManage["pinyin"] = "1"; //拼音码暂时不生成
+    // buTempletManage["temdes"] = "1"; //模板描述 暂时不需要
+    buTempletManage["weight"] = 1;  //权重默认给1
+    buTempletManage["temtype"] = "0"; //模板类型 0 病历模板 1 医嘱订单模板
+    buTempletManage["temlevel"] = parentObj['temlevel'];  //模板级别 来自父节点
+    buTempletManage["parentid"] = parentObj['temmanageid']; //数节点
+    buTempletManage["parentids"] = parentObj["parentids"] + buTempletManage["parentid"] + '/';
+    buTempletManage["creatuserid"] = DEFAULT_USERID;
+    buTempletManage["personid"] = DEFAULT_USERID;
+    buTempletManage["provid"] = parentObj['provid'];
+    buTempletManage["cityid"] = parentObj["cityid"];
+    buTempletManage["distid"] = parentObj["distid"];
+    buTempletManage["orgid"] = DEFAULT_ORGID;
+    buTempletManage["isleaf"] = '1';  //是模板
+    buTempletManage["deptcode"] = DEFAULT_DEPTID;
+    // buTempletManage["remarks"] = "1";  //怎么生成
+    buTempletManage["isperson"] = parentObj['isperson'];
+    buTempletManage["createuser_name"] = DEFAULT_USERNAME;
+  }
+
+  //诊断列表以及诊断明细
+  _buDiagnosisInfo = (values, buDiagnosisInfo) => {
+    debugger
+    const _originData = values.diagnose.originData ? values.diagnose.originData : [];
+    let _buDiagnosisTempletList = [];
+    _originData.map((data) => {
+      let { baSyndromeList, buDiagnosisSyndromeTempletList, buDiagnosisSyndromeList, ...otherData } = data;
+      _buDiagnosisTempletList.push({ buDiagnosisSyndromeTempletList: buDiagnosisSyndromeList, ...otherData });
+    })
+    buDiagnosisInfo.buDiagnosisTempletList = _buDiagnosisTempletList;
+    buDiagnosisInfo.diagnosisDesc = values.diagnose.extractionData;  // 诊断描述
+    buDiagnosisInfo.registerid = "";   //挂号流水号
+    buDiagnosisInfo.registerno = "";  //his挂号流水号
+    buDiagnosisInfo.orgid = DEFAULT_ORGID;
+    buDiagnosisInfo.doctorid = DEFAULT_USERID;
+    buDiagnosisInfo.doctorname = DEFAULT_USERNAME;
+    buDiagnosisInfo.deptcode = DEFAULT_DEPTID;
+  }
+
+  //诊疗模板数据格式
+  _BuPatientCaseTemplet = (values, buDiagnosisInfo) => {
+    return {
+      orgid: DEFAULT_ORGID,
+      deptcode: DEFAULT_DEPTID,
+      pridepict: this.getString(values.pridepict),
+      hpi: this.getString(values.hpi),
+      pasthistory: this.getString(values.pasthistory),
+      allergichistory: this.getString(values.allergichistory),
+      personhistory: this.getString(values.personhistory),
+      moHistory: this.getString(values.moHistory),
+      familyhistory: this.getString(values.familyhistory),
+      temperature: values.temperature,
+      pulse: values.pulse,
+      breath: values.breath,
+      systolicPressure: values.systolicPressure,
+      diastolicPressure: values.diastolicPressure,
+      inspection: this.getString(values.inspection),
+      smelling: values.smelling,
+      palpation: this.getString(values.palpation),
+      syndrome: this.getString(values.syndrome),
+      psycheck: values.psycheck,
+      suggession: values.suggession,
+      treatprinciple: this.getString(values.treatprinciple),
+      casetype: values.casetype1, //初复诊 0 初诊
+      heightnum: values.heightnum,
+      weightnum: values.weightnum,
+      treatway: values['treatway'],
+      facephoto: values.inspectionPicture[0],
+      sidephoto: values.inspectionPicture[1],
+      isperiod: values.isperiod,
+      ispregnancy: values.ispregnancy,
+      gestationalWeeks: values.gestationalWeeks,
+      buDiagnosisInfoTemplet: buDiagnosisInfo,
+    }
+  }
+
+  //形成传给诊断组件的数据 纯函数
+  _generateDiagnosisRenderData = (initData) => {
+    let _buDiagnosisInfoTemplet = {}, _buDiagnosisTempletList = [], toDiagnosis = [], _buDiagnosisSyndromeTempletList = [];
+    if ('buDiagnosisInfoTemplet' in initData) {
+      _buDiagnosisInfoTemplet = initData['buDiagnosisInfoTemplet'];
+      if ('buDiagnosisTempletList' in _buDiagnosisInfoTemplet) {
+        _buDiagnosisTempletList = _buDiagnosisInfoTemplet['buDiagnosisTempletList']
+        if (lodash.isArray(_buDiagnosisTempletList)) {
+          _buDiagnosisTempletList.map((data) => {
+            const { buDiagnosisSyndromeTempletList, ...otherData } = data;
+            toDiagnosis.push({buDiagnosisSyndromeList: lodash.cloneDeep(buDiagnosisSyndromeTempletList), ...otherData});
+          });
+          return toDiagnosis;
+        }
+      } else {
+        return [];
+      }
+    } else {
+      return [];
+    }
+  }
+
   /**
    * [getString 获取form表单项中对象中的文本]
    * @param  {String} [obj=''] [表单对象]
@@ -184,17 +282,11 @@ class BLTmp extends Component {
   };
 
   render() {
-    const { newTmp } = this.props;
+    const { openTmp, optType, tmpClassify } = this.props;
     let { saved, caseItems, tabIndex, initData } = this.state;
     const { getFieldDecorator, setFieldsValue, getFieldsValue } = this.props.form;
     let { pridepict = '', hpi = '', inspection = '', palpation = '', smelling = '' } = getFieldsValue();
-    // let listenFormData = {
-    //   pridepict: this.getString(pridepict),
-    //   hpi: this.getString(hpi),
-    //   inspection: this.getString(inspection),
-    //   palpation: this.getString(palpation),
-    //   smelling: this.getString(smelling),
-    // };
+    const _DiagnosisRenderData = this._generateDiagnosisRenderData(initData);
     const formItemLayout = {
       labelCol: {
         xs: { span: 3 },
@@ -215,11 +307,12 @@ class BLTmp extends Component {
     }
     return (
       <Container>
-        <Header><Title><ArrowIcon type='right_arrow'/>病历模板/新增病历模板</Title></Header>
+        <Header><Title><ArrowIcon type='right_arrow' />病历模板/新增病历模板</Title></Header>
         <Content>
           <SpecForm onSubmit={this.handleSubmit} >
             <ScrollArea height={140}>
-              <TmpName getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} />
+              <SelectSearchForm getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} selectItemObj={tmpClassify} />
+              <TmpName getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData['temname']} />
               <MainSpeech getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{ originData: [], extractionData: initData.pridepict }} />
               <IllHistory_present title='现病史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{ originData: [], extractionData: initData.hpi }} />
               <IllHistory_allergy title='过敏史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{ originData: [], extractionData: initData.allergichistory }} />
@@ -233,15 +326,15 @@ class BLTmp extends Component {
               <Syndrome setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{ originData: {}, extractionData: initData.syndrome }}></Syndrome>
               <HabitusInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{ temperature: initData.temperature, breath: initData.breath, pulse: initData.pulse, systolicPressure: initData.systolicPressure, diastolicPressure: initData.diastolicPressure, heightnum: initData.heightnum, weightnum: initData.weightnum }}></HabitusInspect>
               <OtherInspect setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.psycheck}></OtherInspect>
-              <Diagnose setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{ originData: initData.buDiagnosisInfo && JSON.stringify(initData.buDiagnosisInfo) != '{}' ? initData.buDiagnosisInfo.buDiagnosisList : [], extractionData: getDiagnoseText(initData.buDiagnosisInfo && JSON.stringify(initData.buDiagnosisInfo) != '{}' ? initData.buDiagnosisInfo.buDiagnosisList : []) }}></Diagnose>
+              <Diagnose setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} 
+              initialValue={{ originData: _DiagnosisRenderData, extractionData: getDiagnoseText(_DiagnosisRenderData) }}></Diagnose>
               <CurePrinciple setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{ originData: {}, extractionData: initData.treatprinciple }}></CurePrinciple>
               <DocAdvice setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.suggession}></DocAdvice>
               <Row>
                 <Col span={14}>
-                  <SureButton type="primary" htmlType="submit" disabled={!window.modifyPermission}>保存</SureButton>
-                  {/* <BorderButton type="primary" onClick={this.handleReset}>打印</BorderButton> */}
-                  <BorderButton type="primary" onClick={this.handleReset}>保存模板</BorderButton>
-                  <Button onClick={() => newTmp('fl')}>返回</Button>
+                  {/* {(optType == "") && <BorderButton type="primary" htmlType="submit" onClick={this.handleReset}>保存模板</BorderButton>} */}
+                  {<BorderButton type="primary" htmlType="submit" >保存模板</BorderButton>}
+                  <BorderButton onClick={() => openTmp('fl')}>返回</BorderButton>
                 </Col>
                 <Saving span={10}>
                   {
@@ -287,7 +380,7 @@ const Title = styled.span`
   display: flex;
   align-items: center;
 `;
-const ArrowIcon = styled(Icon)`
+const ArrowIcon = styled(Icon) `
   height: 32px;
   width: 18px;
   margin-top: 5px;
@@ -363,4 +456,12 @@ const SureButton = styled(Button) `
 `;
 
 const TreatmentList = Form.create()(BLTmp);
+
+TreatmentList.propTypes = {
+  openTmp: PropTypes.func.isRequired,  //调用新建模板，或者查看，更新模板方法 必须
+  optType: PropTypes.string.isRequired, //操作类型 新建，查看，更新
+  paramData: PropTypes.object,  //在查看和编辑时需要参数查询模板数据
+  tmpName: PropTypes.string,  //在查看和编辑时需要显示模板明细
+};
+
 export default TreatmentList;

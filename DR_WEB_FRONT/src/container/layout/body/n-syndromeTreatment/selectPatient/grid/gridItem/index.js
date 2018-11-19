@@ -21,20 +21,11 @@ export default class GridItem extends Component {
               <div>全天号 ｜ {dataSource.regDate.substr(5,2)}号</div>
             </Info>
           </Body>
-          {
-            gridType == 0 ?
-            <Footer themeType={themeType}>
-              <ActionButton onClick={() => {this.props.onStep(1, dataSource.registerid)}}>
-                选择
-              </ActionButton>
-            </Footer>
-            : gridType == 1 ?
-            <Footer themeType={themeType}>
-              <ActionButton onClick={() => {this.props.onStep(1, dataSource.registerid)}}>
-                选择
-              </ActionButton>
-            </Footer> : null
-          }
+          <Footer themeType={themeType}>
+            <ActionButton onClick={() => {this.props.onStep(1, dataSource.registerid)}}>
+              选择
+            </ActionButton>
+          </Footer>
         </Container>
       </ThemeProvider>
     )

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import Icon from 'components/dr/icon';
 import Popout from 'components/popout/basePop';
+import BasicInput from '../basicInput';
 
 export default class InputSelect extends Component {
   constructor(props){
@@ -16,11 +17,17 @@ export default class InputSelect extends Component {
   };
   /** [handleEnterPress 包括enter显示，esc隐藏的判断函数] */
   handleEnterPress = (e) => {
-    if(e.keyCode == 13){ // enter
-      if(!this.props.formItemProps.disable){ // 诊断是否只读模式
-        this.setState({visible:true});
-        this.props.displayed(); // 通知父组件已显示弹框
+    if(e.keyCode === 13 && e.ctrlKey){ // enter + ctrl
+        if(!this.props.formItemProps.disable){ // 诊断是否只读模式
+          this.setState({visible:true});
+        }
+    }
+    if(e.keyCode == 13){ // enter 右侧联动
+      if(this.props.formItemProps.onKeyDown){
+        this.props.formItemProps.onKeyDown();
       }
+      e.preventDefault(); // 阻止回车话那换行事件
+      return false;
     }
     if(e.keyCode == 27){ // ESC
       this.setState({visible:false});
@@ -36,16 +43,16 @@ export default class InputSelect extends Component {
   };
   render() {
     let { visible } = this.state;
-    let { icon = '#C6C6C6' , type = 'search', title = '标题', icon_right = '0px', hbgColor, icon_type, importability = true} = this.props;
+    let { icon = '#C6C6C6' , type = 'search', title = '标题', icon_right = '0px', hbgColor, icon_type, importability = true, fixed_left = 1} = this.props;
     let { value, ...other } = this.props.formItemProps; // 表单属性
-    if(!importability){
+    if(!importability){ //  去掉输入事件
       other.onChange = (e) => {}
     }
     return (
       <Container >
-        <Input {...other} value={value.extractionData} autoComplete="off" onKeyDown={this.handleEnterPress}/>
-        <Search type={type} fill={icon} right={icon_right} onClick={()=>{this.handleEnterPress({keyCode: 13})}}/>
-        <Popout visible={visible} title ={title} onClose={this.handleClose} hbgColor={hbgColor} icon_type={icon_type}>
+        <BasicInput {...other}  value={typeof(value) == 'string' ? value : value.extractionData} autoComplete="off" onKeyDown={this.handleEnterPress}/>
+        <Search type={type} fill={icon} right={icon_right} onClick={()=>{this.setState({visible: true})}}/>
+        <Popout visible={visible} title ={title} onClose={this.handleClose} hbgColor={hbgColor} icon_type={icon_type} fixed_left={fixed_left}>
           {this.props.children}
         </Popout>
       </Container>
@@ -62,29 +69,6 @@ const Search = styled(Icon)`
   cursor: pointer;
   right: ${props => props.right};
   top: 10px;
-`;
-const Input = styled.input.attrs({
-  type: 'text',
-  icon: 0,
-  placeholder: props => props.placeholder
-})`
-  border-bottom: 1px solid rgba(215, 215, 215);
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  line-height: 25px;
-  color: black;
-  width: 100%;
-  background: transparent;
-  margin-top: 10px;
-  font-size: 12px;
-  &:focus {
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    border-bottom: 1px solid rgba(215, 215, 215, 1);
-    outline: none
-  }
 `;
 InputSelect.propTypes = {
   icon: PropTypes.string, // 右侧小搜索按钮的颜色

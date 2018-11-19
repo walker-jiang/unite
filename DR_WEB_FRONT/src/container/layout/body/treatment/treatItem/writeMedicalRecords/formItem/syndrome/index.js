@@ -19,7 +19,7 @@ export default class Index extends Component {
           {getFieldDecorator('syndrome', {
             initialValue: initialValue
           })(
-            <SyndromePop />
+            <SyndromePop itemFieldname='syndrome'/>
           )}
           </FormItem>
         </Col>

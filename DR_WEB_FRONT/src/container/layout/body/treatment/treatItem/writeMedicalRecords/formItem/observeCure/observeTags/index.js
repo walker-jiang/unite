@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Modal from 'react-modal';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 
-export default class ObserveCure extends Component {
+export default class ObserveTags extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -66,29 +66,33 @@ export default class ObserveCure extends Component {
   };
   /** [coatedTagClick 舌苔标签被选择] */
   coatedTagClick(text, checkable, id){
-    let {tongueCoatedSelected, tongueNatureSelected} = this.state;
+    // let {tongueCoatedSelected, tongueNatureSelected} = this.state;
     if(checkable){ // 选中
-      tongueCoatedSelected.push({id: id, name: text});
+      this.props.onClick('add', text);
+      // tongueCoatedSelected.push({id: id, name: text});
     }else{ // 取消
-      tongueCoatedSelected = tongueCoatedSelected.remove({ name: text});
+      this.props.onClick('del', text);
+      // tongueCoatedSelected = tongueCoatedSelected.remove({ name: text});
     }
-    this.setState({ tongueCoatedSelected }, () => {
-      let {tongueCoatedSelected, tongueNatureSelected} = this.state;
-      this.props.onClick(tongueCoatedSelected, tongueNatureSelected);
-    });
+    // this.setState({ tongueCoatedSelected }, () => {
+    //   let {tongueCoatedSelected, tongueNatureSelected} = this.state;
+    //   this.props.onClick(tongueCoatedSelected, tongueNatureSelected);
+    // });
   };
   /** [natureTagClick 舌质标签被选择] */
   natureTagClick(text, checkable, id){
-    let {tongueCoatedSelected, tongueNatureSelected} = this.state;
+    // let {tongueCoatedSelected, tongueNatureSelected} = this.state;
     if(checkable){ // 选中
-      tongueNatureSelected.push({id: id, name: text});
+      this.props.onClick('add', text);
+      // tongueNatureSelected.push({id: id, name: text});
     }else{ // 取消
-      tongueNatureSelected = tongueNatureSelected.remove({ name: text});
+      this.props.onClick('del', text);
+      // tongueNatureSelected = tongueNatureSelected.remove({ name: text});
     }
-    this.setState({ tongueNatureSelected }, () => {
-      let {tongueCoatedSelected, tongueNatureSelected} = this.state;
-      this.props.onClick(tongueCoatedSelected, tongueNatureSelected);
-    });
+    // this.setState({ tongueNatureSelected }, () => {
+    //   let {tongueCoatedSelected, tongueNatureSelected} = this.state;
+    //   this.props.onClick(tongueCoatedSelected, tongueNatureSelected);
+    // });
   };
   /**
    * [tagsOver 鼠标滑过标签2后触发另一个事件]

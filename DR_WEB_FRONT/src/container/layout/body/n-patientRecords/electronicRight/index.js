@@ -111,16 +111,14 @@ export default class Electronic extends Component {
       xy = disname;
       zy = '暂略；';
     }
-    let cl;
-    let wl;
-    chOrderList.forEach((item)=>{
-      console.log('item',item)
-      cl = item.ordercontent;
-    })
-    weOrderList.forEach((item)=>{
-      console.log('item',item)
-      wl = item.ordercontent;
-    })
+    let cl = chOrderList.map((item, index)=>{
+      item.key = index; // 加唯一key值
+      return item.ordercontent;
+    });
+    let wl = weOrderList.map((item, index)=>{
+      item.key = index; // 加唯一key值
+      return item.ordercontent;
+    });
     if(casetype != ''){//判断初复诊：1为初诊，2为复诊；
       var ct = casetype;
       ss = <RadioGroup name="radiogroup" disabled defaultValue={ct}>

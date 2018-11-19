@@ -16,12 +16,19 @@ export default class TextareaEnterPop extends Component {
    * @param  {[type]} keyCode [键盘码]
    * @return {[type]}         [undefined]
    */
-  handleKeyPress(keyCode){
-    if(keyCode == 13){ // enter
+  handleKeyPress(e){
+    if(e.keyCode === 13 && e.ctrlKey){ // enter + ctrl
       this.setState({visible:true});
-      this.props.displayed(this.props.formItemProps.title); // 通知父组件已显示弹框
+      // this.props.displayed(this.props.formItemProps.title); // 通知父组件已显示弹框
     }
-    if(keyCode == 27){ // ESC
+    if(e.keyCode == 13){ // enter 右侧联动
+      if(this.props.formItemProps.onKeyDown){
+        this.props.formItemProps.onKeyDown();
+        e.preventDefault(); // 阻止回车话那换行事件
+        return false;
+      }
+    }
+    if(e.keyCode == 27){ // ESC
       this.setState({visible:false});
     }
   };
@@ -30,14 +37,14 @@ export default class TextareaEnterPop extends Component {
     this.setState({visible: false});
   };
   render() {
-    let { value, title , ...other } = this.props.formItemProps; // 表单属性
+    let { fixed_left = 1, formItemProps: { value, title , ...other } } = this.props; // 表单属性
     let { visible } = this.state;
     return (
       <Container>
-        <Textarea {...other} value={value.extractionData} onKeyDown={(e) => { this.handleKeyPress(e.keyCode) }} >
+        <Textarea {...other} value={typeof(value) == 'string' ? value: value.extractionData} onKeyDown={(e) => { this.handleKeyPress(e) }} >
         </Textarea>
-        <Sign type='search' fill='#C6C6C6' onClick={() => {this.handleKeyPress(13)}}></Sign>
-        <Popout visible={visible} title ={title} onClose={this.handleClose}>
+        <Sign type='search' fill='#C6C6C6' onClick={() => {this.setState({visible: true})}}></Sign>
+        <Popout visible={visible} title ={title} onClose={this.handleClose} fixed_left={fixed_left}>
           {this.props.children}
         </Popout>
       </Container>

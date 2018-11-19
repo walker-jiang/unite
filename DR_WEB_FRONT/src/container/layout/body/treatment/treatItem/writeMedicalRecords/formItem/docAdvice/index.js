@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import { Form, Row, Col } from 'antd';
-import Input from 'components/dr/input/basicInput';
+import DocAdvicePop from './docAdvicePop';
 
 const FormItem = Form.Item;
 
@@ -9,7 +9,7 @@ export default class Index extends Component {
   render() {
     const { getFieldDecorator, formItemLayout, initialValue} = this.props;
     return (
-      <Row className='height'>
+      <Row>
         <Col span={24}>
           <FormItem
             {...formItemLayout}
@@ -19,7 +19,7 @@ export default class Index extends Component {
           {getFieldDecorator('suggession', {
             initialValue: initialValue
           })(
-            <Input id='suggession'/>
+            <DocAdvicePop itemFieldname='suggession'/>
           )}
           </FormItem>
         </Col>

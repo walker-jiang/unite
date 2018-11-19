@@ -44,9 +44,9 @@ class PieChart extends React.Component {
       })
       var divHtml;
       if(all == 0){
-        divHtml=`<div style="color:##929292;font-size: 14px;text-align: center;width: 10em;">就诊总量<br><span style="color:#272727;font-size:20px"> 0 </span></div>`
+        divHtml=`<div style="color:#929292;font-size: 14px;text-align: center;width: 10em;">就诊总量<br><span style="color:#272727;font-size:20px"> 0 </span></div>`
       }else{
-        divHtml=`<div style="color:##929292;font-size: 14px;text-align: center;width: 10em;">就诊总量<br><span style="color:#272727;font-size:20px"> ${all} </span></div>`
+        divHtml=`<div style="color:#929292;font-size: 14px;text-align: center;width: 10em;">就诊总量<br><span style="color:#272727;font-size:20px"> ${all} </span></div>`
       }
       chart.guide().html({
         html: divHtml,
@@ -59,8 +59,9 @@ class PieChart extends React.Component {
        window.chart = new G2.Chart({
         container: 'mountNode',
         forceFit: true,
-        height:250,
-        width:250,
+        clickable:false,
+        height:150,
+        width:150,
         padding: { top: 10, right:150, bottom: 10, left: 0 }
       });
       window.piechartPaint();
@@ -73,16 +74,18 @@ class PieChart extends React.Component {
         }
       });
       // window.chart.changeData(this.state.daTa)
-      window.chart.coord('theta', {
+      window.chart.coord('theta', {   //设置图案的填充大小
         innerRadius: 0.75
-      });
+      });1
       window.chart.tooltip({
         showTitle: false
       });
       var this_ =this;
-      window.chart.legend({
+      window.chart.legend({  //设置图例文字提示框
         useHtml: true,
+        clickable:false,
         position: 'right',
+        slidable:false,
         offsetY:-50,
         offsetX:"",
         textStyle: {
@@ -116,8 +119,14 @@ class PieChart extends React.Component {
           return str; // val 为每个图例项的文本值
         }
       });
-      window.chart.intervalStack().position('value').color('type').shape('sliceShape');
+      window.chart.intervalStack().position('value').color('type').shape('sliceShape').style({
+        lineWidth: 1
+      });
       window.chart.render();
+      // var geom =G2.getGeoms()[0]; // 获取所有的图形
+      // var items = geom.getData(); // 获取图形对应的数据
+      // console.log(geom,items,  geom.getSelected(items[1]))
+      console.log(window.chart )
     }else{
       window.chart.guide().clear();// 清理guide
       window.piechartPaint();
@@ -192,6 +201,7 @@ class PieChart extends React.Component {
     var this_=this,dataA = [];
     function scallBack(res){
       var disval=0;
+      console.log(res.data,'1231313')
       res.data.map((val,i) => {
         if( val.disname == ''){//把disname是空的对应的disnamecount值添加到'其他'里面
           disval += parseInt(val.disnamecount)

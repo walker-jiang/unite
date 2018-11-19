@@ -172,14 +172,14 @@ export default class ContentDetail extends Component {
   }
   render() {
     var { isCut, isUnfoldAll, drugName, treatname, therapy, freqname, buImlistEntities, item, unfold  } = this.state;
-    console.log("this.props.item====",item.baUsage);
+    console.log("this.props.item====",item);
     return (
       <div>
         <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
         <div className="content-detail-two" style={{paddingBottom:item.priors == "1"?10:5}}>
           <div>
             <span onClick={()=>this.unfold("drugName",drugName)} className="left">
-              {item.drugName.length>35?<span style={{fontWeight:600}}><Icon type={drugName?"down":"right"}/>主方：</span>:<span style={{fontWeight:600,marginLeft:15}}>主方：</span>}
+              {item.drugName && item.drugName.length>35?<span style={{fontWeight:600}}><Icon type={drugName?"down":"right"}/>主方：</span>:<span style={{fontWeight:600,marginLeft:15}}>主方：</span>}
             </span>
             <span className="right">{ drugName?(item.drugName == ""?"无":item.drugName):this.cutOut(item.drugName) }</span>
           </div>
@@ -197,7 +197,7 @@ export default class ContentDetail extends Component {
           </div>
           <div>
             <span onClick={()=>this.unfold("therapy",therapy)} className="left">
-              {item.therapy.length>25?<span style={{fontWeight:600}}><Icon type={therapy?"down":"right"}/>治则治法：</span>:<span style={{fontWeight:600,marginLeft:15}}>治则治法：</span>}
+              {item.therapy && item.therapy.length>25?<span style={{fontWeight:600}}><Icon type={therapy?"down":"right"}/>治则治法：</span>:<span style={{fontWeight:600,marginLeft:15}}>治则治法：</span>}
             </span>
             <span className="right">{ therapy?(item.therapy == ""?"无":item.therapy):this.cutOut(item.therapy) }</span>
           </div>

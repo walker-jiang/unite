@@ -13,6 +13,7 @@ import Cardno from '../../n-patientRegister/registerForm/basicInfoForm/interconn
 import Sex from '../../n-patientRegister/registerForm/basicInfoForm/interconnectedItems/cardnoSexBirthday/sex';
 import Birthday from '../../n-patientRegister/registerForm/basicInfoForm/interconnectedItems/cardnoSexBirthday/birthday';
 import PatientName from '../../n-patientRegister/registerForm/basicInfoForm/interconnectedItems/patientName';
+import DeptDoctor from '../../n-patientRegister/registerForm/basicInfoForm/interconnectedItems/deptDoctor';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
@@ -33,82 +34,16 @@ class QuickReception extends Component {
         birthday: '',
         casetype: '',
       }, //患者数据
-      defaultDept: {}, // 默认科室
-      defaultDoc: {}, //默认医生
+      defaultDept: {key: window.sessionStorage.getItem('deptid'), label: window.sessionStorage.getItem('deptidDic')}, // 默认科室
+      defaultDoc: {key: window.sessionStorage.getItem('userid'), label: window.sessionStorage.getItem('username')}, //默认医生
       pationtype: [], // 患者类型
       cardtype: [], //卡类型
       sex: [], // 性别
       casetype: [], //就诊类型
-      deptData: [], //科室数据
-      docData: [], // 就诊医生数据
     };
     this.quickReceive = this.quickReceive.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  };
-  /** [getDept 科室数据] */
-  getDept() {
-    let params = {
-      url: 'BaDepartmentController/getList',
-      server_url: config_login_url,
-      data: {
-        keyword: '',
-        orgid: window.sessionStorage.getItem('orgid')
-      }
-    };
-    let that = this;
-    function success(res) {
-      if(res.result){
-        let deptData = res.data;
-        let defaultDept = {};
-        let deptname = '';
-        deptData.forEach(item => {
-          if(item.deptid == window.sessionStorage.getItem('deptid')){
-            deptname = item.deptname;
-          }
-        });
-        defaultDept = {
-          key: window.sessionStorage.getItem('deptid'),
-          label: deptname
-        }
-        that.setState({ deptData, defaultDept }, () => {
-          that.getDocData('init', window.sessionStorage.getItem('deptid'));
-        })
-      }
-    };
-    ajaxGetResource(params, success);
-  }
-  /**
-   * [getDocData 获取医生数据]
-   * @param  {[type]} param [改变项的form ID]
-   * @param  {[type]} value [改变项的 form value]
-   * @return {[type]}       [undefin]
-   */
-  getDocData(param, value){
-    let self = this;
-    let params = {
-      url: 'BaOrguserController/getList',
-      data: {
-        orgid: window.sessionStorage.getItem('orgid'),
-        deptcode: window.sessionStorage.getItem('deptid'),
-        keyword: ''
-      },
-    };
-    function callBack(res){
-      if(res.result){
-        let defaultDoc = {
-          key: window.sessionStorage.getItem('userid'),
-          label: window.sessionStorage.getItem('username')
-        };
-        self.setState({
-          docData: res.data,
-          defaultDoc
-        });
-      }else{
-        console.log('异常响应信息', res);
-      }
-    };
-    ajaxGetResource(params, callBack);
   };
   /**
    * [getDictList 获取字典列表]
@@ -138,7 +73,6 @@ class QuickReception extends Component {
   };
   quickReceive(){
     this.getDictList(['sex', 'pationtype', 'cardtype', 'casetype']);
-    this.getDept();
     let patientInfo = {
       patientname: '',
       sex: '',
@@ -178,7 +112,8 @@ class QuickReception extends Component {
           recDoctorid: doctor.key,
           recDoctorname:  doctor.label,
           regDoctorid: doctor.key,
-          regDoctorname:  doctor.label
+          regDoctorname: doctor.label,
+          casetype: values.casetype
         };
         let params = {
           url: 'BuRegisterController/quickRecive',
@@ -191,7 +126,7 @@ class QuickReception extends Component {
             let path = {
               pathname: '/layout/treatment',
             };
-            window.casetype_global = getFieldValue('casetype');
+            // window.casetype_global = getFieldValue('casetype');
             window.registerID = res.data.registerid;
             window.modifyPermission = 1; // 治疗书写权限0只读 1 可写
             window.patientID = res.data.patientid;
@@ -205,7 +140,6 @@ class QuickReception extends Component {
             console.log('异常响应信息', res);
           }
         };
-        console.log('params', params);
         ajaxGetResource(params, callBack);
       }
     });
@@ -214,7 +148,7 @@ class QuickReception extends Component {
     this.props.form.resetFields();
   }
   render() {
-    let { visible, patientInfo, pationtype, cardtype, casetype, sex, deptData, docData, defaultDept, defaultDoc } = this.state;
+    let { visible, patientInfo, pationtype, cardtype, casetype, sex, defaultDept, defaultDoc } = this.state;
     const { getFieldDecorator, setFieldsValue, getFieldValue } = this.props.form;
     const formItemLayout = {
       labelCol: {
@@ -245,7 +179,7 @@ class QuickReception extends Component {
               <Col span={12}>
                 <PatientName commontProps={commontProps} ref={ ref => { this.patientName = ref }} initialValue={patientInfo.patientname}/>
               </Col>
-              <Col span={11}>
+              <Col span={12}>
                 <Sex commontProps={commontProps} sex={sex} initialValue={patientInfo.sex}/>
               </Col>
             </Row>
@@ -264,7 +198,7 @@ class QuickReception extends Component {
                   )}
                 </FormItem>
               </Col>
-              <Col span={11}>
+              <Col span={12}>
                 <FormItem
                   {...formItemLayout}
                   colon={false}
@@ -302,7 +236,7 @@ class QuickReception extends Component {
                   )}
                 </FormItem>
               </Col>
-              <Col span={11}>
+              <Col span={12}>
                 <Cardno commontProps={commontProps} initialValue={patientInfo.cardno}/>
               </Col>
             </Row>
@@ -310,7 +244,7 @@ class QuickReception extends Component {
               <Col span={12}>
                 <Birthday commontProps={commontProps} initialValue={patientInfo.birthday}/>
               </Col>
-              <Col span={11}>
+              <Col span={12}>
                 <FormItem
                   {...formItemLayout}
                   colon={false}
@@ -329,44 +263,7 @@ class QuickReception extends Component {
                 </FormItem>
               </Col>
             </Row>
-            <Row>
-              <Col span={12}>
-                <FormItem
-                  {...formItemLayout}
-                  colon={false}
-                  label="就诊科室："
-                  >
-                  {getFieldDecorator('dept', {
-                    rules: [{ required: true, message: '请选择就诊科室!' }],
-                    initialValue: defaultDept
-                  })(
-                    <SpecSelect onChange={e => this.getDocData('dept', e.key)} labelInValue disabled>
-                    {
-                      deptData.map(item => <Option key={item.deptid} value={item.deptid}>{item.deptname}</Option>)
-                    }
-                    </SpecSelect>
-                  )}
-                </FormItem>
-                </Col>
-              <Col span={11}>
-                <FormItem
-                  {...formItemLayout}
-                  colon={false}
-                  label="接诊医生："
-                  >
-                  {getFieldDecorator('doctor', {
-                    rules: [{ required: true, message: '请输入接诊医生姓名!' }],
-                    initialValue: defaultDoc
-                  })(
-                    <SpecSelect labelInValue disabled>
-                    {
-                      docData.map(item => <Option key={item.orgUerid} value={item.orgUerid}>{item.realname}</Option>)
-                    }
-                    </SpecSelect>
-                  )}
-                </FormItem>
-              </Col>
-            </Row>
+            <DeptDoctor commontProps={Object.assign({...commontProps}, {disabled: true})} onFocus={() => {this.patientName.hidePopTable()}} initialValue={{ dept: defaultDept, doctor: defaultDoc}} percentage={12}/>
             <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
             <Footer>
               <SureButton type="primary" onClick={this.handleSubmit}>接诊</SureButton>
@@ -389,6 +286,9 @@ const RegisterButton = styled(Button)`
 `;
 const SpecForm= styled(Form)`
   width: 600px;
+  &&& {
+    padding-right: 30px;
+  }
   &&& > div > div > .ant-form-item {
     margin-bottom: 10px;
   }

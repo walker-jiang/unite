@@ -21,6 +21,7 @@ import OtherInspect from './formItem/otherInspect';
 import HabitusInspect from './formItem/habitusInspect';
 import Diagnose from './formItem/diagnose';
 import CurePrinciple from './formItem/curePrinciple';
+import Treatway from './formItem/treatway';
 import DocAdvice from './formItem/docAdvice';
 import CarefulItem from './formItem/carefulItem';
 import TipModal from 'components/dr/modal/tip';
@@ -29,26 +30,26 @@ import ScrollArea from 'components/scrollArea';
 import ajaxGetResource from 'commonFunc/ajaxGetResource';
 import buttonSty from 'components/antd/style/button';
 import { getDiagnoseText } from 'commonFunc/transform';
-// import Template from "roots/rightAssistBar/medicalRecordWriting/medicalRecordTemplate.js";
-// import MedicalHistory from "roots/rightAssistBar/medicalRecordWriting/medicalHistory.js";
-// import BiofeedbckTherpy from "roots/rightAssistBar/medicalRecordWriting/BiofeedbckTherpy.js";
-// import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
+import Template from "roots/rightAssistBar/medicalRecordWriting/medicalRecordTemplate.js";
+import MedicalHistory from "roots/rightAssistBar/medicalRecordWriting/medicalHistory.js";
+import BiofeedbckTherpy from "roots/rightAssistBar/medicalRecordWriting/BiofeedbckTherpy.js";
+import AuxiliaryDiagnosis from "roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js";
 
-const loadingComponent = () => (<div>Loading...</div>);
-const Template = Loadable({
-  loader: () => import('roots/rightAssistBar/medicalRecordWriting/medicalRecordTemplate.js'),
-  loading: loadingComponent,
-});
-const MedicalHistory = Loadable({
-  loader: () => import('roots/rightAssistBar/medicalRecordWriting/medicalHistory.js'),
-  loading: loadingComponent,
-});const BiofeedbckTherpy = Loadable({
-  loader: () => import('roots/rightAssistBar/medicalRecordWriting/BiofeedbckTherpy.js'),
-  loading: loadingComponent,
-});const AuxiliaryDiagnosis = Loadable({
-  loader: () => import('roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js'),
-  loading: loadingComponent,
-});
+// const loadingComponent = () => (<div>Loading...</div>);
+// const Template = Loadable({
+//   loader: () => import('roots/rightAssistBar/medicalRecordWriting/medicalRecordTemplate.js'),
+//   loading: loadingComponent,
+// });
+// const MedicalHistory = Loadable({
+//   loader: () => import('roots/rightAssistBar/medicalRecordWriting/medicalHistory.js'),
+//   loading: loadingComponent,
+// });const BiofeedbckTherpy = Loadable({
+//   loader: () => import('roots/rightAssistBar/medicalRecordWriting/BiofeedbckTherpy.js'),
+//   loading: loadingComponent,
+// });const AuxiliaryDiagnosis = Loadable({
+//   loader: () => import('roots/rightAssistBar/medicalRecordWriting/auxiliaryDiagnosis.js'),
+//   loading: loadingComponent,
+// });
 
 const TabPane = Tabs.TabPane;
 const bodyHeight = document.body.clientHeight;
@@ -62,6 +63,7 @@ class WriteMedicalRecords extends Component {
       tabIndex: '', // 当前tab
       caseItems: [], // 病历指标项
       temname:'',
+      listenFormData: {}, // 左右侧联动的数据
       initData: {
         "allergichistory": '',//过敏史
         "billid": '',
@@ -213,6 +215,7 @@ class WriteMedicalRecords extends Component {
           pulse: values.pulse,
           registerid: window.registerID,
           smelling: values.smelling,
+          treatway: values.treatway,
           suggession: values.suggession,
           syndrome: this.getString(values.syndrome),
           systolicPressure: values.systolicPressure,
@@ -355,42 +358,22 @@ class WriteMedicalRecords extends Component {
      visible: true,
    });
  }
-/** [handleOk 关闭对话框] */
- handleOk = (e) => {
+  /** [handleOk 关闭对话框] */
+  handleOk = (e) => {
    console.log(e);
    this.setState({
      visible: false,
    });
  }
-/** [handleCancel 关闭对话框] */
- handleCancel = (e) => {
+  /** [handleCancel 关闭对话框] */
+  handleCancel = (e) => {
    console.log(e);
    this.setState({
      visible: false,
    });
  }
- /** [postModal 拿到模板列表的数据/拿到我的模板的详情] */
- // getbuTempletManageList=()=>{
- //   let params = {
- //     url: 'BuTempletManageController/getList',
- //     data: {
- //          personid:window.sessionStorage.getItem('userid'),
- //          orgid:window.sessionStorage.getItem('orgid'),
- //          temtype:'0'
- //     },
- //     type: 'get',
- //   };
- //   function callBack(res){
- //     if(res.result){
- //       console.log('模板列表数据',res)
- //     }else{
- //       console.log('异常响应信息', res);
- //     }
- //   };
- //   ajaxGetResource(params, callBack);
- // }
- /** [postModal 添加诊疗模板信息] */
- postModal=()=>{
+  /** [postModal 添加诊疗模板信息] */
+  postModal=()=>{
   let data={
     "allergichistory": "1",
     "billid": 0,
@@ -532,15 +515,12 @@ class WriteMedicalRecords extends Component {
    ajaxGetResource(params, callBack);
    this. handleCancel();
  }
- /** [onChange 获取弹出层中输入框的数据] */
- onChange=(e)=>{
+  /** [onChange 获取弹出层中输入框的数据] */
+  onChange=(e)=>{
    this.setState({temname:e.target.value})
  }
-  render() {
-    let { saved, caseItems, tabIndex, initData } = this.state;
-    const { getFieldDecorator, setFieldsValue, getFieldsValue, isFieldsTouched } = this.props.form;
-    let isEdit = isFieldsTouched();
-    let { pridepict = '', hpi = '', inspection = '', palpation = '', smelling = '' } = getFieldsValue();
+  onEnterKeyDown = () => {
+    let { pridepict = '', hpi = '', inspection = '', palpation = '', smelling = '' } = this.props.form.getFieldsValue();
     let listenFormData =  {
       pridepict: this.getString(pridepict),
       hpi: this.getString(hpi),
@@ -548,6 +528,13 @@ class WriteMedicalRecords extends Component {
       palpation: this.getString(palpation),
       smelling: this.getString(smelling),
     };
+    this.setState({ listenFormData });
+  };
+  render() {
+    let { saved, caseItems, tabIndex, initData, listenFormData } = this.state;
+    const { getFieldDecorator, setFieldsValue, getFieldsValue, isFieldsTouched } = this.props.form;
+    const IsMedRecordTemplate = this.props.IsMedRecordTemplate;
+    let isEdit = isFieldsTouched();
     const formItemLayout = {
       labelCol: {
         xs: { span: 3 },
@@ -572,38 +559,38 @@ class WriteMedicalRecords extends Component {
           <ScrollArea height={140}>
           {
             caseItems.map((item, index) => {
-              if(item.targetid == 1 && item.isChoose == '01'){
+              if(item.targetid == 1 && item.isChoose == '01' && !IsMedRecordTemplate){
                 return <CaseType key={index} changeTabs={this.changeTabs} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.casetype}></CaseType>
               }
               if(item.targetid == 2 && item.isChoose == '01'){
-                return <MainSpeech key={index} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.pridepict}}/>
+                return <MainSpeech key={index} getFieldDecorator={getFieldDecorator} onEnterKeyDown={this.onEnterKeyDown} formItemLayout={formItemLayout} initialValue={initData.pridepict}/>
               }
               if(item.targetid == 3 && item.isChoose == '01'){
-                return <IllHistory_present key={index} title='现病史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.hpi}}/>
+                return <IllHistory_present key={index} title='现病史' getFieldDecorator={getFieldDecorator} onEnterKeyDown={this.onEnterKeyDown} formItemLayout={formItemLayout} initialValue={initData.hpi}/>
               }
               if(item.targetid == 4 && item.isChoose == '01'){
-                return <IllHistory_allergy key={index} title='过敏史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.allergichistory}}/>
+                return <IllHistory_allergy key={index} title='过敏史' getFieldDecorator={getFieldDecorator} onEnterKeyDown={() => {}} formItemLayout={formItemLayout} initialValue={initData.allergichistory}/>
               }
               if(item.targetid == 5 && item.isChoose == '01'){
-                return <IllHistory_pasthis key={index} title='既往史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.pasthistory}}/>
+                return <IllHistory_pasthis key={index} title='既往史' getFieldDecorator={getFieldDecorator} onEnterKeyDown={() => {}} formItemLayout={formItemLayout} initialValue={initData.pasthistory}/>
               }
               if(item.targetid == 6 && item.isChoose == '01'){
-                return <IllHistory_personhis key={index} title='个人史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.personhistory}}/>
+                return <IllHistory_personhis key={index} title='个人史' getFieldDecorator={getFieldDecorator} onEnterKeyDown={() => {}} formItemLayout={formItemLayout} initialValue={initData.personhistory}/>
               }
               if(item.targetid == 7 && item.isChoose == '01'){
-                return <IllHistory_moHis key={index} title='月经婚育史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.moHistory}}/>
+                return <IllHistory_moHis key={index} title='月经婚育史' getFieldDecorator={getFieldDecorator} onEnterKeyDown={() => {}} formItemLayout={formItemLayout} initialValue={initData.moHistory}/>
               }
               if(item.targetid == 8 && item.isChoose == '01'){
-                return <IllHistory_familyhis key={index} title='家族史' getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: [], extractionData: initData.familyhistory}}/>
+                return <IllHistory_familyhis key={index} title='家族史' getFieldDecorator={getFieldDecorator} onEnterKeyDown={() => {}} formItemLayout={formItemLayout} initialValue={initData.familyhistory}/>
               }
               if(item.targetid == 9 && item.isChoose == '01'){
-                return <ObserveCure ref={ ref => { this.observeCure = ref }} hideFeelCure={this.hidePopComponent} key={index} setFieldsValue={setFieldsValue} getFieldsValue={getFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: tongueUrls, text: initData.inspection}}></ObserveCure>
+                return <ObserveCure ref={ ref => { this.observeCure = ref }} onEnterKeyDown={this.onEnterKeyDown} hideFeelCure={this.hidePopComponent} key={index} setFieldsValue={setFieldsValue} getFieldsValue={getFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{urlArr: tongueUrls, text: initData.inspection}}></ObserveCure>
               }
               if(item.targetid == 10 && item.isChoose == '01'){
-                return <FeelCure ref={ ref => { this.fellCure = ref }} hideObseverCure={this.hidePopComponent} key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
+                return <FeelCure ref={ ref => { this.fellCure = ref }} onEnterKeyDown={this.onEnterKeyDown} hideObseverCure={this.hidePopComponent} key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.palpation}></FeelCure>
               }
               if(item.targetid == 12 && item.isChoose == '01'){
-                return <SmellCure key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.smelling}></SmellCure>
+                return <SmellCure key={index} setFieldsValue={setFieldsValue} onEnterKeyDown={this.onEnterKeyDown} getFieldDecorator={getFieldDecorator} onEnterKeyDown={this.onEnterKeyDown} formItemLayout={formItemLayout} initialValue={initData.smelling}></SmellCure>
               }
               if(item.targetid == 13 && item.isChoose == '01'){
                 return <Syndrome key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: {}, extractionData: initData.syndrome}}></Syndrome>
@@ -618,9 +605,12 @@ class WriteMedicalRecords extends Component {
                 return <Diagnose key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: initData.buDiagnosisInfo && JSON.stringify(initData.buDiagnosisInfo) != '{}' ? initData.buDiagnosisInfo.buDiagnosisList : [], extractionData: getDiagnoseText(initData.buDiagnosisInfo && JSON.stringify(initData.buDiagnosisInfo) != '{}'  ? initData.buDiagnosisInfo.buDiagnosisList : [])}}></Diagnose>
               }
               if(item.targetid == 17 && item.isChoose == '01'){
-                return <CurePrinciple key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={{originData: {}, extractionData: initData.treatprinciple}}></CurePrinciple>
+                return <CurePrinciple key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.treatprinciple}></CurePrinciple>
               }
               if(item.targetid == 18 && item.isChoose == '01'){
+                return <Treatway key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.treatway}></Treatway>
+              }
+              if(item.targetid == 19 && item.isChoose == '01'){
                 return <DocAdvice key={index} setFieldsValue={setFieldsValue} getFieldDecorator={getFieldDecorator} formItemLayout={formItemLayout} initialValue={initData.suggession}></DocAdvice>
               }
             })
@@ -634,11 +624,19 @@ class WriteMedicalRecords extends Component {
           {
             !caseItems.length ? null :
             <Row>
-              <Col span={14}>
-                <SureButton type="primary" htmlType="submit" disabled={!window.modifyPermission}>保存</SureButton>
-                <BorderButton type="primary" onClick={this.handleReset}>打印</BorderButton>
-                <BorderButton type="primary" onClick={this.showModal}>另存成模板</BorderButton>
-              </Col>
+              {
+                IsMedRecordTemplate ?
+                  <Col span={14}>
+                    <SureButton type="primary" onClick={this.showModal}>另存成模板</SureButton>
+                    <BorderButton type="primary" onClick={() => {this.props.returnToTempManagement()}}>返回</BorderButton>
+                  </Col>
+                  :
+                  <Col span={14}>
+                    <SureButton type="primary" htmlType="submit" disabled={!window.modifyPermission}>保存</SureButton>
+                    <BorderButton type="primary" onClick={this.handleReset}>打印</BorderButton>
+                    <BorderButton type="primary" onClick={this.showModal}>另存成模板</BorderButton>
+                  </Col>
+              }
               <Saving span={10}>
                 {
 
@@ -663,15 +661,21 @@ class WriteMedicalRecords extends Component {
         </SpecForm>
         <Modals>
         {
-          tabIndex == '1' ?
+          tabIndex == '1' || IsMedRecordTemplate?
           (
-            <SpecTabs key='1' defaultActiveKey='1' animated={false}>
-              <TabPane tab="病历模板" key="1">
-                <Template changeInitData={this.changeInitData} listenFormData={listenFormData}/>
-              </TabPane>
-              <TabPane tab="历史病历" key="2">
-                <MedicalHistory changeInitData={this.changeInitData}/>
-              </TabPane>
+            <SpecTabs key='1' defaultActiveKey={IsMedRecordTemplate ? '3' : '1'} animated={false}>
+              {
+                IsMedRecordTemplate ? null :
+                  <TabPane tab="病历模板" key="1">
+                    <Template changeInitData={this.changeInitData} listenFormData={listenFormData}/>
+                  </TabPane>
+              }
+              {
+                IsMedRecordTemplate ? null :
+                  <TabPane tab="病历模板" key="1">
+                    <Template changeInitData={this.changeInitData} listenFormData={listenFormData}/>
+                  </TabPane>
+              }
               <TabPane tab="辅助诊断" key="3">
                 <AuxiliaryDiagnosis type={1} changeInitDataTwo={this.changeInitDataTwo} listenFormData={listenFormData}/>
               </TabPane>
@@ -682,7 +686,7 @@ class WriteMedicalRecords extends Component {
           ) :
           (
             <SpecTabs key='2' defaultActiveKey='2'animated={false}>
-              <TabPane tab="历史病历" key="1">
+              <TabPane tab="历史医嘱" key="1">
                 <MedicalHistory/>
               </TabPane>
               <TabPane tab="治疗反馈" key="2">
@@ -728,6 +732,7 @@ const Container = styled.div`
 const SpecForm = styled(Form)`
   &&& {
     width: calc(100% - 426px);
+    padding-top: 2px;
   }
   & > div > .ant-row{
     padding-left: 20px;

@@ -74,7 +74,7 @@ export default class ChPatentMedicine extends Component {
       let buDiagnosisInfo = {
         buDiagnosisList: values.diagnose.originData,
         "cardno": window.cardno,
-        "deptid": window.sessionStorage.getItem('deptid'),
+        "deptcode": window.sessionStorage.getItem('deptid'),
         "diagnosisDesc": values.diagnosename,
         "doctorid": window.sessionStorage.getItem('userid'),
         "orgid": window.sessionStorage.getItem('orgid'),

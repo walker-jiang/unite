@@ -51,27 +51,56 @@ export default class ObserveCure extends Component {
    * @param  {[type]} tongueShape  [舌质]
    * @return {[type]}              [undefined]
    */
-  observeTagsClick(tongueCoated, tongueShape){ // 将选中的标签插入输入行
-    let tongueCoatedText = []; // 舌苔文本描述
-    tongueCoated.forEach((item, index)=>{
-      tongueCoatedText.push(item.name);
-    });
-    let tongueShapeText = []; // 舌质文本描述
-    tongueShape.forEach((item, index)=>{
-      tongueShapeText.push(item.name);
-    });
-    let text = tongueCoatedText.length > 0 ? '舌苔（':'';
-    text += tongueCoatedText.join('、')
-    text += tongueCoatedText.length > 0 ? '）' : '';
-    text += ( tongueCoatedText.length && tongueShapeText.length ) ? '；' : '';
-    text += tongueShapeText.length > 0 ? '舌质（' : '';
-    text += tongueShapeText.join('、')
-    text += tongueShapeText.length > 0 ? '）' : '';
-
-    let buPatcasToncoaList = tongueCoated;
-    let buPatcasTonnatList = tongueCoated;
-    let originData = { buPatcasToncoaList, buPatcasTonnatList};
-    this.props.setFieldsValue({inspection: text});
+  observeTagsClick(type, text){ // 将选中的标签插入输入行
+    // let tongueCoatedText = []; // 舌苔文本描述
+    // tongueCoated.forEach((item, index)=>{
+    //   tongueCoatedText.push(item.name);
+    // });
+    // let tongueShapeText = []; // 舌质文本描述
+    // tongueShape.forEach((item, index)=>{
+    //   tongueShapeText.push(item.name);
+    // });
+    // let text = tongueCoatedText.length > 0 ? '舌苔（':'';
+    // text += tongueCoatedText.join('、')
+    // text += tongueCoatedText.length > 0 ? '）' : '';
+    // text += ( tongueCoatedText.length && tongueShapeText.length ) ? '；' : '';
+    // text += tongueShapeText.length > 0 ? '舌质（' : '';
+    // text += tongueShapeText.join('、')
+    // text += tongueShapeText.length > 0 ? '）' : '';
+    // let text = tongueCoatedText.join('、') + (tongueCoatedText.length ? '、' : '') + tongueShapeText.join('、');
+    // let buPatcasToncoaList = tongueCoated;
+    // let buPatcasTonnatList = tongueCoated;
+    // let originData = { buPatcasToncoaList, buPatcasTonnatList};
+    let pre_text = this.props.getFieldsValue(['inspection']).inspection;
+    if(type === 'add' && text){
+      if(pre_text){
+        if(!pre_text.includes(text)){
+          var lastChar = pre_text.substr(pre_text.length - 1, 1);
+          if(lastChar === '，' || lastChar == '。' || lastChar === '、' || lastChar === '；' || lastChar === ',' || lastChar === '.' || lastChar === '/'){
+            pre_text += text; // 如果最后一个字符包含符号则直接添加字符串
+          }else{
+            pre_text += '、' + text;
+          }
+          this.props.setFieldsValue({inspection: pre_text});
+        }
+      }else{
+        this.props.setFieldsValue({inspection: text});
+      }
+    }else{
+      if(pre_text.includes(text) && text){ // 字符串匹配
+        for(var i=0; i < pre_text.length; i++){
+          var searchResult = pre_text.startsWith(text, i); // 判断是否存在如果存在
+          if(searchResult){
+            pre_text =  pre_text.replace(text, '');
+            if(pre_text[i] === '，' || pre_text[i] == '。' || pre_text[i] === '、' || pre_text[i] === '；' || pre_text[i] === ',' || pre_text[i] === '.' || pre_text[i] === '/'){
+              let prefix = pre_text.substr(0, i);
+              pre_text = prefix + pre_text.substr(i+1);
+            }
+            this.props.setFieldsValue({inspection: pre_text});
+          }
+        }
+      }
+    }
   };
   /**
    * [handleEnterPress 键盘事件]
@@ -81,7 +110,8 @@ export default class ObserveCure extends Component {
   handleEnterPress = (e) => {
     let expand = this.state.expand;
     if(e.keyCode == 13){ // tab键
-      this.expand(e, !expand);
+      // this.expand(e, !expand);
+      this.props.onEnterKeyDown();
     }
     if(e.keyCode == 9){ // tab键
       this.expand(e, false);
@@ -113,14 +143,18 @@ export default class ObserveCure extends Component {
    */
   tagsOver(text, url, detail){
     let standard = { text, url, detail };
-    this.setState({ standard }, () => {
-      this.tongueShow.handleOpen();
-    });
+    if(this.tongueShow.visible){
+      this.setState({ standard });
+    }else {
+      this.setState({ standard }, () => {
+        this.tongueShow.handleOpen();
+      });
+    }
 
   };
   /** [tagsOut 鼠标画出] */
   tagsOut(){
-    this.tongueShow.handleClose();
+    // this.tongueShow.handleClose();
   };
   /** [getUrl 获取拍照图片路径] */
   getUrl(url){

@@ -13,7 +13,7 @@ export default class AddIllByManifestations extends Component {
       illData: [], // 疾病数据数组
       // keyword: '', //为了能够保持和病症组件联动需要记住keyword
       totalLines: 0, // 查询结果总行数
-      curLine: -1, // 当前行,从-1开始，, 初始化未选中任何行，-1表示未选中任何行
+      curLine: 0, // 当前行,从-1开始，, 初始化未选中任何行，-1表示未选中任何行
     };
     this.showResult = this.showResult.bind(this);
     this.hideResult = this.hideResult.bind(this);
@@ -50,12 +50,15 @@ export default class AddIllByManifestations extends Component {
       if(res.result){
         let illData = res.data.map((item, index)=>{
           item.key = index; // 加唯一key值
-          item.status = 0; // 0表示全部未选择
+          item.status = index ? 0 : 1; // 0表示全部未选择
           item.checkedStatus = 0; // 0表示全部未选中 2 表示选中
           return item
         });
         let totalLines = illData.length;
-        self.setState({illData, totalLines, curLine: -1, showResult: true});
+        if(totalLines == 1){
+          illData[0].checkedStatus = 2;
+        }
+        self.setState({illData, totalLines, curLine: 0, showResult: true});
       }else{
         console.log('异常响应信息', res);
       }

@@ -6,155 +6,11 @@ import { Table } from 'antd';
 import Icon from 'components/dr/icon';
 import getResource from 'commonFunc/ajaxGetResource';
 import tableSty from 'components/antd/style/table';
+import HocAddTable from '../../../hocAddTable';
 import IconSty from 'components/dr/icon/iconStyle';
+import PagenationSty from 'components/antd/style/pagination';
 
-
-
-
-export default class QuickAddHerb extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      showResult: false, // 是否显示浮窗
-      herbData: [], //草药数据数组
-      totalLines: 0, // 查询结果总行数
-      curLine: 0, // 当前行,从0开始，-1表示未选中任何行
-      loadStatus: 0, // 数据加载状态 0 未请求或者请求完毕 1 请求中
-    };
-    this.showResult = this.showResult.bind(this);
-    this.hideResult = this.hideResult.bind(this);
-  };
-  /* getHerbData 获取草药数据 */
-  getHerbData(value){
-    let params = {
-      url: 'BaHerbalMedicineController/getList',
-      data: {
-        keyword: value
-      }
-    };
-    let that = this;
-    function success(res) {
-      if(res.result){
-        let herbData = res.data.map((item, index)=>{
-          item.key = index; // 加唯一key值
-          item.status = (index == 0) ? 1 : 0; // 0表示全部未选中,1表示选择了该行,初始化时默认选中第一行
-          return item
-        });
-        let totalLines = herbData.length;
-        that.setState({herbData, totalLines});
-      }else{
-        console.log('异常响应信息', res);
-      }
-    };
-    this.setState({ loadStatus: 1, herbData:[], showResult: true, totalLines: 0, curLine: 0 }, ()=>{ // 先把项目置空
-      getResource(params, success);
-    });
-  };
-  /* [showResult 查询、展示结果] */
-  showResult(value = ''){
-    if(value.trim() != ''){
-      this.getHerbData(value);
-    }else{ // 空输入项关闭下拉框
-      this.hideResult();
-    }
-  };
-  /* [hideResult 收起查询结果] */
-  hideResult(){
-    this.setState({
-      showResult: false,
-      herbData: [],
-      totalLines: 0,
-      curLine: 0,
-      loadStatus: 0
-    });
-  };
-  /* [getValue 获取表格选中行数据] */
-  getValue(record){
-    let quickAddData = record;
-    this.setState({
-      showResult: false,
-    }, function () {
-      this.props.getQuickData(quickAddData)
-    });
-  };
-  /* 按下Enter键,获取选中行数据 */
-  getEnterValue (curLine) {
-    let herbData = this.state.herbData;
-    let quickAddData = herbData[curLine];
-    this.setState({
-      showResult: false,
-    }, function () {
-      this.props.getQuickData(quickAddData)
-    });
-  }
-  /* [checkedLine 选中表格行触发的函数] */
-  checkedLine(record, status){
-    let herbData = this.state.herbData;
-    herbData.map((item)=>{ // 改变当前行的选中状态
-      if(item.key == record.key){
-          item.status = status;
-      }else{
-        item.status = 0;
-      }
-      return item;
-    });
-    this.setState({ herbData });
-  };
-  // 将除当前点击行外的所有行均设置为未选中
-  SelectedLine(record){
-    let herbData = this.state.herbData;
-    herbData.map((item)=>{
-      if(item.status != 2){
-        if(item.key == record.key){
-          if(item.status == 1){
-            item.status = 0;
-          }else{
-            item.status = 1;
-          }
-        }else{
-          item.status = 0;
-        }
-      }
-      return item;
-    });
-    this.setState({ herbData });
-  };
-  /* [handleEnterPress 包括向上箭头选择上一行，下箭头选择下一行*/
-  handleEnterPress = (e) => {
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation();
-    let herbData = this.state.herbData;
-    let curLine = this.state.curLine;
-    let totalLines = this.state.totalLines;
-    switch(e.keyCode){
-      case 40:         // 向下箭头, 选择下一行
-        if(curLine >= totalLines-1){
-          curLine = 0;
-        }else{
-          curLine++;
-        }
-        this.SelectedLine(herbData[curLine]);
-        break;
-      case 38:         // 向上箭头，选择上一行
-        if(curLine <= 0){
-          curLine = totalLines-1;
-        }else{
-          curLine--;
-        }
-        this.SelectedLine(herbData[curLine]);
-        break;
-      case 13:         // Enter 添加到处方列表
-        if(herbData.length > 0 && this.state.showResult){
-          this.checkedLine(herbData[curLine], 2);
-          this.getEnterValue(curLine)
-        }else{
-          this.tipModal.showModal({stressContent: '请选择项目'});
-        }
-        break;
-    };
-    this.setState({ curLine });
-    return false;
-  };
+class QuickAddHerb extends Component {
   /** [getColumns 获取表格数据 ] */
   getColumns(){
     const columns = [{
@@ -197,22 +53,49 @@ export default class QuickAddHerb extends Component {
     }];
     return columns;
   };
+  /** [stopPop 阻止事件冒泡] */
+  stopPop = (e) => {
+    e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
+    return false;
+  };
   render() {
-    let { showResult, herbData, loadStatus } = this.state;
+    let { showResult = false, itemsData = [], loadStatus = 0, total, currentPage } = this.props;
     let columns = this.getColumns();
+    let that = this;
+    let pagination = {
+      simple: true,
+      total: total, // 总的记录数
+      defaultCurrent: currentPage, // 当前页
+      current: currentPage, // 当前页
+      pageSize: 10, // 每页记录数
+      itemRender: (current, type, originalElement)=>{
+        if (type === 'prev') {
+          return <a>上页</a>;
+        } if (type === 'next') {
+          return <a>下页</a>;
+        }if(type == 'page'){
+          return <a className='test'>{current}</a>
+        }
+        return originalElement;
+      },
+      onChange:(nextPage, pageSize) => {
+        that.props.getData(nextPage);
+      },
+    };
     return (
-      <SearchInput {...this.props} onFocus={this.showResult} displayed={this.showResult} onKeyDown={this.handleEnterPress}>
+      <SearchInput {...this.props} displayed={this.props.showResultFunc} onKeyDown={this.props.handleEnterPress}>
         {
           showResult?
           (
-            <Result>
+            <Result  onClick={this.stopPop}>
               <SpecTable
                 onRow={(record) => {
                   return {
                     onClick: (e) => {
-                      this.checkedLine(record, record.status?0:2);
+                      this.props.checkedLine(record, record.status?0:2);
                       e.stopPropagation();
-                      this.getValue(record);
+                      this.props.getValue(record);
                     },       // 点击行
                   };
                 }}
@@ -221,8 +104,8 @@ export default class QuickAddHerb extends Component {
                 }}
                 locale={{emptyText: loadStatus ? <DataLoading type='data_loading' /> : '暂无草药数据' }}
                 columns={columns}
-                dataSource={herbData}
-                pagination={false}
+                dataSource={itemsData}
+                pagination={pagination}
               ></SpecTable>
             </Result>
           )
@@ -248,11 +131,34 @@ const Result = styled.div`
   border-bottom: 1px solid #bebebe;
 `;
 const SpecTable = styled(Table)`
-  ${tableSty.selectedTable}
+  ${tableSty.selectedTable};
+  ${PagenationSty.easyPagination};
+  .ant-table-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 const DataLoading = styled(Icon)`
   ${IconSty.rotate}
 `;
+let params = {
+  url: 'BaHerbalMedicineController/getPageByMap',
+  async: false,
+  data: {},
+  processData: (data) => { // 后台返回数据处理函数
+    let herbData = [];
+    if(data){
+      herbData = data.records.map((item, index)=>{
+        item.key = index; // 加唯一key值
+        item.status = (index == 0) ? 1 : 0; // 0表示全部未选中,1表示选择了该行,初始化时默认选中第一行
+        return item
+      });
+    }
+    return herbData;
+  }
+};
+export default HocAddTable(QuickAddHerb, params);
 /*
 @作者：马晓敏
 @日期：2018-07-10

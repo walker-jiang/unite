@@ -171,7 +171,7 @@ class Index extends Component {
       dataIndex: 'birthday',
       key: 'birthday',
       align: 'center',
-      render: (text, record) => extractDataFromIdentityCard.getAgeFromBirthday(text.substr(0,4))
+      render: (text, record) => extractDataFromIdentityCard.getAgeFromBirthday(text.substr(0,10))
     }, {
       title: '操作',
       dataIndex: 'operation',

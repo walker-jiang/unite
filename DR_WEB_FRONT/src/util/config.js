@@ -3,8 +3,8 @@
 */
 module.exports = {
     config_service_url: 'http://219.234.5.58:8087/', // 后台服务地址
-    // templateManagement: 'http://192.168.103.190:8087/',    //模板管理 ylm
-    templateManagement: 'http://10.192.4.28:8088/',    //模板管理 ylm
+    // templateManagement: 'http://10.192.4.130:8088/',    //模板管理 ylm
+    templateManagement: 'http://192.168.103.190:8087/',    //模板管理 ylm
     config_CureService_url : 'http://219.234.5.58:8098/', // 治未病后台服务地址
     config_InteLigenTreat_url : 'http://219.234.5.58:8765/', // 辨证论治后台服务地址
     config_login_url : 'http://219.234.5.58:8086/', // 辨证论治后台服务地址 不是辨证论治 有待修改 update

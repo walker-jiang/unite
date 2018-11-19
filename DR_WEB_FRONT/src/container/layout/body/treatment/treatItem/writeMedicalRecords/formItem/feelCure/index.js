@@ -63,7 +63,8 @@ export default class Index extends Component {
   handleEnterPress = (e) => {
     let expand = this.state.expand;
     if(e.keyCode == 13){ // tab键
-      this.expand(e, !expand);
+      // this.expand(e, !expand);
+      this.props.onEnterKeyDown();
     }
     if(e.keyCode == 9){ // tab键
       this.expand(e, false);

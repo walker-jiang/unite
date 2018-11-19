@@ -53,6 +53,7 @@ export default class Index extends Component {
       if(res.result){
         let patienList = res.data.records.map((item, index) => Object.assign(item, { key: index }))
         let totalRecords = res.data.total;
+        console.log('患者数据',res.data)
         self.setState({patienList: patienList, totalRecords, loadStatus: 0});
       }else{
         console.log('异常响应信息', res);
@@ -88,7 +89,7 @@ export default class Index extends Component {
       dataIndex: 'birthday',
       key: 'birthday',
       width: '4%',
-      render: (text, record) => extractDataFromIdentityCard.getAgeFromBirthday(text.substr(0,4))
+      render: (text, record) => extractDataFromIdentityCard.getAgeFromBirthday(text.substr(0,10))
     }, {
       title: '手机号',
       dataIndex: 'mobile',

@@ -43,14 +43,14 @@ export default class DeptDoctor extends Component {
    * [getDocData 获取医生数据]
    * @param  {[type]} deptid [科室 ID]
    */
-  getDocData(deptid){
+  getDocData(deptcode){
     let self = this;
     let params = {
       url: 'BaOrguserController/getList',
       async: false,
       data: {
         orgid: window.sessionStorage.getItem('orgid'),
-        deptcode: deptid ,
+        deptcode: deptcode ,
         keyword: ''
       },
     };
@@ -75,12 +75,12 @@ export default class DeptDoctor extends Component {
     }
   };
   render() {
-    let { formItemLayout, getFieldDecorator, disabled } = this.props.commontProps;
-    const initialValue = this.props.initialValue;
+    const { percentage = 8, initialValue, commontProps } = this.props;
+    let { formItemLayout, getFieldDecorator, disabled } = commontProps;
     const { deptData, docData } = this.state;
     return (
       <Row>
-        <Col span={7} offset={1}>
+        <Col span={percentage}>
           <FormItem
             {...formItemLayout}
             colon={false}
@@ -92,13 +92,13 @@ export default class DeptDoctor extends Component {
             })(
               <SpecSelect disabled={disabled} allowClear onChange={this.changeDtepSelector} labelInValue onFocus={() => { this.props.onFocus() }}>
               {
-                deptData.map(item => <Option key={item.deptid} value={item.deptid}>{item.deptname}</Option>)
+                deptData.map(item => <Option key={item.deptcode} value={item.deptcode}>{item.deptname}</Option>)
               }
               </SpecSelect>
             )}
           </FormItem>
         </Col>
-        <Col span={7}>
+        <Col span={percentage}>
           <FormItem
             {...formItemLayout}
             colon={false}

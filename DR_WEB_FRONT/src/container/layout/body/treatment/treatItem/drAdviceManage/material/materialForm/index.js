@@ -20,7 +20,7 @@ const RadioGroup = Radio.Group;
 const FormItem = Form.Item;
 const Option = Select.Option;
 
-class Index extends Component {
+class MaterialForm extends Component {
   constructor (props) {
     super(props);
     this.state = {
@@ -29,17 +29,19 @@ class Index extends Component {
       // buRecipe: {}, // 原始处方信息
       data: {}, //原始医嘱信息
       deptData: [], // 执行科室数据
+      mitype: [], // 以保内医保外字典数据
+      selectedMitype: '', // 选择的医保类型
       feeAll: 0, // 合计费用
       // 初始化数据
       buDiagnosisList: [], // 诊断明细信息
       aim: '', // 材料目的
-      miType: '1', // 0 医保外， 1医保内 默认选择医保内
       MaterialData: [], // 材料项目数据
     }
   }
   componentWillMount(){
     this.getDiagnoseData();
     this.getDept();
+    this.getMitype(['mitype']);
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
       this.getMaterialData(this.props.orderid);
     }else{ // 添加可以初始化数据
@@ -54,12 +56,36 @@ class Index extends Component {
       }
     }
   };
+  /** [getMittype 获取字典数据] */
+  getMitype(DictTypeList){
+    let self = this;
+    let params = {
+      url: 'BaDatadictController/getListData',
+      data: {
+        dictNoList: DictTypeList
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        let dictListObj = {};
+        res.data.forEach(item => {
+          dictListObj[item.dictno.toLowerCase()] = item.baDatadictDetailList;
+        });
+        const selectedMitype = dictListObj.mitype.length ? dictListObj.mitype[0].value : '';
+        self.setState({...dictListObj, selectedMitype});
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
   /** [getDept 执行科室数据] */
   getDept() {
     let params = {
       url: 'BaDepartmentController/getList',
       server_url: config_login_url,
       data: {
+        orgid: window.sessionStorage.getItem('orgid'),
         keyword: 1
       }
     };
@@ -185,10 +211,6 @@ class Index extends Component {
         Dataitem[nameItem] = Dataitem.itemid == itemid ? newName : Dataitem[nameItem];
       }
     });
-
-    medicineData.forEach((Dataitem, index)=>{
-
-    });
     this.setState({ MaterialData });
   };
   /**
@@ -251,7 +273,7 @@ class Index extends Component {
       title: "材料明细",
       dataIndex: 'itemname',
       key: 'itemname',
-      render: (text, record, index) => record.orderSuitid ? <span><Stress>{record.orderSuitname}</Stress>/{record.itemname}</span> : <span>{record.itemname}</span>
+      render: (text, record, index) => record.orderSuitid ? <span><Stress>{record.orderSuitname}</Stress>/<MiTypeText miType={record.miType}>{record.itemname}</MiTypeText></span> : <span><MiTypeText miType={record.miType}>{record.itemname}</MiTypeText></span>
     }, {
       title: "执行科室",
       dataIndex: 'deptname',
@@ -316,6 +338,7 @@ class Index extends Component {
           itemChild.key = dataSource.length
           itemChild.orderSuitid = item.orderSuitid;
           itemChild.orderSuitname = item.orderSuitname;
+          itemChild.miType = item.miType;
           feeAll += itemChild.count * itemChild.unitprice;
           dataSource.push(itemChild);
         });
@@ -336,8 +359,14 @@ class Index extends Component {
     }
     return { dataSource, feeAll };
   };
+  /** [changeMitype 选择医保类型] */
+  changeMitype = (e) => {
+    this.setState({
+      selectedMitype: e.target.value,
+    });
+  }
   render () {
-    let { visiblePop, MaterialData, buDiagnosisList, miType, aim } = this.state;
+    let { visiblePop, MaterialData, buDiagnosisList, mitype, selectedMitype, aim } = this.state;
     const { getFieldDecorator } = this.props.form;
     const {dataSource, feeAll} = this.getTableDataSource(deepClone(MaterialData));
     const columns = this.getTableColumns();
@@ -414,14 +443,11 @@ class Index extends Component {
               {...specFormItemLayout}
               label={<span><Add>➕</Add>快速添加：</span>}
               >
-                {getFieldDecorator('miType',{
-                  initialValue: miType
-                })(
-                  <SpecRadioGroup>
-                    <Radio value='0'>医保外</Radio>
-                    <Radio value='1'>医保内</Radio>
-                  </SpecRadioGroup>
-                )}
+              <SpecRadioGroup value={selectedMitype} onChange={this.changeMitype}>
+              {
+                mitype.map(item => <Radio key={item.value} value={item.value}>{item.vname}</Radio>)
+              }
+              </SpecRadioGroup>
               </SpecFormItem>
           </Col>
           <Col span={16}>
@@ -429,7 +455,7 @@ class Index extends Component {
               {...formItemLayout}
               >
                 {getFieldDecorator('addQuickly')(
-                  <QuickAddMaterialItem placeholder='请输入材料项目首字母快速添加' icon='#0A6ECB' ref={ref => this.quickAddMaterialItem = ref} getQuickData = {this.addMaterialData.bind(this)}/>
+                  <QuickAddMaterialItem placeholder='请输入材料项目首字母快速添加' selectedMitype={selectedMitype} icon='#0A6ECB' ref={ref => this.quickAddMaterialItem = ref} getQuickData = {this.addMaterialData.bind(this)}/>
                 )}
               </FormItem>
           </Col>
@@ -460,7 +486,7 @@ class Index extends Component {
             rowClassName={(record, index)=>record.itemid != '空' ? 'dotted' : 'dotted clear'} >
           </SpecTable>
           <Tip>💡提示：医保外项目以红色显示</Tip>
-          <Total>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
+          <Total margin_right={dataSource.length}>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
         </Footer>
         <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </SpecForm>
@@ -478,8 +504,13 @@ const HiddenRow = styled(Row)`
   }
 `;
 const SpecRow = styled(Row)`
-  max-height: 78px;
-  overflow: hidden;
+  &&& {
+    height: 78px;
+    overflow: scroll;
+  }
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 const SpecFormItem = styled(FormItem)`
   .ant-form-item-children {
@@ -522,14 +553,12 @@ const Stress = styled.span`
 const Tip = Stress.extend`
   position: absolute;
   top: 290px;
-  left: 20px;
   line-height: 35px;
 `;
 const Total = styled.div`
   position: absolute;
   top: 290px;
-  left: 550px;
-  width: 100px;
+  right: ${props => props.margin_right ? '200px' : '0px'}
   line-height: 35px;
 `;
 const Add = styled.span`
@@ -565,10 +594,13 @@ const SpecTable = styled(Table)`
 const SpecTag = styled(Tag)`
   ${tagsSty.yelloGreen}
 `;
+// 医保外红色显示
+const MiTypeText = styled.span`
+  color: ${props => props.miType == '1' ? 'red' : 'black'};
+`;
+const MaterialFormWrapper = Form.create()(MaterialForm);
 
-const ChPatentMedicineForm = Form.create()(Index);
-
-export default ChPatentMedicineForm;
+export default MaterialFormWrapper;
 /*
 @作者：姜中希
 @日期：2018-08-23

@@ -9,6 +9,7 @@ function getResource(params , success, error ){
     beforeSend: function(request) {
       request.setRequestHeader("Token", window.sessionStorage.getItem('token'));
       request.setRequestHeader("orgid", window.sessionStorage.getItem('orgid'));
+      request.setRequestHeader("userid", window.sessionStorage.getItem('userid'));
     },
     processData: processData,
     dataType: dataType,

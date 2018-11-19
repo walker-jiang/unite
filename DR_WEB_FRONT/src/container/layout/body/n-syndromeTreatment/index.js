@@ -28,7 +28,7 @@ export default class SyndromeTreatment extends Component {
   componentWillReceiveProps(){
     this.setState({ current: 0 })
   };
-  getCaseData(){};
+  /** [getSyndromeData 获取患者病历数据] */
   getSyndromeData(){
     let self = this;
     let params = {

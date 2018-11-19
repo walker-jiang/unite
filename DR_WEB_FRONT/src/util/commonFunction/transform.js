@@ -59,7 +59,7 @@ function getDiagnoseDataSource(originData = [], type = 'now'){
           itemChild.order = diagnoseHisData.length + 1;
           itemChild.diagnosisName = item.diagnosisName + '/' + itemNext.synname;
           itemChild.diagnosisCode = itemNext.syncode;
-          itemChild.manifCode = item.diagnosisCode;
+          itemChild.manifCode = item.diagnosisCode; // 疾病码
           itemChild.diagnosisWay = item.diagnosisWay;
           itemChild.diagnosisWayDic = '中医诊断';
           itemChild.diagnosisType = '-';
@@ -106,7 +106,7 @@ function combinedAddFormData(values, itemData, type){
   let buOrderDtlList = new Array();   // 非医嘱套项目
   let buOrdmedical = { // 医嘱套项目
     aim: values.aim,
-    miType: values.miType,
+    // miType: values.miType,
     deptcode: window.sessionStorage.getItem('deptid'), // 科室ID
     deptname: window.sessionStorage.getItem('deptid'), // 科室ID
     doctorid: window.sessionStorage.getItem('userid'), // 用户ID
@@ -183,7 +183,7 @@ function combinedModifyFormData(values, itemData, data, buDiagnosisInfo, buOrdme
 
   let buOrderDtlList = new Array();   // 检验项目非医嘱套
   buOrdmedical.aim = values.aim;
-  buOrdmedical.miType = values.miType;
+  // buOrdmedical.miType = values.miType;
 
   let buOrdmedicalSuitList = new Array(); // 医嘱套列表
   itemData.forEach((item, index) => {
@@ -256,7 +256,8 @@ function converItemToNeeded(Item, ItemArray){
  * @return {[type]}      [格式化后的项目]
  */
 function converItemToNeededCN(Item, ItemArray, type){
-  Item.count = Item.defQty;
+  console.log('Item.count', Item);
+  Item.count = Math.ceil(Item.defDosage / (Item.mediFactor * Item.packageFactor)); // ROUNDUP(单次剂量/(单位剂量*最小开药单位与基准单位转化系数))
   Item.dosage = Item.defQty;
   Item.miType = '';
   if(Item.baUsage){

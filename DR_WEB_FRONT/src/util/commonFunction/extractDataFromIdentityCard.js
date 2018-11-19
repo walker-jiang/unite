@@ -25,9 +25,9 @@ function getBirthdayFromIdCard(idCard) {
 function getSexFromIdCard(idCard){
   let sex = '';
   if(idCard.length == 15){
-    sex = idCard.substr(14, 1) % 2 ? '01' : '02';
+    sex = idCard.substr(14, 1) % 2 ? '1' : '2';
   }else if(idCard.length == 18){
-    sex = idCard.substr(16,1) % 2 ? '01' : '02';
+    sex = idCard.substr(16,1) % 2 ? '1' : '2';
   }
   return sex;
 };
@@ -43,7 +43,7 @@ function getAgeFromBirthday(birthday) {
         du = m1.diff(m2);
     if (du < 0) {
       console.log('生日格式错误');
-      return '0岁';
+      return '请输入正确的生日';
     }
     let year = moment.duration(du).years(),
       months = moment.duration(du).months(),

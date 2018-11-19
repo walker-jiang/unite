@@ -22,7 +22,7 @@ export default class Sex extends Component {
           rules: [{ required: true, message: '请选择患者性别!' }],
           initialValue: initialValue
         })(
-          <SpecRadioGroup disabled={getFieldValue('cardtype') == '01'}>
+          <SpecRadioGroup disabled={disabled}>
           {
             sex.map(item => <Radio value={item.value} key={item.value}>{item.vname}</Radio>)
           }

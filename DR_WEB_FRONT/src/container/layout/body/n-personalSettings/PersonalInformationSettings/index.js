@@ -14,7 +14,7 @@ function getBase64(img, callback) {
   const reader = new FileReader();
   reader.addEventListener('load', () => callback(reader.result));
   reader.readAsDataURL(img);
-  console.log(reader);
+  // console.log(reader);
 }
 // function successToast() {
 //   Toast.success('Load success !!!', 1);
@@ -38,12 +38,12 @@ class PersonalInformationSettings extends React.Component{
     let deptcodeDic = this.state.data[2];//科室
     // this.getDocData(data,postDic,deptcodeDic);
 
-    console.log('可是数据回显：',data,postDic,deptcodeDic);
+    // console.log('可是数据回显：',data,postDic,deptcodeDic);
     var post,deptcode;
     deptcodeDic.forEach((val,ind)=>{
       if(val!=null){
         if(data.deptcode == val.deptcode){
-          deptcode=val.deptdesc
+          deptcode=val.deptcode
         }
       }
     })
@@ -80,6 +80,7 @@ class PersonalInformationSettings extends React.Component{
      function tishi(){
        _this.setState({ifshow:false})
        _this.props.handleStatus([]);
+      _this.props.getPatientData(window.sessionStorage.getItem('userid'));
      }
      setTimeout(tishi,1000)
    }
@@ -130,8 +131,8 @@ class PersonalInformationSettings extends React.Component{
         }
       })
       deptData.forEach((v,i)=>{
-        console.log(values.deptcode,v,v.deptdesc);
-        if(v.deptdesc != null&&values.deptcode == v.deptdesc){
+        // console.log(values.deptcode,v,v.deptdesc,'1122222');
+        if(v.deptdesc != null&&values.deptcode == v.deptcode){
           deptcode = v.deptcode;
           return
         }
@@ -155,7 +156,7 @@ class PersonalInformationSettings extends React.Component{
         data: JSON.stringify(date),
         server_url:config_login_url
       }
-      console.log('发送的数据',date)
+      // console.log('发送的数据',date)
       let that = this;
       function success(res) {
         if(res.result){
@@ -183,7 +184,7 @@ class PersonalInformationSettings extends React.Component{
       },
     };
     function callBack(res){
-      console.log('resres1234567890',res);
+      // console.log('resres1234567890',res);
       if(res.result){
         self.props.handleClick(res.data.photo);
       }else{
@@ -289,9 +290,10 @@ class PersonalInformationSettings extends React.Component{
                        >
                           {getFieldDecorator('deptcode', {
                             rules: [{ required: true, message: 'Please input your username!' }],
+                            // initialValue:pageDataTwo.homeSetting?Number(pageDataTwo.homeSetting):1,
                           })(
                             <Select disabled={this.state.checked} placeholder="请选择您所属科室">
-                               {this.state.data[2].map((val,i)=>val!=null?(<Option key={i} value={val.deptname}>{val.deptname}</Option>):'')}
+                               {this.state.data[2].map((val,i)=>val!=null?(<Option key={i} value={val.deptcode}>{val.deptname}</Option>):'')}
                            </Select>
                           )}
                         </FormItem>
@@ -397,5 +399,6 @@ const Successupdata =styled.div`
 const IconOne = styled(Icons)`
   height:20px;
   width:20px;
-  margin-right:4px;
+  margin-top: -2px;
+  margin-left: 16px;
 `

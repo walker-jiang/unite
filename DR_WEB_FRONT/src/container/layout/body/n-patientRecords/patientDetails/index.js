@@ -107,7 +107,7 @@ export default class Index extends Component {
     if(rcStatus == 0) {
         curTabComponet = <Ssc patientid = {patientid} basicOperation = {basicOperation}/>
     } else if(rcStatus == 1) {
-      if(data == [] || data == "" || data == null){
+      if(data.records == [] || data.records == "" || data.records == null){
         curTabComponet =<NullData> 
                           <TipImg src={Addtip} />
                           <TipTitle>该患者还没有电子病历</TipTitle>

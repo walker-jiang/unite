@@ -124,16 +124,14 @@ export default class Electronic extends Component {
             <Radio value='2'>复诊</Radio>
            </RadioGroup>
     }
-    let cl;
-    let wl;
-    chOrderList.forEach((item)=>{
-      console.log('item',item)
-      cl = item.ordercontent;
-    })
-    weOrderList.forEach((item)=>{
-      console.log('item',item)
-      wl = item.ordercontent;
-    })
+    let cl = chOrderList.map((item, index)=>{
+      item.key = index; // 加唯一key值
+      return item.ordercontent;
+    });
+    let wl = weOrderList.map((item, index)=>{
+      item.key = index; // 加唯一key值
+      return item.ordercontent;
+    });
     let orgidDic = this.props.orgidDic;
     let pridepictS = this.state.pridepict ? this.state.pridepict : '暂略；';
     let hpiS = this.state.hpi ? this.state.hpi : '暂略；';

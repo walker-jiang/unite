@@ -1,88 +1,90 @@
 import React, { Component } from 'react';
-import { Modal, Button, Input, Select } from 'antd';
+import { Modal, Button, Input, Form } from 'antd';
+import YSelectSearch from '../YSelectSearch.js';
+import { enums } from 'utils';
 
-const Option = Select.Option;
+const { CHECK, EDIT,  CREATE,  DELETE} = enums;
+const FormItem = Form.Item;
+const formItemLayout = {
+    wrapperCol: { span: 24 },
+};
 
-class ClassifyModal extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      value: undefined, //上级分类
-      data: [],
-      classifyParentData: {}, //选中的实体类
-      classifyName: '', //分类名称，受控组件
-    }
-  }
-
-  handleSearch = (value) => {
-    const _value = String(value);
-    const _len = _value.length;
-    if (_len < 3) {
-      return;
-    }
-    const { getDataFun, getDataParam } = this.props;
-    const _param = Object.assign({}, getDataParam, { keyword: value });
-    if (getDataFun) {
-      getDataFun(_param).then((data) => {
-        if (data['result']) {
-          this.setState({ data: data.data });
-        } else {
-          console.log("getDataFun请求错误")
+class Classify extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            cState: '', //check, edit, create
         }
-      });
     }
-  }
 
-  //select中的值改变时
-  handleChange = (value) => {
-    this.setState({ value });
-  }
-
-  //select中值被选中时
-  handleSelect = (value, option) => {
-    this.setState({value: value, classifyParentData: option.props['refdata']});
-  }
-
-  //将分类名称变成受控组件
-  handleUsernameChange = (e) => {
-    this.setState({ classifyName: e.target.value })
-  }
-
-  //处理保存任务
-  handleOnClick = () => {
-    const { onOk } = this.props.modalProps;
-    const { value, classifyParentData, classifyName } = this.state;
-    if(onOk) {
-      onOk(value, classifyParentData, classifyName);
+    handleSubmit = (e) => {
+        e.preventDefault();
+        const { onOk } = this.props.modalProps;
+        const { initialData } = this.props;
+        this.props.form.validateFields((err, values) => {
+            if (!err) {
+                if(onOk) { onOk(values); }
+            } else {
+                console.log("出错了");
+                return;
+            }
+        });
     }
-  }
 
-  render() {
-    const { value, data, classifyName } = this.state;
-    const { modalProps } = this.props;
-    const { onCancel, loading, onOk } = modalProps;
-    return (
-      <Modal {...modalProps} maskClosable={false} footer={[
-        <Button key="取消" onClick={onCancel}>返回</Button>,
-        <Button key="提交" type="primary" loading={loading} onClick={this.handleOnClick}>保存</Button>]} >
-        <Select
-          showSearch
-          value={this.state.value}
-          placeholder={'输入医嘱模板名称'}
-          style={{ width: '100%' }}
-          filterOption={false}
-          onSearch={this.handleSearch}
-          onChange={this.handleChange}
-          onSelect={this.handleSelect}
-          notFoundContent={null}>
-          {this.state.data.map((item) => {
-            return <Option key={item.temmanageid} refdata={item}>{item.temname}</Option>
-          })}
-        </Select>
-        <Input placeholder="分类名称" value={classifyName} onChange={this.handleUsernameChange}/>
-      </Modal>
-    )
-  }
+    renderForm = () => {
+        const { getFieldDecorator } = this.props.form;
+        const { getDataFun, getDataParam, initialData, selectItemObj, mType } = this.props;
+        let parentidInitialValue = {};
+        if('parentid' in selectItemObj) {
+            parentidInitialValue = {value: initialData? initialData['parentid']: "", item: [selectItemObj]}
+        } else {
+            parentidInitialValue = {value: "", item: []};
+        }
+        return (
+            <Form onSubmit={this.handleSubmit}>
+                <FormItem {...formItemLayout}>
+                    {getFieldDecorator('parentid', {
+                        initialValue: parentidInitialValue,
+                        rules: [{
+                            required: true,
+                            message: '请输入分类',
+                        }],
+                    })( <YSelectSearch
+                            allowClear={true}
+                            placeholder="模板分类"
+                            style={{ 'width': '100%' }}
+                            remoteService={getDataFun}
+                            paramData={getDataParam}
+                            fieldKey='temmanageid'
+                            fieldName='temname' /> )}
+                </FormItem>
+                <FormItem {...formItemLayout}>
+                    {getFieldDecorator('temname', {
+                        initialValue: initialData? initialData['temname']: "",
+                        rules: [{
+                            required: true,
+                            message: '请输入分类名称',
+                        }],
+                    })( <Input placeholder="分类名称" /> )}
+                </FormItem>
+            </Form>
+        );
+    }
+
+    render() {
+        const { modalProps, mType } = this.props;
+        const { onCancel, loading } = modalProps;
+        const footer = (mType == CHECK)? 
+            [<Button key="取消" onClick={onCancel}>返回</Button>]:
+            [<Button key="取消" onClick={onCancel}>返回</Button>,
+                <Button key="提交" type="primary" loading={loading} onClick={this.handleSubmit}>保存</Button>]
+        return (
+            <Modal {...modalProps} maskClosable={false} footer={footer} >
+                {this.renderForm()}
+            </Modal>
+        )
+    }
 }
 
+const ClassifyModal = Form.create()(Classify);
 export default ClassifyModal

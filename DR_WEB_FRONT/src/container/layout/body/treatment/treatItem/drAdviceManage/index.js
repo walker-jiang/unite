@@ -23,24 +23,10 @@ import AddHeader from './addHeader';
 import dashed from './imgs/dashed.png';
 import TipModal from 'components/dr/modal/tip';
 import buttonSty from 'components/antd/style/button';
-// import MedicalHistoryTwo from "../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
-// import DoctorAdviceTemplate from "../../../../../rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
-// import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
+import MedicalHistoryTwo from "../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js";
+import DoctorAdviceTemplate from "../../../../../rightAssistBar/doctorAdvice/doctorAdviceTemplate.js";
+import IntelligentTreat from "../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js";
 const TabPane = Tabs.TabPane;
-
-const loadingComponent = () => (<div>Loading...</div>);
-const MedicalHistoryTwo = Loadable({
-  loader: () => import('../../../../../rightAssistBar/doctorAdvice/MedicalHistoryTwo.js'),
-  loading: loadingComponent,
-});
-const DoctorAdviceTemplate = Loadable({
-  loader: () => import('../../../../../rightAssistBar/doctorAdvice/doctorAdviceTemplate.js'),
-  loading: loadingComponent,
-});
-const IntelligentTreat = Loadable({
-  loader: () => import('../../../../../rightAssistBar/doctorAdvice/intelligentTreat.js'),
-  loading: loadingComponent,
-});
 
 export default class Index extends Component {
   constructor(props) {
@@ -479,7 +465,7 @@ export default class Index extends Component {
     	aim: 'jiang',
     	miType: '0', // 0 医保内， 1医保外
     	buDiagnosisList: [{
-  				"buDiagnosisDismainfList": [{
+  				"buDiagnosisSyndromeList": [{
   					"ctstamp": "2018-09-22 10:55:46",
   					"diagnosisid": "201837584946816406",
   					"diseaseid": 18,
@@ -634,7 +620,7 @@ export default class Index extends Component {
     	aim: 'jiang',
     	miType: '0', // 0 医保内， 1医保外
     	"buDiagnosisList": [{
-  				"buDiagnosisDismainfList": [{
+  				"buDiagnosisSyndromeList": [{
   					"ctstamp": "2018-09-22 10:55:46",
   					"diagnosisid": "201837584946816406",
   					"diseaseid": 18,
@@ -810,7 +796,7 @@ export default class Index extends Component {
       aim: 'jiang',
     	miType: '0', // 0 医保内， 1医保外
     	"buDiagnosisList": [{
-  				"buDiagnosisDismainfList": [{
+  				"buDiagnosisSyndromeList": [{
   					"ctstamp": "2018-09-22 10:55:46",
   					"diagnosisid": "201837584946816406",
   					"diseaseid": 18,
@@ -938,7 +924,7 @@ export default class Index extends Component {
       aim: 'jiang',
     	miType: '0', // 0 医保内， 1医保外
     	"buDiagnosisList": [{
-  				"buDiagnosisDismainfList": [{
+  				"buDiagnosisSyndromeList": [{
   					"ctstamp": "2018-09-22 10:55:46",
   					"diagnosisid": "201837584946816406",
   					"diseaseid": 18,
@@ -1045,7 +1031,7 @@ export default class Index extends Component {
       countnum: 3, // 付数
       freq: {key: '1', label: '每日一次'}, // 频次
     	"buDiagnosisList": [{
-  				"buDiagnosisDismainfList": [{
+  				"buDiagnosisSyndromeList": [{
   					"ctstamp": "2018-09-22 10:55:46",
   					"diagnosisid": "201837584946816406",
   					"diseaseid": 18,
@@ -1095,6 +1081,7 @@ export default class Index extends Component {
   };
   render() {
     let { dataSource, tatalRecords, currentPage, actionType, orderid, attachOrder , showWay, diagnoseText } = this.state;
+    const IsMedRecordTemplate = this.props.IsMedRecordTemplate;
     let that = this;
     let selectedRows = dataSource.filter((item) => item.checkState);
     let pagination = {
@@ -1165,24 +1152,39 @@ export default class Index extends Component {
               <CheckNoPrint onClick={() => {this.checkChange('noPrint')}}>选中未打印项</CheckNoPrint>
               <SimplePagination {...pagination}></SimplePagination>
             </CheckAction>
-            <div>
-              <SureButton type="primary" onClick={this.submit} disabled={!window.modifyPermission}>提交</SureButton>
-              <BorderButton type="primary" onClick={() => {this.handlePrintClick()}}>打印</BorderButton>
-              <BorderButton type="primary">另存成模板</BorderButton>
-            </div>
+            {
+              IsMedRecordTemplate ?
+              <div>
+                <SureButton type="primary" >另存成模板</SureButton>
+                <BorderButton type="primary" onClick={() => {this.props.returnToTempManagement()}}>返回</BorderButton>
+              </div>
+              :
+              <div>
+                <SureButton type="primary" onClick={this.submit} disabled={!window.modifyPermission}>提交</SureButton>
+                <BorderButton type="primary" onClick={() => {this.handlePrintClick()}}>打印</BorderButton>
+                <BorderButton type="primary">另存成模板</BorderButton>
+              </div>
+            }
           </Footer>
         </List>
         <Modal>
           {
             <SpecTabs key='1' defaultActiveKey='1' animated={false}>
+
+              {
+                IsMedRecordTemplate ? null :
+                <TabPane tab="医嘱模板" key="3">
+                <DoctorAdviceTemplate actionManager= {this.actionManager} getData={this.getData}/>
+                </TabPane>
+              }
+              {
+                IsMedRecordTemplate ? null :
+                <TabPane tab="历史医嘱" key="2">
+                  <MedicalHistoryTwo type={1} actionManager= {this.actionManager} getData={this.getData}/>
+                </TabPane>
+              }
               <TabPane tab="智能论治" key="1">
                 <IntelligentTreat type={1} actionManager= {this.actionManager} modelData={this.modelData}/>
-              </TabPane>
-              <TabPane tab="历史医嘱" key="2">
-                <MedicalHistoryTwo type={1} actionManager= {this.actionManager} getData={this.getData}/>
-              </TabPane>
-              <TabPane tab="医嘱模板" key="3">
-                <DoctorAdviceTemplate actionManager= {this.actionManager} getData={this.getData}/>
               </TabPane>
             </SpecTabs>
           }

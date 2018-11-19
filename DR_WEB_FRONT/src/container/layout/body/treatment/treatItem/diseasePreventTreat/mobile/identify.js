@@ -7,16 +7,17 @@ export default class Identify extends Component {
   constructor(props){
     super(props);
     this.state = {
-        userId : '',
         name: '',
         sex: '',
         age: '',
-        certificatesNumber: ''
     };
   };
 
-  componentDidMount(){//获取患者信息，进行确认
-    var certificatesType = '01'
+  componentWillReceiveProps(nextProps){//获取患者信息，进行确认
+    console.log('nextProps',nextProps);
+    var certificatesNumber = nextProps.certificatesNumber;
+    var certificatesType = nextProps.certificatesType;
+    console.log('身份',certificatesNumber,certificatesType);
     let params = {
       type: 'GET',
       url: 'healthcabin/user/qrcode',
@@ -26,25 +27,15 @@ export default class Identify extends Component {
       crossDoman:true,
       data:{
         certificatesType: certificatesType,
-        certificatesNumber: '653024198209249589'
+        certificatesNumber: certificatesNumber
       }
     };
     let that = this;
     function success(res){
       that.setState({
-        userId: res.data.user.userid,
         name: res.data.user.name,
         sex: res.data.user.sex,
-        age: res.data.user.age,
-        certificatesNumber: res.data.user.certificatesNumber,
-      },function(){
-          console.log('userId',this.state.userId)
-          let userId = this.state.userId;
-          let name = this.state.name;
-          let sex = this.state.sex;
-          let age = this.state.age;
-          let certificatesNumber = this.state.certificatesNumber;
-          this.props.patientInformation(userId,name,sex,age,certificatesNumber)
+        age: res.data.user.birthday,
       })
     };
 
@@ -66,7 +57,32 @@ export default class Identify extends Component {
   }
 
   render() {
-    let { userId, name, sex, age, certificatesNumber } = this.state;
+    var date=new Date;
+    var year=date.getFullYear(); 
+    let { name, sex, age } = this.state;
+    let certificatesType = this.props.certificatesType;
+    let certificatesNumber = this.props.certificatesNumber;
+    let cardType;
+    if(certificatesType == '01') {
+        cardType = '身份证'
+    } else if (certificatesType == '02') {
+        cardType = '护照'
+    } else if (certificatesType == '03') {
+        cardType = '军官证'
+    } else if (certificatesType == '04') {
+        cardType = '港澳台居民通行证'
+    } else if (certificatesType == '05') {
+        cardType = '出生证'
+    }
+    let ageDic = year - age.substr(0,4);
+    let sexDic;
+    if(sex == '1'){
+        sexDic = '男'
+    } else if (sex == '2'){
+        sexDic = '女'
+    } else {
+        sexDic = '未知'
+    }
     return (
       <div>
         <div>
@@ -93,34 +109,34 @@ export default class Identify extends Component {
         </Row>
         <div style={styles.rowDiv}>
             <Row type="flex" justify="start" style={styles.rowStyle}>
-                <Col xs={6} sm={6} style={styles.colLeftStyle}>
+                <Col xs={10} sm={10} offset={1} style={styles.colLeftStyle}>
                     <div style={styles.confirmBefore}>姓名：</div>
                 </Col>
-                <Col xs={18} sm={18} style={styles.colRightStyle}>
+                <Col xs={13} sm={13} style={styles.colRightStyle}>
                     <div style={styles.confirm}>{name}</div>
                 </Col>
             </Row>
             <Row type="flex" justify="start" style={styles.rowStyle}>
-                <Col xs={6} sm={6} style={styles.colLeftStyle}>
+                <Col xs={10} sm={10} offset={1} style={styles.colLeftStyle}>
                     <div style={styles.confirmBefore}>性别：</div>
                 </Col>
-                <Col xs={18} sm={18} style={styles.colRightStyle}>
-                    <div style={styles.confirm}>{sex}</div>
+                <Col xs={13} sm={13} style={styles.colRightStyle}>
+                    <div style={styles.confirm}>{sexDic}</div>
                 </Col>
             </Row>
             <Row type="flex" justify="start" style={styles.rowStyle}>
-                <Col xs={6} sm={6} style={styles.colLeftStyle}>
+                <Col xs={10} sm={10} offset={1} style={styles.colLeftStyle}>
                     <div style={styles.confirmBefore}>年龄：</div>
                 </Col>
-                <Col xs={18} sm={18} style={styles.colRightStyle}>
-                    <div style={styles.confirm}>{age}</div>
+                <Col xs={13} sm={13} style={styles.colRightStyle}>
+                    <div style={styles.confirm}>{ageDic}</div>
                 </Col>
             </Row>
             <Row type="flex" justify="start" style={styles.rowStyle}>
-                <Col xs={6} sm={6} style={styles.colLeftStyle}>
-                    <div style={styles.confirmBefore}>身份证号：</div>
+                <Col xs={10} sm={10} offset={1} style={styles.colLeftStyle}>
+                    <div style={styles.confirmBefore}>{cardType}：</div>
                 </Col>
-                <Col xs={18} sm={18} style={styles.colRightStyle}>
+                <Col xs={13} sm={13} style={styles.colRightStyle}>
                     <div style={styles.confirm}>{certificatesNumber}</div>
                 </Col>
             </Row>
@@ -199,7 +215,8 @@ const styles = {
         fontSize: '17px'
     },
     rowDiv: {
-        marginTop:'4%'
+        marginTop:'4%',
+        // marginLeft: '9rem'
     },
     rowStyle: {
         lineHeight: '3rem'

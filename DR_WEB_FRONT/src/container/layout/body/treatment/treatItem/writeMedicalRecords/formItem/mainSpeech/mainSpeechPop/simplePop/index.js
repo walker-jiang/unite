@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import ReactModal from 'react-modal';
 import { Button, Input, Row, Col, InputNumber, Radio  } from 'antd';
 import Modal from 'react-modal';
 import buttonSty from 'components/antd/style/button';
+import reactModalSty from 'components/reactModal';
 
 const Group = Radio.Group;
 const RadioButton = Radio.Button;
@@ -60,82 +62,57 @@ export default class SimplePop extends Component {
   render() {
     let { visible, primarySym, time, unit } = this.state;
     return (
-    <div>
-      {
-        !!visible ?
-        <Container onKeyDown={this.handleEnterPress}>
-          <Body>
-            <Line>
-              <Title span={4}>主症：</Title>
-              <Text span={20}>{primarySym}</Text>
-            </Line>
-            <Line>
-              <Title span={4}>持续时间：</Title>
-              <Col span={6}>
-                <InputNumber min={1} autoFocus='autofocus' max={10} defaultValue={time} onChange={this.handleInput}/>
-              </Col>
-              <Col span={14}>
-                <Group defaultValue={unit} onChange={this.handleToggle}>
-                  <Radio.Button value="时">时</Radio.Button>
-                  <Radio.Button value="天">天</Radio.Button>
-                  <Radio.Button value="周">周</Radio.Button>
-                  <Radio.Button value="月">月</Radio.Button>
-                  <Radio.Button value="年">年</Radio.Button>
-                </Group>
-              </Col>
-            </Line>
-            <Row>
-              <Col span={6} offset={5}>
-                <SureButton type="primary" onClick={this.handleOK}>确定</SureButton>
-              </Col>
-              <Col span={6} offset={2}>
-                <CancelButton type="primary" onClick={this.handleClose}>取消</CancelButton>
-              </Col>
-            </Row>
-          </Body>
-        </Container>
-        : null
-      }
-    </div>
+      <WindowModal
+         className="Modal"
+         overlayClassName="Overlay"
+         isOpen={visible}
+         ariaHideApp={false}>
+         <Container onKeyDown={this.handleEnterPress}>
+           <Body>
+             <Line>
+               <Title span={4}>主症：</Title>
+               <Text span={20}>{primarySym}</Text>
+             </Line>
+             <Line>
+               <Title span={4}>持续时间：</Title>
+               <Col span={6}>
+                 <InputNumber min={1} autoFocus='autofocus' max={10} defaultValue={time} onChange={this.handleInput}/>
+               </Col>
+               <Col span={14}>
+                 <Group defaultValue={unit} onChange={this.handleToggle}>
+                   <Radio.Button value="时">时</Radio.Button>
+                   <Radio.Button value="天">天</Radio.Button>
+                   <Radio.Button value="周">周</Radio.Button>
+                   <Radio.Button value="月">月</Radio.Button>
+                   <Radio.Button value="年">年</Radio.Button>
+                 </Group>
+               </Col>
+             </Line>
+             <Row>
+               <Col span={6} offset={5}>
+                 <SureButton type="primary" onClick={this.handleOK}>确定</SureButton>
+               </Col>
+               <Col span={6} offset={2}>
+                 <CancelButton type="primary" onClick={this.handleClose}>取消</CancelButton>
+               </Col>
+             </Row>
+           </Body>
+         </Container>
+      </WindowModal>
     );
   }
 }
-const modalStyle = {
-   overlay: {
-     position: 'fixed',
-     top: 0,
-     left: 0,
-     width: '100vw',
-     height: '100vh',
-     backgroundColor: 'rgba(0, 0, 0, 0.2)'
-   },
-   content: {
-     position: 'fixed',
-     top: '0px',
-     left: '0px',
-     right: '0px',
-     bottom: '0px',
-     background: 'transparent',
-     overflow: 'auto',
-     border: 'none',
-     display: 'flex',
-     justifyContent: 'center',
-     alignItems: 'center',
-     outline: 'none',
-   }
- };
+const WindowModal = styled(ReactModal)`
+  ${reactModalSty.windowModal};
+  &&& {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding-top: 200px;
+    z-index: 21;
+  }
+`;
 const Container = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0px;
-  left: 0px;
-  display: flex;
-  align-items: center;
-  font-size: 12px;
-  z-index: 5;
-  font-family: 'MicrosoftYaHei', '微软雅黑';
-  justify-content: center
 `;
 const Body = styled.div`
   width: 400px;

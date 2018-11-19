@@ -20,7 +20,7 @@ export default class Index extends Component {
           {getFieldDecorator('pridepict', {
             initialValue: initialValue
           })(
-            <MainSpeechPop title='患者主诉'/>
+            <MainSpeechPop title='患者主诉' onKeyDown={() => {this.props.onEnterKeyDown()}} itemFieldname='pridepict'/>
           )}
           </FormItem>
         </Col>

@@ -51,7 +51,7 @@ class Examination extends Component {
         this.setState({
           examineData: buOrderDtlList.concat(buOrdmedicalSuitList),
           aim: Recipe.aim,
-          miType: Recipe.miType,
+          // miType: Recipe.miType,
         });
       }
     }
@@ -62,6 +62,7 @@ class Examination extends Component {
       url: 'BaDepartmentController/getList',
       server_url: config_login_url,
       data: {
+        orgid: window.sessionStorage.getItem('orgid'),
         keyword: 1
       }
     };
@@ -271,18 +272,19 @@ class Examination extends Component {
       title: "检验项/检验明细项",
       dataIndex: 'itemname',
       key: 'itemname',
-      render: (text, record, index) => record.orderSuitid ? <span><Stress>{record.orderSuitname}</Stress>/<MiTypeText>{record.itemname}</MiTypeText></span> : <span><MiTypeText>{record.itemname}</MiTypeText></span>
+      render: (text, record, index) => record.orderSuitid ? <span><Stress>{record.orderSuitname}</Stress>/<MiTypeText miType={record.miType}>{record.itemname}</MiTypeText></span> : <span><MiTypeText miType={record.miType}>{record.itemname}</MiTypeText></span>
     }, {
       title: "执行科室",
       dataIndex: 'deptname',
       key: 'deptname',
+      width: '10%',
       render: (text, record, index)=>(
         <SpecSelect
-          defaultValue={{key: record.deptid ? record.deptid : 0, label: record.deptname ? record.deptname : ''}}
+          defaultValue={{key: record.deptcode ? record.deptcode : 0, label: record.deptname ? record.deptname : ''}}
           labelInValue={true}
-          onSelect={(e)=>{this.onModifySelectValue(record.itemid, 'deptid', 'deptname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
+          onSelect={(e)=>{this.onModifySelectValue(record.itemid, 'deptcode', 'deptname', e.key, e.label, record.orderSuitid ? record.orderSuitid : '')}}>
           {
-            deptData.map((item) => <Option key={item.deptid} value={item.deptid}>{item.deptname}</Option>)
+            deptData.map((item) => <Option key={item.deptcode} value={item.deptcode}>{item.deptname}</Option>)
           }
         </SpecSelect>
       )
@@ -336,6 +338,7 @@ class Examination extends Component {
           itemChild.key = dataSource.length
           itemChild.orderSuitid = item.orderSuitid;
           itemChild.orderSuitname = item.orderSuitname;
+          itemChild.miType = item.miType;
           feeAll += itemChild.count * itemChild.unitprice;
           dataSource.push(itemChild);
         });
@@ -370,7 +373,6 @@ class Examination extends Component {
     const columns = this.getTableColumns();
     const Pagination = {
       simple: true,
-      className: 'custom',
       pageSize: 8,
       total: dataSource.length,
       itemRender: (current, type, originalElement)=>{
@@ -379,7 +381,7 @@ class Examination extends Component {
           } if (type === 'next') {
             return <a>下页</a>;
           }if(type == 'page'){
-            return <a className='test'>{current}</a>
+            return <a>{current}</a>
           }
           return originalElement;
         }
@@ -484,7 +486,7 @@ class Examination extends Component {
             rowClassName={(record, index)=> record.itemid != '空' ? 'dotted' : 'dotted clear'} >
           </SpecTable>
           <Tip>💡提示：医保外项目以红色显示</Tip>
-          <Total>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
+          <Total margin_right={dataSource.length}>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
         </Footer>
         <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
       </SpecForm>
@@ -502,8 +504,10 @@ const HiddenRow = styled(Row)`
   }
 `;
 const SpecRow = styled(Row)`
-  max-height: 78px;
-  overflow: scroll;
+  &&& {
+    height: 78px;
+    overflow: scroll;
+  }
   ::-webkit-scrollbar {
     display: none;
   }
@@ -516,9 +520,8 @@ const SpecFormItem = styled(FormItem)`
   }
 `;
 const SpecSelect = styled(Select)`
-  ${selectSty.blackTriangle}
+  ${selectSty.blackTriangle};
 `;
-
 const InputCount = styled(Input)`
   &&& {
     ${inputSty.short};
@@ -551,18 +554,15 @@ const Stress = styled.span`
 const Tip = Stress.extend`
   position: absolute;
   top: 290px;
-  left: 20px;
   line-height: 35px;
 `;
 const Total = styled.div`
   position: absolute;
   top: 290px;
-  left: 550px;
-  width: 100px;
+  right: ${props => props.margin_right ? '200px' : '0px'}
   line-height: 35px;
 `;
 const Add = styled.span`
-
   color: #0A6ECB;
 `;
 const SpecRadioGroup = styled(RadioGroup)`
@@ -592,8 +592,9 @@ const SpecTable = styled(Table)`
     color: rgb(102, 102, 102);
   }
 `;
+// 医保外红色显示
 const MiTypeText = styled.span`
-  color: red;
+  color: ${props => props.miType == '1' ? 'red' : 'black'};
 `;
 const ExaminationForm = Form.create()(Examination);
 

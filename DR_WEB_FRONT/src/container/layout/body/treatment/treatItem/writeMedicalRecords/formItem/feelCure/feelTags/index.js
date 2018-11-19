@@ -27,7 +27,7 @@ export default class FellCure extends Component {
   getData(){
     let self = this;
     let params = {
-      url: 'BuPulseConditionController/getList',
+      url: 'BaPulseConditionController/getList',
       data: {},
     };
     function callBack(res){

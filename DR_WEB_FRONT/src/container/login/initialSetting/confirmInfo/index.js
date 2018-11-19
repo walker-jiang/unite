@@ -145,7 +145,7 @@ class Index extends Component {
             }],
           })(
             <AvatarUploader {...props}>
-            {imageUrl ? <img src={imageUrl} style={{ width: '100%' }} alt="avatar" /> : uploadButton}
+            {imageUrl ? <img src={imageUrl} style={{ width: '100%',height:'100%'}} alt="avatar" /> : uploadButton}
             </AvatarUploader>
           )}
           <AvatarRequest>

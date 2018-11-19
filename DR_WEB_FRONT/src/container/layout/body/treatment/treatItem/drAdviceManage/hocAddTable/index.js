@@ -15,33 +15,38 @@ const HocAddTable = (WrappedComponent, params) => {
       super(props);
       this.state = {
         showResult: false, // 是否显示浮窗
+        keyword: '',
         itemsData: [], // 项目数据数组
         totalLines: 0, // 查询结果总行数
         curLine: 0, // 当前行,从0开始，-1表示未选中任何行
         loadStatus: 0, // 数据加载状态 0 未请求或者请求完毕 1 请求中
+        total: 0, // 分页总条数
+        currentPage: 1, // 当前页
       };
       this.showResult = this.showResult.bind(this);
       this.hideResult = this.hideResult.bind(this);
       this.checkedLine = this.checkedLine.bind(this);
       this.getValue = this.getValue.bind(this);
+      this.getData = this.getData.bind(this);
     };
     /* getData 获取项目数据 */
-    getData(value){
-      params.data.keyword = value;
+    getData(currentPage = 1){
+      params.data.keyword = this.state.keyword;
+      params.data.page = currentPage;
+      params.data.pageSize = 10
+      if(this.props.selectedMitype){
+        params.data.miType = this.props.selectedMitype;
+      }
       let that = this;
       function success(res) {
         if(res.result){
-          let itemsData = res.data.baMedicalDtlList.map((item, index)=>{
-            item.key = index; // 加唯一key值
-            item.status = (index == 0) ? 1 : 0; // 0表示全部未选中,1表示选择了该行,初始化时默认选中第一行
-            return item
-          });
-          res.data.baOrderSuitList.forEach((item, index)=>{
-            item.key = itemsData.length; // 加唯一key值
-            itemsData.push(item);
-          });
+          let itemsData = params.processData(res.data);
           let totalLines = itemsData.length;
-          that.setState({itemsData, totalLines, loadStatus: 0});
+          let total = 0;
+          if(res.data && !Array.isArray(res.data)){
+            total = res.data.total;
+          }
+          that.setState({itemsData, totalLines, loadStatus: 0, total, currentPage});
         }else{
           console.log('异常响应信息', res);
         }
@@ -53,7 +58,9 @@ const HocAddTable = (WrappedComponent, params) => {
     /* [showResult 查询、展示结果] */
     showResult(value = ''){
       if(value.trim() != ''){
-        this.getData(value);
+        this.setState({ keyword: value}, () => {
+          this.getData();
+        });
       }else{ // 空输入项关闭下拉框
         this.hideResult();
       }
@@ -157,10 +164,10 @@ const HocAddTable = (WrappedComponent, params) => {
     };
     static displayName = `HOC(${getDisplayName(WrappedComponent)})`
     render(){
-      let { showResult, itemsData, loadStatus } = this.state;
+      let { showResult, itemsData, loadStatus, total, currentPage } = this.state;
       return (
         <div>
-          <WrappedComponent {...this.props} showResultFunc={this.showResult} {...this.state} handleEnterPress={this.handleEnterPress} checkedLine={this.checkedLine} getValue={this.getValue}/>
+          <WrappedComponent {...this.props} showResultFunc={this.showResult} {...this.state} getData={this.getData} handleEnterPress={this.handleEnterPress} checkedLine={this.checkedLine} getValue={this.getValue}/>
           <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
         </div>
       )

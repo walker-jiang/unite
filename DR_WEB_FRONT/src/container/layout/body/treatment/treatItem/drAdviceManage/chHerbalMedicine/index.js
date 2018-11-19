@@ -54,18 +54,43 @@ export default class ChHerbalMedicine extends Component {
       });
       return;
     }
-    let promise = this.checkTaboo(herbalData); // 紧急项目监测
-    promise.then((res) => {
-      console.log('继续保存', res);
-      if(this.props.actionType == 'add'){
-        this.addHerbalData(formData, herbalData);
-      }else{ // 修改保存
-        this.mmodifyHerbalData(formData, herbalData);
+    // 遍历缺少项目
+    let lackItem = [];
+    herbalData.forEach(item => {
+      if(!item.itemid){
+        lackItem.push(item.itemname);
       }
-    }, (res) => {
-      console.log('点击查看', res);
-      this.form.refreshHerbalData(res);
     });
+    if(lackItem.length){
+      this.tipModal.showModal({
+        stressContent: lackItem.join('、') + '暂无，请替换后重新保存'
+      });
+      return;
+    }
+    let promise = this.checkTaboo(herbalData); // 紧急项目监测
+    if(promise){
+      promise.then((res) => {
+        console.log('继续保存', res);
+        if(this.props.actionType == 'add'){
+          this.addHerbalData(formData, herbalData);
+        }else{ // 修改保存
+          this.mmodifyHerbalData(formData, herbalData);
+        }
+      }, (res) => {
+        console.log('点击查看', res);
+        this.form.refreshHerbalData(res);
+      }).catch(() => {
+        this.tipModal.showModal({
+          stressContent: '禁忌检测失败'
+        });
+      });
+    }else{
+      promise.catch(() => {
+        this.tipModal.showModal({
+          stressContent: '禁忌检测失败'
+        });
+      });
+    }
     // console.log('表单数据', formData);
     // console.log('草药数据', herbalData);
   };
@@ -86,7 +111,7 @@ export default class ChHerbalMedicine extends Component {
     let buDiagnosisInfo = {
       buDiagnosisList: values.diagnose.originData,
       "cardno": window.cardno,
-      "deptid": window.sessionStorage.getItem('deptid'),
+      "deptcode": window.sessionStorage.getItem('deptid'),
       "diagnosisDesc": values.diagnosename,
       "doctorid": window.sessionStorage.getItem('userid'),
       "doctorname": window.sessionStorage.getItem('username'),
@@ -148,7 +173,7 @@ export default class ChHerbalMedicine extends Component {
       orgCode: window.sessionStorage.getItem('orgid')
     };
     let params = {
-      url: 'Taboo/matchBy',
+      url: 'Taboo/matchByDtl',
       server_url: config_taboo_url,
       async: false,
       type: 'post',
@@ -156,56 +181,7 @@ export default class ChHerbalMedicine extends Component {
     }
     let that = this;
     let promise = null;
-    // function success(res) {
-    //   if(res.result){
-    //     let carefulArr = []; // 慎用项
-    //     let tabooArr = []; // 禁忌项
-    //     res.data.forEach(item => {
-    //       if(item.careful){
-    //         carefulArr.push(item.careful);
-    //       }
-    //       if(item.taboo){
-    //         tabooArr.push(item.taboo);
-    //       }
-    //     });
-    //     if(carefulArr.length || tabooArr.length){ // 弹框提示
-    //       let title = [];
-    //       if(carefulArr.length){
-    //         title.push(<p>慎用项目：{carefulArr.join('、')}</p>);
-    //       }
-    //       if(tabooArr.length){
-    //         title.push(<p>禁忌项目：{tabooArr.join('、')}</p>);
-    //       }
-    //       promise = new Promise((resolve, reject) => {
-    //         confirm({
-    //           title: title.map(item => item),
-    //           iconType: 'exclamation-circle',
-    //           okText: '继续保存',
-    //           cancelText: '查看',
-    //           onOk() { // 继续保存
-    //             resolve(herbalData);
-    //           },
-    //           onCancel() { // 查看禁忌
-    //             herbalData.map(herbalItem => {
-    //               res.data.forEach(itemcTaboo => {
-    //                 if(itemcTaboo.itemid == herbalItem.itemid){
-    //                   herbalItem.careful = itemcTaboo.careful;
-    //                   herbalItem.taboo = itemcTaboo.taboo;
-    //                 }
-    //               })
-    //               return herbalItem;
-    //             });
-    //             reject(herbalData);
-    //           },
-    //         });
-    //       });
-    //     }else{
-    //       promise = new Promise((resolve, reject) => {
-    //         resolve(herbalData);
-    //       });
-    //     }
-    //   }
-    // };
+
     function success(res) {
       if(res.result){
         if(res.data['taboo'] && res.data['taboo'].length>0){ // 弹框提示
@@ -239,6 +215,10 @@ export default class ChHerbalMedicine extends Component {
             resolve(herbalData);
           });
         }
+      }else{
+        promise = new Promise((resolve, reject) => {
+          reject();
+        });
       }
     };
     ajaxGetResource(params, success);

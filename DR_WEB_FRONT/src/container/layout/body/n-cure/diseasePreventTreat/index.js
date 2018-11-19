@@ -25,8 +25,10 @@ export default class DiseasePreventTreat extends Component {
   };
 
   componentWillMount(){//患者是否存在 0或者1
-    let cardtype = window.certificatesType?window.certificatesType:this.props.cardtype;
-    let cardno = window.certificatesNumber?window.certificatesNumber:this.props.cardno;
+    // let cardtype = window.certificatesType?window.certificatesType:this.props.cardtype;
+    // let cardno = window.certificatesNumber?window.certificatesNumber:this.props.cardno;
+    let cardtype = this.props.cardtype;
+    let cardno = this.props.cardno;
     let params = {
       type: 'GET',
       url: 'healthcabin/user/qrcode',

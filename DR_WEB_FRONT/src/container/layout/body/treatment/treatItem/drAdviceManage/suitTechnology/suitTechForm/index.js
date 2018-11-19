@@ -30,12 +30,13 @@ class SuitTechForm extends Component {
       buOrdmedical: {}, // 医嘱套对象原始属于保存保单部分数据修改时需要
       data: {}, //原始医嘱信息，修改时需要使用
       deptData: [], // 执行科室数据
+      mitype: [], // 以保内医保外字典数据
+      selectedMitype: '', // 选择的医保类型
       frequencyData: [],  // 频次下拉数据
       feeAll: 0, // 合计费用
       // 初始化数据
       buDiagnosisList: [], // 诊断明细信息
       aim: '', // 适宜技术目的
-      miType: '1', // 0 医保外， 1医保内 默认选择医保内
       suitTechData: [], // 适宜技术项目数据
       visible: true, // 穴位编辑弹框是否可见
       curTechDetail: {}, // 当前需要编辑适宜技术明细的穴位
@@ -44,6 +45,7 @@ class SuitTechForm extends Component {
   componentWillMount(){
     this.getDiagnoseData();
     this.getDept();
+    this.getMitype(['mitype']);
     this.getFrequency();
     if(this.props.actionType == 'modify' || this.props.actionType == 'view'){ // 修改、查看需要初始化数据
       this.getSuitTechData(this.props.orderid);
@@ -76,6 +78,29 @@ class SuitTechForm extends Component {
     };
     ajaxGetResource(params, success);
   }
+  /** [getMittype 获取字典数据] */
+  getMitype(DictTypeList){
+    let self = this;
+    let params = {
+      url: 'BaDatadictController/getListData',
+      data: {
+        dictNoList: DictTypeList
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        let dictListObj = {};
+        res.data.forEach(item => {
+          dictListObj[item.dictno.toLowerCase()] = item.baDatadictDetailList;
+        });
+        const selectedMitype = dictListObj.mitype.length ? dictListObj.mitype[0].value : '';
+        self.setState({...dictListObj, selectedMitype});
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
+  };
   /** [getDept 执行科室数据] */
   getDept() {
     let params = {
@@ -83,7 +108,7 @@ class SuitTechForm extends Component {
       server_url: config_login_url,
       data: {
         keyword: 1,
-        orgid: 10000
+        orgid: window.sessionStorage.getItem('orgid'),
       }
     };
     let that = this;
@@ -354,7 +379,18 @@ class SuitTechForm extends Component {
       render: (text, record, index) => {
         if(index%2 == 0){
           return {
-            children: <span><Title>治疗项/治疗明细</Title>：<Item>{record.orderSuitname}</Item>/{record.itemname}</span>,
+            children:
+              <span>
+                <Title>治疗项/治疗明细</Title>：
+                {
+                  record.orderSuitid ?
+                  <span>
+                    <Item>{record.orderSuitname}</Item>/
+                    <MiTypeText miType={record.miType}>{record.itemname}</MiTypeText>
+                  </span> :
+                  <MiTypeText miType={record.miType}>{record.itemname}</MiTypeText>
+                }
+              </span>,
             props: {
               colSpan: 2,
             },
@@ -519,6 +555,7 @@ class SuitTechForm extends Component {
           // item.unitprice += itemChild.count * itemChild.unitprice; // 医嘱套单价拼接
           itemChild.orderSuitid = item.orderSuitid;
           itemChild.orderSuitname = item.orderSuitname;
+          itemChild.miType = item.miType;
           itemChild.key = dataSource.length;
           dataSource.push(itemChild);
 
@@ -606,8 +643,14 @@ class SuitTechForm extends Component {
     }
     this.setState({suitTechData});
   };
+  /** [changeMitype 选择医保类型] */
+  changeMitype = (e) => {
+    this.setState({
+      selectedMitype: e.target.value,
+    });
+  }
   render () {
-    let { visiblePop, suitTechData, buDiagnosisList, miType, aim, visible, curTechDetail } = this.state;
+    let { visiblePop, suitTechData, buDiagnosisList, mitype, selectedMitype, aim, visible, curTechDetail } = this.state;
     const { getFieldDecorator } = this.props.form;
     const {dataSource, feeAll} = this.getTableDataSource(deepClone(suitTechData));
     const columns = this.getTableColumns();
@@ -691,22 +734,19 @@ class SuitTechForm extends Component {
                   {...specFormItemLayout}
                   label={<span><Add>➕</Add>快速添加：</span>}
                   >
-                    {getFieldDecorator('miType',{
-                      initialValue: miType
-                    })(
-                      <SpecRadioGroup>
-                        <Radio value='0'>医保外</Radio>
-                        <Radio value='1'>医保内</Radio>
-                      </SpecRadioGroup>
-                    )}
-                  </SpecFormItem>
+                  <SpecRadioGroup value={selectedMitype} onChange={this.changeMitype}>
+                  {
+                    mitype.map(item => <Radio key={item.value} value={item.value}>{item.vname}</Radio>)
+                  }
+                  </SpecRadioGroup>
+                </SpecFormItem>
               </Col>
               <Col span={16}>
                 <FormItem
                   {...formItemLayout}
                   >
                     {getFieldDecorator('addQuickly')(
-                      <QuickAddSuitTechItem placeholder='请输入治疗项目首字母快速添加' icon='#0A6ECB' ref={ref => this.quickAddSuitTechItem = ref} getQuickData = {this.addSuitTechData.bind(this)}/>
+                      <QuickAddSuitTechItem placeholder='请输入治疗项目首字母快速添加' selectedMitype={selectedMitype} icon='#0A6ECB' ref={ref => this.quickAddSuitTechItem = ref} getQuickData = {this.addSuitTechData.bind(this)}/>
                     )}
                   </FormItem>
               </Col>
@@ -736,7 +776,7 @@ class SuitTechForm extends Component {
                 pagination={Pagination}>
               </SpecTable>
               <Tip>💡提示：医保外项目以红色显示</Tip>
-              <Total>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
+              <Total margin_right={dataSource.length}>合计：{parseFloat(feeAll).toFixed(2)}元</Total>
             </Footer>
             <TipModal ref={ref=>{this.tipModal=ref}}></TipModal>
         </SpecForm>
@@ -751,8 +791,10 @@ const SpecForm = styled(Form)`
   }
 `;
 const SpecRow = styled(Row)`
-  max-height: 78px;
-  overflow: scroll;
+  &&& {
+    height: 78px;
+    overflow: scroll;
+  }
   ::-webkit-scrollbar {
     display: none;
   }
@@ -800,14 +842,12 @@ const Stress = styled.span`
 const Tip = Stress.extend`
   position: absolute;
   top: 290px;
-  left: 20px;
   line-height: 35px;
 `;
 const Total = styled.div`
   position: absolute;
   top: 290px;
-  left: 550px;
-  width: 100px;
+  right: ${props => props.margin_right ? '200px' : '0px'}
   line-height: 35px;
 `;
 const Add = styled.span`
@@ -882,7 +922,10 @@ const Edit = styled(Icon)`
   width: 25px;
   height: 18px;
 `;
-
+// 医保外红色显示
+const MiTypeText = styled.span`
+  color: ${props => props.miType == '1' ? 'red' : 'black'};
+`;
 const ChPatentMedicineForm = Form.create()(SuitTechForm);
 
 export default ChPatentMedicineForm;

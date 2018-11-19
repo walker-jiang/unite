@@ -23,6 +23,7 @@ export default class StartWork extends Component {
       end: '',
       arr:[],
       answer:[],
+      printQuestion: [],
       index: 0,
       userId: '',
       percent: 0,
@@ -61,16 +62,29 @@ export default class StartWork extends Component {
     let userId = this.props.userId;
     console.log('userId',userId)
     let arr = this.state.arr;
+    arr.map((item, index)=>{
+      item.key = index+1; // 加唯一key值
+      return item;
+    });
     let type_id = arr[this.state.index].type_id;
     let type_name = arr[this.state.index].type_name;
+    let qText = arr[this.state.index].q_text;
+    let qSeq = arr[this.state.index].key;
     let q_id = arr[this.state.index].q_id;
     let options_value = e.target.value + '';
     let answerJson = this.state.answer;
-    let aj = answerJson.push({typeId: type_id, typeName: type_name, qId: q_id, optionsValue: options_value});
+    // let arrData = {};
+    // let printQuestion = this.state.printQuestion;
+    // let pq = printQuestion.push({number: number, q_text: q_text, optionsValue: options_value});
+    // arrData.data = printQuestion;
+    // console.log('arrData',arrData);
+    let aj = answerJson.push({qSeq: qSeq, qText: qText, typeId: type_id, typeName: type_name, qId: q_id, optionsValue: options_value});
     let startQuestion = this.state.startQuestion;
     if(startQuestion == arr.length){//当前数量等于题目.length时，点击最后一题的选项，提交存储答案的json
       if('radio checked'){
         let paramsData = JSON.stringify(answerJson);
+        console.log('paramsData',paramsData);
+        
         this.saveTip.showModal(1);
         let self = this;
         let params = {

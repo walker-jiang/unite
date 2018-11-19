@@ -11,6 +11,7 @@ import printImages from "../images/print.png";
 import xian from "../images/xian.png";
 import exportFile from "../images/exportFile.png";
 import comeBack from "../images/comeBack.png";
+import Addtip from '../images/addtip.png';
 import getResource from 'commonFunc/ajaxGetResource';
 
 export default class index extends Component {
@@ -125,15 +126,44 @@ export default class index extends Component {
         orgidDic = data[i].orgidDic;
     }
     // console.log('jhduscdsfsd',arr)
-    // console.log('i',i)
-    var lodeData = data.map((item, i)=>{
-        return (
-            <ListData key={i} className= {this.state.valueColor[i]} onClick={()=>this.handClickList(i)}>
-                <First>{item.ctstamp.substr(0,10)}|{item.orgidDic}|医师：{item.doctorname}|{item.casetype == 1? '初诊':'复诊'}</First>
-                <Second>诊断：{item.buDiagnosisInfo.diagnosisDesc}</Second>
-            </ListData>
-        )
-    });
+    console.log('data',data)
+    let center;
+    if(data == [] ||　data == undefined || data == null || data['0'] == undefined ) {
+        console.log('null');
+        
+        center =
+            <NullData> 
+                <TipImg src={Addtip} />
+                <TipTitle>该患者还没有电子病历</TipTitle>
+            </NullData>
+    } else {
+        console.log('notnull');
+        
+        var lodeData = data.map((item, i)=>{
+            return (
+                <ListData key={i} className= {this.state.valueColor[i]} onClick={()=>this.handClickList(i)}>
+                    <First>{item.ctstamp.substr(0,10)}|{item.orgidDic}|医师：{item.doctorname}|{item.casetype == 1? '初诊':'复诊'}</First>
+                    <Second>诊断：{item.buDiagnosisInfo.diagnosisDesc}</Second>
+                </ListData>
+            )
+        });
+        center =
+        <Row>
+            <Col span={7}>
+                <ScrollArea height={100}>
+                    <ListBorder className="listRightLine">
+                        {lodeData}
+                        <ShowHidden onClick={this.handClickShow}>{show == true? '显示':'隐藏'}<Patientname>{patientname}</Patientname>更多病例信息>></ShowHidden>
+                    </ListBorder>
+                </ScrollArea>    
+            </Col>
+            <Col span={15} offset={1}>
+                <ScrollArea height={100}>
+                    <ElectronicRight data={data} i={i} patientname={patientname} sex={sex} birthday={birthday}  patienttypeDic={patienttypeDic} examDate={examDate} casetype={casetype} orgidDic={orgidDic} />
+                </ScrollArea>
+            </Col>
+        </Row>
+    }
     console.log(lodeData);
     return (
     <Container>
@@ -163,21 +193,7 @@ export default class index extends Component {
           </Row>
         </Title>
         <CenterArea id="eleBingLi">
-            <Row>
-                <Col span={7}>
-                    <ScrollArea height={100}>
-                        <ListBorder className="listRightLine">
-                            {lodeData}
-                            <ShowHidden onClick={this.handClickShow}>{show == true? '显示':'隐藏'}<Patientname>{patientname}</Patientname>更多病例信息>></ShowHidden>
-                        </ListBorder>
-                    </ScrollArea>    
-                </Col>
-                <Col span={15} offset={1}>
-                    <ScrollArea height={100}>
-                        <ElectronicRight data={data} i={i} patientname={patientname} sex={sex} birthday={birthday}  patienttypeDic={patienttypeDic} examDate={examDate} casetype={casetype} orgidDic={orgidDic} />
-                    </ScrollArea>
-                </Col>
-            </Row>   
+            {center}
         </CenterArea>
       </Container>
     )
@@ -287,6 +303,22 @@ const ShowHidden = styled.div`
     margin-left: 0.3rem;
     margin-top: 15px;
     cursor:pointer;
+`;
+const TipImg = styled.img`
+  width: 109px;
+  height: 130px;
+  margin-left: 44%;
+`;
+const TipTitle = styled.div`
+  font-size: 16px;
+  color: #666666;
+  text-align: center;
+  line-height: 24px;
+`;
+const NullData = styled.div`
+  width: 100%;
+  margin-top: 17rem;
+  margin-bottom: 17rem;
 `;
 /*
 @作者：王崇琨

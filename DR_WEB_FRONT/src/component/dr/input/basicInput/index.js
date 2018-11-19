@@ -53,6 +53,5 @@ const InputWithLine = styled.input.attrs({
 /*
 @作者：姜中希
 @日期：2018-06-26
-@描述：自定义一个输入框组件，样式定制，使用时要提供initialValue,没有默认值
-设为空字符串，提供icon 属性表明需要图标，使用示例参考：src\container\layout\content\treatManage\treatment\treatmentList.js
+@描述：自定义一个基本输入框组件，样式定制，使用时要提供value
 */

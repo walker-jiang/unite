@@ -163,6 +163,12 @@ class ChangePassword extends React.Component{
             <div className="button" style={{width:"100%",borderTop:"1px solid #ccc",padding:"20px 0 0 10%",display:`${this.state.checked?"none":"block"}`}}>
               <Button onClick={this.handleSubmit} htmlType="submit">保存</Button>
               <Button onClick={this.setStatus}>取消</Button>
+                {this.state.ifshow
+                    ?<Successupdata>
+                    <IconOne type='ok'/>
+                    保存成功
+                  </Successupdata>
+                  :null}
             </div>
          </Form>
       </div>
@@ -178,6 +184,7 @@ const Successupdata =styled.div`
 const IconOne = styled(Icons)`
   height:20px;
   width:20px;
-  margin-right:4px;
+  margin-top: -2px;
+  margin-left: 16px;
 `
 export default Form.create()(ChangePassword)

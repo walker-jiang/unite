@@ -59,11 +59,11 @@ const ModelManage= Loadable({
   loader: () => import('./n-modelManage'),
   loading: loadingComponent,
 });
-// import PersonalSetting from './n-personalSettings';
-const PersonalSetting= Loadable({
-  loader: () => import('./n-personalSettings'),
-  loading: loadingComponent,
-});
+import PersonalSetting from './n-personalSettings';
+// const PersonalSetting= Loadable({
+//   loader: () => import('./n-personalSettings'),
+//   loading: loadingComponent,
+// });
 const SystemManage= Loadable({
   loader: () => import('./n-systemManage'),
   loading: loadingComponent,

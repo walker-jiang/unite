@@ -54,7 +54,7 @@ class AcupointForm extends Component {
       server_url: config_login_url,
       data: {
         keyword: 1,
-        orgid: 10000
+        orgid: window.sessionStorage.getItem('orgid'),
       }
     };
     let that = this;
@@ -387,7 +387,7 @@ class AcupointForm extends Component {
               label={<span><Add>➕</Add>添加穴位/部位</span>}
               >
                 {getFieldDecorator('miType',{
-                  initialValue: miType
+                  initialValue: 'miType'
                 })(
                   <SpecRadioGroup>
                     <Radio value='0'>医保外</Radio>
@@ -526,16 +526,7 @@ const Name = styled.span`
 `;
 const SimplePagination = styled(Pagination)`
   ${paginationSty.easyPagination};
-  &&& {
-    margin-top: 6px;
-    float: right;
-  }
-  &&& > .ant-pagination-next a , &&& > .ant-pagination-prev a, &&& > .ant-pagination-simple-pager{
-    color: rgb(178, 20, 20) !important;
-  }
-  &&& > .ant-pagination-prev::before {
-    color: rgb(178, 20, 20) !important;
-  }
+  
 `;
 const AcupointFormWrapper = Form.create()(AcupointForm);
 export default AcupointFormWrapper;

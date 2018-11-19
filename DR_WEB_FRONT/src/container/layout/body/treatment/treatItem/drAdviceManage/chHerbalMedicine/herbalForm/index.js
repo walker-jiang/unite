@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
-import { Form, Select, Button, Row, Col, Pagination, } from 'antd';
+import { Form, Select, Button, Row, Col, Pagination, Radio } from 'antd';
 import Table from 'components/dr/icon/icons/table';
 import List from 'components/dr/icon/icons/list';
 import TableShow from './showWay/tableShow';
 import ListShow from './showWay/listShow';
-import TempAddSubtract from './tempAddSubtract';
 import SelectHerb from './selectHerb';
 import QuickAddHerb from './quickAddHerb';
 import Diagnose from './diagnose';
@@ -21,6 +20,7 @@ import { getDiagnoseText, converItemToNeededCN } from 'commonFunc/transform';
 import paginationSty from 'components/antd/style/pagination';
 
 const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
 const Option = Select.Option;
 
 class HerbalForm extends Component {
@@ -49,6 +49,8 @@ class HerbalForm extends Component {
       subHerbalData: [], // 临症加减草药数据
       tipVisible: false, // 禁忌、慎用提示是否可见
       careful_tip: '', // 禁忌提示信息文本
+      mitype: [], // 以保内医保外字典数据
+      selectedMitype: '', // 选择的医保类型
     };
     this.delHerbal = this.delHerbal.bind(this);
     this.dosageChange = this.dosageChange.bind(this);
@@ -76,6 +78,7 @@ class HerbalForm extends Component {
   componentWillMount(){
     this.getDiagnoseData();
     this.getFrequency();
+    this.getMitype(['mitype']);
     if(this.props.initData){ // 修改、查看需要初始化数据
       this.getCHMedicineAdvice(this.props.orderid);
     }else{ // 添加可以初始化数据
@@ -95,6 +98,29 @@ class HerbalForm extends Component {
         }
       }
     }
+  };
+  /** [getMittype 获取字典数据] */
+  getMitype(DictTypeList){
+    let self = this;
+    let params = {
+      url: 'BaDatadictController/getListData',
+      data: {
+        dictNoList: DictTypeList
+      },
+    };
+    function callBack(res){
+      if(res.result){
+        let dictListObj = {};
+        res.data.forEach(item => {
+          dictListObj[item.dictno.toLowerCase()] = item.baDatadictDetailList;
+        });
+        const selectedMitype = dictListObj.mitype.length ? dictListObj.mitype[0].value : '';
+        self.setState({...dictListObj, selectedMitype});
+      }else{
+        console.log('异常响应信息', res);
+      }
+    };
+    ajaxGetResource(params, callBack);
   };
   /** [getDiagnoseData 组件初始化获取加载诊断数据] */
   getDiagnoseData(){
@@ -257,6 +283,7 @@ class HerbalForm extends Component {
       server_url: config_InteLigenTreat_url+'TCMAE/',
       data: {
         treatmId: cureCaseId,
+        userid: window.sessionStorage.getItem('userid'),
         orgCode: window.sessionStorage.getItem('orgid')
       },
     };
@@ -366,8 +393,14 @@ class HerbalForm extends Component {
       this.setState({ tipVisible: true, careful_tip:  value})
     }
   };
+  /** [changeMitype 选择医保类型] */
+  changeMitype = (e) => {
+    this.setState({
+      selectedMitype: e.target.value,
+    });
+  }
   render () {
-    let { recipename, usagename, remark, treatway, countnum, freq, herbalData, buDiagnosisList, frequencyData, showWay, current, illCaseData, cureCaseData, subHerbalData, tipVisible, careful_tip } = this.state;
+    let { recipename, usagename, remark, treatway, countnum, freq, herbalData, buDiagnosisList, frequencyData, showWay, current, illCaseData, cureCaseData, subHerbalData, tipVisible, careful_tip, mitype, selectedMitype } = this.state;
     const { getFieldDecorator } = this.props.form;
     const formItemLayout = {
       labelCol: {
@@ -381,6 +414,17 @@ class HerbalForm extends Component {
       colon: false
     };
     const separateFormItemLayout = {
+      labelCol: {
+        xs: { span: 6 },
+        sm: { span: 6 },
+      },
+      wrapperCol: {
+        xs: { span: 18 },
+        sm: { span: 18 },
+      },
+      colon: false
+    };
+    const specFormItemLayout = {
       labelCol: {
         xs: { span: 6 },
         sm: { span: 6 },
@@ -554,14 +598,24 @@ class HerbalForm extends Component {
           </Col>
         </Row>
         <Row>
-          <SpecCol span={8}>
+          <SpecCol span={2}>
             <TableIcon showWay={showWay} onClick={this.toggleShowWay.bind(this, 'table')}/>
             <ListIcon showWay={showWay} onClick={this.toggleShowWay.bind(this, 'list')}/>
-            <AddHerbal onClick = {()=>{this.addHerbalForm.handleAddClick()}}>🌿添加中药</AddHerbal>
-            <QuickAdd>快速添加：</QuickAdd>
           </SpecCol>
-          <Col span={16}>
-            <QuickAddHerb placeholder='请输入中药首字母快速添加' icon='true' ref={ref => this.quickAddHerb = ref} getQuickData = {this.addHerbalData.bind(this)}/>
+          <SpecCol span={2}>
+            <span>🌿添加中药</span>
+          </SpecCol>
+          <Col span={5}>
+            <SpecFormItem>
+              <SpecRadioGroup value={selectedMitype} onChange={this.changeMitype}>
+              {
+                mitype.map(item => <Radio key={item.value} value={item.value}>{item.vname}</Radio>)
+              }
+              </SpecRadioGroup>
+            </SpecFormItem>
+          </Col>
+          <Col span={15}>
+            <QuickAddHerb placeholder='请输入中药首字母快速添加' selectedMitype={selectedMitype} icon='true' ref={ref => this.quickAddHerb = ref} getQuickData = {this.addHerbalData.bind(this)}/>
           </Col>
         </Row>
         <Row>
@@ -577,6 +631,7 @@ class HerbalForm extends Component {
               pageSize={pagination.pageSize}
               herbalData={ herbalData }
               delHerbal={this.delHerbal}
+              selectedMitype={selectedMitype}
               ref={ref => this.addListData = ref} />
             :
             <TableShow
@@ -627,7 +682,7 @@ const SpecSelect = styled(Select)`
   }
 `;
 const SpecCol = styled(Col)`
-  margin: 15px 0px 5px 0px;
+  margin: 10px 0px 5px 0px;
 `;
 const TableIcon = styled(Table)`
   background: ${props => props.showWay == 'table' ? 'rgb(178, 20, 20)' : '#999999'};
@@ -637,7 +692,7 @@ const ListIcon = styled(List)`
     background-color: ${props => props.showWay == 'list' ? 'rgb(178, 20, 20)' : '#999999'};
   }
   border-color: ${props => props.showWay == 'list' ? 'rgba(10, 110, 203, 1)' : '#999999'};
-  margin:0px 10px;
+  margin-left: 10px;
 `;
 const AddHerbal = styled.div`
   float: left;
@@ -666,13 +721,11 @@ const Bottom = styled.div`
 `;
 const Tip = styled.span`
   font-size: 12px;
-  line-height: 35px;
-  margin-left: 20px;
+  line-height: 55px;
 `;
 const Doctor = styled.div`
   float: right;
-  width: 100px;
-  line-height: 35px;
+  line-height: 55px;
 `;
 const Name = styled.span`
   text-decoration: underline;
@@ -731,6 +784,27 @@ const SimplePagination = styled(Pagination)`
     color: rgb(178, 20, 20) !important;
   }
 `;
+const SpecRadioGroup = styled(RadioGroup)`
+  &&& {
+    float: left;
+    font-size: 12px;
+    width: 220px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    margin-right: 21px;
+    margin-top: 8px;
+    border-right: 1px solid #e9e9e9;
+  }
+`;
+const SpecFormItem = styled(FormItem)`
+  .ant-form-item-children {
+    display: flex;
+    border-bottom: 1px solid rgba(215,215,215,1);
+    height: 35px;
+  }
+`;
+
 const HerbalFormWrapper = Form.create()(HerbalForm);
 export default HerbalFormWrapper;
 
